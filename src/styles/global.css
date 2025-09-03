@@ -1,15 +1,23 @@
-/* Smooth fade-in for page transitions */
+/* Smooth fade-in and scale for page transitions */
 .page-wrapper {
-  animation: fadeIn 0.4s ease-in-out;
+  animation: fadeInScale 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  opacity: 0; /* Ensure starts invisible */
 }
 
-@keyframes fadeIn {
-  from {
+@keyframes fadeInScale {
+  0% {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px) scale(0.98);
+    filter: blur(2px);
   }
-  to {
+  50% {
+    opacity: 0.6;
+    transform: translateY(10px) scale(0.99);
+    filter: blur(1px);
+  }
+  100% {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }

@@ -12,6 +12,8 @@ const Signup = lazy(() => import("./pages/Signup"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
 
 // Layout wrapper (Navbar + Footer)
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -54,6 +56,26 @@ const App: React.FC = () => {
               element={
                 <Layout>
                   <Signup />
+                </Layout>
+              }
+            />
+
+            {/* About */}
+            <Route
+              path="/about"
+              element={
+                <Layout>
+                  <About />
+                </Layout>
+              }
+            />
+
+            {/* Contact */}
+            <Route
+              path="/contact"
+              element={
+                <Layout>
+                  <Contact />
                 </Layout>
               }
             />
