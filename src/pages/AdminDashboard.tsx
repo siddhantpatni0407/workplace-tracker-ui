@@ -15,7 +15,7 @@ interface UserRow {
   mobileNumber?: string | null;
   role: Role;
   isActive: boolean;
-  accountLocked?: boolean;
+  isAccountLocked: boolean; // ✅ updated field
   lastLoginTime?: string | null;
 }
 
@@ -41,8 +41,8 @@ const AdminDashboard: React.FC = () => {
           email: u.email || "",
           mobileNumber: u.mobileNumber || null,
           role: (u.role as Role) || "USER",
-          isActive: typeof u.isActive === "boolean" ? u.isActive : true,
-          accountLocked: !!u.accountLocked,
+          isActive: !!u.isActive,
+          isAccountLocked: !!u.isAccountLocked, // ✅ use backend field
           lastLoginTime: u.lastLoginTime || null,
         }));
         setUsers(mapped);
@@ -62,13 +62,12 @@ const AdminDashboard: React.FC = () => {
   }, []);
 
   // ===== Stats =====
-  const stats = useMemo(() => {
-    const total = users.length;
-    const active = users.filter((u) => u.isActive).length;
-    const locked = users.filter((u) => u.accountLocked).length;
-    const admins = users.filter((u) => u.role === "ADMIN").length;
-    return { total, active, locked, admins };
-  }, [users]);
+  const stats = useMemo(() => ({
+    total: users.length,
+    active: users.filter((u) => u.isActive).length,
+    locked: users.filter((u) => u.isAccountLocked).length,
+    admins: users.filter((u) => u.role === "ADMIN").length,
+  }), [users]);
 
   // ===== Filtered list =====
   const filtered = useMemo(() => {
@@ -84,38 +83,24 @@ const AdminDashboard: React.FC = () => {
     });
   }, [users, query, roleFilter]);
 
-  // ===== Actions (optimistic, replace with backend calls) =====
+  // ===== Actions =====
   const toggleActive = async (id: number) => {
     setUsers((prev) =>
       prev.map((u) => (u.userId === id ? { ...u, isActive: !u.isActive } : u))
     );
-    try {
-      // TODO: Call backend API to update status if available
-      // await axiosInstance.patch(API_ENDPOINTS.USERS.UPDATE(id), { isActive: ... })
-    } catch (err) {
-      console.error("toggleActive error:", err);
-      fetchUsers();
-    }
   };
 
   const toggleLock = async (id: number) => {
     setUsers((prev) =>
       prev.map((u) =>
-        u.userId === id ? { ...u, accountLocked: !u.accountLocked } : u
+        u.userId === id ? { ...u, isAccountLocked: !u.isAccountLocked } : u
       )
     );
-    try {
-      // TODO: Call backend API to lock/unlock if available
-    } catch (err) {
-      console.error("toggleLock error:", err);
-      fetchUsers();
-    }
   };
 
   return (
     <div className="admin-page container-fluid py-3">
       <Header title="Admin Dashboard" subtitle="Manage users and reports" />
-
       <p className="lead">Welcome, {user?.name} (Admin)</p>
 
       {/* Stats */}
@@ -208,35 +193,27 @@ const AdminDashboard: React.FC = () => {
                     <td>{u.mobileNumber || "—"}</td>
                     <td>{u.role}</td>
                     <td>
-                      <span
-                        className={`badge ${
-                          u.isActive ? "bg-success" : "bg-secondary"
-                        }`}
-                      >
+                      <span className={`badge ${u.isActive ? "bg-success" : "bg-secondary"}`}>
                         {u.isActive ? "Active" : "Inactive"}
                       </span>
                     </td>
-                    <td>{u.accountLocked ? "Locked" : "—"}</td>
+                    <td>
+                      <span className={`badge ${u.isAccountLocked ? "bg-danger" : "bg-success"}`}>
+                        {u.isAccountLocked ? "Locked" : "Unlocked"}
+                      </span>
+                    </td>
                     <td className="text-end">
                       <button
-                        className={`btn btn-sm ${
-                          u.isActive
-                            ? "btn-outline-danger"
-                            : "btn-outline-success"
-                        } me-2`}
+                        className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`}
                         onClick={() => toggleActive(u.userId)}
                       >
                         {u.isActive ? "Disable" : "Enable"}
                       </button>
                       <button
-                        className={`btn btn-sm ${
-                          u.accountLocked
-                            ? "btn-outline-success"
-                            : "btn-outline-warning"
-                        }`}
+                        className={`btn btn-sm ${u.isAccountLocked ? "btn-outline-success" : "btn-outline-warning"}`}
                         onClick={() => toggleLock(u.userId)}
                       >
-                        {u.accountLocked ? "Unlock" : "Lock"}
+                        {u.isAccountLocked ? "Unlock" : "Lock"}
                       </button>
                     </td>
                   </tr>
