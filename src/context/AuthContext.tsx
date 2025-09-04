@@ -1,6 +1,5 @@
-// src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { authService, SignupData } from "../services/authService";
+import { authService, SignupData, AuthResponse } from "../services/authService";
 
 export type Role = "ADMIN" | "USER";
 
@@ -13,8 +12,8 @@ export interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (user: SignupData) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<AuthResponse>;
+  signup: (user: SignupData) => Promise<AuthResponse>;
   logout: () => void;
 }
 
@@ -23,46 +22,32 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(authService.getUser());
 
-  const login = async (email: string, password: string): Promise<boolean> => {
-    try {
-      const resp = await authService.login(email, password);
-      if (resp.status === "SUCCESS" && resp.token) {
-        authService.saveSession(resp);
-        setUser({
-          name: resp.name!,
-          mobileNumber: "", // backend doesn't return mobile on login, skip
-          email,
-          role: resp.role!,
-        });
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error("Login failed", error);
-      return false;
+  const login = async (email: string, password: string): Promise<AuthResponse> => {
+    const resp = await authService.login(email, password);
+    if (resp.status === "SUCCESS" && resp.token) {
+      authService.saveSession(resp);
+      setUser({
+        name: resp.name!,
+        mobileNumber: "",
+        email,
+        role: resp.role!,
+      });
     }
+    return resp;
   };
 
-  const signup = async (newUser: SignupData): Promise<boolean> => {
-    try {
-      const resp = await authService.signup(newUser);
-      if (resp.status === "SUCCESS" && resp.token) {
-        authService.saveSession(resp);
-        setUser({
-          name: newUser.name,
-          mobileNumber: newUser.mobileNumber,
-          email: newUser.email,
-          role: newUser.role,
-        });
-        return true;
-      } else {
-        alert(resp.message); // show backend error e.g. "Email already exists."
-      }
-      return false;
-    } catch (error) {
-      console.error("Signup failed", error);
-      return false;
+  const signup = async (newUser: SignupData): Promise<AuthResponse> => {
+    const resp = await authService.signup(newUser);
+    if (resp.status === "SUCCESS" && resp.token) {
+      authService.saveSession(resp);
+      setUser({
+        name: newUser.name,
+        mobileNumber: newUser.mobileNumber,
+        email: newUser.email,
+        role: newUser.role,
+      });
     }
+    return resp;
   };
 
   const logout = () => {

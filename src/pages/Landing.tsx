@@ -39,153 +39,155 @@ const Landing: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
+  e.preventDefault();
+  if (!validateForm()) return;
 
-    let success = false;
+  try {
     if (isSignup) {
-      success = await signup(form);
+      // 🔹 signup flow
+      const resp = await signup(form);
+      if (resp.status === "SUCCESS") {
+        navigate(form.role === "ADMIN" ? "/admin" : "/user");
+      } else {
+        setError(resp.message || "Signup failed. Please try again.");
+      }
     } else {
-      success = await login(form.email, form.password);
+      // 🔹 login flow
+      const resp = await login(form.email, form.password);
+      if (resp.status === "SUCCESS") {
+        navigate(resp.role === "ADMIN" ? "/admin" : "/user");
+      } else {
+        if (resp.message?.toLowerCase().includes("locked")) {
+          setError(
+            "⚠️ Your account is locked due to multiple failed login attempts. Please reset your password or contact admin."
+          );
+        } else {
+          setError(resp.message || "Invalid credentials. Please try again.");
+        }
+      }
     }
+  } catch (err) {
+    setError("Something went wrong. Please try again later.");
+  }
+};
 
-    if (success) {
-      navigate(form.role === "ADMIN" ? "/admin" : "/user");
-    } else {
-      setError("Invalid credentials. Please try again.");
-    }
-  };
 
   return (
     <div className="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="row w-100 shadow-lg rounded-4 overflow-hidden" style={{ maxWidth: "1000px" }}>
-        {/* Left Column: App Info */}
+      <div
+        className="row w-100 shadow-lg rounded-4 overflow-hidden"
+        style={{ maxWidth: "1000px" }}
+      >
+        {/* Left Column: Info */}
         <div className="col-md-6 bg-primary text-white d-flex flex-column justify-content-center p-5 position-relative">
-          <h1 className="fw-bold mb-4 animate__animated animate__fadeInDown">
+          <h1 className="fw-bold mb-4">
             Welcome to <span className="text-warning">Workplace Tracker</span>
           </h1>
-          <p className="lead mb-4 animate__animated animate__fadeIn">
-            Simplify your work-life management with our intelligent tracking system.
-            Know your attendance, office visits, and work from home days—all in one place.
+          <p className="lead mb-4">
+            Track attendance, office visits, and work-from-home days—all in one place.
           </p>
-          <ul className="list-unstyled fs-6 animate__animated animate__fadeIn animate__delay-1s">
+          <ul className="list-unstyled fs-6">
             <li className="mb-2">
-              <i className="bi bi-check-circle-fill me-2 text-warning"></i> Track Work From Office & Home
+              <i className="bi bi-check-circle-fill me-2 text-warning"></i>
+              Track Work From Office & Home
             </li>
             <li className="mb-2">
-              <i className="bi bi-check-circle-fill me-2 text-warning"></i> View Monthly & Yearly Reports
+              <i className="bi bi-check-circle-fill me-2 text-warning"></i>
+              Monthly & Yearly Reports
             </li>
             <li className="mb-2">
-              <i className="bi bi-check-circle-fill me-2 text-warning"></i> Role-Based Dashboards for Admin & Users
-            </li>
-            <li className="mb-2">
-              <i className="bi bi-check-circle-fill me-2 text-warning"></i> Simple & Intuitive UI
+              <i className="bi bi-check-circle-fill me-2 text-warning"></i>
+              Role-Based Dashboards
             </li>
           </ul>
-          <div className="mt-4">
-            <img
-              src="/assets/workplace-illustration.png"
-              alt="Workplace Tracker Illustration"
-              className="img-fluid animate__animated animate__zoomIn animate__delay-2s"
-            />
-          </div>
         </div>
 
-        {/* Right Column: Login/Signup Form */}
+        {/* Right Column: Form */}
         <div className="col-md-6 bg-white d-flex align-items-center justify-content-center p-5">
           <div className="w-100" style={{ maxWidth: "450px" }}>
             <h2 className="text-center mb-3 fw-bold text-primary">
-              {isSignup ? "Create a New Account" : "Login to Workplace Tracker"}
+              {isSignup ? "Create Account" : "Login"}
             </h2>
             <p className="text-center text-muted mb-4">
               {isSignup
-                ? "Fill in the details below to register."
-                : "Enter your credentials to continue."}
+                ? "Fill details to register"
+                : "Enter email and password to login"}
             </p>
 
             <form onSubmit={handleSubmit}>
               {isSignup && (
                 <>
                   <div className="mb-3">
-                    <label htmlFor="name" className="form-label fw-semibold">
-                      Full Name
-                    </label>
+                    <label className="form-label fw-semibold">Full Name</label>
                     <input
-                      id="name"
                       name="name"
                       type="text"
                       value={form.name}
                       onChange={handleChange}
-                      placeholder="Enter your full name"
                       className="form-control"
+                      placeholder="Enter your full name"
                     />
                   </div>
-
                   <div className="mb-3">
-                    <label htmlFor="mobile" className="form-label fw-semibold">
+                    <label className="form-label fw-semibold">
                       Mobile Number
                     </label>
                     <input
-                      type="tel"
-                      className="form-control"
                       name="mobileNumber"
+                      type="tel"
                       value={form.mobileNumber}
                       onChange={handleChange}
-                      required
+                      className="form-control"
+                      placeholder="10-digit number"
                       minLength={10}
                       maxLength={10}
                       inputMode="numeric"
-                      placeholder="10-digit number"
+                      required
                     />
                   </div>
                 </>
               )}
 
               <div className="mb-3">
-                <label htmlFor="email" className="form-label fw-semibold">
-                  Email Address
-                </label>
+                <label className="form-label fw-semibold">Email</label>
                 <input
-                  id="email"
                   name="email"
                   type="email"
                   value={form.email}
                   onChange={handleChange}
-                  placeholder="Enter your email"
                   className="form-control"
+                  placeholder="Enter your email"
+                  required
                 />
               </div>
 
               <div className="mb-3">
-                <label htmlFor="password" className="form-label fw-semibold">
-                  Password
-                </label>
+                <label className="form-label fw-semibold">Password</label>
                 <input
-                  id="password"
                   name="password"
                   type="password"
                   value={form.password}
                   onChange={handleChange}
-                  placeholder="Enter your password"
                   className="form-control"
+                  placeholder="Enter your password"
+                  required
                 />
               </div>
 
-              <div className="mb-3">
-                <label htmlFor="role" className="form-label fw-semibold">
-                  Select Role
-                </label>
-                <select
-                  id="role"
-                  name="role"
-                  value={form.role}
-                  onChange={handleChange}
-                  className="form-select"
-                >
-                  <option value="USER">User</option>
-                  <option value="ADMIN">Admin</option>
-                </select>
-              </div>
+              {isSignup && (
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Role</label>
+                  <select
+                    name="role"
+                    value={form.role}
+                    onChange={handleChange}
+                    className="form-select"
+                  >
+                    <option value="USER">User</option>
+                    <option value="ADMIN">Admin</option>
+                  </select>
+                </div>
+              )}
 
               {error && (
                 <p className="text-danger text-center fw-semibold">{error}</p>
@@ -195,13 +197,14 @@ const Landing: React.FC = () => {
                 type="submit"
                 className="btn btn-primary w-100 py-2 fw-semibold shadow-sm"
               >
-                {isSignup ? "Create Account" : "Login Now"}
+                {isSignup ? "Sign Up" : "Login"}
               </button>
             </form>
 
             <hr className="my-4" />
 
             <button
+              type="button"
               className="btn btn-outline-secondary w-100 py-2"
               onClick={() => {
                 setIsSignup((prev) => !prev);
