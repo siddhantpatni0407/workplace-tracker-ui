@@ -1,7 +1,9 @@
+// src/pages/AdminDashboard.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import Header from "../components/Header/Header";
 import { useAuth } from "../context/AuthContext";
-import axiosInstance from "../services/axiosInstance"; // optional for real API
+import axiosInstance from "../services/axiosInstance";
+import { API_ENDPOINTS } from "../constants/apiEndpoints";
 import "./AdminDashboard.css";
 
 type Role = "ADMIN" | "USER";
@@ -10,9 +12,10 @@ interface UserRow {
   userId: number;
   name: string;
   email: string;
+  mobileNumber?: string | null;
   role: Role;
   isActive: boolean;
-  accountLocked: boolean;
+  accountLocked?: boolean;
   lastLoginTime?: string | null;
 }
 
@@ -24,24 +27,31 @@ const AdminDashboard: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState<"ALL" | Role>("ALL");
   const [error, setError] = useState<string | null>(null);
 
-  // ===== Fetch Users (mock for now) =====
+  // ===== Fetch Users from backend =====
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Replace mock with API call when backend ready
-      // const resp = await axiosInstance.get<UserRow[]>("/api/v1/workplace-tracker-service/user/fetch");
-      // setUsers(resp.data);
+      const resp = await axiosInstance.get(API_ENDPOINTS.USERS.GET_ALL);
 
-      const mock: UserRow[] = [
-        { userId: 1, name: "Siddhant Patni", email: "siddhant@example.com", role: "ADMIN", isActive: true, accountLocked: false },
-        { userId: 2, name: "Priyanka Patni", email: "priyanka@example.com", role: "USER", isActive: true, accountLocked: false },
-        { userId: 3, name: "John Doe", email: "john@example.com", role: "USER", isActive: false, accountLocked: true },
-      ];
-      await new Promise((r) => setTimeout(r, 400));
-      setUsers(mock);
-    } catch (e) {
-      setError("Failed to load users.");
+      if (resp?.data?.status === "SUCCESS" && Array.isArray(resp.data.data)) {
+        const mapped: UserRow[] = resp.data.data.map((u: any) => ({
+          userId: u.userId,
+          name: u.username || u.name || "",
+          email: u.email || "",
+          mobileNumber: u.mobileNumber || null,
+          role: (u.role as Role) || "USER",
+          isActive: typeof u.isActive === "boolean" ? u.isActive : true,
+          accountLocked: !!u.accountLocked,
+          lastLoginTime: u.lastLoginTime || null,
+        }));
+        setUsers(mapped);
+      } else {
+        setError(resp?.data?.message || "Failed to load users.");
+      }
+    } catch (err: any) {
+      console.error("fetchUsers error:", err);
+      setError(err?.response?.data?.message || "Network/server error.");
     } finally {
       setLoading(false);
     }
@@ -62,24 +72,44 @@ const AdminDashboard: React.FC = () => {
 
   // ===== Filtered list =====
   const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
     return users.filter((u) => {
       if (roleFilter !== "ALL" && u.role !== roleFilter) return false;
-      const q = query.trim().toLowerCase();
-      return !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
+      if (!q) return true;
+      return (
+        u.name.toLowerCase().includes(q) ||
+        u.email.toLowerCase().includes(q) ||
+        (u.mobileNumber || "").includes(q)
+      );
     });
   }, [users, query, roleFilter]);
 
-  // ===== Actions =====
-  const toggleActive = (id: number) => {
+  // ===== Actions (optimistic, replace with backend calls) =====
+  const toggleActive = async (id: number) => {
     setUsers((prev) =>
       prev.map((u) => (u.userId === id ? { ...u, isActive: !u.isActive } : u))
     );
+    try {
+      // TODO: Call backend API to update status if available
+      // await axiosInstance.patch(API_ENDPOINTS.USERS.UPDATE(id), { isActive: ... })
+    } catch (err) {
+      console.error("toggleActive error:", err);
+      fetchUsers();
+    }
   };
 
-  const toggleLock = (id: number) => {
+  const toggleLock = async (id: number) => {
     setUsers((prev) =>
-      prev.map((u) => (u.userId === id ? { ...u, accountLocked: !u.accountLocked } : u))
+      prev.map((u) =>
+        u.userId === id ? { ...u, accountLocked: !u.accountLocked } : u
+      )
     );
+    try {
+      // TODO: Call backend API to lock/unlock if available
+    } catch (err) {
+      console.error("toggleLock error:", err);
+      fetchUsers();
+    }
   };
 
   return (
@@ -122,7 +152,7 @@ const AdminDashboard: React.FC = () => {
           <div className="d-flex gap-2 w-100">
             <input
               className="form-control"
-              placeholder="Search users..."
+              placeholder="Search users by name, email, or mobile..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -162,6 +192,7 @@ const AdminDashboard: React.FC = () => {
                   <th>ID</th>
                   <th>Name</th>
                   <th>Email</th>
+                  <th>Mobile</th>
                   <th>Role</th>
                   <th>Active</th>
                   <th>Locked</th>
@@ -174,22 +205,35 @@ const AdminDashboard: React.FC = () => {
                     <td>{u.userId}</td>
                     <td>{u.name}</td>
                     <td>{u.email}</td>
+                    <td>{u.mobileNumber || "—"}</td>
                     <td>{u.role}</td>
                     <td>
-                      <span className={`badge ${u.isActive ? "bg-success" : "bg-secondary"}`}>
+                      <span
+                        className={`badge ${
+                          u.isActive ? "bg-success" : "bg-secondary"
+                        }`}
+                      >
                         {u.isActive ? "Active" : "Inactive"}
                       </span>
                     </td>
                     <td>{u.accountLocked ? "Locked" : "—"}</td>
                     <td className="text-end">
                       <button
-                        className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`}
+                        className={`btn btn-sm ${
+                          u.isActive
+                            ? "btn-outline-danger"
+                            : "btn-outline-success"
+                        } me-2`}
                         onClick={() => toggleActive(u.userId)}
                       >
                         {u.isActive ? "Disable" : "Enable"}
                       </button>
                       <button
-                        className={`btn btn-sm ${u.accountLocked ? "btn-outline-success" : "btn-outline-warning"}`}
+                        className={`btn btn-sm ${
+                          u.accountLocked
+                            ? "btn-outline-success"
+                            : "btn-outline-warning"
+                        }`}
                         onClick={() => toggleLock(u.userId)}
                       >
                         {u.accountLocked ? "Unlock" : "Lock"}
