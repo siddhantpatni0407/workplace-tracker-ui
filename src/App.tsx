@@ -9,10 +9,11 @@ import "./styles/global.css";
 
 // Lazy loading pages
 const Landing = lazy(() => import("./pages/Landing"));
-const Login = lazy(() => import("./pages/Login"));           // <-- added
+const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
+const UserManagement = lazy(() => import("./pages/UserManagement")); // <-- added
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
@@ -41,50 +42,15 @@ const App: React.FC = () => {
         <Suspense fallback={<Loader />}>
           <Routes>
             {/* Landing (marketing / cover page) */}
-            <Route
-              path="/"
-              element={
-                <Layout>
-                  <Landing />
-                </Layout>
-              }
-            />
+            <Route path="/" element={<Layout><Landing /></Layout>} />
 
             {/* Authentication pages */}
-            <Route
-              path="/login"
-              element={
-                <Layout>
-                  <Login />
-                </Layout>
-              }
-            />
-            <Route
-              path="/signup"
-              element={
-                <Layout>
-                  <Signup />
-                </Layout>
-              }
-            />
+            <Route path="/login" element={<Layout><Login /></Layout>} />
+            <Route path="/signup" element={<Layout><Signup /></Layout>} />
 
             {/* Static pages */}
-            <Route
-              path="/about"
-              element={
-                <Layout>
-                  <About />
-                </Layout>
-              }
-            />
-            <Route
-              path="/contact"
-              element={
-                <Layout>
-                  <Contact />
-                </Layout>
-              }
-            />
+            <Route path="/about" element={<Layout><About /></Layout>} />
+            <Route path="/contact" element={<Layout><Contact /></Layout>} />
 
             {/* Dashboards (protected) */}
             <Route
@@ -97,6 +63,7 @@ const App: React.FC = () => {
                 </PrivateRoute>
               }
             />
+
             <Route
               path="/user"
               element={
@@ -108,15 +75,20 @@ const App: React.FC = () => {
               }
             />
 
-            {/* 404 Page */}
+            {/* User Management - ADMIN only */}
             <Route
-              path="*"
+              path="/user-management"
               element={
-                <Layout>
-                  <NotFound />
-                </Layout>
+                <PrivateRoute role="ADMIN">
+                  <Layout>
+                    <UserManagement />
+                  </Layout>
+                </PrivateRoute>
               }
             />
+
+            {/* 404 Page */}
+            <Route path="*" element={<Layout><NotFound /></Layout>} />
           </Routes>
         </Suspense>
       </BrowserRouter>
