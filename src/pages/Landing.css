@@ -1,0 +1,184 @@
+/* landing.css */
+
+/* Page root */
+.landing-root {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f6f8ff 0%, #ffffff 100%);
+  padding: 2rem;
+}
+
+/* Main card container */
+.landing-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  max-width: 1100px;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+/* Left panel */
+.landing-left {
+  background: linear-gradient(135deg, #0d6efd 0%, #6610f2 100%);
+  color: #fff;
+  padding: 3.25rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.landing-left-inner {
+  max-width: 520px;
+  animation: slideInLeft 600ms ease both;
+}
+
+/* Right panel */
+.landing-right {
+  background: #fff;
+  padding: 3rem;
+}
+
+/* Titles */
+.landing-title {
+  font-size: 2.1rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  line-height: 1.05;
+}
+
+.highlight {
+  color: #ffd54a;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+/* Subtitle */
+.landing-sub {
+  margin-bottom: 1.25rem;
+  color: rgba(255,255,255,0.92);
+  font-size: 1.05rem;
+}
+
+/* Feature list */
+.landing-features {
+  margin: 1.25rem 0;
+  padding: 0;
+  list-style: none;
+  color: rgba(255,255,255,0.95);
+  font-size: 0.95rem;
+}
+
+.landing-features li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.65rem;
+  opacity: 0.98;
+}
+
+/* small dot (icon-like) */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffd54a;
+  display: inline-block;
+  margin-right: 0.75rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+}
+
+/* CTA section */
+.cta-wrap {
+  max-width: 420px;
+  width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  animation: popIn 500ms ease both 150ms;
+}
+
+.cta-title {
+  margin-bottom: 0.25rem;
+  font-weight: 700;
+  color: #0d6efd;
+}
+
+.cta-sub {
+  margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.btn-solid {
+  background: linear-gradient(90deg,#0d6efd,#6610f2);
+  border: none;
+  color: #fff;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  transition: transform .12s ease, box-shadow .12s ease;
+  box-shadow: 0 6px 18px rgba(13,110,253,0.12);
+}
+.btn-solid:hover,
+.btn-solid:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(13,110,253,0.14);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid rgba(13,110,253,0.12);
+  color: #0d6efd;
+  padding: 0.72rem 1rem;
+  font-weight: 600;
+  transition: background .12s ease, transform .12s ease;
+}
+.btn-outline:hover,
+.btn-outline:focus {
+  transform: translateY(-2px);
+  background: rgba(13,110,253,0.04);
+}
+
+.btn-link-muted {
+  color: #6c757d;
+  text-decoration: underline;
+  background: transparent;
+  border: none;
+}
+
+/* small meta */
+.small-meta { opacity: 0.92; }
+
+/* Responsive: stack columns on small screens */
+@media (max-width: 991px) {
+  .landing-card {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-left {
+    padding: 2rem;
+  }
+
+  .landing-right {
+    padding: 2rem;
+  }
+}
+
+/* Subtle animations */
+@keyframes slideInLeft {
+  from { transform: translateX(-18px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes popIn {
+  from { transform: translateY(6px) scale(.995); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Accessibility focus outlines */
+a.btn:focus, .btn:focus {
+  outline: 3px solid rgba(13,110,253,0.15);
+  outline-offset: 3px;
+}
+
+/* small text tweak */
+.landing-note small { opacity: 0.92; }
