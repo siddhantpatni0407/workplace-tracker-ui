@@ -1,13 +1,13 @@
+// src/context/AuthContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { authService, SignupData, AuthResponse } from "../services/authService";
-
-export type Role = "ADMIN" | "USER";
+import { Role } from "../types/auth";
 
 export interface User {
   name: string;
-  mobileNumber: string;
-  email: string;
-  role: Role;
+  mobileNumber?: string;
+  email?: string;
+  role?: Role;
 }
 
 interface AuthContextType {
@@ -20,25 +20,35 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(authService.getUser());
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = authService.getUser();
+    return stored ? { name: stored.name, mobileNumber: stored.mobileNumber, role: stored.role } : null;
+  });
 
+  /**
+   * Return the full AuthResponse so pages (Login.tsx) can read message/status.
+   */
   const login = async (email: string, password: string): Promise<AuthResponse> => {
     const resp = await authService.login(email, password);
+
     if (resp.status === "SUCCESS" && resp.token) {
+      // save token + user
       authService.saveSession(resp);
       setUser({
-        name: resp.name!,
-        mobileNumber: "",
+        name: resp.name ?? "",
         email,
-        role: resp.role!,
+        role: resp.role ?? undefined,
       });
     }
+
     return resp;
   };
 
   const signup = async (newUser: SignupData): Promise<AuthResponse> => {
     const resp = await authService.signup(newUser);
+
     if (resp.status === "SUCCESS" && resp.token) {
+      // Save session (backend provided token on signup)
       authService.saveSession(resp);
       setUser({
         name: newUser.name,
@@ -47,6 +57,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         role: newUser.role,
       });
     }
+
     return resp;
   };
 

@@ -1,3 +1,4 @@
+// src/App.tsx
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
@@ -8,6 +9,7 @@ import "./styles/global.css";
 
 // Lazy loading pages
 const Landing = lazy(() => import("./pages/Landing"));
+const Login = lazy(() => import("./pages/Login"));           // <-- added
 const Signup = lazy(() => import("./pages/Signup"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
@@ -19,9 +21,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="d-flex flex-column min-vh-100">
     <Navbar />
-    <main className="flex-fill container py-4 page-wrapper">
-      {children}
-    </main>
+    <main className="flex-fill container py-4 page-wrapper">{children}</main>
     <Footer />
   </div>
 );
@@ -40,7 +40,7 @@ const App: React.FC = () => {
       <BrowserRouter>
         <Suspense fallback={<Loader />}>
           <Routes>
-            {/* Landing / Login */}
+            {/* Landing (marketing / cover page) */}
             <Route
               path="/"
               element={
@@ -50,7 +50,15 @@ const App: React.FC = () => {
               }
             />
 
-            {/* Signup */}
+            {/* Authentication pages */}
+            <Route
+              path="/login"
+              element={
+                <Layout>
+                  <Login />
+                </Layout>
+              }
+            />
             <Route
               path="/signup"
               element={
@@ -60,7 +68,7 @@ const App: React.FC = () => {
               }
             />
 
-            {/* About */}
+            {/* Static pages */}
             <Route
               path="/about"
               element={
@@ -69,8 +77,6 @@ const App: React.FC = () => {
                 </Layout>
               }
             />
-
-            {/* Contact */}
             <Route
               path="/contact"
               element={
@@ -80,7 +86,7 @@ const App: React.FC = () => {
               }
             />
 
-            {/* Dashboards */}
+            {/* Dashboards (protected) */}
             <Route
               path="/admin"
               element={
