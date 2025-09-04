@@ -1,36 +1,68 @@
 // src/services/authService.ts
+import axiosInstance from "./axiosInstance";
 import { User, Role } from "../context/AuthContext";
+import { API_ENDPOINTS } from "../constants/apiEndpoints";
 
-interface SignupData extends User {
+export interface SignupData {
+  name: string;
+  mobileNumber: string; // ✅ changed from mobile → mobileNumber
+  email: string;
   password: string;
+  role: Role;
+}
+
+export interface AuthResponse {
+  token: string | null;
+  role: Role | null;
+  userId: number | null;
+  name: string | null;
+  status: "SUCCESS" | "FAILED";
+  message: string;
+  lastLoginTime: string | null;
+  isActive: boolean | null;
+  loginAttempts: number | null;
+  accountLocked: boolean | null;
 }
 
 export const authService = {
-  signup: (data: SignupData): User => {
-    // Save user info in localStorage
-    localStorage.setItem("user", JSON.stringify(data));
-    return { name: data.name, mobile: data.mobile, email: data.email, role: data.role };
+  signup: async (data: SignupData): Promise<AuthResponse> => {
+    const response = await axiosInstance.post<AuthResponse>(
+      API_ENDPOINTS.AUTH.SIGNUP,
+      data // ✅ now includes correct field names
+    );
+    return response.data;
   },
 
-  login: (email: string, password: string): User | null => {
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      const saved: SignupData = JSON.parse(stored);
-      if (saved.email === email && saved.password === password) {
-        return { name: saved.name, mobile: saved.mobile, email: saved.email, role: saved.role };
-      }
-    }
-    return null;
+  login: async (email: string, password: string): Promise<AuthResponse> => {
+    const response = await axiosInstance.post<AuthResponse>(
+      API_ENDPOINTS.AUTH.LOGIN,
+      { email, password }
+    );
+    return response.data;
   },
 
   logout: () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
+  },
+
+  saveSession: (resp: AuthResponse) => {
+    if (resp.status === "SUCCESS" && resp.token) {
+      localStorage.setItem("token", resp.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          userId: resp.userId,
+          name: resp.name,
+          role: resp.role,
+          isActive: resp.isActive,
+        })
+      );
+    }
   },
 
   getUser: (): User | null => {
     const stored = localStorage.getItem("user");
-    if (!stored) return null;
-    const parsed: SignupData = JSON.parse(stored);
-    return { name: parsed.name, mobile: parsed.mobile, email: parsed.email, role: parsed.role };
+    return stored ? JSON.parse(stored) : null;
   },
 };

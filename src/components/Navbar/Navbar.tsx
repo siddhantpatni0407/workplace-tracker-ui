@@ -10,7 +10,10 @@ const Navbar: React.FC = () => {
     <nav className="navbar navbar-expand-lg custom-navbar fixed-top shadow-sm">
       <div className="container-fluid">
         {/* Brand */}
-        <Link className="navbar-brand fw-bold text-white" to="/">
+        <Link
+          className="navbar-brand fw-bold text-white"
+          to={user ? (user.role === "ADMIN" ? "/admin" : "/user") : "/"}
+        >
           Workplace Tracker
         </Link>
 
@@ -78,7 +81,7 @@ const Navbar: React.FC = () => {
             {user?.role === "USER" && (
               <li className="nav-item">
                 <Link className="nav-link text-white" to="/user">
-                  User Dashboard
+                  Dashboard
                 </Link>
               </li>
             )}
@@ -96,7 +99,10 @@ const Navbar: React.FC = () => {
                 >
                   {user.name || "Profile"}
                 </button>
-                <ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark">
+                <ul
+                  className="dropdown-menu dropdown-menu-end dropdown-menu-dark"
+                  aria-labelledby="userMenu"
+                >
                   <li>
                     <Link className="dropdown-item" to="/profile">
                       My Profile
@@ -111,7 +117,10 @@ const Navbar: React.FC = () => {
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <button className="dropdown-item text-danger" onClick={logout}>
+                    <button
+                      className="dropdown-item text-danger"
+                      onClick={logout}
+                    >
                       Logout
                     </button>
                   </li>

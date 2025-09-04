@@ -10,7 +10,7 @@ const Signup: React.FC = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    mobile: "",
+    mobileNumber: "",
     email: "",
     password: "",
     role: "USER" as Role,
@@ -25,10 +25,12 @@ const Signup: React.FC = () => {
     setFormData({ ...formData, role });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    signup(formData); // call AuthContext
-    navigate("/"); // redirect to login/landing page
+    const success = await signup(formData); // wait for signup result
+    if (success) {
+      navigate("/"); // redirect only if success
+    }
   };
 
   return (
@@ -53,8 +55,8 @@ const Signup: React.FC = () => {
             <input
               type="tel"
               className="form-control"
-              name="mobile"
-              value={formData.mobile}
+              name="mobileNumber"
+              value={formData.mobileNumber}
               onChange={handleChange}
               required
               pattern="[0-9]{10}"

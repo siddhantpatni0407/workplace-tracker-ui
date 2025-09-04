@@ -10,7 +10,7 @@ const Landing: React.FC = () => {
 
   const [form, setForm] = useState({
     name: "",
-    mobile: "",
+    mobileNumber: "",
     email: "",
     password: "",
     role: "USER" as Role,
@@ -30,7 +30,7 @@ const Landing: React.FC = () => {
       setError("Email and Password are required.");
       return false;
     }
-    if (isSignup && (!form.name || !form.mobile)) {
+    if (isSignup && (!form.name || !form.mobileNumber)) {
       setError("Name and Mobile are required for signup.");
       return false;
     }
@@ -126,13 +126,16 @@ const Landing: React.FC = () => {
                       Mobile Number
                     </label>
                     <input
-                      id="mobile"
-                      name="mobile"
                       type="tel"
-                      value={form.mobile}
-                      onChange={handleChange}
-                      placeholder="Enter your mobile number"
                       className="form-control"
+                      name="mobileNumber"
+                      value={form.mobileNumber}
+                      onChange={handleChange}
+                      required
+                      minLength={10}
+                      maxLength={10}
+                      inputMode="numeric"
+                      placeholder="10-digit number"
                     />
                   </div>
                 </>
