@@ -88,13 +88,6 @@ const Navbar: React.FC = () => {
               </Link>
             </li>
 
-            {user?.role === "USER" && (
-              <li className="nav-item">
-                <Link className="nav-link text-white nav-hover" to="/user">
-                  Dashboard
-                </Link>
-              </li>
-            )}
           </ul>
 
           {/* Right side */}
