@@ -1,0 +1,26 @@
+/* Clean centered card */
+.contact-card {
+  max-width: 600px;
+  background: #fff;
+  border: none;
+  animation: fadeUp 0.5s ease both;
+}
+
+/* Input group */
+.input-group-text {
+  background: #f8f9fa;
+  border-right: 0;
+}
+.input-group .form-control {
+  border-left: 0;
+}
+.form-control:focus {
+  border-color: #8e2de2;
+  box-shadow: 0 0 0 0.2rem rgba(142, 45, 226, 0.25);
+}
+
+/* fade-up animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

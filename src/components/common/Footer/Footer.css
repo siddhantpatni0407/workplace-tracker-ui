@@ -1,5 +1,34 @@
 .footer {
-  background: #1c1c1c;
+  background: linear-gradient(90deg, #1c1c1c, #252525);
   width: 100%;
   margin-top: auto;
+  font-size: 0.875rem;
+  letter-spacing: 0.3px;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.footer-copy {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-dev {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer .dev-name {
+  font-weight: 600;
+  color: #4a90e2; /* accent color */
+  transition: color 0.2s ease;
+}
+
+.footer .dev-name:hover {
+  color: #7ab6ff; /* lighter accent on hover */
+  text-decoration: underline;
+}
+
+@media (max-width: 576px) {
+  .footer {
+    font-size: 0.8rem;
+    padding: 0.75rem;
+  }
 }
