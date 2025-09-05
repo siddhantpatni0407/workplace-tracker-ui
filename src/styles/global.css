@@ -1,23 +1,61 @@
-/* Smooth fade-in and scale for page transitions */
-.page-wrapper {
-  animation: fadeInScale 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
-  opacity: 0; /* Ensure starts invisible */
+/* global.css — additions for Home / full-page layout */
+
+/* Ensure full-height app root so 100vh math works reliably */
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@keyframes fadeInScale {
-  0% {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-    filter: blur(2px);
-  }
-  50% {
-    opacity: 0.6;
-    transform: translateY(10px) scale(0.99);
-    filter: blur(1px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
+/* Utility class: hide page scroll (use on body when landing/Home mounted) */
+.no-scroll {
+  overflow: hidden !important;
+  /* keep touch scroll prevented on mobile when used */
+  overscroll-behavior: none;
+}
+
+/* Footer styling helpers — keep the footer visible and above background */
+.site-footer {
+  position: relative;      /* default: not fixed; works with body padding-bottom technique */
+  z-index: 1200;
+  width: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(20,20,22,0.9);
+  color: #fff;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.25);
+  font-size: 0.9rem;
+}
+
+/* Optional: if you prefer a sticky/footer-always-on-top version, toggle this class */
+.site-footer.fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* Ensure page-wrapper animation doesn't create overflow */
+.page-wrapper {
+  overflow: visible; /* animation shouldn't cause a scrolling box */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* If Home adds an overlay helper on body (home-body-overlay) */
+.home-body-overlay::before {
+  /* non-blocking overlay so it doesn't change layout/scroll */
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2; /* sits behind your Home card but above background */
+}
+
+/* small responsive safeguard: prevent double-footers appearing under small viewports */
+@media (max-width: 520px) {
+  .site-footer { font-size: 0.82rem; padding: 0.5rem; }
 }
