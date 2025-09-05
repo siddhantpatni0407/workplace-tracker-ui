@@ -123,21 +123,61 @@ The UI is built with **React** and styled using **Bootstrap** (with custom CSS e
 
 ```
 src/
- ├── assets/               # Images, logos, backgrounds
- ├── components/           # Shared UI components (Navbar, Header, LastLoginPopup, etc.)
- ├── context/              # AuthContext (login, signup, logout)
- ├── pages/                # Page-level components
- │    ├── Landing/
- │    ├── AdminDashboard/
- │    ├── UserDashboard/
- │    ├── UserManagement/
- │    └── Reports/
- ├── services/             # API service layer (authService, axiosInstance)
- ├── types/                # TypeScript types (User, Role, etc.)
- ├── constants/            # API endpoints, roles
- ├── App.tsx               # Routing setup
- ├── index.tsx             # App entry point
- └── index.css             # Global styles
+├── assets/
+│   └── workplace-tracker-background.jpg
+│
+├── components/
+│   ├── common/
+│   │   ├── header/Header.tsx
+│   │   ├── header/Header.css
+│   │   ├── navbar/Navbar.tsx
+│   │   ├── navbar/Navbar.css
+│   │   └── login/
+│   │       ├── Login.tsx            <-- login UI component
+│   │       ├── Login.css
+│   │       └── LastLoginPopup/
+│   │           ├── LastLoginPopup.tsx
+│   │           └── LastLoginPopup.css
+│   │
+│   ├── admin/
+│   │   ├── dashboard/
+│   │   │   ├── AdminDashboard.tsx
+│   │   │   └── AdminDashboard.css
+│   │   └── userManagement/
+│   │       ├── UserManagement.tsx
+│   │       └── UserManagement.css
+│   │
+│   └── user/
+│       └── dashboard/
+│           ├── UserDashboard.tsx
+│           └── UserDashboard.css
+│
+├── context/
+│   └── AuthContext.tsx
+│
+├── pages/
+│   ├── Landing/
+│   │   ├── Landing.tsx
+│   │   └── Landing.css
+│   ├── AdminDashboard/        <-- page wrappers can simply re-export components
+│   ├── UserDashboard/
+│   ├── UserManagement/
+│   └── Reports/
+│
+├── services/
+│   ├── axiosInstance.ts
+│   └── authService.ts
+│
+├── types/
+│   └── auth.ts
+│
+├── constants/
+│   └── apiEndpoints.ts
+│
+├── App.tsx
+├── index.tsx
+└── index.css
+
 ```
 
 ---
