@@ -1,46 +1,234 @@
-# Getting Started with Create React App
+# workplace-tracker-ui
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Frontend application for the **Workplace Tracker** system.
+Provides an interface for user login, registration, attendance logging, user management (admin), and reports dashboard.
+
+---
+
+## Table of Contents
+
+- [workplace-tracker-ui](#workplace-tracker-ui)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Features](#features)
+  - [Tech Stack](#tech-stack)
+  - [Prerequisites](#prerequisites)
+  - [Quick Start](#quick-start)
+  - [Project Structure](#project-structure)
+  - [Configuration](#configuration)
+  - [Available Scripts](#available-scripts)
+  - [API Integration](#api-integration)
+  - [Pages \& Components](#pages--components)
+  - [Styling](#styling)
+  - [Deployment](#deployment)
+    - [Production build](#production-build)
+    - [Docker (optional)](#docker-optional)
+  - [Troubleshooting](#troubleshooting)
+  - [Contact \& License](#contact--license)
+
+---
+
+## Overview
+
+The UI is built with **React** and styled using **Bootstrap** (with custom CSS effects). It connects to the backend `workplace-tracker-service` via REST APIs.
+
+- User portal (dashboard, attendance, profile)
+- Admin portal (user management, reports, DB backup)
+- JWT authentication flow
+- Responsive UI (desktop & mobile)
+
+---
+
+## Features
+
+- **Authentication:** Signup, login, logout
+- **Dashboard:** Role-based (User vs Admin)
+- **Admin Tools:** Manage users, view reports, lock/unlock accounts
+- **Attendance:** Log work-from-home/office, view history
+- **Last Login Popup:** Shows last login timestamp on login
+- **Responsive Navbar:** Home, Admin Tools, About, Contact
+- **Theming:** Background effects, animated cards, blurred overlays
+
+---
+
+## Tech Stack
+
+- **React 18+**
+- **TypeScript**
+- **React Router v6**
+- **Bootstrap 5** & Bootstrap Icons
+- **Axios** (API calls)
+- **Context API (AuthContext)** for global auth state
+- **Custom CSS** for effects (glassmorphism, animations)
+
+---
+
+## Prerequisites
+
+- Node.js 18+
+- npm or yarn package manager
+- Running instance of [workplace-tracker-service](../workplace-tracker-service) backend
+
+---
+
+## Quick Start
+
+1. **Clone repo**
+
+   ```bash
+   git clone <repo-url>
+   cd workplace-tracker-ui
+   ```
+
+2. **Install dependencies**
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Configure API endpoints**
+   Update `src/constants/apiEndpoints.ts`:
+
+   ```ts
+   export const API_ENDPOINTS = {
+     AUTH: {
+       LOGIN: "/api/v1/workplace-tracker-service/login",
+       SIGNUP: "/api/v1/workplace-tracker-service/register",
+       RESET_PASSWORD: "/api/v1/workplace-tracker-service/forgot/reset",
+     },
+     USERS: {
+       GET_ALL: "/api/v1/workplace-tracker-service/user/fetch",
+     },
+   };
+   ```
+
+   You can set the **base URL** inside `src/services/axiosInstance.ts`.
+
+4. **Run the app**
+
+   ```bash
+   npm start
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## Project Structure
+
+```
+src/
+ ├── assets/               # Images, logos, backgrounds
+ ├── components/           # Shared UI components (Navbar, Header, LastLoginPopup, etc.)
+ ├── context/              # AuthContext (login, signup, logout)
+ ├── pages/                # Page-level components
+ │    ├── Landing/
+ │    ├── AdminDashboard/
+ │    ├── UserDashboard/
+ │    ├── UserManagement/
+ │    └── Reports/
+ ├── services/             # API service layer (authService, axiosInstance)
+ ├── types/                # TypeScript types (User, Role, etc.)
+ ├── constants/            # API endpoints, roles
+ ├── App.tsx               # Routing setup
+ ├── index.tsx             # App entry point
+ └── index.css             # Global styles
+```
+
+---
+
+## Configuration
+
+- **Auth Context:**
+  Manages user state, token, role, last login time.
+- **Axios Instance:**
+  Injects JWT token into headers automatically.
+- **LocalStorage:**
+  Stores session token + user data (`user`, `token`).
+
+---
 
 ## Available Scripts
 
-In the project directory, you can run:
+- `npm start` — Run development server
+- `npm build` — Build production bundle
+- `npm test` — Run tests
+- `npm run lint` — Run linter
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## API Integration
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- Auth flows via `authService.ts`
+- API endpoints centrally managed in `constants/apiEndpoints.ts`
+- Token stored in `localStorage` and added to every request by `axiosInstance.ts`
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Pages & Components
 
-### `npm run build`
+- **Landing Page** — Login/Signup toggle
+- **Admin Dashboard** — Cards (User Management, Reports, Backup, Attendance)
+- **User Dashboard** — Attendance log, history
+- **User Management (Admin)** — View users, toggle active/locked, see last login & attempts
+- **Reports** — (to be integrated with backend reporting)
+- **Header/Navbar** — Role-aware navigation
+- **LastLoginPopup** — Shows once after login
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Styling
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Bootstrap + custom **CSS effects**
+- Features: blurred backgrounds, animated hover cards, responsive tables
+- Custom table styling with sticky headers, zebra rows, attempts badges
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Deployment
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Production build
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```bash
+npm run build
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+- Output in `/build` folder
+- Serve with any static hosting (Nginx, Apache, Netlify, Vercel)
+- Ensure backend API URL is correctly set in `axiosInstance.ts`
 
-## Learn More
+### Docker (optional)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Add a Dockerfile:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```dockerfile
+FROM node:18-alpine as build
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=build /app/build /usr/share/nginx/html
+```
+
+---
+
+## Troubleshooting
+
+- **401 Unauthorized** → Token expired → login again (or implement refresh token)
+- **CORS issues** → Configure CORS in backend (`@CrossOrigin`)
+- **White screen after build** → Check `homepage` in `package.json` or React Router config
+- **API not reachable** → Verify `axiosInstance` base URL
+
+---
+
+## Contact & License
+
+- Maintainer: **Siddhant Patni**
+- License: MIT / Apache-2.0 (choose)
+
+---
