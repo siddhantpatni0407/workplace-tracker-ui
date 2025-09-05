@@ -83,7 +83,7 @@ const About: React.FC = () => {
               <div>
                 <small className="text-muted">Contact</small>
                 <div>
-                  <a href="mailto:siddhant@example.com" className="link-primary">siddhant@example.com</a>
+                  <a href="mailto:siddhant4patni@gmail.com" className="link-primary">siddhant4patni@gmail.com</a>
                 </div>
               </div>
 
