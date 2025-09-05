@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import "./AdminDashboard.css";
-import LastLoginPopup from "../../common/lastLoginPopup/LastLoginPopup";
+import LastLoginPopup from "../../common/login/lastLoginPopup/LastLoginPopup";
 
 /**
  * Dashboard shows feature cards only (no stats / user table).

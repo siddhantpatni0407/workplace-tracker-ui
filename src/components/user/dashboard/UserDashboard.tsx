@@ -1,7 +1,7 @@
 import React from "react";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
-import LastLoginPopup from "../../common/lastLoginPopup/LastLoginPopup";
+import LastLoginPopup from "../../common/login/lastLoginPopup/LastLoginPopup";
 import "./UserDashboard.css";
 
 const UserDashboard: React.FC = () => {
