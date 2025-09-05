@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header/Header";
+import Header from "../components/common/Header/Header";
 import { useAuth } from "../context/AuthContext";
 import LastLoginPopup from "../components/LastLoginPopup/LastLoginPopup";
 import "./AdminDashboard.css";

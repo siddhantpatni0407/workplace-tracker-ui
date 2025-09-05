@@ -1,5 +1,5 @@
 import React from "react";
-import Header from "../components/Header/Header";
+import Header from "../components/common/Header/Header";
 import { useAuth } from "../context/AuthContext";
 import LastLoginPopup from "../components/LastLoginPopup/LastLoginPopup";
 import "./UserDashboard.css";
