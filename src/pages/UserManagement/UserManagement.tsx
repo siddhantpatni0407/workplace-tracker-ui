@@ -15,6 +15,7 @@ interface UserRow {
   isActive: boolean;
   isAccountLocked: boolean;
   lastLoginTime?: string | null;
+  loginAttempts?: number | null;
 }
 
 const UserManagement: React.FC = () => {
@@ -40,6 +41,8 @@ const UserManagement: React.FC = () => {
           isActive: !!u.isActive,
           isAccountLocked: !!u.isAccountLocked,
           lastLoginTime: u.lastLoginTime || null,
+          loginAttempts:
+            typeof u.loginAttempts === "number" ? u.loginAttempts : null,
         }));
         setUsers(mapped);
       } else {
@@ -55,7 +58,6 @@ const UserManagement: React.FC = () => {
 
   useEffect(() => {
     fetchUsers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const stats = useMemo(
@@ -82,45 +84,58 @@ const UserManagement: React.FC = () => {
   }, [users, query, roleFilter]);
 
   const toggleActive = async (id: number) => {
-    setUsers((prev) => prev.map((u) => (u.userId === id ? { ...u, isActive: !u.isActive } : u)));
-    try {
-      // backend patch if available
-    } catch (err) {
-      console.error(err);
-      fetchUsers();
-    }
+    setUsers((prev) =>
+      prev.map((u) => (u.userId === id ? { ...u, isActive: !u.isActive } : u))
+    );
   };
 
   const toggleLock = async (id: number) => {
-    setUsers((prev) => prev.map((u) => (u.userId === id ? { ...u, isAccountLocked: !u.isAccountLocked } : u)));
-    try {
-      // backend patch if available
-    } catch (err) {
-      console.error(err);
-      fetchUsers();
-    }
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.userId === id ? { ...u, isAccountLocked: !u.isAccountLocked } : u
+      )
+    );
   };
 
   const handleRoleSelect = (val: string) => {
     if (val === "ALL" || val === "USER" || val === "ADMIN") setRoleFilter(val);
   };
 
+  const formatDate = (dateStr?: string | null) => {
+    if (!dateStr) return "—";
+    try {
+      return new Date(dateStr).toLocaleString();
+    } catch {
+      return dateStr;
+    }
+  };
+
   return (
     <div className="user-management container-fluid py-4" data-animate="fade">
       <div className="mx-auto" style={{ maxWidth: 1100 }}>
+        {/* Header + refresh button */}
         <div className="d-flex align-items-center justify-content-between mb-3">
           <div>
             <h1 className="um-title mb-0">User Management</h1>
             <div className="text-muted small">Welcome, {user?.name}</div>
           </div>
           <div>
-            <button className="btn btn-sm btn-outline-primary" onClick={fetchUsers} disabled={loading}>
-              {loading ? <span className="spinner-border spinner-border-sm me-2" /> : <i className="bi bi-arrow-clockwise me-1" />}
+            <button
+              className="btn btn-sm btn-outline-primary"
+              onClick={fetchUsers}
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="spinner-border spinner-border-sm me-2" />
+              ) : (
+                <i className="bi bi-arrow-clockwise me-1" />
+              )}
               Refresh
             </button>
           </div>
         </div>
 
+        {/* Stats Row */}
         <div className="row g-3 mb-4">
           <div className="col-6 col-md-3">
             <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
@@ -152,6 +167,7 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
 
+        {/* Filters */}
         <div className="card mb-3 p-3 shadow-sm um-filter-card">
           <div className="d-flex gap-2 align-items-center flex-column flex-md-row">
             <input
@@ -169,14 +185,16 @@ const UserManagement: React.FC = () => {
               <option value="USER">User</option>
               <option value="ADMIN">Admin</option>
             </select>
-            <div className="ms-auto d-none d-md-block" />
           </div>
         </div>
 
+        {/* Users table */}
         <div className="card shadow-sm user-table um-table-glow">
           <div className="table-responsive">
             {loading ? (
-              <div className="p-4 text-center"><div className="spinner-border" role="status" /></div>
+              <div className="p-4 text-center">
+                <div className="spinner-border" role="status" />
+              </div>
             ) : error ? (
               <div className="p-4 text-danger text-center">{error}</div>
             ) : filtered.length === 0 ? (
@@ -190,34 +208,73 @@ const UserManagement: React.FC = () => {
                     <th>Email</th>
                     <th>Mobile</th>
                     <th style={{ width: 90 }}>Role</th>
+                    <th style={{ width: 150 }}>Last Login</th>
+                    <th style={{ width: 100 }}>Attempts</th>
                     <th style={{ width: 100 }}>Active</th>
                     <th style={{ width: 100 }}>Locked</th>
-                    <th style={{ width: 170 }} className="text-end">Actions</th>
+                    <th style={{ width: 170 }} className="text-end">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((u, idx) => (
-                    <tr key={u.userId} className="um-row" style={{ animationDelay: `${idx * 35}ms` }}>
+                    <tr
+                      key={u.userId}
+                      className="um-row"
+                      style={{ animationDelay: `${idx * 35}ms` }}
+                    >
                       <td>{u.userId}</td>
                       <td>{u.name}</td>
-                      <td className="text-truncate" style={{ maxWidth: 260 }}>{u.email}</td>
+                      <td
+                        className="text-truncate"
+                        style={{ maxWidth: 220 }}
+                      >
+                        {u.email}
+                      </td>
                       <td>{u.mobileNumber || "—"}</td>
                       <td>{u.role}</td>
+                      <td>{formatDate(u.lastLoginTime)}</td>
+                      <td>{u.loginAttempts ?? "—"}</td>
                       <td>
-                        <span className={`badge ${u.isActive ? "bg-success" : "bg-secondary"}`}>
+                        <span
+                          className={`badge ${
+                            u.isActive ? "bg-success" : "bg-secondary"
+                          }`}
+                        >
                           {u.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
                       <td>
-                        <span className={`badge ${u.isAccountLocked ? "bg-danger locked-badge" : "bg-success"}`}>
+                        <span
+                          className={`badge ${
+                            u.isAccountLocked
+                              ? "bg-danger locked-badge"
+                              : "bg-success"
+                          }`}
+                        >
                           {u.isAccountLocked ? "Locked" : "Unlocked"}
                         </span>
                       </td>
                       <td className="text-end">
-                        <button className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`} onClick={() => toggleActive(u.userId)}>
+                        <button
+                          className={`btn btn-sm ${
+                            u.isActive
+                              ? "btn-outline-danger"
+                              : "btn-outline-success"
+                          } me-2`}
+                          onClick={() => toggleActive(u.userId)}
+                        >
                           {u.isActive ? "Disable" : "Enable"}
                         </button>
-                        <button className={`btn btn-sm ${u.isAccountLocked ? "btn-outline-success" : "btn-outline-warning"}`} onClick={() => toggleLock(u.userId)}>
+                        <button
+                          className={`btn btn-sm ${
+                            u.isAccountLocked
+                              ? "btn-outline-success"
+                              : "btn-outline-warning"
+                          }`}
+                          onClick={() => toggleLock(u.userId)}
+                        >
                           {u.isAccountLocked ? "Unlock" : "Lock"}
                         </button>
                       </td>
