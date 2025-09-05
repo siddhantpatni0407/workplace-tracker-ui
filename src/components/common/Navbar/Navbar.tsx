@@ -132,12 +132,12 @@ const Navbar: React.FC = () => {
               </li>
             ) : (
               <li className="nav-item">
-                <Link
+                {/* <Link
                   className="btn btn-light btn-sm px-3 fw-semibold nav-auth-btn"
                   to="/login"
                 >
                   <i className="bi bi-box-arrow-in-right me-1"></i> Login
-                </Link>
+                </Link> */}
               </li>
             )}
           </ul>
