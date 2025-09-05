@@ -81,11 +81,10 @@ const UserManagement: React.FC = () => {
     });
   }, [users, query, roleFilter]);
 
-  // optimistic UI toggles (replace with real API calls if available)
   const toggleActive = async (id: number) => {
     setUsers((prev) => prev.map((u) => (u.userId === id ? { ...u, isActive: !u.isActive } : u)));
     try {
-      // await axiosInstance.patch(API_ENDPOINTS.USERS.UPDATE(id), { isActive: ... });
+      // backend patch if available
     } catch (err) {
       console.error(err);
       fetchUsers();
@@ -95,66 +94,65 @@ const UserManagement: React.FC = () => {
   const toggleLock = async (id: number) => {
     setUsers((prev) => prev.map((u) => (u.userId === id ? { ...u, isAccountLocked: !u.isAccountLocked } : u)));
     try {
-      // await axiosInstance.patch(API_ENDPOINTS.USERS.UPDATE(id), { isAccountLocked: ... });
+      // backend patch if available
     } catch (err) {
       console.error(err);
       fetchUsers();
     }
   };
 
-  // safe role select handler (fixes TS type error)
   const handleRoleSelect = (val: string) => {
-    if (val === "ALL" || val === "USER" || val === "ADMIN") {
-      setRoleFilter(val);
-    }
+    if (val === "ALL" || val === "USER" || val === "ADMIN") setRoleFilter(val);
   };
 
   return (
-    <div className="user-management container-fluid py-4">
+    <div className="user-management container-fluid py-4" data-animate="fade">
       <div className="mx-auto" style={{ maxWidth: 1100 }}>
-        <div className="d-flex align-items-center justify-content-between mb-2">
+        <div className="d-flex align-items-center justify-content-between mb-3">
           <div>
             <h1 className="um-title mb-0">User Management</h1>
             <div className="text-muted small">Welcome, {user?.name}</div>
           </div>
           <div>
             <button className="btn btn-sm btn-outline-primary" onClick={fetchUsers} disabled={loading}>
-              {loading ? <span className="spinner-border spinner-border-sm me-2" /> : null}
+              {loading ? <span className="spinner-border spinner-border-sm me-2" /> : <i className="bi bi-arrow-clockwise me-1" />}
               Refresh
             </button>
           </div>
         </div>
 
-        {/* stats */}
         <div className="row g-3 mb-4">
           <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center">
+            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+              <div className="stat-icon"><i className="bi bi-people-fill"></i></div>
               <div className="stat-title">TOTAL</div>
               <div className="stat-value">{stats.total}</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center">
+            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+              <div className="stat-icon"><i className="bi bi-check-circle-fill"></i></div>
               <div className="stat-title">ACTIVE</div>
               <div className="stat-value text-success">{stats.active}</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center">
+            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+              <div className="stat-icon"><i className="bi bi-lock-fill"></i></div>
               <div className="stat-title">LOCKED</div>
               <div className="stat-value text-danger">{stats.locked}</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center">
+            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+              <div className="stat-icon"><i className="bi bi-shield-lock-fill"></i></div>
               <div className="stat-title">ADMINS</div>
               <div className="stat-value">{stats.admins}</div>
             </div>
           </div>
         </div>
 
-        {/* filters */}
-        <div className="card mb-3 p-3 shadow-sm">
+        <div className="card mb-3 p-3 shadow-sm um-filter-card">
           <div className="d-flex gap-2 align-items-center flex-column flex-md-row">
             <input
               className="form-control flex-grow-1"
@@ -175,13 +173,10 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
 
-        {/* table */}
-        <div className="card shadow-sm user-table">
+        <div className="card shadow-sm user-table um-table-glow">
           <div className="table-responsive">
             {loading ? (
-              <div className="p-4 text-center">
-                <div className="spinner-border" role="status" />
-              </div>
+              <div className="p-4 text-center"><div className="spinner-border" role="status" /></div>
             ) : error ? (
               <div className="p-4 text-danger text-center">{error}</div>
             ) : filtered.length === 0 ? (
@@ -201,8 +196,8 @@ const UserManagement: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((u) => (
-                    <tr key={u.userId} className="um-row">
+                  {filtered.map((u, idx) => (
+                    <tr key={u.userId} className="um-row" style={{ animationDelay: `${idx * 35}ms` }}>
                       <td>{u.userId}</td>
                       <td>{u.name}</td>
                       <td className="text-truncate" style={{ maxWidth: 260 }}>{u.email}</td>
@@ -214,21 +209,15 @@ const UserManagement: React.FC = () => {
                         </span>
                       </td>
                       <td>
-                        <span className={`badge ${u.isAccountLocked ? "bg-danger" : "bg-success"}`}>
+                        <span className={`badge ${u.isAccountLocked ? "bg-danger locked-badge" : "bg-success"}`}>
                           {u.isAccountLocked ? "Locked" : "Unlocked"}
                         </span>
                       </td>
                       <td className="text-end">
-                        <button
-                          className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`}
-                          onClick={() => toggleActive(u.userId)}
-                        >
+                        <button className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`} onClick={() => toggleActive(u.userId)}>
                           {u.isActive ? "Disable" : "Enable"}
                         </button>
-                        <button
-                          className={`btn btn-sm ${u.isAccountLocked ? "btn-outline-success" : "btn-outline-warning"}`}
-                          onClick={() => toggleLock(u.userId)}
-                        >
+                        <button className={`btn btn-sm ${u.isAccountLocked ? "btn-outline-success" : "btn-outline-warning"}`} onClick={() => toggleLock(u.userId)}>
                           {u.isAccountLocked ? "Unlock" : "Lock"}
                         </button>
                       </td>
