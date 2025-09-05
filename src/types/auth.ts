@@ -1,25 +1,47 @@
 // src/types/auth.ts
+
 export type Role = "ADMIN" | "USER";
 
+/** Credentials used by login API (email + password) */
 export interface LoginCredentials {
-  username: string; // for login (we’ll use email as username)
+  email: string;
   password: string;
 }
 
+/** Signup payload (matches backend: mobileNumber) */
 export interface SignupData {
   name: string;
-  mobile: string;
+  mobileNumber: string;
   email: string;
   password: string;
   role: Role;
 }
 
+/** Lightweight user shape stored in localStorage / used in context */
 export interface User {
-  id: number;
-  name: string;
-  mobile: string;
-  email: string;
-  username: string; // same as email
-  password: string;
-  role: Role;
+  userId?: number | null;
+  name?: string | null;
+  mobileNumber?: string | null;
+  email?: string | null;
+  role?: Role | null;
+  isActive?: boolean | null;
+  lastLoginTime?: string | null;
+  loginAttempts?: number | null;
+  accountLocked?: boolean | null;
+}
+
+/** Canonical AuthResponse used by authService and components */
+export interface AuthResponse {
+  accessToken?: string | null; // canonical access token field
+  token?: string | null;       // legacy fallback
+  role?: Role | null;
+  userId?: number | null;
+  name?: string | null;
+  email?: string | null;
+  status: "SUCCESS" | "FAILED";
+  message?: string | null;
+  lastLoginTime?: string | null;
+  isActive?: boolean | null;
+  loginAttempts?: number | null;
+  accountLocked?: boolean | null;
 }
