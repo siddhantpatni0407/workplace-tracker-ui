@@ -78,7 +78,7 @@ const AdminDashboard: React.FC = () => {
         ))}
       </div>
 
-    <LastLoginPopup lastLoginTime={user?.lastLoginTime} />
+    <LastLoginPopup lastLoginTime={user?.lastLoginTime ?? null} />
     </div>
   );
 };

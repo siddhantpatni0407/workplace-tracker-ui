@@ -1,50 +1,32 @@
-/* src/components/LastLoginPopup.css */
+/* src/components/LastLoginPopup/LastLoginPopup.css (keep earlier rules, add spacing) */
 .last-login-popup {
   position: fixed;
   bottom: 20px;
   left: 20px;
   background: linear-gradient(135deg, #0d6efd, #6610f2);
   color: #fff;
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-size: 0.9rem;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
   display: flex;
   align-items: center;
   gap: 10px;
   z-index: 1050;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  max-width: 280px;
-  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  max-width: 300px;
 }
+.popup-text { line-height: 1.1; }
+.popup-text small { font-size: 0.82rem; opacity: 0.95; }
 
-/* Animate in and fade out */
-.animate-popup {
-  animation: slideIn 0.5s ease, fadeOut 0.5s ease 4.5s forwards;
-}
+.animate-popup { animation: slideIn 0.45s ease, fadeOut 0.45s ease 4.5s forwards; }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-40px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
+  from { opacity: 0; transform: translateX(-24px) scale(.98); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
 }
-
 @keyframes fadeOut {
-  to {
-    opacity: 0;
-    transform: translateY(20px) scale(0.97);
-  }
+  to { opacity: 0; transform: translateY(8px) scale(.98); }
 }
 
-/* Text inside */
-.popup-text {
-  line-height: 1.2;
-}
-.popup-text small {
-  font-size: 0.75rem;
-  opacity: 0.9;
-}
+/* ensure the bootstrap .btn-close-white (if using) looks fine on small popup */
+.btn-close-white { filter: invert(1) grayscale(.3) brightness(1.2); }

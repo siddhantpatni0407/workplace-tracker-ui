@@ -105,7 +105,7 @@ const UserDashboard: React.FC = () => {
           </div>
         </section>
       </div>
-      <LastLoginPopup lastLoginTime={user?.lastLoginTime} />
+      <LastLoginPopup lastLoginTime={user?.lastLoginTime ?? null} />
     </div>
   );
 };

@@ -1,30 +1,43 @@
-// src/components/LastLoginPopup.tsx
+// src/components/LastLoginPopup/LastLoginPopup.tsx
 import React, { useEffect, useState } from "react";
 import "./LastLoginPopup.css";
 
-interface Props {
+export interface LastLoginPopupProps {
   lastLoginTime?: string | null;
 }
 
-const LastLoginPopup: React.FC<Props> = ({ lastLoginTime }) => {
-  const [visible, setVisible] = useState(true);
+const LastLoginPopup: React.FC<LastLoginPopupProps> = ({ lastLoginTime }) => {
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), 5000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!lastLoginTime) return;
+
+    // Use lastLoginTime as unique key
+    const key = `lastLoginShown_${lastLoginTime}`;
+    const alreadyShown = sessionStorage.getItem(key);
+
+    if (!alreadyShown) {
+      setVisible(true);
+      sessionStorage.setItem(key, "true");
+
+      const timer = setTimeout(() => setVisible(false), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [lastLoginTime]);
 
   if (!visible || !lastLoginTime) return null;
 
-  const formatted = new Date(lastLoginTime).toLocaleString();
+  let formatted = "";
+  try {
+    formatted = new Date(lastLoginTime).toLocaleString();
+  } catch {
+    formatted = lastLoginTime;
+  }
 
   return (
-    <div className="last-login-popup shadow-lg animate-popup">
-      <i className="bi bi-clock-history me-2 fs-5" aria-hidden="true"></i>
-      <div className="popup-text">
-        <span className="fw-bold">Last login</span>
-        <small className="d-block">{formatted}</small>
-      </div>
+    <div className="last-login-popup shadow-lg">
+      <i className="bi bi-clock-history me-2"></i>
+      <span>Last login: {formatted}</span>
     </div>
   );
 };

@@ -35,6 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (resp.status === "SUCCESS" && resp.token) {
       authService.saveSession(resp);
+
       setUser({
         userId: resp.userId ?? undefined,
         name: resp.name ?? "",
@@ -45,6 +46,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loginAttempts: resp.loginAttempts ?? null,
         accountLocked: resp.accountLocked ?? null,
       });
+
+      // ✅ mark popup to show only once after login
+      localStorage.setItem("lastLoginShown", "false");
     }
 
     return resp;
@@ -55,7 +59,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (resp.status === "SUCCESS" && resp.token) {
       authService.saveSession(resp);
+
       setUser({
+        userId: resp.userId ?? undefined,
         name: newUser.name,
         mobileNumber: newUser.mobileNumber,
         email: newUser.email,
@@ -65,6 +71,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         loginAttempts: resp.loginAttempts ?? null,
         accountLocked: resp.accountLocked ?? null,
       });
+
+      localStorage.setItem("lastLoginShown", "false");
     }
 
     return resp;
@@ -73,6 +81,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const logout = () => {
     authService.logout();
     setUser(null);
+    localStorage.removeItem("lastLoginShown");
   };
 
   return (

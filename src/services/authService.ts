@@ -30,7 +30,10 @@ export interface SignupData {
 export const authService = {
   signup: async (data: SignupData): Promise<AuthResponse> => {
     try {
-      const resp = await axiosInstance.post<AuthResponse>(API_ENDPOINTS.AUTH.SIGNUP, data);
+      const resp = await axiosInstance.post<AuthResponse>(
+        API_ENDPOINTS.AUTH.SIGNUP,
+        data
+      );
       return resp.data;
     } catch (err: any) {
       if (err?.response?.data) {
@@ -80,11 +83,15 @@ export const authService = {
   logout: () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("lastLoginTime");
+    localStorage.removeItem("lastLoginShown");
   },
 
   saveSession: (resp: AuthResponse) => {
     if (resp.status === "SUCCESS" && resp.token) {
       localStorage.setItem("token", resp.token);
+
+      // Save user object
       localStorage.setItem(
         "user",
         JSON.stringify({
@@ -92,11 +99,17 @@ export const authService = {
           name: resp.name,
           role: resp.role,
           isActive: resp.isActive,
-          lastLoginTime: resp.lastLoginTime,   // ✅ Save last login
-          loginAttempts: resp.loginAttempts,   // ✅ Save attempts
-          accountLocked: resp.accountLocked,   // ✅ Save lock status
+          lastLoginTime: resp.lastLoginTime,
+          loginAttempts: resp.loginAttempts,
+          accountLocked: resp.accountLocked,
         })
       );
+
+      // Save last login time & reset popup flag
+      if (resp.lastLoginTime) {
+        localStorage.setItem("lastLoginTime", resp.lastLoginTime);
+        localStorage.setItem("lastLoginShown", "false");
+      }
     }
   },
 
