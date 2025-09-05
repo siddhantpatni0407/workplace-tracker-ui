@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Role } from "../types/auth";
-import RoleSelect from "../components/RoleSelect";
-import { authService } from "../services/authService";
+import { Role } from "../../../types/auth";
+import RoleSelect from "./../../RoleSelect";
+import { authService } from "../../../services/authService";
 
 interface FormData {
   name: string;

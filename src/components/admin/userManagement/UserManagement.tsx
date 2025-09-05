@@ -1,8 +1,8 @@
 // src/pages/UserManagement.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import axiosInstance from "../../services/axiosInstance";
-import { API_ENDPOINTS } from "../../constants/apiEndpoints";
+import { useAuth } from "../../../context/AuthContext";
+import axiosInstance from "../../../services/axiosInstance";
+import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import "./UserManagement.css";
 
 type Role = "ADMIN" | "USER";

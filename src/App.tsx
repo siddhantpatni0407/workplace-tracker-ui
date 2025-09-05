@@ -3,20 +3,20 @@ import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
-import Navbar from "./components/common/Navbar/Navbar";
-import Footer from "./components/common/Footer/Footer";
+import Navbar from "./components/common/navbar/Navbar";
+import Footer from "./components/common/footer/Footer";
 import "./styles/global.css";
 
 // Lazy loading pages
-const Landing = lazy(() => import("./pages/Landing"));
-const Login = lazy(() => import("./pages/Login"));
-const Signup = lazy(() => import("./pages/Signup"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-const UserDashboard = lazy(() => import("./pages/UserDashboard"));
-const UserManagement = lazy(() => import("./pages/UserManagement/UserManagement")); // <-- added
+const Home = lazy(() => import("./components/common/home/Home"));
+const Login = lazy(() => import("./components/common/login/Login"));
+const Signup = lazy(() => import("./components/common/signUp/Signup"));
+const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDashboard"));
+const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
+const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement")); 
 const NotFound = lazy(() => import("./pages/NotFound"));
-const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
+const About = lazy(() => import("./components/common/about/About"));
+const Contact = lazy(() => import("./components/common/contact/Contact"));
 
 // Layout wrapper (Navbar + Footer)
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -41,8 +41,8 @@ const App: React.FC = () => {
       <BrowserRouter>
         <Suspense fallback={<Loader />}>
           <Routes>
-            {/* Landing (marketing / cover page) */}
-            <Route path="/" element={<Layout><Landing /></Layout>} />
+            {/* Home (marketing / cover page) */}
+            <Route path="/" element={<Layout><Home /></Layout>} />
 
             {/* Authentication pages */}
             <Route path="/login" element={<Layout><Login /></Layout>} />

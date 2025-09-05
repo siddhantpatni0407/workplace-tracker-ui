@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/common/Header/Header";
-import { useAuth } from "../context/AuthContext";
-import LastLoginPopup from "../components/LastLoginPopup/LastLoginPopup";
+import Header from "../../common/header/Header";
+import { useAuth } from "../../../context/AuthContext";
 import "./AdminDashboard.css";
+import LastLoginPopup from "../../common/lastLoginPopup/LastLoginPopup";
 
 /**
  * Dashboard shows feature cards only (no stats / user table).
