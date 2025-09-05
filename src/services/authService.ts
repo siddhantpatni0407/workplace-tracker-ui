@@ -33,7 +33,6 @@ export const authService = {
       const resp = await axiosInstance.post<AuthResponse>(API_ENDPOINTS.AUTH.SIGNUP, data);
       return resp.data;
     } catch (err: any) {
-      // If backend responded with a body, return that message
       if (err?.response?.data) {
         return err.response.data as AuthResponse;
       }
@@ -54,7 +53,10 @@ export const authService = {
 
   login: async (email: string, password: string): Promise<AuthResponse> => {
     try {
-      const resp = await axiosInstance.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, { email, password });
+      const resp = await axiosInstance.post<AuthResponse>(
+        API_ENDPOINTS.AUTH.LOGIN,
+        { email, password }
+      );
       return resp.data;
     } catch (err: any) {
       if (err?.response?.data) {
@@ -90,12 +92,23 @@ export const authService = {
           name: resp.name,
           role: resp.role,
           isActive: resp.isActive,
+          lastLoginTime: resp.lastLoginTime,   // ✅ Save last login
+          loginAttempts: resp.loginAttempts,   // ✅ Save attempts
+          accountLocked: resp.accountLocked,   // ✅ Save lock status
         })
       );
     }
   },
 
-  getUser: (): { name: string; mobileNumber?: string; email?: string; role?: Role } | null => {
+  getUser: (): {
+    userId?: number;
+    name: string;
+    role?: Role;
+    isActive?: boolean;
+    lastLoginTime?: string | null;
+    loginAttempts?: number | null;
+    accountLocked?: boolean | null;
+  } | null => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   },

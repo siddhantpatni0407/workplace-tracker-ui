@@ -1,6 +1,7 @@
 import React from "react";
 import Header from "../components/Header/Header";
 import { useAuth } from "../context/AuthContext";
+import LastLoginPopup from "../components/LastLoginPopup/LastLoginPopup";
 import "./UserDashboard.css";
 
 const UserDashboard: React.FC = () => {
@@ -104,6 +105,7 @@ const UserDashboard: React.FC = () => {
           </div>
         </section>
       </div>
+      <LastLoginPopup lastLoginTime={user?.lastLoginTime} />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+// src/components/Navbar/Navbar.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
@@ -9,7 +10,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className="navbar navbar-expand-lg custom-navbar fixed-top shadow-sm">
       <div className="container-fluid">
-        {/* Brand */}
+        {/* Brand -> goes to role-specific home */}
         <Link
           className="navbar-brand fw-bold text-white"
           to={user ? (user.role === "ADMIN" ? "/admin" : "/user") : "/"}
@@ -17,7 +18,7 @@ const Navbar: React.FC = () => {
           Workplace Tracker
         </Link>
 
-        {/* Toggle button (mobile) */}
+        {/* Toggler (mobile) */}
         <button
           className="navbar-toggler"
           type="button"
@@ -30,10 +31,48 @@ const Navbar: React.FC = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        {/* Navbar Links */}
+        {/* Links */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
-            {/* Common Links */}
+            {/* Home (explicit) */}
+            <li className="nav-item">
+              <Link className="nav-link text-white" to={user ? (user.role === "ADMIN" ? "/admin" : "/user") : "/"}>
+                Home
+              </Link>
+            </li>
+
+            {/* Admin Tools (only for admins) */}
+            {user?.role === "ADMIN" && (
+              <li className="nav-item dropdown">
+                <button
+                  className="nav-link dropdown-toggle text-white btn btn-link"
+                  id="adminMenu"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  Admin Tools
+                </button>
+                <ul className="dropdown-menu dropdown-menu-dark" aria-labelledby="adminMenu">
+                  <li>
+                    <Link className="dropdown-item" to="/user-management">
+                      User Management
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/reports">
+                      Reports
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/db-backup">
+                      DB Backup
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+            )}
+
+            {/* Public / common links */}
             <li className="nav-item">
               <Link className="nav-link text-white" to="/about">
                 About
@@ -45,39 +84,7 @@ const Navbar: React.FC = () => {
               </Link>
             </li>
 
-            {/* Role-based Links */}
-            {user?.role === "ADMIN" && (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link text-white" to="/admin">
-                    Admin Dashboard
-                  </Link>
-                </li>
-                <li className="nav-item dropdown">
-                  <button
-                    className="nav-link dropdown-toggle text-white btn btn-link"
-                    id="adminMenu"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                  >
-                    Admin Tools
-                  </button>
-                  <ul className="dropdown-menu dropdown-menu-dark">
-                    <li>
-                      <Link className="dropdown-item" to="/reports">
-                        Reports
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/user-management">
-                        User Management
-                      </Link>
-                    </li>
-                  </ul>
-                </li>
-              </>
-            )}
-
+            {/* If regular USER, show Dashboard link (optional) */}
             {user?.role === "USER" && (
               <li className="nav-item">
                 <Link className="nav-link text-white" to="/user">
@@ -87,7 +94,7 @@ const Navbar: React.FC = () => {
             )}
           </ul>
 
-          {/* Right Side (Auth/User Profile) */}
+          {/* Right side: profile / auth */}
           <ul className="navbar-nav ms-auto">
             {user ? (
               <li className="nav-item dropdown">
@@ -99,10 +106,7 @@ const Navbar: React.FC = () => {
                 >
                   {user.name || "Profile"}
                 </button>
-                <ul
-                  className="dropdown-menu dropdown-menu-end dropdown-menu-dark"
-                  aria-labelledby="userMenu"
-                >
+                <ul className="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="userMenu">
                   <li>
                     <Link className="dropdown-item" to="/profile">
                       My Profile
@@ -117,10 +121,7 @@ const Navbar: React.FC = () => {
                     <hr className="dropdown-divider" />
                   </li>
                   <li>
-                    <button
-                      className="dropdown-item text-danger"
-                      onClick={logout}
-                    >
+                    <button className="dropdown-item text-danger" onClick={logout}>
                       Logout
                     </button>
                   </li>
@@ -128,7 +129,7 @@ const Navbar: React.FC = () => {
               </li>
             ) : (
               <li className="nav-item">
-                <Link className="btn btn-outline-light btn-sm" to="/">
+                <Link className="btn btn-outline-light btn-sm" to="/login">
                   Login
                 </Link>
               </li>

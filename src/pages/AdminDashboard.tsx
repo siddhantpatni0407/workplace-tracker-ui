@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header/Header";
 import { useAuth } from "../context/AuthContext";
+import LastLoginPopup from "../components/LastLoginPopup/LastLoginPopup";
 import "./AdminDashboard.css";
 
 /**
@@ -76,6 +77,8 @@ const AdminDashboard: React.FC = () => {
           </button>
         ))}
       </div>
+
+    <LastLoginPopup lastLoginTime={user?.lastLoginTime} />
     </div>
   );
 };

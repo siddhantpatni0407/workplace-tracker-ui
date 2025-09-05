@@ -4,10 +4,15 @@ import { authService, SignupData, AuthResponse } from "../services/authService";
 import { Role } from "../types/auth";
 
 export interface User {
+  userId?: number;
   name: string;
   mobileNumber?: string;
   email?: string;
   role?: Role;
+  isActive?: boolean;
+  lastLoginTime?: string | null;
+  loginAttempts?: number | null;
+  accountLocked?: boolean | null;
 }
 
 interface AuthContextType {
@@ -22,22 +27,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
     const stored = authService.getUser();
-    return stored ? { name: stored.name, mobileNumber: stored.mobileNumber, role: stored.role } : null;
+    return stored ? stored : null;
   });
 
-  /**
-   * Return the full AuthResponse so pages (Login.tsx) can read message/status.
-   */
   const login = async (email: string, password: string): Promise<AuthResponse> => {
     const resp = await authService.login(email, password);
 
     if (resp.status === "SUCCESS" && resp.token) {
-      // save token + user
       authService.saveSession(resp);
       setUser({
+        userId: resp.userId ?? undefined,
         name: resp.name ?? "",
         email,
         role: resp.role ?? undefined,
+        isActive: resp.isActive ?? undefined,
+        lastLoginTime: resp.lastLoginTime ?? null,
+        loginAttempts: resp.loginAttempts ?? null,
+        accountLocked: resp.accountLocked ?? null,
       });
     }
 
@@ -48,13 +54,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const resp = await authService.signup(newUser);
 
     if (resp.status === "SUCCESS" && resp.token) {
-      // Save session (backend provided token on signup)
       authService.saveSession(resp);
       setUser({
         name: newUser.name,
         mobileNumber: newUser.mobileNumber,
         email: newUser.email,
         role: newUser.role,
+        lastLoginTime: resp.lastLoginTime ?? null,
+        isActive: resp.isActive ?? undefined,
+        loginAttempts: resp.loginAttempts ?? null,
+        accountLocked: resp.accountLocked ?? null,
       });
     }
 
