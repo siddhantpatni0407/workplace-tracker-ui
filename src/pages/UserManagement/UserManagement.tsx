@@ -1,3 +1,4 @@
+// src/pages/UserManagement.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import axiosInstance from "../../services/axiosInstance";
@@ -113,7 +114,7 @@ const UserManagement: React.FC = () => {
   return (
     <div className="user-management container-fluid py-4" data-animate="fade">
       <div className="mx-auto" style={{ maxWidth: 1100 }}>
-        {/* Header + refresh button */}
+        {/* Header */}
         <div className="d-flex align-items-center justify-content-between mb-3">
           <div>
             <h1 className="um-title mb-0">User Management</h1>
@@ -135,32 +136,40 @@ const UserManagement: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats Row */}
+        {/* Stats */}
         <div className="row g-3 mb-4">
           <div className="col-6 col-md-3">
             <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon"><i className="bi bi-people-fill"></i></div>
+              <div className="stat-icon">
+                <i className="bi bi-people-fill"></i>
+              </div>
               <div className="stat-title">TOTAL</div>
               <div className="stat-value">{stats.total}</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
             <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon"><i className="bi bi-check-circle-fill"></i></div>
+              <div className="stat-icon">
+                <i className="bi bi-check-circle-fill"></i>
+              </div>
               <div className="stat-title">ACTIVE</div>
               <div className="stat-value text-success">{stats.active}</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
             <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon"><i className="bi bi-lock-fill"></i></div>
+              <div className="stat-icon">
+                <i className="bi bi-lock-fill"></i>
+              </div>
               <div className="stat-title">LOCKED</div>
               <div className="stat-value text-danger">{stats.locked}</div>
             </div>
           </div>
           <div className="col-6 col-md-3">
             <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon"><i className="bi bi-shield-lock-fill"></i></div>
+              <div className="stat-icon">
+                <i className="bi bi-shield-lock-fill"></i>
+              </div>
               <div className="stat-title">ADMINS</div>
               <div className="stat-value">{stats.admins}</div>
             </div>
@@ -203,78 +212,51 @@ const UserManagement: React.FC = () => {
               <table className="table table-hover table-striped table-sm m-0 align-middle">
                 <thead className="table-light">
                   <tr>
-                    <th style={{ width: 60 }}>ID</th>
+                    <th className="text-center sno-col" style={{ width: 60 }}>S.No</th>
+                    <th className="text-center userid-col" style={{ width: 90 }}>User ID</th>
                     <th>Name</th>
                     <th>Email</th>
                     <th>Mobile</th>
                     <th style={{ width: 90 }}>Role</th>
-                    <th style={{ width: 150 }}>Last Login</th>
+                    <th style={{ width: 160 }}>Last Login</th>
                     <th style={{ width: 100 }}>Attempts</th>
                     <th style={{ width: 100 }}>Active</th>
                     <th style={{ width: 100 }}>Locked</th>
-                    <th style={{ width: 170 }} className="text-end">
-                      Actions
-                    </th>
+                    <th style={{ width: 170 }} className="text-end">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.map((u, idx) => (
-                    <tr
-                      key={u.userId}
-                      className="um-row"
-                      style={{ animationDelay: `${idx * 35}ms` }}
-                    >
-                      <td>{u.userId}</td>
+                    <tr key={u.userId} className="um-row" style={{ animationDelay: `${idx * 35}ms` }}>
+                      <td className="text-center sno-col">{idx + 1}</td>
+                      <td className="text-center userid-col">{u.userId}</td>
                       <td>{u.name}</td>
-                      <td
-                        className="text-truncate"
-                        style={{ maxWidth: 220 }}
-                      >
-                        {u.email}
-                      </td>
+                      <td className="text-truncate" style={{ maxWidth: 220 }}>{u.email}</td>
                       <td>{u.mobileNumber || "—"}</td>
                       <td>{u.role}</td>
                       <td>{formatDate(u.lastLoginTime)}</td>
-                      <td>{u.loginAttempts ?? "—"}</td>
                       <td>
-                        <span
-                          className={`badge ${
-                            u.isActive ? "bg-success" : "bg-secondary"
-                          }`}
-                        >
+                        {typeof u.loginAttempts === 'number' ? (
+                          <span className={`attempts-badge ${u.loginAttempts === 0 ? 'zero' : u.loginAttempts < 3 ? 'warn' : 'danger'}`}>
+                            {u.loginAttempts}
+                          </span>
+                        ) : '—'}
+                      </td>
+                      <td>
+                        <span className={`badge ${u.isActive ? "bg-success" : "bg-secondary"}`}>
                           {u.isActive ? "Active" : "Inactive"}
                         </span>
                       </td>
                       <td>
-                        <span
-                          className={`badge ${
-                            u.isAccountLocked
-                              ? "bg-danger locked-badge"
-                              : "bg-success"
-                          }`}
-                        >
+                        <span className={`badge ${u.isAccountLocked ? "bg-danger locked-badge" : "bg-success"}`}>
                           {u.isAccountLocked ? "Locked" : "Unlocked"}
                         </span>
                       </td>
                       <td className="text-end">
-                        <button
-                          className={`btn btn-sm ${
-                            u.isActive
-                              ? "btn-outline-danger"
-                              : "btn-outline-success"
-                          } me-2`}
-                          onClick={() => toggleActive(u.userId)}
-                        >
+                        <button className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`} onClick={() => toggleActive(u.userId)}>
                           {u.isActive ? "Disable" : "Enable"}
                         </button>
-                        <button
-                          className={`btn btn-sm ${
-                            u.isAccountLocked
-                              ? "btn-outline-success"
-                              : "btn-outline-warning"
-                          }`}
-                          onClick={() => toggleLock(u.userId)}
-                        >
+                        <button className={`btn btn-sm ${u.isAccountLocked ? "btn-outline-success" : "btn-outline-warning"}`} onClick={() => toggleLock(u.userId)}>
                           {u.isAccountLocked ? "Unlock" : "Lock"}
                         </button>
                       </td>
