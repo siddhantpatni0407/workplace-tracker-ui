@@ -1,0 +1,64 @@
+/* Signup page styles — matches Login visual language */
+
+.signup-bg{
+  min-height: calc(100vh - 56px);
+  padding: 28px;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(102,16,242,.06), transparent 60%),
+    radial-gradient(1000px 600px at 110% 110%, rgba(13,110,253,.06), transparent 60%),
+    linear-gradient(180deg, #f7f8fc, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-card{
+  width: 100%;
+  max-width: 620px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.94);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.06);
+  animation: cardIn .36s ease both;
+}
+
+.signup-head{
+  padding: 14px 20px;
+  color:#fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0d6efd, #6610f2);
+}
+
+/* Input group details */
+.input-group-text{
+  background:#f8f9fb;
+  border-right:0;
+}
+.input-group .form-control{
+  border-left:0;
+}
+
+/* Toggle button at end of password field */
+.btn-toggle{
+  background:#f8f9fb;
+  border-left:0;
+  cursor:pointer;
+}
+
+/* Buttons */
+.btn-primary {
+  box-shadow: 0 10px 24px rgba(13,110,253,.12);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(13,110,253,.18); }
+
+@keyframes cardIn{
+  from{ transform: translateY(10px); opacity:0; }
+  to{ transform: translateY(0); opacity:1; }
+}
+
+@media (max-width: 576px){
+  .signup-card{ max-width: 100%; }
+  .signup-bg { padding: 14px; }
+}
