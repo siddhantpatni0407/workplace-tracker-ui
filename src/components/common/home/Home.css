@@ -12,18 +12,17 @@ html, body, #root {
   box-sizing: border-box;
 }
 
-/* overlay helper injected to body (non-blocking) */
+/* add subtle overlay on top of body background (non-blocking) */
 .home-body-overlay::before {
   content: "";
   position: fixed;
   inset: 0;
   background: linear-gradient(180deg, rgba(8,10,26,0.18), rgba(13,110,253,0.03) 60%);
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 }
 
-/* root: ensure it fits available viewport minus footer gap;
-   allow page scroll if content is taller than viewport */
+/* root: center the card within available viewport minus footer gap */
 .home-root {
   position: relative;
   width: 100%;
@@ -33,26 +32,31 @@ html, body, #root {
   padding: 2.25rem;
   min-height: calc(100vh - var(--home-footer-gap));
   box-sizing: border-box;
-  overflow: visible; /* let the page scroll if needed */
+  overflow: visible; /* allow vertical scrolling if needed */
   z-index: 3;
 }
 
 /* Card centered, consistent sizing */
 .home-card {
-  width: min(var(--card-max), 96%);
+  width: min(var(--card-max), 92%);
   border-radius: 12px;
   overflow: hidden;
   background: linear-gradient(180deg, #ffffff, #fbfdff);
   box-shadow: 0 22px 60px rgba(2,6,23,0.24);
   z-index: 4;
+  /* ensure card never grows taller than available area */
+  max-height: calc(100vh - var(--home-footer-gap) - 40px);
 }
 
-/* ensure footer sits above the background but we don't force positioning */
-body footer,
-body .site-footer,
-#root footer {
-  z-index: 1200;
-  position: relative; /* don't force fixed; keep layout natural */
+/* if vertical space is tight, allow internal scrolling inside card rather than forcing body scroll */
+.home-card .row {
+  max-height: 100%;
+}
+.home-card .home-left-inner,
+.home-card .cta-wrap {
+  max-height: calc(100vh - var(--home-footer-gap) - 120px);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Left column */
@@ -122,3 +126,26 @@ body .site-footer,
 
 /* focus outlines */
 a.btn:focus, .btn:focus { outline: 3px solid rgba(24,72,255,0.12); outline-offset: 3px; }
+
+/* FOOTER helper: when we add `.home-footer-fixed` to footer element, it will be pinned */
+.home-footer-fixed {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  background: rgba(29, 31, 35, 0.92);
+  color: #fff;
+  border-top: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.45);
+  /* keep padding small and readable */
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* if footer contains inner content elements, ensure they are visible */
+.home-footer-fixed .container, .home-footer-fixed .footer-inner {
+  color: #fff;
+}

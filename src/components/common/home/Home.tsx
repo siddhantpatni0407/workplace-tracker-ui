@@ -5,9 +5,9 @@ import bg from "../../../assets/workplace-tracker-background.jpg"; // adjust pat
 
 const Home: React.FC = () => {
   useEffect(() => {
-    // save previous body inline styles so we restore them later
+    // Save previous inline styles so we can restore them
     const prev = {
-      overflow: document.body.style.overflow,
+      overflowX: document.documentElement.style.overflowX,
       backgroundImage: document.body.style.backgroundImage,
       backgroundSize: document.body.style.backgroundSize,
       backgroundPosition: document.body.style.backgroundPosition,
@@ -16,74 +16,58 @@ const Home: React.FC = () => {
       paddingBottom: document.body.style.paddingBottom,
     };
 
-    // Apply full-bleed background (use scroll attachment to avoid layout issues)
+    // Apply full-bleed background on body (keeps natural scrolling)
     document.body.style.backgroundImage = `url("${bg}")`;
     document.body.style.backgroundSize = "cover";
     document.body.style.backgroundPosition = "center center";
     document.body.style.backgroundRepeat = "no-repeat";
-    document.body.style.backgroundAttachment = "scroll";
+    document.body.style.backgroundAttachment = "fixed";
 
-    // add non-blocking overlay helper class (visual only)
+    // Keep horizontal scrolling prevented, but allow vertical scrolling if needed
+    document.documentElement.style.overflowX = "hidden";
+
+    // add a non-invasive overlay class (css provides ::before)
     document.body.classList.add("home-body-overlay");
 
-    const footerSelectorCandidates = ["footer", ".site-footer", "#site-footer"];
-    const findFooter = () =>
-      footerSelectorCandidates.reduce<HTMLElement | null>((acc, sel) => {
-        if (acc) return acc;
-        const el = document.querySelector<HTMLElement>(sel);
-        return el ?? null;
-      }, null);
-
+    // pin footer to bottom (adds a helper class) and set body padding-bottom so card not hidden
+    const footer = document.querySelector("footer");
     const applyFooterGap = () => {
-      const footer = findFooter();
-      // If multiple footers exist warn (helps catch duplicate-footer problems)
-      const footers = document.querySelectorAll("footer, .site-footer, #site-footer");
-      if (footers.length > 1) {
-        // do not throw - just log so you can remove the duplicate in layout
-        // eslint-disable-next-line no-console
-        console.warn(`Multiple footer elements found (${footers.length}). Remove duplicates to avoid layout issues.`);
-      }
-
-      const footerHeight = footer ? footer.offsetHeight : 72;
+      const footerEl = footer as HTMLElement | null;
+      const footerHeight = footerEl ? footerEl.offsetHeight : 72;
       const buffer = 12;
       const gap = footerHeight + buffer;
-
-      // expose as CSS var and also add padding so content doesn't overlap the footer
-      document.body.style.setProperty("--home-footer-gap", `${gap}px`);
       document.body.style.paddingBottom = `${gap}px`;
-
-      // ensure footer renders above background / content
-      if (footer) {
-        // only bump z-index, don't force position change (safer)
-        footer.style.zIndex = footer.style.zIndex || "1200";
-      }
+      // expose CSS var in case css needs it
+      document.documentElement.style.setProperty("--home-footer-gap", `${gap}px`);
+      if (footerEl) footerEl.classList.add("home-footer-fixed");
     };
 
     applyFooterGap();
     window.addEventListener("resize", applyFooterGap);
 
-    // Observe footer size changes
+    // If ResizeObserver available, watch footer height changes
     let ro: ResizeObserver | null = null;
-    const footerEl = findFooter();
-    if (footerEl && (window as any).ResizeObserver) {
-      ro = new ResizeObserver(() => applyFooterGap());
-      ro.observe(footerEl);
+    if (footer && (window as any).ResizeObserver) {
+      ro = new ResizeObserver(applyFooterGap);
+      ro.observe(footer);
     }
 
     return () => {
+      // cleanup
       window.removeEventListener("resize", applyFooterGap);
-      if (ro && footerEl) ro.unobserve(footerEl);
+      if (ro && footer) ro.unobserve(footer);
+      if (footer) (footer as HTMLElement).classList.remove("home-footer-fixed");
+
       document.body.classList.remove("home-body-overlay");
 
-      // restore previous body styles & cleanup
+      document.documentElement.style.overflowX = prev.overflowX;
       document.body.style.backgroundImage = prev.backgroundImage;
       document.body.style.backgroundSize = prev.backgroundSize;
       document.body.style.backgroundPosition = prev.backgroundPosition;
       document.body.style.backgroundRepeat = prev.backgroundRepeat;
       document.body.style.backgroundAttachment = prev.backgroundAttachment;
-      document.body.style.paddingBottom = prev.paddingBottom;
-      document.body.style.overflow = prev.overflow;
-      document.body.style.removeProperty("--home-footer-gap");
+      document.body.style.paddingBottom = prev.paddingBottom || "";
+      document.documentElement.style.removeProperty("--home-footer-gap");
     };
   }, []);
 
