@@ -13,7 +13,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Signup = lazy(() => import("./pages/Signup"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const UserDashboard = lazy(() => import("./pages/UserDashboard"));
-const UserManagement = lazy(() => import("./pages/UserManagement")); // <-- added
+const UserManagement = lazy(() => import("./pages/UserManagement/UserManagement")); // <-- added
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));

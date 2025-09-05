@@ -1,0 +1,121 @@
+/* UserManagement.css — scoped under .user-management */
+
+/* container */
+.user-management {
+  padding-top: 1rem;
+  padding-bottom: 2.5rem;
+  background: transparent;
+}
+
+/* title */
+.um-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+/* stat cards */
+.um-stats .stat-card {
+  min-height: 78px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.9rem 0.8rem;
+  border: 1px solid rgba(0,0,0,0.06);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.um-stats .stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 22px rgba(15,15,15,0.06);
+}
+.stat-title {
+  font-size: 0.72rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+}
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+/* filters card (re-usable) */
+.card.mb-3.p-3 {
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* search input */
+.card .form-control {
+  min-width: 220px;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+/* table card */
+.user-table {
+  margin-top: 0.9rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* table styling */
+.user-table table {
+  margin: 0;
+  background: transparent;
+  border-collapse: separate;
+}
+.user-table thead th {
+  background: #fafafa;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-size: 0.9rem;
+  vertical-align: middle;
+}
+.user-table tbody tr {
+  transition: background .12s ease, transform .12s ease;
+}
+.user-table tbody tr.um-row:hover {
+  background: rgba(13,110,253,0.03);
+  transform: translateY(-2px);
+}
+.user-table tbody td {
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  font-size: 0.92rem;
+}
+
+/* action buttons */
+.user-table .btn {
+  padding: 0.28rem 0.6rem;
+  font-size: 0.82rem;
+  border-radius: 6px;
+}
+
+/* badges */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.55rem;
+  border-radius: 10px;
+}
+
+/* small screens */
+@media (max-width: 768px) {
+  .user-management { padding-left: 0.8rem; padding-right: 0.8rem; }
+  .um-title { text-align: center; }
+  .user-management .lead { text-align: center; }
+  .row.g-3 { gap: .75rem; }
+  .card .d-flex { flex-direction: column; gap: .6rem; }
+  .card .form-select.w-auto { width: 100% !important; }
+}
+
+/* very small devices: reduce paddings */
+@media (max-width: 480px) {
+  .user-table tbody td { padding: .45rem .5rem; font-size: .86rem; }
+  .user-table thead th { font-size: .82rem; }
+  .user-table .btn { padding: .22rem .45rem; font-size: .8rem; }
+}
