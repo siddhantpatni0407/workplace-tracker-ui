@@ -1,15 +1,30 @@
-/* UserManagement.css (tweaked for full-width table + alignment) */
+/* UserManagement.css (tweaked for full-width table + alignment + borders) */
 
-.user-management { padding-top: 1.25rem; padding-bottom: 2.5rem; padding-left: 2rem; padding-right: 2rem; }
+.user-management { 
+  padding-top: 1.25rem; 
+  padding-bottom: 2.5rem; 
+  padding-left: 2rem; 
+  padding-right: 2rem; 
+}
 
 /* entrance fade */
-[data-animate="fade"] { opacity: 0; transform: translateY(8px); animation: umFadeIn 420ms ease forwards; }
-@keyframes umFadeIn { to { opacity: 1; transform: translateY(0); }}
+[data-animate="fade"] { 
+  opacity: 0; 
+  transform: translateY(8px); 
+  animation: umFadeIn 420ms ease forwards; 
+}
+@keyframes umFadeIn { 
+  to { opacity: 1; transform: translateY(0); }
+}
 
 /* header */
-.um-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.125rem; }
+.um-title { 
+  font-size: 1.6rem; 
+  font-weight: 700; 
+  margin-bottom: 0.125rem; 
+}
 
-/* ---------- Stats cards (unchanged but refined) ---------- */
+/* ---------- Stats cards ---------- */
 .stat-card {
   min-height: 82px;
   display:flex;
@@ -18,14 +33,13 @@
   background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.82));
   border-radius: 12px;
   padding: 0.9rem 0.8rem;
-  border: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.1);
   transition: transform .18s ease, box-shadow .18s ease;
   position: relative;
   overflow: hidden;
 }
 .stat-card:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(15,15,15,0.08); }
 .stat-icon { font-size: 1.1rem; color: rgba(13,110,253,0.9); margin-bottom: 6px; }
-.um-card-acc .stat-icon i, .stat-icon i { font-size: 1.15rem; }
 
 /* subtle gradient accent bar (left) */
 .stat-card::before {
@@ -51,41 +65,57 @@
 .um-filter-card {
   background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(250,250,250,0.95));
   border-radius: 10px;
-  border: 1px solid rgba(0,0,0,0.045);
+  border: 1px solid rgba(0,0,0,0.1);
   backdrop-filter: blur(6px);
   transition: box-shadow .15s ease, transform .12s ease;
 }
 .um-filter-card:hover { box-shadow: 0 10px 28px rgba(13,110,253,0.06); transform: translateY(-3px); }
 
-/* ---------- Table container glow ---------- */
-.um-table-glow { border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.06); background: #fff; }
+/* ---------- Table container ---------- */
+.um-table-glow { 
+  border-radius: 10px; 
+  overflow: hidden; 
+  border: 1px solid rgba(0,0,0,0.15); 
+  background: #fff; 
+}
 .um-table-glow:hover { box-shadow: 0 18px 40px rgba(13,110,253,0.04); }
 
-/* ---------- Table: header, zebra, sticky ---------- */
+/* ---------- Table styling with borders ---------- */
 .user-table .table {
+  width: 100%;
+  min-width: 1100px;
   margin: 0;
-  border-collapse: separate;
-  border-spacing: 0;
+  border-collapse: collapse; /* ensure shared borders */
   background: transparent;
+  border: 1px solid rgba(0,0,0,0.15); /* outer border */
 }
 .user-table thead th {
-  background: #fbfbfd;
+  background: #f8f9fa;
   font-weight: 700;
   font-size: 0.9rem;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+  border: 1px solid rgba(0,0,0,0.15); /* header borders */
   position: sticky;
   top: 0;
   z-index: 2;
   backdrop-filter: blur(4px);
 }
-.user-table tbody tr { background: #fff; }
-.user-table tbody tr:nth-child(odd) { background: #ffffff; }
-.user-table tbody tr:nth-child(even) { background: #fbfcff; }
+.user-table tbody td {
+  vertical-align: middle;
+  padding: 0.6rem 0.8rem;
+  font-size: 0.94rem;
+  border: 1px solid rgba(0,0,0,0.1); /* cell borders */
+}
+.user-table tbody tr:nth-child(even) { background:#fbfcff; }
+.user-table tbody tr:nth-child(odd) { background:#ffffff; }
 
 /* hover */
-.user-table tbody tr.um-row:hover { transform: translateY(-6px); background: rgba(13,110,253,0.03); box-shadow: 0 10px 30px rgba(13,110,253,0.03); }
+.user-table tbody tr.um-row:hover { 
+  transform: translateY(-2px); 
+  background: rgba(13,110,253,0.04); 
+  box-shadow: 0 4px 16px rgba(13,110,253,0.05); 
+}
 
-/* row appear animation */
+/* animation */
 .user-table tbody tr.um-row {
   transition: transform .14s ease, background .14s ease, box-shadow .14s ease, opacity .2s;
   transform-origin: left center;
@@ -94,34 +124,32 @@
 }
 @keyframes rowAppear { to { opacity:1; transform:none; } }
 
-/* filter */
-.um-filter-card { border-radius:10px; padding:0.9rem; background:#fff; border:1px solid rgba(0,0,0,0.045); }
-
-/* table container */
-.um-table-glow { border-radius:10px; overflow: hidden; background: #fff; border: 1px solid rgba(0,0,0,0.06); }
-.um-table-glow .table-responsive { overflow: auto; }
-
-/* table baseline */
-.user-table .table { width: 100%; min-width: 1100px; margin: 0; background: transparent; }
-.user-table thead th { background: #fbfbfd; font-weight:700; border-bottom:1px solid rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 2; }
-.user-table tbody tr:nth-child(even) { background:#fbfcff; }
-
-/* sizing columns */
+/* column sizing */
 .sno-col { width:56px; text-align:center; font-weight:600; }
 .userid-col { width:90px; text-align:center; font-weight:600; }
 
-/* table cells */
-.user-table td { vertical-align: middle; padding:0.6rem 0.8rem; border-bottom:1px solid rgba(0,0,0,0.04); font-size:0.94rem; }
-
 /* attempts badge */
-.attempts-badge { display:inline-block; min-width:34px; text-align:center; padding:0.25rem 0.45rem; border-radius:999px; font-weight:600; font-size:0.78rem; color:#fff; }
+.attempts-badge { 
+  display:inline-block; 
+  min-width:34px; 
+  text-align:center; 
+  padding:0.25rem 0.45rem; 
+  border-radius:999px; 
+  font-weight:600; 
+  font-size:0.78rem; 
+  color:#fff; 
+}
 .attempts-badge.zero { background:#6c757d; opacity:0.95; }
 .attempts-badge.warn { background:#ffc107; color:#212529; }
 .attempts-badge.danger { background:#dc3545; }
 
 /* locked badge pulse */
 .locked-badge { animation: pulseLocked 2200ms infinite linear; }
-@keyframes pulseLocked { 0% { box-shadow:0 0 0 0 rgba(220,53,69,0.12);} 70% { box-shadow:0 0 0 8px rgba(220,53,69,0);} 100% { box-shadow:0 0 0 0 rgba(220,53,69,0);} }
+@keyframes pulseLocked { 
+  0% { box-shadow:0 0 0 0 rgba(220,53,69,0.12);} 
+  70% { box-shadow:0 0 0 8px rgba(220,53,69,0);} 
+  100% { box-shadow:0 0 0 0 rgba(220,53,69,0);} 
+}
 
 /* responsive */
 @media (max-width: 1200px) {
@@ -135,4 +163,7 @@
 }
 
 /* subtle focus */
-.user-table tbody tr:focus-within { outline: 3px solid rgba(13,110,253,0.06); outline-offset:2px; }
+.user-table tbody tr:focus-within { 
+  outline: 3px solid rgba(13,110,253,0.06); 
+  outline-offset:2px; 
+}
