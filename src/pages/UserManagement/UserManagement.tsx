@@ -113,159 +113,173 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="user-management container-fluid py-4" data-animate="fade">
-      <div className="mx-auto" style={{ maxWidth: 1100 }}>
-        {/* Header */}
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h1 className="um-title mb-0">User Management</h1>
-            <div className="text-muted small">Welcome, {user?.name}</div>
-          </div>
-          <div>
-            <button
-              className="btn btn-sm btn-outline-primary"
-              onClick={fetchUsers}
-              disabled={loading}
-            >
-              {loading ? (
-                <span className="spinner-border spinner-border-sm me-2" />
-              ) : (
-                <i className="bi bi-arrow-clockwise me-1" />
-              )}
-              Refresh
-            </button>
-          </div>
+      {/* Use full width — no narrow centered wrapper */}
+      <div className="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h1 className="um-title mb-0">User Management</h1>
+          <div className="text-muted small">Welcome, {user?.name}</div>
         </div>
-
-        {/* Stats */}
-        <div className="row g-3 mb-4">
-          <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon">
-                <i className="bi bi-people-fill"></i>
-              </div>
-              <div className="stat-title">TOTAL</div>
-              <div className="stat-value">{stats.total}</div>
-            </div>
-          </div>
-          <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon">
-                <i className="bi bi-check-circle-fill"></i>
-              </div>
-              <div className="stat-title">ACTIVE</div>
-              <div className="stat-value text-success">{stats.active}</div>
-            </div>
-          </div>
-          <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon">
-                <i className="bi bi-lock-fill"></i>
-              </div>
-              <div className="stat-title">LOCKED</div>
-              <div className="stat-value text-danger">{stats.locked}</div>
-            </div>
-          </div>
-          <div className="col-6 col-md-3">
-            <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
-              <div className="stat-icon">
-                <i className="bi bi-shield-lock-fill"></i>
-              </div>
-              <div className="stat-title">ADMINS</div>
-              <div className="stat-value">{stats.admins}</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="card mb-3 p-3 shadow-sm um-filter-card">
-          <div className="d-flex gap-2 align-items-center flex-column flex-md-row">
-            <input
-              className="form-control flex-grow-1"
-              placeholder="Search users by name, email, or mobile..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <select
-              className="form-select w-auto"
-              value={roleFilter}
-              onChange={(e) => handleRoleSelect(e.target.value)}
-            >
-              <option value="ALL">All</option>
-              <option value="USER">User</option>
-              <option value="ADMIN">Admin</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Users table */}
-        <div className="card shadow-sm user-table um-table-glow">
-          <div className="table-responsive">
+        <div>
+          <button
+            className="btn btn-sm btn-outline-primary"
+            onClick={fetchUsers}
+            disabled={loading}
+          >
             {loading ? (
-              <div className="p-4 text-center">
-                <div className="spinner-border" role="status" />
-              </div>
-            ) : error ? (
-              <div className="p-4 text-danger text-center">{error}</div>
-            ) : filtered.length === 0 ? (
-              <div className="p-4 text-muted text-center">No users found.</div>
+              <span className="spinner-border spinner-border-sm me-2" />
             ) : (
-              <table className="table table-hover table-striped table-sm m-0 align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th className="text-center sno-col" style={{ width: 60 }}>S.No</th>
-                    <th className="text-center userid-col" style={{ width: 90 }}>User ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Mobile</th>
-                    <th style={{ width: 90 }}>Role</th>
-                    <th style={{ width: 160 }}>Last Login</th>
-                    <th style={{ width: 100 }}>Attempts</th>
-                    <th style={{ width: 100 }}>Active</th>
-                    <th style={{ width: 100 }}>Locked</th>
-                    <th style={{ width: 170 }} className="text-end">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((u, idx) => (
-                    <tr key={u.userId} className="um-row" style={{ animationDelay: `${idx * 35}ms` }}>
-                      <td className="text-center sno-col">{idx + 1}</td>
-                      <td className="text-center userid-col">{u.userId}</td>
-                      <td>{u.name}</td>
-                      <td className="text-truncate" style={{ maxWidth: 220 }}>{u.email}</td>
-                      <td>{u.mobileNumber || "—"}</td>
-                      <td>{u.role}</td>
-                      <td>{formatDate(u.lastLoginTime)}</td>
-                      <td>
-                        {typeof u.loginAttempts === 'number' ? (
-                          <span className={`attempts-badge ${u.loginAttempts === 0 ? 'zero' : u.loginAttempts < 3 ? 'warn' : 'danger'}`}>
-                            {u.loginAttempts}
-                          </span>
-                        ) : '—'}
-                      </td>
-                      <td>
-                        <span className={`badge ${u.isActive ? "bg-success" : "bg-secondary"}`}>
-                          {u.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td>
-                        <span className={`badge ${u.isAccountLocked ? "bg-danger locked-badge" : "bg-success"}`}>
-                          {u.isAccountLocked ? "Locked" : "Unlocked"}
-                        </span>
-                      </td>
-                      <td className="text-end">
-                        <button className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`} onClick={() => toggleActive(u.userId)}>
-                          {u.isActive ? "Disable" : "Enable"}
-                        </button>
-                        <button className={`btn btn-sm ${u.isAccountLocked ? "btn-outline-success" : "btn-outline-warning"}`} onClick={() => toggleLock(u.userId)}>
-                          {u.isAccountLocked ? "Unlock" : "Lock"}
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <i className="bi bi-arrow-clockwise me-1" />
             )}
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {/* Stats Row (keeps existing) */}
+      <div className="row g-3 mb-4">
+        <div className="col-6 col-md-3">
+          <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+            <div className="stat-icon">
+              <i className="bi bi-people-fill"></i>
+            </div>
+            <div className="stat-title">TOTAL</div>
+            <div className="stat-value">{stats.total}</div>
           </div>
+        </div>
+        <div className="col-6 col-md-3">
+          <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+            <div className="stat-icon">
+              <i className="bi bi-check-circle-fill"></i>
+            </div>
+            <div className="stat-title">ACTIVE</div>
+            <div className="stat-value text-success">{stats.active}</div>
+          </div>
+        </div>
+        <div className="col-6 col-md-3">
+          <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+            <div className="stat-icon">
+              <i className="bi bi-lock-fill"></i>
+            </div>
+            <div className="stat-title">LOCKED</div>
+            <div className="stat-value text-danger">{stats.locked}</div>
+          </div>
+        </div>
+        <div className="col-6 col-md-3">
+          <div className="stat-card shadow-sm p-3 rounded text-center um-card-acc">
+            <div className="stat-icon">
+              <i className="bi bi-shield-lock-fill"></i>
+            </div>
+            <div className="stat-title">ADMINS</div>
+            <div className="stat-value">{stats.admins}</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters (keeps existing) */}
+      <div className="card mb-3 p-3 shadow-sm um-filter-card">
+        <div className="d-flex gap-2 align-items-center flex-column flex-md-row">
+          <input
+            className="form-control flex-grow-1"
+            placeholder="Search users by name, email, or mobile..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+          <select
+            className="form-select w-auto"
+            value={roleFilter}
+            onChange={(e) => handleRoleSelect(e.target.value)}
+          >
+            <option value="ALL">All</option>
+            <option value="USER">User</option>
+            <option value="ADMIN">Admin</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Full-width Users table (no narrow wrapper) */}
+      <div className="card shadow-sm user-table um-table-glow">
+        <div className="table-responsive">
+          {loading ? (
+            <div className="p-4 text-center">
+              <div className="spinner-border" role="status" />
+            </div>
+          ) : error ? (
+            <div className="p-4 text-danger text-center">{error}</div>
+          ) : filtered.length === 0 ? (
+            <div className="p-4 text-muted text-center">No users found.</div>
+          ) : (
+            <table className="table table-hover table-striped table-sm m-0 align-middle" style={{ minWidth: 1100 }}>
+              <thead className="table-light">
+                <tr>
+                  <th className="sno-col">S.No</th>
+                  <th className="userid-col">User ID</th>
+                  <th>Name</th>
+                  <th style={{ minWidth: 260 }}>Email</th>
+                  <th>Mobile</th>
+                  <th style={{ width: 90 }}>Role</th>
+                  <th style={{ width: 160 }}>Last Login</th>
+                  <th style={{ width: 110 }}>Attempts</th>
+                  <th style={{ width: 100 }}>Active</th>
+                  <th style={{ width: 100 }}>Locked</th>
+                  <th style={{ width: 170 }} className="text-end">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((u, idx) => (
+                  <tr key={u.userId} className="um-row" style={{ animationDelay: `${idx * 35}ms` }}>
+                    <td className="sno-col">{idx + 1}</td>
+                    <td className="userid-col">{u.userId}</td>
+                    <td>{u.name}</td>
+                    <td className="text-truncate" style={{ maxWidth: 320 }}>
+                      {u.email}
+                    </td>
+                    <td>{u.mobileNumber || "—"}</td>
+                    <td>{u.role}</td>
+                    <td>{formatDate(u.lastLoginTime)}</td>
+                    <td>
+                      {typeof u.loginAttempts === "number" ? (
+                        <span
+                          className={`attempts-badge ${
+                            u.loginAttempts === 0 ? "zero" : u.loginAttempts < 3 ? "warn" : "danger"
+                          }`}
+                        >
+                          {u.loginAttempts}
+                        </span>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
+                    <td>
+                      <span className={`badge ${u.isActive ? "bg-success" : "bg-secondary"}`}>
+                        {u.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`badge ${u.isAccountLocked ? "bg-danger locked-badge" : "bg-success"}`}>
+                        {u.isAccountLocked ? "Locked" : "Unlocked"}
+                      </span>
+                    </td>
+                    <td className="text-end">
+                      <button
+                        className={`btn btn-sm ${u.isActive ? "btn-outline-danger" : "btn-outline-success"} me-2`}
+                        onClick={() => toggleActive(u.userId)}
+                      >
+                        {u.isActive ? "Disable" : "Enable"}
+                      </button>
+                      <button
+                        className={`btn btn-sm ${u.isAccountLocked ? "btn-outline-success" : "btn-outline-warning"}`}
+                        onClick={() => toggleLock(u.userId)}
+                      >
+                        {u.isAccountLocked ? "Unlock" : "Lock"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
