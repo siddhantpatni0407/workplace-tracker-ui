@@ -1,4 +1,4 @@
-// src/pages/UserManagement.tsx
+// src/pages/UserManagement/UserManagement.tsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import axiosInstance from "../../../services/axiosInstance";
@@ -84,18 +84,64 @@ const UserManagement: React.FC = () => {
     });
   }, [users, query, roleFilter]);
 
+  // ✅ API call to toggle Active
   const toggleActive = async (id: number) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.userId === id ? { ...u, isActive: !u.isActive } : u))
-    );
+    const target = users.find((u) => u.userId === id);
+    if (!target) return;
+
+    try {
+      const resp = await axiosInstance.patch(
+        API_ENDPOINTS.USERS.UPDATE_STATUS,
+        {
+          userId: id,
+          isActive: !target.isActive,
+          isAccountLocked: target.isAccountLocked,
+        }
+      );
+
+      if (resp.data?.status === "SUCCESS" && resp.data.data) {
+        const updated = resp.data.data;
+        setUsers((prev) =>
+          prev.map((u) => (u.userId === id ? { ...u, ...updated } : u))
+        );
+      } else {
+        console.error("toggleActive failed:", resp.data);
+        setError(resp.data?.message || "Failed to update status.");
+      }
+    } catch (err: any) {
+      console.error("toggleActive error:", err);
+      setError(err?.response?.data?.message || "Network/server error.");
+    }
   };
 
+  // ✅ API call to toggle Lock
   const toggleLock = async (id: number) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.userId === id ? { ...u, isAccountLocked: !u.isAccountLocked } : u
-      )
-    );
+    const target = users.find((u) => u.userId === id);
+    if (!target) return;
+
+    try {
+      const resp = await axiosInstance.patch(
+        API_ENDPOINTS.USERS.UPDATE_STATUS,
+        {
+          userId: id,
+          isActive: target.isActive,
+          isAccountLocked: !target.isAccountLocked,
+        }
+      );
+
+      if (resp.data?.status === "SUCCESS" && resp.data.data) {
+        const updated = resp.data.data;
+        setUsers((prev) =>
+          prev.map((u) => (u.userId === id ? { ...u, ...updated } : u))
+        );
+      } else {
+        console.error("toggleLock failed:", resp.data);
+        setError(resp.data?.message || "Failed to update status.");
+      }
+    } catch (err: any) {
+      console.error("toggleLock error:", err);
+      setError(err?.response?.data?.message || "Network/server error.");
+    }
   };
 
   const handleRoleSelect = (val: string) => {
