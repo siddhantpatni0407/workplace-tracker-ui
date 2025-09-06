@@ -6,6 +6,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Navbar from "./components/common/navbar/Navbar";
 import Footer from "./components/common/footer/Footer";
 import "./styles/global.css";
+import Reports from "./components/admin/reports/Reports";
 
 // Lazy loading pages
 const Home = lazy(() => import("./components/common/home/Home"));
@@ -95,6 +96,17 @@ const App: React.FC = () => {
                 <PrivateRoute>
                   <Layout>
                     <UserSettings />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/user-analytics"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <Reports />
                   </Layout>
                 </PrivateRoute>
               }

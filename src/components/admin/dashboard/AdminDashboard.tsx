@@ -24,11 +24,11 @@ const AdminDashboard: React.FC = () => {
     },
     {
       id: "reports",
-      title: "Reports",
-      subtitle: "Attendance & usage reports",
+      title: "User Analytics",
+      subtitle: "User Analytics & Visualizations",
       icon: "bi-bar-chart-line-fill",
       colorClass: "card-purple",
-      action: () => navigate("/reports"),
+      action: () => navigate("/user-analytics"),
     },
     {
       id: "backup",

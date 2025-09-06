@@ -64,8 +64,8 @@ const Navbar: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/reports">
-                      <i className="bi bi-bar-chart-fill me-2"></i> Reports
+                    <Link className="dropdown-item" to="/user-analytics">
+                      <i className="bi bi-bar-chart-fill me-2"></i> User Analytics
                     </Link>
                   </li>
                   <li>
