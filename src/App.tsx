@@ -28,7 +28,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
     {/* scrollable main content */}
     <main className="page-content">
-      <div className="container-xxl px-3 py-4">
+      <div className="page-wrapper flex-fill container-fluid px-4 py-4">
         {children}
       </div>
     </main>
