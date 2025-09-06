@@ -1,22 +1,66 @@
-/* Clean centered card */
+/* Centered contact card */
 .contact-card {
-  max-width: 600px;
-  background: #fff;
-  border: none;
+  max-width: 700px;
+  width: 100%;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+  border: 0;
   animation: fadeUp 0.5s ease both;
+}
+
+/* Icon box */
+.brand-icon {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #7c4dff, #3b82f6);
+  color: #fff;
+  font-size: 1.1rem;
+  box-shadow: 0 6px 16px rgba(59,130,246,0.08);
 }
 
 /* Input group */
 .input-group-text {
-  background: #f8f9fa;
+  background: #f8f9fb;
   border-right: 0;
 }
 .input-group .form-control {
   border-left: 0;
 }
 .form-control:focus {
-  border-color: #8e2de2;
-  box-shadow: 0 0 0 0.2rem rgba(142, 45, 226, 0.25);
+  border-color: rgba(124,77,255,0.9);
+  box-shadow: 0 0 0 0.18rem rgba(124,77,255,0.12);
+}
+
+/* Success banner */
+.alert-success {
+  border-radius: 10px;
+  padding: 12px 14px;
+  animation: fadeUp 0.4s ease;
+}
+.success-check {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg,#10b981,#06b6d4);
+  border-radius: 50%;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* Submit button */
+.btn-primary {
+  background: linear-gradient(90deg,#5b21b6,#3b82f6);
+  border: 0;
+  box-shadow: 0 10px 30px rgba(59,130,246,0.08);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 48px rgba(59,130,246,0.12);
 }
 
 /* fade-up animation */
