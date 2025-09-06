@@ -22,12 +22,22 @@ const Contact = lazy(() => import("./components/common/contact/Contact"));
 
 // Layout wrapper (Navbar + Footer)
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="d-flex flex-column min-vh-100">
+  <div className="app-shell">
+    {/* fixed navbar */}
     <Navbar />
-    <main className="flex-fill container py-4 page-wrapper">{children}</main>
+
+    {/* scrollable main content */}
+    <main className="page-content">
+      <div className="container-xxl px-3 py-4">
+        {children}
+      </div>
+    </main>
+
+    {/* fixed footer */}
     <Footer />
   </div>
 );
+
 
 // Loading Spinner for Suspense
 const Loader: React.FC = () => (

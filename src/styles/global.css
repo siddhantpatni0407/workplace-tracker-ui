@@ -59,3 +59,34 @@ html, body, #root {
 @media (max-width: 520px) {
   .site-footer { font-size: 0.82rem; padding: 0.5rem; }
 }
+/* App shell: full viewport */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;  /* Full viewport height */
+  overflow: hidden; /* Prevent double scrollbars */
+}
+
+/* Navbar fixed at top */
+.app-shell > nav {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1050; /* above page content */
+}
+
+/* Footer fixed at bottom */
+.app-shell > .site-footer {
+  flex-shrink: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 1050;
+}
+
+/* Scrollable middle section */
+.page-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f9fafb; /* optional light background */
+}
