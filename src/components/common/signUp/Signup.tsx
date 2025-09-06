@@ -10,57 +10,91 @@ interface FormData {
   mobileNumber: string;
   email: string;
   password: string;
+  confirmPassword: string;
   role: Role;
+  acceptTerms: boolean;
 }
+
+const initialForm: FormData = {
+  name: "",
+  mobileNumber: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  role: "USER",
+  acceptTerms: false,
+};
 
 const Signup: React.FC = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState<FormData>({
-    name: "",
-    mobileNumber: "",
-    email: "",
-    password: "",
-    role: "USER",
-  });
+  const [form, setForm] = useState<FormData>(initialForm);
   const [showPw, setShowPw] = useState(false);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
   const sanitizeMobile = (value: string) => value.replace(/\D/g, "").slice(0, 10);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target as HTMLInputElement;
     if (name === "mobileNumber") {
       setForm((p) => ({ ...p, mobileNumber: sanitizeMobile(value) }));
+    } else if (type === "checkbox") {
+      setForm((p) => ({ ...p, [name]: checked } as unknown as FormData));
     } else {
-      setForm((p) => ({ ...p, [name]: value }));
+      setForm((p) => ({ ...p, [name]: value } as unknown as FormData));
     }
+    setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+    setErr(null);
   };
 
   const handleRoleChange = (role: Role) => setForm((p) => ({ ...p, role }));
 
-  const validate = (): string | null => {
-    if (!form.name.trim()) return "Name is required.";
-    if (form.mobileNumber.length !== 10) return "Mobile number must be 10 digits.";
-    if (!form.email.trim()) return "Email is required.";
-    if (!form.password) return "Password is required.";
-    if (form.password.length < 6) return "Password should be at least 6 characters.";
-    return null;
+  // Basic validators
+  const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  const passwordScore = (pw: string) => {
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return score; // 0..4
   };
 
-  const canSubmit = useMemo(() => !loading && !!form.email && !!form.password && !!form.name, [form, loading]);
+  const passwordStrengthLabel = (score: number) =>
+    score <= 1 ? "Weak" : score === 2 ? "Fair" : score === 3 ? "Good" : "Strong";
+
+  const validate = (): boolean => {
+    const errs: Partial<Record<keyof FormData, string>> = {};
+    if (!form.name.trim()) errs.name = "Name is required";
+    if (!form.mobileNumber || form.mobileNumber.length !== 10) errs.mobileNumber = "Enter a 10-digit mobile number";
+    if (!form.email.trim() || !isEmail(form.email)) errs.email = "Enter a valid email address";
+    if (!form.password) errs.password = "Password is required";
+    else if (form.password.length < 6) errs.password = "Password must be at least 6 characters";
+    if (!form.confirmPassword) errs.confirmPassword = "Please confirm your password";
+    else if (form.confirmPassword !== form.password) errs.confirmPassword = "Passwords do not match";
+    if (!form.acceptTerms) errs.acceptTerms = "You must accept the terms and conditions";
+    setFieldErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const canSubmit = useMemo(() => {
+    return (
+      !loading &&
+      form.name.trim() !== "" &&
+      form.email.trim() !== "" &&
+      form.password !== "" &&
+      form.confirmPassword !== ""
+    );
+  }, [form, loading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr(null);
     setSuccess(null);
 
-    const v = validate();
-    if (v) {
-      setErr(v);
-      return;
-    }
+    if (!validate()) return;
 
     setLoading(true);
     try {
@@ -74,17 +108,15 @@ const Signup: React.FC = () => {
 
       if (resp.status === "SUCCESS") {
         setSuccess(resp.message || "Signup successful. Redirecting to login...");
-        // optionally auto-login: save session & navigate
-        if (resp.token) {
+        // auto-login if token returned
+        if (resp.token || resp.accessToken) {
           authService.saveSession(resp);
-          // go to role-based route or landing
           const role = resp.role || "USER";
           navigate(role === "ADMIN" ? "/admin" : "/user");
           window.location.reload();
-        } else {
-          // show confirmation then send user to login
-          setTimeout(() => navigate("/login"), 1400);
+          return;
         }
+        setTimeout(() => navigate("/login"), 1200);
       } else {
         setErr(resp.message || "Signup failed. Please try again.");
       }
@@ -95,6 +127,8 @@ const Signup: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const strength = passwordScore(form.password);
 
   return (
     <div className="signup-bg d-flex align-items-center justify-content-center">
@@ -122,11 +156,12 @@ const Signup: React.FC = () => {
                   name="name"
                   value={form.name}
                   onChange={handleChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.name ? "is-invalid" : ""}`}
                   placeholder="Enter your full name"
                   disabled={loading}
                   required
                 />
+                {fieldErrors.name && <div className="invalid-feedback">{fieldErrors.name}</div>}
               </div>
             </div>
 
@@ -138,13 +173,14 @@ const Signup: React.FC = () => {
                   name="mobileNumber"
                   value={form.mobileNumber}
                   onChange={handleChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.mobileNumber ? "is-invalid" : ""}`}
                   placeholder="10-digit number"
                   inputMode="numeric"
                   pattern="[0-9]{10}"
                   disabled={loading}
                   required
                 />
+                {fieldErrors.mobileNumber && <div className="invalid-feedback">{fieldErrors.mobileNumber}</div>}
               </div>
               <div className="form-text">Numbers only — 10 digits</div>
             </div>
@@ -158,11 +194,12 @@ const Signup: React.FC = () => {
                   type="email"
                   value={form.email}
                   onChange={handleChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.email ? "is-invalid" : ""}`}
                   placeholder="you@example.com"
                   disabled={loading}
                   required
                 />
+                {fieldErrors.email && <div className="invalid-feedback">{fieldErrors.email}</div>}
               </div>
             </div>
 
@@ -175,7 +212,7 @@ const Signup: React.FC = () => {
                   type={showPw ? "text" : "password"}
                   value={form.password}
                   onChange={handleChange}
-                  className="form-control"
+                  className={`form-control ${fieldErrors.password ? "is-invalid" : ""}`}
                   placeholder="Choose a strong password"
                   disabled={loading}
                   required
@@ -188,12 +225,55 @@ const Signup: React.FC = () => {
                 >
                   <i className={`bi ${showPw ? "bi-eye-slash-fill" : "bi-eye-fill"}`} />
                 </button>
+                {fieldErrors.password && <div className="invalid-feedback">{fieldErrors.password}</div>}
+              </div>
+
+              <div className="password-hint mt-2 d-flex align-items-center justify-content-between">
+                <div className="strength">
+                  <div className={`strength-bar strength-${strength}`} aria-hidden />
+                  <small className="ms-2 text-muted">{passwordStrengthLabel(strength)}</small>
+                </div>
+                <div className="small text-muted">Use 8+ chars, mix letters, numbers & symbols.</div>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label fw-semibold">Confirm password</label>
+              <div className="input-group input-group-lg">
+                <span className="input-group-text"><i className="bi bi-lock-fill" /></span>
+                <input
+                  name="confirmPassword"
+                  type={showPw ? "text" : "password"}
+                  value={form.confirmPassword}
+                  onChange={handleChange}
+                  className={`form-control ${fieldErrors.confirmPassword ? "is-invalid" : ""}`}
+                  placeholder="Re-enter password"
+                  disabled={loading}
+                  required
+                />
+                {fieldErrors.confirmPassword && <div className="invalid-feedback">{fieldErrors.confirmPassword}</div>}
               </div>
             </div>
 
             <div className="mb-3">
               <label className="form-label fw-semibold">Role</label>
               <RoleSelect value={form.role} onChange={handleRoleChange} disabled={loading} />
+            </div>
+
+            <div className="mb-3 form-check">
+              <input
+                id="acceptTerms"
+                name="acceptTerms"
+                type="checkbox"
+                className={`form-check-input ${fieldErrors.acceptTerms ? "is-invalid" : ""}`}
+                checked={form.acceptTerms}
+                onChange={handleChange}
+                disabled={loading}
+              />
+              <label className="form-check-label" htmlFor="acceptTerms">
+                I agree to the <a href="/terms" target="_blank" rel="noopener noreferrer">terms & conditions</a>
+              </label>
+              {fieldErrors.acceptTerms && <div className="invalid-feedback">{fieldErrors.acceptTerms}</div>}
             </div>
 
             <button type="submit" className="btn btn-primary btn-lg w-100" disabled={!canSubmit}>
