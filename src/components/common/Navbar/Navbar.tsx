@@ -113,7 +113,7 @@ const Navbar: React.FC = () => {
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/settings">
+                    <Link className="dropdown-item" to="/user-settings">
                       <i className="bi bi-sliders2-vertical me-2"></i> Settings
                     </Link>
                   </li>

@@ -13,7 +13,8 @@ const Login = lazy(() => import("./components/common/login/Login"));
 const Signup = lazy(() => import("./components/common/signUp/Signup"));
 const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDashboard"));
 const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
-const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement")); 
+const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
+const UserSettings = lazy(() => import("./components/common/userSettings/UserSettings")); // <- added
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -82,6 +83,18 @@ const App: React.FC = () => {
                 <PrivateRoute role="ADMIN">
                   <Layout>
                     <UserManagement />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* User Settings - any authenticated user (no role restriction) */}
+            <Route
+              path="/user-settings"
+              element={
+                <PrivateRoute>
+                  <Layout>
+                    <UserSettings />
                   </Layout>
                 </PrivateRoute>
               }

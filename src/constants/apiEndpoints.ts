@@ -1,4 +1,3 @@
-// src/constants/apiEndpoints.ts (replace the AUTH block or entire file)
 const API_BASE_URL = "http://localhost:8010/api/v1/workplace-tracker-service";
 
 export const API_ENDPOINTS = {
@@ -7,7 +6,6 @@ export const API_ENDPOINTS = {
     LOGIN: `${API_BASE_URL}/login`,
     FORGOT_PASSWORD_RESET: `${API_BASE_URL}/forgot/reset`,
     LOGOUT: `${API_BASE_URL}/logout`,
-    // Updated refresh endpoint (explicit /auth/refresh)
     REFRESH_TOKEN: `${API_BASE_URL}/auth/refresh`,
   },
 
@@ -17,7 +15,16 @@ export const API_ENDPOINTS = {
     CREATE: `${API_BASE_URL}/user`,
     UPDATE: (id: number | string) => `${API_BASE_URL}/user/${id}`,
     DELETE: (id: number | string) => `${API_BASE_URL}/user/${id}`,
-    UPDATE_STATUS: `${API_BASE_URL}/user/status`
+    UPDATE_STATUS: `${API_BASE_URL}/user/status`,
+  },
+
+  USER_SETTINGS: {
+    GET: (userId: number | string) =>
+      `${API_BASE_URL}/user/settings?userId=${userId}`,
+    UPSERT: (userId: number | string) =>
+      `${API_BASE_URL}/user/settings?userId=${userId}`,
+    DELETE: (userId: number | string) =>
+      `${API_BASE_URL}/user/settings?userId=${userId}`,
   },
 
   DASHBOARD: {
