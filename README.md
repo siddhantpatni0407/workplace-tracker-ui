@@ -5,12 +5,12 @@ Provides an interface for user login, registration, attendance logging, user man
 
 ---
 
-## **📝 Last Updated :** **`2025-09-06`**
+## **📝 Last Updated :** **`2025-09-07`**
 
 ## Table of Contents
 
 - [workplace-tracker-ui](#workplace-tracker-ui)
-  - [**📝 Last Updated :** **`2025-09-06`**](#-last-updated--2025-09-06)
+  - [**📝 Last Updated :** **`2025-09-07`**](#-last-updated--2025-09-07)
   - [Table of Contents](#table-of-contents)
   - [Overview](#overview)
   - [Features](#features)
