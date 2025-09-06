@@ -1,6 +1,5 @@
 /* src/pages/Reports/Reports.css */
-
-.reports-page { min-height: 75vh; }
+.reports-page { min-height: 75vh; padding-bottom: 1.5rem; }
 .reports-title { font-size: 1.95rem; color: #4f46e5; font-weight: 700; }
 
 /* card */
@@ -13,6 +12,7 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+  position: relative;
 }
 
 /* top-of-card small actions row */
@@ -25,11 +25,7 @@
 }
 
 /* highlight-total */
-.total-badge {
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
+.total-badge { display:flex; align-items:center; gap:12px; }
 .total-number {
   font-size: 2.6rem;
   font-weight: 900;
@@ -40,11 +36,7 @@
   color: transparent;
   text-shadow: 0 6px 14px rgba(79,70,229,0.12);
 }
-.total-label {
-  font-weight:700;
-  color:#6b7280;
-  font-size:0.95rem;
-}
+.total-label { font-weight:700; color:#6b7280; font-size:0.95rem; }
 
 /* make some cards stretch */
 .card-stretch { height: 100%; }
@@ -52,51 +44,27 @@
 
 /* tuned sizing for charts */
 .chart-holder { min-height: 120px; }
-.chart-big { height: 260px; min-height: 220px; display:flex; align-items:stretch; justify-content:stretch; }
+.chart-big { height: 320px; min-height: 220px; display:flex; align-items:stretch; justify-content:stretch; }
 
 /* force charts to use full card width/height */
-.chart-fullwidth {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
+.chart-fullwidth { width: 100%; height: 100%; display: block; }
 
 /* tiny adjustments for dropdown button appearance */
-.analytics-card .dropdown .btn {
-  padding: .25rem .5rem;
-}
+.analytics-card .dropdown .btn { padding: .25rem .5rem; }
 
 /* modal styles for enlarged chart */
 .reports-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(12,23,45,0.45);
-  backdrop-filter: blur(3px);
-  padding: 1rem;
+  position: fixed; inset: 0; z-index: 2000;
+  display:flex; align-items:center; justify-content:center;
+  background: rgba(12,23,45,0.45); backdrop-filter: blur(3px); padding: 1rem;
 }
 .reports-modal {
-  width: min(1100px, 96%);
-  max-height: 90vh;
-  overflow: auto;
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,0.06);
+  width: min(1200px, 96%); max-height: 90vh; overflow: auto;
+  background: #fff; border-radius: 12px; border: 1px solid rgba(0,0,0,0.06);
   box-shadow: 0 36px 90px rgba(2,6,23,0.3);
 }
-.reports-modal-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid rgba(0,0,0,0.04);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-.reports-modal-body {
-  padding: 18px;
-}
+.reports-modal-header { padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.04); display:flex; align-items:center; justify-content:space-between; }
+.reports-modal-body { padding: 18px; }
 
 /* legend tweaks for pies */
 .recharts-legend-wrapper { font-size: 0.92rem; }
@@ -106,10 +74,9 @@
 
 /* responsive: increase heights on larger screens for better use of horizontal space */
 @media (min-width: 1200px) {
-  .chart-big { height: 360px; }
+  .chart-big { height: 420px; }
   .chart-tall { min-height: 520px; }
 }
-
 @media (max-width: 992px) {
   .chart-big { height: 300px; }
 }
@@ -118,3 +85,6 @@
   .chart-big { height: 220px; }
   .analytics-card { padding: 12px; }
 }
+
+/* small nicety: rounded dropdowns and smaller icons */
+.btn-outline-secondary { border-radius: 8px; }
