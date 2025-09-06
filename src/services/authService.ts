@@ -33,6 +33,12 @@ export interface SignupData {
   role: Role;
 }
 
+/** Captcha payload (optional) - allow null so callers with string | null don't error */
+export interface CaptchaPayload {
+  captchaToken?: string | null | undefined;
+  mathCaptchaAnswer?: string | null | undefined;
+}
+
 export const authService = {
   signup: async (data: SignupData): Promise<AuthResponse> => {
     try {
@@ -47,9 +53,27 @@ export const authService = {
     }
   },
 
-  login: async (email: string, password: string): Promise<AuthResponse> => {
+  /**
+   * login now accepts an optional captcha payload as 3rd argument.
+   * Example: authService.login(email, password, { captchaToken: '...' })
+   */
+  login: async (
+    email: string,
+    password: string,
+    captcha?: CaptchaPayload
+  ): Promise<AuthResponse> => {
     try {
-      const resp = await axiosInstance.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, { email, password });
+      const payload: any = { email, password };
+
+      // only attach captcha fields when they are not null/undefined/empty
+      if (captcha?.captchaToken != null && captcha.captchaToken !== "") {
+        payload.captchaToken = captcha.captchaToken;
+      }
+      if (captcha?.mathCaptchaAnswer != null && captcha.mathCaptchaAnswer !== "") {
+        payload.mathCaptchaAnswer = captcha.mathCaptchaAnswer;
+      }
+
+      const resp = await axiosInstance.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, payload);
       return normalizeAuthResponse(resp.data);
     } catch (err: any) {
       if (err?.response?.data) return normalizeAuthResponse(err.response.data);

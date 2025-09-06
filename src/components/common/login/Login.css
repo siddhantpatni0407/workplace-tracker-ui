@@ -57,6 +57,34 @@
 }
 .login-submit:hover{ transform: translateY(-2px); box-shadow: 0 16px 34px rgba(13,110,253,.18); }
 
+/* Captcha block styles */
+.captcha-block .captcha-canvas {
+  width: 200px;
+  height: 50px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.04);
+  border: 1px solid rgba(0,0,0,0.06);
+  display: block;
+}
+
+/* refresh button */
+.captcha-refresh {
+  height: 40px;
+  width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+/* tighten layout on small screens */
+@media (max-width: 420px) {
+  .captcha-block .captcha-canvas {
+    width: 160px;
+    height: 44px;
+  }
+}
+
 /* Small entrance */
 @keyframes cardIn{
   from{ transform: translateY(10px); opacity:0; }
