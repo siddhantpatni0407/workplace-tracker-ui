@@ -66,7 +66,7 @@ const App: React.FC = () => {
 
             {/* Dashboards (protected) */}
             <Route
-              path="/admin"
+              path="/admin-dashboard"
               element={
                 <PrivateRoute role="ADMIN">
                   <Layout>
@@ -77,7 +77,7 @@ const App: React.FC = () => {
             />
 
             <Route
-              path="/user"
+              path="/user-dashboard"
               element={
                 <PrivateRoute role="USER">
                   <Layout>

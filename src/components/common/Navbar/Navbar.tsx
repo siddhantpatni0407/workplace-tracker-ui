@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
         {/* Brand */}
         <Link
           className="navbar-brand fw-bold text-white"
-          to={user ? (user.role === "ADMIN" ? "/admin" : "/user") : "/"}
+          to={user ? (user.role === "ADMIN" ? "/admin-dashboard" : "/user-dashboard") : "/"}
         >
           <i className="bi bi-briefcase-fill me-2"></i>
           Workplace Tracker
@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
             <li className="nav-item">
               <Link
                 className="nav-link text-white nav-hover"
-                to={user ? (user.role === "ADMIN" ? "/admin" : "/user") : "/"}
+                to={user ? (user.role === "ADMIN" ? "/admin-dashboard" : "/user-dashboard") : "/"}
               >
                 Home
               </Link>

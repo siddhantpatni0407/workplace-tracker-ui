@@ -112,7 +112,7 @@ const Signup: React.FC = () => {
         if (resp.token || resp.accessToken) {
           authService.saveSession(resp);
           const role = resp.role || "USER";
-          navigate(role === "ADMIN" ? "/admin" : "/user");
+          navigate(role === "ADMIN" ? "/admin-dashboard" : "/ user-dashboard");
           window.location.reload();
           return;
         }
