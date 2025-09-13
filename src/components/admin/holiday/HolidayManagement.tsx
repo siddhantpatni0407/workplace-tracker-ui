@@ -1,24 +1,51 @@
 // src/components/admin/holiday/HolidayManagement.tsx
-import React, { useEffect, useMemo, useState } from "react";
-import { parseISO } from "date-fns";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { parseISO, format } from "date-fns";
 import { toast } from "react-toastify";
 import Header from "../../common/header/Header";
 import { HolidayDTO } from "../../../types/holiday";
-import { ResponseDTO } from "../../../types/api"; // add import at top next to HolidayDTO
+import { ResponseDTO } from "../../../types/api";
 import holidayService from "../../../services/holidayService";
 import "./HolidayManagement.css";
 
 /**
- * Holiday Management - enhanced
- * - Toolbar: search by name, filter by type, date range
- * - Export: CSV & Print
- * - Table: badges for type, hover, responsive
- * - Modal: create/edit with saving state
- *
- * Notes:
- * - Server expects dates as yyyy-MM-dd (ISO date)
- * - Authentication: Authorization header handled via axios interceptor
+ * Holiday Management - enhanced (Admin)
+ * - DD/MM/YYYY display
+ * - Filters: Year, Month, Type + from/to date and search (debounced)
+ * - Refresh + lastRefreshed
+ * - Improved table styling & centered headers
+ * - Accessible create/edit modal + delete confirmation with optimistic delete & Undo
  */
+
+const MONTHS = [
+    { value: "ALL", label: "All months" },
+    { value: "01", label: "Jan" },
+    { value: "02", label: "Feb" },
+    { value: "03", label: "Mar" },
+    { value: "04", label: "Apr" },
+    { value: "05", label: "May" },
+    { value: "06", label: "Jun" },
+    { value: "07", label: "Jul" },
+    { value: "08", label: "Aug" },
+    { value: "09", label: "Sep" },
+    { value: "10", label: "Oct" },
+    { value: "11", label: "Nov" },
+    { value: "12", label: "Dec" },
+];
+
+const useDebounced = <T,>(value: T, ms = 300) => {
+    const [v, setV] = useState(value);
+    useEffect(() => {
+        const t = setTimeout(() => setV(value), ms);
+        return () => clearTimeout(t);
+    }, [value, ms]);
+    return v;
+};
+
+type DeleteIntent = {
+    show: boolean;
+    target?: HolidayDTO;
+};
 
 const HolidayManagement: React.FC = () => {
     const [loading, setLoading] = useState(false);
@@ -35,17 +62,33 @@ const HolidayManagement: React.FC = () => {
 
     // filters
     const [q, setQ] = useState("");
+    const debouncedQ = useDebounced(q, 220);
     const [filterType, setFilterType] = useState<"ALL" | "MANDATORY" | "OPTIONAL">("ALL");
+
+    // new admin filter controls
+    const [filterYear, setFilterYear] = useState<"ALL" | string>("ALL");
+    const [filterMonth, setFilterMonth] = useState<string>("ALL");
     const [from, setFrom] = useState<string>("");
     const [to, setTo] = useState<string>("");
 
-    // load holidays from server (optionally you can pass from/to; service supports it)
+    const [lastRefreshed, setLastRefreshed] = useState<string>("");
+
+    // delete confirmation modal state
+    const [deleteIntent, setDeleteIntent] = useState<DeleteIntent>({ show: false });
+    const [processingDelete, setProcessingDelete] = useState(false);
+
+    // optimistic deletion backup for undo
+    const backupRef = useRef<Map<string | number, HolidayDTO>>(new Map());
+
+    const formFirstRef = useRef<HTMLInputElement | null>(null);
+
     const load = async () => {
         setLoading(true);
         try {
-            // If date filters provided use them, else load all
+            // currently load everything; client-side filters apply afterwards
             const payload = await holidayService.getHolidays(from || undefined, to || undefined);
             setHolidays(payload ?? []);
+            setLastRefreshed(new Date().toISOString());
         } catch (err) {
             console.error("load holidays", err);
             toast.error("Failed to load holidays");
@@ -59,16 +102,33 @@ const HolidayManagement: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // client-side filtered list for fast UI response (still call load when changing date range)
+    useEffect(() => {
+        if (showForm) {
+            setTimeout(() => formFirstRef.current?.focus(), 30);
+        }
+    }, [showForm]);
+
+    // derive years available from data
+    const years = useMemo(() => {
+        const set = new Set<string>();
+        holidays.forEach((h) => {
+            if (h.holidayDate) set.add(h.holidayDate.slice(0, 4)); // YYYY
+        });
+        const arr = Array.from(set).sort((a, b) => Number(b) - Number(a)); // newest first
+        return ["ALL", ...arr];
+    }, [holidays]);
+
     const filtered = useMemo(() => {
         return holidays.filter((h) => {
             if (filterType !== "ALL" && h.holidayType !== filterType) return false;
-            if (q && !(`${h.name} ${h.description ?? ""}`.toLowerCase().includes(q.toLowerCase()))) return false;
+            if (debouncedQ && !(`${h.name} ${h.description ?? ""}`.toLowerCase().includes(debouncedQ.toLowerCase()))) return false;
+            if (filterYear !== "ALL" && h.holidayDate.slice(0, 4) !== filterYear) return false;
+            if (filterMonth !== "ALL" && h.holidayDate.slice(5, 7) !== filterMonth) return false;
             if (from && h.holidayDate < from) return false;
             if (to && h.holidayDate > to) return false;
             return true;
-        });
-    }, [holidays, q, filterType, from, to]);
+        }).sort((a, b) => (a.holidayDate < b.holidayDate ? -1 : a.holidayDate > b.holidayDate ? 1 : 0));
+    }, [holidays, debouncedQ, filterType, from, to, filterYear, filterMonth]);
 
     const openCreate = () => {
         setEditing(null);
@@ -122,50 +182,78 @@ const HolidayManagement: React.FC = () => {
         }
     };
 
-    const remove = async (h: HolidayDTO) => {
-        if (!h.holidayId) return;
-        if (!window.confirm(`Delete holiday "${h.name}" on ${h.holidayDate}?`)) return;
+    const confirmDelete = (h: HolidayDTO) => setDeleteIntent({ show: true, target: h });
+
+    const performDelete = async (h: HolidayDTO | undefined) => {
+        if (!h || !h.holidayId) return;
+        setProcessingDelete(true);
+
+        // optimistic UI: remove locally while we call server
+        const key = h.holidayId;
+        backupRef.current.set(key, h);
+        setHolidays((prev) => prev.filter((x) => x.holidayId !== key));
+
+        // show undo toast
+        toast.info(
+            <div>
+                Deleted "{h.name}" —{" "}
+                <button
+                    className="btn btn-link btn-sm p-0"
+                    onClick={() => {
+                        const original = backupRef.current.get(key);
+                        if (original) {
+                            setHolidays((prev) => [original!, ...prev]);
+                            backupRef.current.delete(key);
+                            toast.dismiss();
+                            toast.success("Undo successful");
+                            load();
+                        }
+                    }}
+                >
+                    Undo
+                </button>
+            </div>,
+            { autoClose: 6000 }
+        );
 
         try {
-            setLoading(true);
-            // now returns typed ResponseDTO<void>
-            const resp: ResponseDTO<void> = await holidayService.deleteHoliday(h.holidayId);
-
-            // Show server-provided message if present, else fallback
-            if (resp?.message) {
-                toast.success(resp.message);
-            } else {
-                toast.success("Holiday deleted");
-            }
-
-            // Refresh list
-            await load();
+            const resp: ResponseDTO<void> = await holidayService.deleteHoliday(h.holidayId!);
+            if (resp?.message) toast.success(resp.message);
+            else toast.success("Holiday deleted");
+            backupRef.current.delete(key);
         } catch (err: any) {
             console.error("delete holiday", err);
+            const original = backupRef.current.get(key);
+            if (original) {
+                setHolidays((prev) => [original!, ...prev]);
+                backupRef.current.delete(key);
+            }
             const msg = err?.response?.data?.message ?? err?.message ?? "Failed to delete holiday";
             toast.error(msg);
         } finally {
-            setLoading(false);
+            setProcessingDelete(false);
+            setDeleteIntent({ show: false });
         }
     };
 
     const displayDate = (isoDate?: string) => {
         if (!isoDate) return "";
         try {
-            return parseISO(isoDate).toLocaleDateString();
+            const d = parseISO(isoDate);
+            return format(d, "dd/MM/yyyy");
         } catch {
             return isoDate;
         }
     };
 
-    // CSV export
     const exportCSV = () => {
-        if (!holidays || holidays.length === 0) {
+        const source = filtered.length ? filtered : holidays;
+        if (!source || source.length === 0) {
             toast.info("No holiday data to export");
             return;
         }
-        const rows = (filtered.length ? filtered : holidays).map((h) => ({
-            Date: h.holidayDate,
+        const rows = source.map((h) => ({
+            Date: displayDate(h.holidayDate),
             Name: h.name,
             Type: h.holidayType,
             Description: h.description ?? "",
@@ -183,9 +271,9 @@ const HolidayManagement: React.FC = () => {
     };
 
     const printView = () => {
-        // open new window and print simple table
-        const rows = (filtered.length ? filtered : holidays)
-            .map((h) => `<tr><td>${h.holidayDate}</td><td>${escapeHtml(h.name)}</td><td>${h.holidayType}</td><td>${escapeHtml(h.description ?? "")}</td></tr>`)
+        const source = filtered.length ? filtered : holidays;
+        const rows = source
+            .map((h) => `<tr><td>${displayDate(h.holidayDate)}</td><td>${escapeHtml(h.name)}</td><td>${h.holidayType}</td><td>${escapeHtml(h.description ?? "")}</td></tr>`)
             .join("");
         const html = `
       <html><head><title>Holidays</title>
@@ -205,6 +293,27 @@ const HolidayManagement: React.FC = () => {
         return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
     }
 
+    // keyboard: esc closes form or delete modal
+    useEffect(() => {
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                if (deleteIntent.show) setDeleteIntent({ show: false });
+                else if (showForm && !saving) setShowForm(false);
+            }
+        };
+        window.addEventListener("keydown", onKey);
+        return () => window.removeEventListener("keydown", onKey);
+    }, [deleteIntent.show, showForm, saving]);
+
+    const clearFilters = () => {
+        setQ("");
+        setFilterType("ALL");
+        setFrom("");
+        setTo("");
+        setFilterYear("ALL");
+        setFilterMonth("ALL");
+    };
+
     return (
         <div className="container py-4">
             <Header title="Holiday Management" subtitle="Add or update company holidays" />
@@ -212,102 +321,139 @@ const HolidayManagement: React.FC = () => {
             {/* toolbar */}
             <div className="d-flex flex-wrap gap-2 mb-3 align-items-center toolbar">
                 <div className="d-flex gap-2 align-items-center">
-                    <button className="btn btn-primary btn-sm" onClick={openCreate} disabled={saving || loading}>
+                    <button className="btn btn-primary btn-sm" onClick={openCreate} disabled={saving || loading} aria-label="Add holiday">
                         <i className="bi bi-plus-lg me-1" /> Add Holiday
                     </button>
-                    <button className="btn btn-outline-secondary btn-sm" onClick={load} disabled={loading}>
-                        <i className="bi bi-arrow-repeat me-1" /> Refresh
+                    <button className="btn btn-outline-secondary btn-sm" onClick={() => load()} disabled={loading} aria-label="Refresh list">
+                        {loading ? (
+                            <>
+                                <span className="spinner-border spinner-border-sm me-1" role="status" />
+                                Refreshing
+                            </>
+                        ) : (
+                            <>
+                                <i className="bi bi-arrow-repeat me-1" /> Refresh
+                            </>
+                        )}
                     </button>
                 </div>
 
                 <div className="ms-auto d-flex gap-2 align-items-center">
                     <div className="input-group input-group-sm">
                         <span className="input-group-text">Search</span>
-                        <input className="form-control" placeholder="name or description" value={q} onChange={(e) => setQ(e.target.value)} />
+                        <input aria-label="Search holidays" className="form-control" placeholder="name or description" value={q} onChange={(e) => setQ(e.target.value)} />
                     </div>
 
-                    <select className="form-select form-select-sm" value={filterType} onChange={(e) => setFilterType(e.target.value as any)}>
+                    {/* Year / Month / Type filters */}
+                    <select className="form-select form-select-sm" value={filterYear} onChange={(e) => setFilterYear(e.target.value as any)} aria-label="Filter year" title="Year">
+                        {years.map((y) => (
+                            <option key={y} value={y}>
+                                {y === "ALL" ? "All years" : y}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select className="form-select form-select-sm" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} aria-label="Filter month" title="Month">
+                        {MONTHS.map((m) => (
+                            <option key={m.value} value={m.value}>
+                                {m.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select className="form-select form-select-sm" value={filterType} onChange={(e) => setFilterType(e.target.value as any)} aria-label="Filter by type">
                         <option value="ALL">All types</option>
                         <option value="MANDATORY">Mandatory</option>
                         <option value="OPTIONAL">Optional</option>
                     </select>
 
-                    <input type="date" className="form-control form-control-sm" value={from} onChange={(e) => setFrom(e.target.value)} title="From" />
-                    <input type="date" className="form-control form-control-sm" value={to} onChange={(e) => setTo(e.target.value)} title="To" />
-                    <button className="btn btn-outline-info btn-sm" onClick={load} title="Load with date filters" disabled={loading}>
-                        <i className="bi bi-funnel-fill" />
+                    <input type="date" className="form-control form-control-sm" value={from} onChange={(e) => setFrom(e.target.value)} title="From" aria-label="From date" />
+                    <input type="date" className="form-control form-control-sm" value={to} onChange={(e) => setTo(e.target.value)} title="To" aria-label="To date" />
+
+                    <button className="btn btn-link btn-sm text-decoration-none p-0 ms-2" onClick={clearFilters} title="Clear filters" aria-label="Clear filters">
+                        Clear
                     </button>
 
                     <div className="btn-group">
-                        <button className="btn btn-outline-success btn-sm" onClick={exportCSV} title="Export CSV">
+                        <button className="btn btn-outline-success btn-sm" onClick={exportCSV} title="Export CSV" aria-label="Export CSV">
                             <i className="bi bi-file-earmark-spreadsheet me-1" /> Export
                         </button>
-                        <button className="btn btn-outline-secondary btn-sm" onClick={printView} title="Print">
+                        <button className="btn btn-outline-secondary btn-sm" onClick={printView} title="Print" aria-label="Print">
                             <i className="bi bi-printer me-1" /> Print
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div className="table-responsive shadow-sm rounded bg-white">
-                <table className="table table-hover table-striped mb-0">
-                    <thead className="table-light">
-                        <tr>
-                            <th style={{ width: 140 }}>Date</th>
-                            <th>Name</th>
-                            <th style={{ width: 140 }}>Type</th>
-                            <th>Description</th>
-                            <th style={{ width: 160 }} className="text-end">Actions</th>
-                        </tr>
-                    </thead>
+            {/* Card + table */}
+            <div className="card holiday-card shadow-sm">
+                <div className="card-body p-0">
+                    <div className="table-toolbar d-flex justify-content-between align-items-center px-3 py-2">
+                        <div />
+                        <div className="small text-muted">Last refreshed: {lastRefreshed ? format(parseISO(lastRefreshed), "dd/MM/yyyy HH:mm") : "-"}</div>
+                    </div>
 
-                    <tbody>
-                        {loading ? (
-                            <tr>
-                                <td colSpan={5} className="py-5 text-center">
-                                    <div className="spinner-border text-primary me-2" role="status" />
-                                    Loading holidays...
-                                </td>
-                            </tr>
-                        ) : filtered.length === 0 ? (
-                            <tr>
-                                <td colSpan={5} className="py-5 text-center text-muted">
-                                    No holidays match the filters.
-                                </td>
-                            </tr>
-                        ) : (
-                            filtered.map((h) => (
-                                <tr key={h.holidayId ?? `${h.holidayDate}-${h.name}`} className="align-middle">
-                                    <td className="fw-semibold">{displayDate(h.holidayDate)}</td>
-                                    <td>{h.name}</td>
-                                    <td>
-                                        <span className={`badge ${h.holidayType === "MANDATORY" ? "bg-primary" : "bg-secondary"}`}>
-                                            {h.holidayType}
-                                        </span>
-                                    </td>
-                                    <td className="text-truncate" style={{ maxWidth: 500 }}>{h.description}</td>
-                                    <td className="text-end">
-                                        <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(h)} title="Edit">
-                                            <i className="bi bi-pencil-fill" /> Edit
-                                        </button>
-                                        <button className="btn btn-sm btn-outline-danger" onClick={() => remove(h)} title="Delete">
-                                            <i className="bi bi-trash-fill" /> Delete
-                                        </button>
-                                    </td>
+                    <div className="table-responsive">
+                        <table className="table table-hover mb-0 admin-holiday-table">
+                            <thead className="table-light">
+                                <tr>
+                                    <th className="text-center" style={{ width: 140 }}>Date</th>
+                                    <th className="text-center">Name</th>
+                                    <th className="text-center" style={{ width: 140 }}>Type</th>
+                                    <th className="text-center">Description</th>
+                                    <th className="text-end">Actions</th>
                                 </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
+                            </thead>
+
+                            <tbody>
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan={5} className="py-5 text-center">
+                                            <div className="spinner-border text-primary me-2" role="status" />
+                                            Loading holidays...
+                                        </td>
+                                    </tr>
+                                ) : filtered.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="py-5 text-center text-muted">
+                                            No holidays match the filters.
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    filtered.map((h) => (
+                                        <tr key={h.holidayId ?? `${h.holidayDate}-${h.name}`} className="align-middle">
+                                            <td className="fw-semibold text-center">{displayDate(h.holidayDate)}</td>
+                                            <td>{h.name}</td>
+                                            <td className="text-center">
+                                                <span className={`badge badge-type ${h.holidayType === "MANDATORY" ? "mandatory" : "optional"}`}>
+                                                    {h.holidayType === "MANDATORY" ? "Mandatory" : "Optional"}
+                                                </span>
+                                            </td>
+                                            <td className="text-truncate" style={{ maxWidth: 500 }}>{h.description}</td>
+                                            <td className="text-end">
+                                                <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(h)} title="Edit" aria-label={`Edit ${h.name}`}>
+                                                    <i className="bi bi-pencil-fill" /> Edit
+                                                </button>
+                                                <button className="btn btn-sm btn-outline-danger" onClick={() => confirmDelete(h)} title="Delete" aria-label={`Delete ${h.name}`}>
+                                                    <i className="bi bi-trash-fill" /> Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            {/* modal */}
+            {/* create / edit modal */}
             {showForm && (
-                <div className="modal-backdrop-custom">
+                <div className="modal-backdrop-custom" role="dialog" aria-modal="true" aria-label={editing ? "Edit holiday dialog" : "Create holiday dialog"}>
                     <div className="holiday-modal card p-3 shadow-lg">
                         <div className="d-flex justify-content-between align-items-center mb-3">
                             <h6 className="mb-0">{editing ? "Edit Holiday" : "Create Holiday"}</h6>
-                            <button className="btn btn-sm btn-outline-secondary" onClick={() => setShowForm(false)} disabled={saving}>
+                            <button className="btn btn-sm btn-outline-secondary" onClick={() => setShowForm(false)} disabled={saving} aria-label="Close form">
                                 Close
                             </button>
                         </div>
@@ -316,7 +462,7 @@ const HolidayManagement: React.FC = () => {
                             <div className="row g-2">
                                 <div className="col-md-6">
                                     <label className="form-label">Name</label>
-                                    <input className="form-control" value={name} onChange={(e) => setName(e.target.value)} required disabled={saving} />
+                                    <input ref={formFirstRef} className="form-control" value={name} onChange={(e) => setName(e.target.value)} required disabled={saving} aria-required />
                                 </div>
 
                                 <div className="col-md-3">
@@ -351,6 +497,54 @@ const HolidayManagement: React.FC = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* delete confirmation modal */}
+            {deleteIntent.show && deleteIntent.target && (
+                <div className="modal-backdrop-custom" role="dialog" aria-modal="true" aria-label="Delete confirmation dialog">
+                    <div className="holiday-modal card p-3 shadow-lg">
+                        <div className="d-flex justify-content-between align-items-start mb-2">
+                            <h6 className="mb-0">Confirm delete</h6>
+                            <button className="btn btn-sm btn-outline-secondary" onClick={() => setDeleteIntent({ show: false })} disabled={processingDelete} aria-label="Close">
+                                ✕
+                            </button>
+                        </div>
+
+                        <div className="mb-3">
+                            <p className="mb-1">Are you sure you want to delete the following holiday?</p>
+                            <div className="p-2 border rounded bg-light">
+                                <strong>{deleteIntent.target.name}</strong>
+                                <div className="text-muted small">Date: {displayDate(deleteIntent.target.holidayDate)}</div>
+                                <div className="mt-1">
+                                    Type:{" "}
+                                    <span className={`badge badge-type ${deleteIntent.target.holidayType === "MANDATORY" ? "mandatory" : "optional"}`}>
+                                        {deleteIntent.target.holidayType === "MANDATORY" ? "Mandatory" : "Optional"}
+                                    </span>
+                                </div>
+                                {deleteIntent.target.description && <div className="mt-2 small">{deleteIntent.target.description}</div>}
+                            </div>
+                        </div>
+
+                        <div className="d-flex justify-content-between align-items-center">
+                            <div className="small text-muted">This action can be undone within a few seconds via Undo.</div>
+
+                            <div className="d-flex gap-2">
+                                <button className="btn btn-outline-secondary" onClick={() => setDeleteIntent({ show: false })} disabled={processingDelete}>
+                                    Cancel
+                                </button>
+                                <button className="btn btn-danger" onClick={() => performDelete(deleteIntent.target)} disabled={processingDelete}>
+                                    {processingDelete ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status" /> Deleting...
+                                        </>
+                                    ) : (
+                                        "Delete"
+                                    )}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
