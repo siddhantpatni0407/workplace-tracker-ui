@@ -1,3 +1,4 @@
+// src/constants/apiEndpoints.ts
 const API_BASE_URL = "http://localhost:8010/api/v1/workplace-tracker-service";
 
 export const API_ENDPOINTS = {
@@ -42,7 +43,7 @@ export const API_ENDPOINTS = {
     BACKUP: `${API_BASE_URL}/db-backup`,
   },
 
-  // (inside your existing API_ENDPOINTS export)
+  // Leave policies
   LEAVE_POLICIES: {
     GET_ALL: `${API_BASE_URL}/leave-policies`,
     GET_EXACT: (policyId: number | string) =>
@@ -50,7 +51,6 @@ export const API_ENDPOINTS = {
     CREATE: `${API_BASE_URL}/leave-policies`,
     UPDATE: (policyId: number | string) =>
       `${API_BASE_URL}/leave-policies?policyId=${policyId}`,
-    // If you add delete on server, you can put DELETE here:
     // DELETE: (policyId: number | string) => `${API_BASE_URL}/leave-policies?policyId=${policyId}`
   },
 
@@ -65,12 +65,12 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/user-leaves?userLeaveId=${leaveId}`,
   },
 
-  // 🔹 NEW: User Leave Balance APIs
+  // User leave balance
   USER_LEAVE_BALANCE: {
     GET: (userId: number | string, policyId: number | string, year: number) =>
       `${API_BASE_URL}/user-leave-balance?userId=${userId}&policyId=${policyId}&year=${year}`,
-    UPSERT: `${API_BASE_URL}/user-leave-balance`, // admin/manual
-    ADJUST: `${API_BASE_URL}/user-leave-balance/adjust`, // if exposed separately
+    UPSERT: `${API_BASE_URL}/user-leave-balance`,
+    ADJUST: `${API_BASE_URL}/user-leave-balance/adjust`,
     RECALCULATE: (
       userId: number | string,
       policyId: number | string,
@@ -79,7 +79,7 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/user-leave-balance/recalculate?userId=${userId}&policyId=${policyId}&year=${year}`,
   },
 
-  // 🔹 NEW: Holiday APIs
+  // Holidays
   HOLIDAYS: {
     GET_ALL: `${API_BASE_URL}/holidays`,
     GET_BY_ID: (id: number | string) => `${API_BASE_URL}/holidays/${id}`,
@@ -88,7 +88,19 @@ export const API_ENDPOINTS = {
     DELETE: (id: number | string) => `${API_BASE_URL}/holidays/${id}`,
   },
 
-  // 🔹 NEW: Analytics APIs
+  // Visits (office visits)
+  VISITS: {
+    LIST: `${API_BASE_URL}/visits`, // GET with ?userId=...&year=...&month=...
+    UPSERT: `${API_BASE_URL}/visits`, // POST body upsert
+    DELETE: (officeVisitId: number | string) => `${API_BASE_URL}/visits?officeVisitId=${officeVisitId}`,
+  },
+
+  // Daily view records (month or custom range)
+  DAILY_VIEW: {
+    FETCH: `${API_BASE_URL}/fetch-daily-view-records`, // GET ?userId=...&year=...&month=... or ?userId=...&from=YYYY-MM-DD&to=YYYY-MM-DD
+  },
+
+  // Analytics
   ANALYTICS: {
     VISITS_LEAVES_AGGREGATE: (params: {
       userId?: number | string;

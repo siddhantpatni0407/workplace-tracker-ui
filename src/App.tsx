@@ -21,6 +21,7 @@ const LeavePolicyManagement = lazy(() => import("./components/admin/leavePolicyM
 const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHolidayTracker")); // user tracker
 const LeavePolicy = lazy(() => import("./components/user/leavePolicy/LeavePolicy"));
 const ApplyLeave = lazy(() => import("./components/user/leave/ApplyLeave"));
+const OfficeVisit = lazy(() => import("./components/user/officeVisit/OfficeVisit"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -162,6 +163,7 @@ const App: React.FC = () => {
               }
             />
 
+            {/* Leave Policy - USER only (new) */}
             <Route
               path="/leave-policy"
               element={
@@ -171,11 +173,24 @@ const App: React.FC = () => {
               }
             />
 
+            {/* Apply Leave - USER only (new) */}
             <Route
               path="/apply-leave"
               element={
                 <PrivateRoute role="USER">
                   <Layout><ApplyLeave /></Layout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Office Visit - USER only (new) */}
+            <Route
+              path="/office-visit"
+              element={
+                <PrivateRoute role="USER">
+                  <Layout>
+                    <OfficeVisit />
+                  </Layout>
                 </PrivateRoute>
               }
             />
