@@ -41,4 +41,52 @@ export const API_ENDPOINTS = {
   DB: {
     BACKUP: `${API_BASE_URL}/db-backup`,
   },
+
+  // 🔹 NEW: User Leave APIs
+  USER_LEAVES: {
+    GET_BY_USER: (userId: number | string) =>
+      `${API_BASE_URL}/user-leaves?userId=${userId}`,
+    CREATE: `${API_BASE_URL}/user-leaves`,
+    UPDATE: (leaveId: number | string) =>
+      `${API_BASE_URL}/user-leaves?userLeaveId=${leaveId}`,
+    DELETE: (leaveId: number | string) =>
+      `${API_BASE_URL}/user-leaves?userLeaveId=${leaveId}`,
+  },
+
+  // 🔹 NEW: User Leave Balance APIs
+  USER_LEAVE_BALANCE: {
+    GET: (userId: number | string, policyId: number | string, year: number) =>
+      `${API_BASE_URL}/user-leave-balance?userId=${userId}&policyId=${policyId}&year=${year}`,
+    UPSERT: `${API_BASE_URL}/user-leave-balance`, // admin/manual
+    ADJUST: `${API_BASE_URL}/user-leave-balance/adjust`, // if exposed separately
+    RECALCULATE: (userId: number | string, policyId: number | string, year: number) =>
+      `${API_BASE_URL}/user-leave-balance/recalculate?userId=${userId}&policyId=${policyId}&year=${year}`,
+  },
+
+  // 🔹 NEW: Holiday APIs
+  HOLIDAYS: {
+    GET_ALL: `${API_BASE_URL}/holidays`,
+    GET_BY_ID: (id: number | string) => `${API_BASE_URL}/holidays/${id}`,
+    CREATE: `${API_BASE_URL}/holidays`,
+    UPDATE: (id: number | string) => `${API_BASE_URL}/holidays/${id}`,
+    DELETE: (id: number | string) => `${API_BASE_URL}/holidays/${id}`,
+  },
+
+  // 🔹 NEW: Analytics APIs
+  ANALYTICS: {
+    VISITS_LEAVES_AGGREGATE: (params: {
+      userId?: number | string;
+      from: string;
+      to: string;
+      groupBy: "month" | "week" | "year";
+    }) => {
+      const query = new URLSearchParams({
+        ...(params.userId ? { userId: String(params.userId) } : {}),
+        from: params.from,
+        to: params.to,
+        groupBy: params.groupBy,
+      });
+      return `${API_BASE_URL}/analytics/visits-leaves-aggregate?${query}`;
+    },
+  },
 };

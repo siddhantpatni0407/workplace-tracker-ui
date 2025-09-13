@@ -15,7 +15,8 @@ const Signup = lazy(() => import("./components/common/signUp/Signup"));
 const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDashboard"));
 const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
 const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
-const UserSettings = lazy(() => import("./components/common/userSettings/UserSettings")); // <- added
+const UserSettings = lazy(() => import("./components/common/userSettings/UserSettings"));
+const HolidayManagement = lazy(() => import("./components/admin/holiday/HolidayManagement")); // NEW
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -38,11 +39,10 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   </div>
 );
 
-
 // Loading Spinner for Suspense
 const Loader: React.FC = () => (
   <div className="d-flex justify-content-center align-items-center vh-100">
-    <div className="spinner-border text-primary me-2" role="status"></div>
+    <div className="spinner-border text-primary me-2" role="status" />
     <span className="fw-semibold text-muted">Loading, please wait...</span>
   </div>
 );
@@ -94,6 +94,18 @@ const App: React.FC = () => {
                 <PrivateRoute role="ADMIN">
                   <Layout>
                     <UserManagement />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Holiday Management - ADMIN only (new) */}
+            <Route
+              path="/holiday-management"
+              element={
+                <PrivateRoute role="ADMIN">
+                  <Layout>
+                    <HolidayManagement />
                   </Layout>
                 </PrivateRoute>
               }

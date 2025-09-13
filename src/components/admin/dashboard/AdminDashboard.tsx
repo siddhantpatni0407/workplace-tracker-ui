@@ -31,6 +31,14 @@ const AdminDashboard: React.FC = () => {
       action: () => navigate("/user-analytics"),
     },
     {
+      id: "holidays",
+      title: "Holiday Management",
+      subtitle: "Add / edit company holidays",
+      icon: "bi-calendar-event-fill",
+      colorClass: "card-teal",
+      action: () => navigate("/holiday-management"),
+    },
+    {
       id: "backup",
       title: "DB Backup",
       subtitle: "Create or download backups",
@@ -78,7 +86,7 @@ const AdminDashboard: React.FC = () => {
         ))}
       </div>
 
-    <LastLoginPopup lastLoginTime={user?.lastLoginTime ?? null} />
+      <LastLoginPopup lastLoginTime={user?.lastLoginTime ?? null} />
     </div>
   );
 };
