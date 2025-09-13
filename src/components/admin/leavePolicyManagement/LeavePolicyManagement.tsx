@@ -180,7 +180,7 @@ const LeavePolicyManagement: React.FC = () => {
   return (
     <div className="container py-4">
       {/* header — only title/subtitle/eyebrow; actions moved to toolbar below */}
-      <Header title="Leave Policy Management" subtitle="Create and manage leave policies" eyebrow="Admin" />
+      <Header title="Leave Policy Management" subtitle="Create and manage leave policies" />
 
       {/* toolbar directly under header (matches Holiday layout) */}
       <div className="d-flex flex-wrap gap-2 mb-3 align-items-center leave-policy-toolbar">
