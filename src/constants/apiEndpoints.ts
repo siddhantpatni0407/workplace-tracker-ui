@@ -42,6 +42,16 @@ export const API_ENDPOINTS = {
     BACKUP: `${API_BASE_URL}/db-backup`,
   },
 
+  // (inside your existing API_ENDPOINTS export)
+  LEAVE_POLICIES: {
+    GET_ALL: `${API_BASE_URL}/leave-policies`,
+    GET_EXACT: (policyId: number | string) => `${API_BASE_URL}/leave-policies/exact?policyId=${policyId}`,
+    CREATE: `${API_BASE_URL}/leave-policies`,
+    UPDATE: (policyId: number | string) => `${API_BASE_URL}/leave-policies?policyId=${policyId}`,
+    // If you add delete on server, you can put DELETE here:
+    // DELETE: (policyId: number | string) => `${API_BASE_URL}/leave-policies?policyId=${policyId}`
+  },
+
   // 🔹 NEW: User Leave APIs
   USER_LEAVES: {
     GET_BY_USER: (userId: number | string) =>

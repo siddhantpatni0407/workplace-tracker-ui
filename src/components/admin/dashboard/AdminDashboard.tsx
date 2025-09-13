@@ -1,3 +1,4 @@
+// src/components/admin/dashboard/AdminDashboard.tsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../common/header/Header";
@@ -37,6 +38,14 @@ const AdminDashboard: React.FC = () => {
       icon: "bi-calendar-event-fill",
       colorClass: "card-teal",
       action: () => navigate("/holiday-management"),
+    },
+    {
+      id: "leave-policies",
+      title: "Leave Policy Management",
+      subtitle: "Create and manage leave policies",
+      icon: "bi-file-earmark-medical-fill",
+      colorClass: "card-green",
+      action: () => navigate("/leave-policies"),
     },
     {
       id: "backup",

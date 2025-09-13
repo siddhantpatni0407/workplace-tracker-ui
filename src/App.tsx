@@ -17,6 +17,7 @@ const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboa
 const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
 const UserSettings = lazy(() => import("./components/common/userSettings/UserSettings"));
 const HolidayManagement = lazy(() => import("./components/admin/holiday/HolidayManagement")); // admin
+const LeavePolicyManagement = lazy(() => import("./components/admin/leavePolicyManagement/LeavePolicyManagement"));
 const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHolidayTracker")); // user tracker
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
@@ -107,6 +108,18 @@ const App: React.FC = () => {
                 <PrivateRoute role="ADMIN">
                   <Layout>
                     <HolidayManagement />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Leave Policy Management - ADMIN only (new) */}
+            <Route
+              path="/leave-policies"
+              element={
+                <PrivateRoute role="ADMIN">
+                  <Layout>
+                    <LeavePolicyManagement />
                   </Layout>
                 </PrivateRoute>
               }
