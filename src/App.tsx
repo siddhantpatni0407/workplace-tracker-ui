@@ -20,6 +20,7 @@ const HolidayManagement = lazy(() => import("./components/admin/holiday/HolidayM
 const LeavePolicyManagement = lazy(() => import("./components/admin/leavePolicyManagement/LeavePolicyManagement"));
 const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHolidayTracker")); // user tracker
 const LeavePolicy = lazy(() => import("./components/user/leavePolicy/LeavePolicy"));
+const ApplyLeave = lazy(() => import("./components/user/leave/ApplyLeave"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -166,6 +167,15 @@ const App: React.FC = () => {
               element={
                 <PrivateRoute role="USER">
                   <Layout><LeavePolicy /></Layout>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/apply-leave"
+              element={
+                <PrivateRoute role="USER">
+                  <Layout><ApplyLeave /></Layout>
                 </PrivateRoute>
               }
             />

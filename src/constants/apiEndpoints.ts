@@ -45,18 +45,20 @@ export const API_ENDPOINTS = {
   // (inside your existing API_ENDPOINTS export)
   LEAVE_POLICIES: {
     GET_ALL: `${API_BASE_URL}/leave-policies`,
-    GET_EXACT: (policyId: number | string) => `${API_BASE_URL}/leave-policies/exact?policyId=${policyId}`,
+    GET_EXACT: (policyId: number | string) =>
+      `${API_BASE_URL}/leave-policies/exact?policyId=${policyId}`,
     CREATE: `${API_BASE_URL}/leave-policies`,
-    UPDATE: (policyId: number | string) => `${API_BASE_URL}/leave-policies?policyId=${policyId}`,
+    UPDATE: (policyId: number | string) =>
+      `${API_BASE_URL}/leave-policies?policyId=${policyId}`,
     // If you add delete on server, you can put DELETE here:
     // DELETE: (policyId: number | string) => `${API_BASE_URL}/leave-policies?policyId=${policyId}`
   },
 
-  // 🔹 NEW: User Leave APIs
   USER_LEAVES: {
     GET_BY_USER: (userId: number | string) =>
       `${API_BASE_URL}/user-leaves?userId=${userId}`,
-    CREATE: `${API_BASE_URL}/user-leaves`,
+    CREATE: (userId: number | string) =>
+      `${API_BASE_URL}/user-leaves?userId=${userId}`,
     UPDATE: (leaveId: number | string) =>
       `${API_BASE_URL}/user-leaves?userLeaveId=${leaveId}`,
     DELETE: (leaveId: number | string) =>
@@ -69,7 +71,11 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/user-leave-balance?userId=${userId}&policyId=${policyId}&year=${year}`,
     UPSERT: `${API_BASE_URL}/user-leave-balance`, // admin/manual
     ADJUST: `${API_BASE_URL}/user-leave-balance/adjust`, // if exposed separately
-    RECALCULATE: (userId: number | string, policyId: number | string, year: number) =>
+    RECALCULATE: (
+      userId: number | string,
+      policyId: number | string,
+      year: number
+    ) =>
       `${API_BASE_URL}/user-leave-balance/recalculate?userId=${userId}&policyId=${policyId}&year=${year}`,
   },
 

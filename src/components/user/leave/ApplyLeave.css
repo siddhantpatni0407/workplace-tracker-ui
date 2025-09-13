@@ -1,0 +1,110 @@
+/* ApplyLeave.css - improved UI */
+
+/* container cards */
+.leave-apply-card,
+.leave-list-card,
+.leave-balance-card,
+.quick-help-card {
+  border: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  background: #fff;
+}
+
+/* smaller controls */
+.form-label { font-weight: 600; font-size: 0.92rem; }
+.form-control, .form-select { min-height: 44px; }
+
+/* table toolbar */
+.table-toolbar { border-bottom: 1px solid rgba(0,0,0,0.04); }
+
+/* admin-like table style */
+.admin-leave-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+.admin-leave-table thead th {
+  background: linear-gradient(180deg, #fbfbfd, #f3f6fb);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  color: #222;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  padding: 10px 12px;
+  text-align: center;
+}
+.admin-leave-table td {
+  vertical-align: middle;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0,0,0,0.04);
+}
+.admin-leave-table tbody tr:nth-child(even) { background: #fbfcff; }
+.admin-leave-table tbody tr:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(18,38,63,0.06); background: #fff !important; }
+
+/* balance list row */
+.policy-balance-row { background: #fff; }
+
+/* balance small table */
+.balance-table td { padding: 6px 8px; border-top: none; }
+
+/* modals (React rendered) */
+.modal-backdrop.react-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn .12s ease;
+}
+.modal-container { width: 100%; max-width: 720px; padding: 12px; }
+.modal-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 20px 60px rgba(2,6,23,0.16);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { margin: 0; font-weight: 700; }
+.modal-body { padding: 16px; color: #333; }
+.modal-footer { padding: 12px 16px; border-top: 1px solid rgba(0,0,0,0.04); display:flex; justify-content:flex-end; gap:8px; }
+
+/* small close button */
+.btn-close {
+  background: transparent;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-close:hover { background: rgba(0,0,0,0.04); }
+
+/* badges, helper text */
+.badge-insufficient { background: #dc3545; color: #fff; padding: 6px 8px; border-radius: 8px; font-weight: 700; }
+
+/* quick help */
+.quick-help-card .card-body { font-size: 0.92rem; }
+
+/* responsive */
+@media (max-width: 992px) {
+  .leave-balance-card { margin-top: 12px; }
+  .modal-container { max-width: 92%; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
