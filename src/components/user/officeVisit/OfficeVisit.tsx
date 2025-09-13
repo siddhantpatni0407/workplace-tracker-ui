@@ -47,7 +47,15 @@ const visitTypes = [
     { value: "OTHERS", label: "Other" },
 ];
 
-const COLORS = ["#4a00e0", "#10b981", "#7a57ff", "#f97316"];
+// colors used in pie and legend / rows
+const COLORS = {
+    WFO: "#4a90e2",
+    WFH: "#10b981",
+    HYBRID: "#7a57ff",
+    OTHERS: "#f97316",
+    LEAVE: "#ff6b6b",
+    HOLIDAY: "#ffd166",
+};
 
 const OfficeVisit: React.FC = () => {
     const { user } = useAuth();
@@ -209,7 +217,6 @@ const OfficeVisit: React.FC = () => {
             };
 
             const method = editing?.officeVisitId ? "PUT" : "POST";
-            // UPSERT endpoint will handle create/update depending on presence of id or use specific update endpoint.
             const url = API_ENDPOINTS.VISITS.UPSERT;
             const res = await fetch(url, {
                 method,
@@ -289,6 +296,26 @@ const OfficeVisit: React.FC = () => {
         ].filter((d) => d.value > 0);
     }, [summary]);
 
+    // create quick map date => dailyView record to fast lookup and determine coloring
+    const dailyMap = useMemo(() => {
+        const m = new Map<string, DailyViewDTO>();
+        for (const d of dailyView) m.set(d.date, d);
+        return m;
+    }, [dailyView]);
+
+    const getRowClass = (v: OfficeVisitDTO, d?: DailyViewDTO) => {
+        // priority: holiday/leave (from daily view) else visitType
+        if (d) {
+            if (d.label === "HOLIDAY" || d.holidayName) return "row-holiday";
+            if (d.label === "LEAVE" || d.leavePolicyCode) return "row-leave";
+        }
+        const vt = (v.visitType || "").toUpperCase();
+        if (vt === "WFO") return "row-wfo";
+        if (vt === "WFH") return "row-wfh";
+        if (vt === "HYBRID") return "row-hybrid";
+        return "row-others";
+    };
+
     return (
         <div className="container-fluid py-4">
             <Header title="Office Visits" subtitle="Log and view your office visits" />
@@ -352,17 +379,29 @@ const OfficeVisit: React.FC = () => {
                                 <div className="fw-semibold">Visits ({month}/{year})</div>
                                 <div className="small text-muted">Recorded visits for this month</div>
                             </div>
-                            <div className="small text-muted">{visits.length} recorded</div>
+
+                            <div className="d-flex align-items-center gap-3">
+                                {/* legend */}
+                                <div className="vis-legend d-flex gap-2 align-items-center">
+                                    <span className="legend-pill" style={{ background: COLORS.HOLIDAY }} /> Holiday
+                                    <span className="legend-pill" style={{ background: COLORS.LEAVE, marginLeft: 10 }} /> Leave
+                                    <span className="legend-pill" style={{ background: COLORS.WFO, marginLeft: 10 }} /> WFO
+                                    <span className="legend-pill" style={{ background: COLORS.WFH, marginLeft: 10 }} /> WFH
+                                </div>
+
+                                <div className="small text-muted">{visits.length} recorded</div>
+                            </div>
                         </div>
 
                         <div className="card-body p-0">
-                            <div className="table-responsive">
-                                <table className="table mb-0 table-hover">
+                            {/* wrapper with fixed height and scroll */}
+                            <div className="visits-table-wrapper">
+                                <table className="table mb-0 visits-table">
                                     <thead className="table-light">
                                         <tr>
                                             <th style={{ width: 130 }} className="text-center">Date</th>
-                                            <th style={{ width: 110 }}>Type</th>
-                                            <th className="text-truncate">Notes</th>
+                                            <th style={{ width: 110 }} className="text-center">Type</th>
+                                            <th className="text-center">Notes</th>
                                             <th className="text-end" style={{ width: 160 }}>Actions</th>
                                         </tr>
                                     </thead>
@@ -371,17 +410,21 @@ const OfficeVisit: React.FC = () => {
                                             <tr><td colSpan={4} className="py-4 text-center"><div className="spinner-border text-primary me-2" role="status" />Loading...</td></tr>
                                         ) : visits.length === 0 ? (
                                             <tr><td colSpan={4} className="py-4 text-center text-muted">No visits recorded for this month.</td></tr>
-                                        ) : visits.map((v) => (
-                                            <tr key={v.officeVisitId ?? `${v.visitDate}-${v.visitType}`}>
-                                                <td className="text-center fw-semibold">{formatDisplay(v.visitDate)}</td>
-                                                <td>{v.visitType}</td>
-                                                <td className="text-truncate" style={{ maxWidth: 420 }}>{v.notes}</td>
-                                                <td className="text-end">
-                                                    <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(v)}><i className="bi bi-pencil-fill me-1" /> Edit</button>
-                                                    <button className="btn btn-sm btn-outline-danger" onClick={() => remove(v)}><i className="bi bi-trash-fill me-1" /> Delete</button>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        ) : visits.map((v) => {
+                                            const dv = dailyMap.get(v.visitDate ?? "");
+                                            const cls = getRowClass(v, dv);
+                                            return (
+                                                <tr key={v.officeVisitId ?? `${v.visitDate}-${v.visitType}`} className={cls}>
+                                                    <td className="text-center fw-semibold">{formatDisplay(v.visitDate)}</td>
+                                                    <td className="text-center">{v.visitType}</td>
+                                                    <td className="text-center text-truncate" style={{ maxWidth: 420 }}>{v.notes ?? (dv?.visitNotes ?? "-")}</td>
+                                                    <td className="text-end">
+                                                        <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(v)}><i className="bi bi-pencil-fill me-1" /> Edit</button>
+                                                        <button className="btn btn-sm btn-outline-danger" onClick={() => remove(v)}><i className="bi bi-trash-fill me-1" /> Delete</button>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
@@ -467,7 +510,11 @@ const OfficeVisit: React.FC = () => {
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
                                         <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={46} outerRadius={80} paddingAngle={3}>
-                                            {pieData.map((entry, idx) => <Cell key={idx} fill={COLORS[idx % COLORS.length]} />)}
+                                            {pieData.map((entry, idx) => {
+                                                const key = entry.name.toUpperCase();
+                                                const color = (COLORS as any)[key] ?? "#999";
+                                                return <Cell key={idx} fill={color} />;
+                                            })}
                                         </Pie>
                                         <ReTooltip formatter={(val) => [val, "count"]} />
                                         <Legend verticalAlign="bottom" />

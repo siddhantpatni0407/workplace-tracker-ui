@@ -1,4 +1,4 @@
-/* OfficeVisit.css - full width, polished UI */
+/* OfficeVisit.css - full width, polished UI + scroller + colored rows */
 
 /* control card */
 .control-card {
@@ -6,6 +6,91 @@
   background: #fff;
   padding: 10px;
 }
+
+/* legend */
+.vis-legend { font-size: 0.85rem; color: #444; gap: 8px; }
+.legend-pill {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* visits table wrapper - scroller */
+.visits-table-wrapper {
+  max-height: 360px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(250,250,252,0.6), rgba(255,255,255,0.6));
+  border-radius: 0 0 12px 12px;
+}
+
+/* table baseline */
+.visits-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+  background: transparent;
+}
+.visits-table thead th {
+  background: linear-gradient(180deg, #fbfbfd, #f3f6fb);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  padding: 12px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+.visits-table tbody td {
+  padding: 12px 10px;
+  vertical-align: middle;
+}
+
+/* center most content for clean visual */
+.visits-table tbody td.text-center,
+.visits-table thead th.text-center {
+  text-align: center;
+}
+
+/* colored row variants */
+.row-wfo { background: linear-gradient(90deg, rgba(74,144,226,0.06), rgba(255,255,255,0)); border-left: 4px solid #4a90e2; }
+.row-wfh { background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(255,255,255,0)); border-left: 4px solid #10b981; }
+.row-hybrid { background: linear-gradient(90deg, rgba(122,87,255,0.06), rgba(255,255,255,0)); border-left: 4px solid #7a57ff; }
+.row-others { background: linear-gradient(90deg, rgba(249,115,22,0.06), rgba(255,255,255,0)); border-left: 4px solid #f97316; }
+.row-leave { background: linear-gradient(90deg, rgba(255,107,107,0.06), rgba(255,255,255,0)); border-left: 4px solid #ff6b6b; }
+.row-holiday { background: linear-gradient(90deg, rgba(255,209,102,0.06), rgba(255,255,255,0)); border-left: 4px solid #ffd166; }
+
+/* rounded row look and spacing */
+.visits-table tbody tr {
+  transition: transform .15s ease, box-shadow .15s ease;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: table-row;
+}
+.visits-table tbody tr:not(:last-child) td { border-bottom: none; }
+
+/* hover lift */
+.visits-table tbody tr:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(18,38,63,0.06);
+  z-index: 1;
+}
+
+/* notes cell - truncation */
+.visits-table .text-truncate {
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* header/toolbar polished */
+.card-header .vis-legend { display:flex; align-items:center; }
+.card-header .small.text-muted { margin-left: 8px; }
 
 /* modal */
 .modal-backdrop-custom {
@@ -34,13 +119,8 @@
 }
 .modal-body { padding: 14px 16px; }
 
-/* cards */
-.card.shadow-sm { border-radius: 12px; }
-
 /* summary card details */
-.summary-card .card-body {
-  padding: 16px;
-}
+.summary-card .card-body { padding: 16px; }
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -50,16 +130,6 @@
 .summary-item { background: linear-gradient(90deg,#fbfbff,#fff); padding:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
 .summary-label { color:#666; font-weight:600; }
 .summary-value { font-size:1.05rem; font-weight:800; }
-
-/* small table polish */
-.table-responsive .table thead th {
-  background: linear-gradient(180deg, #fbfbfd, #f3f6fb);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 0.78rem;
-}
-.table-responsive .table td { vertical-align: middle; padding:10px; }
 
 /* quick-tips */
 .quick-tips .card-body { font-size: 0.92rem; }
@@ -73,5 +143,5 @@
   .summary-label { font-size: 0.82rem; }
 }
 
-/* slight hover lift for table rows */
+/* slight hover lift for other table rows */
 .table-hover tbody tr:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(18,38,63,0.04); background: #fff !important; transition: all .18s ease; }
