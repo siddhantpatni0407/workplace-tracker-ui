@@ -1,7 +1,11 @@
-/* OfficeVisitAnalytics.css */
+/* OfficeVisitAnalytics.css - enhanced visuals */
 
+/* cards */
 .analytics-card,
-.summary-card {
+.summary-card,
+.actions-card,
+.chart-card,
+.info-card {
   border: 0;
   border-radius: 12px;
   overflow: hidden;
@@ -9,8 +13,16 @@
   background: #fff;
 }
 
+/* form labels small */
+.analytics-card .form-label {
+  font-weight: 600;
+  color: #3b3b3b;
+}
+
+/* table toolbar (kept for consistency if table added later) */
 .table-toolbar { border-bottom: 1px solid rgba(0,0,0,0.04); }
 
+/* analytics table (if you keep) */
 .analytics-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -29,14 +41,28 @@
   border-top: 1px solid rgba(0,0,0,0.04);
 }
 .analytics-table tbody tr:nth-child(even) { background: #fbfcff; }
-.analytics-table tbody tr:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(18,38,63,0.04); }
 
-.summary-row { display:flex; justify-content:space-between; align-items:center; margin:6px 0; font-weight:600; }
+/* charts container cards */
+.chart-card .card-body { padding: 12px; }
+.chart-card h6 { margin-bottom: 8px; }
+
+/* summary */
+.summary-row { display:flex; justify-content:space-between; align-items:center; margin:8px 0; font-weight:600; }
 .summary-row span { color: #666; }
-.summary-bar { height:8px; background:#f1f3f8; border-radius:6px; overflow:hidden; margin-bottom:10px; }
-.summary-bar > div { height:100%; background:linear-gradient(90deg,#4a00e0,#7a57ff); border-radius:6px; }
+.summary-bar { height:10px; background:#f1f3f8; border-radius:10px; overflow:hidden; margin-bottom:12px; }
+.summary-bar > div { height:100%; background:linear-gradient(90deg,#4a00e0,#7a57ff); border-radius:10px; transition: width .7s cubic-bezier(.2,.9,.3,1); }
 
-/* small responsiveness */
+/* actions */
+.actions-card .card-body { padding: 12px; }
+.actions-card .btn { border-radius: 8px; }
+
+/* info */
+.info-card .card-body { padding: 12px; font-size: .95rem; color: #444; }
+
+/* responsiveness tweaks */
 @media (max-width: 992px) {
   .summary-card { margin-top: 12px; }
 }
+
+/* small polish for legend and tooltip */
+.recharts-default-legend ul { gap: 8px; }

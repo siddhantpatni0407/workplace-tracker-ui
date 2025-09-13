@@ -122,6 +122,13 @@ const Navbar: React.FC = () => {
                       <i className="bi bi-building me-2"></i> Office Visit
                     </Link>
                   </li>
+                  
+                  {/* Office Visit Analytics */}
+                  <li>
+                    <Link className="dropdown-item" to="/office-visit-analytics">
+                      <i className="bi bi-bar-chart-line-fill me-2"></i> Office Visit Analytics
+                    </Link>
+                  </li>
 
                   <li>
                     <Link className="dropdown-item" to="/apply-leave">
@@ -140,6 +147,7 @@ const Navbar: React.FC = () => {
                       <i className="bi bi-calendar-event me-2"></i> Holidays
                     </Link>
                   </li>
+
                 </ul>
               </li>
             )}
