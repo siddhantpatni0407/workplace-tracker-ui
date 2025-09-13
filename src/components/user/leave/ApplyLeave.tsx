@@ -367,7 +367,7 @@ const ApplyLeave: React.FC = () => {
     //const usedPct = allocated > 0 ? Math.min(100, Math.round((used / allocated) * 100)) : 0;
 
     return (
-        <div className="container py-4">
+        <div className="container-fluid py-4">
             <Header title="Apply Leave" subtitle="Apply for leaves & view your balances" />
 
             <div className="row gx-4">

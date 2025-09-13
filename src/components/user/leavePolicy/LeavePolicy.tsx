@@ -38,7 +38,7 @@ const LeavePolicy: React.FC = () => {
     }, [policies, q]);
 
     return (
-        <div className="container py-4">
+        <div className="container-fluid py-4">
             <Header title="Leave Policy" subtitle="View company leave policies" />
 
             {/* Search + Refresh toolbar */}

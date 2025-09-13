@@ -169,7 +169,7 @@ const UserHolidayTracker: React.FC = () => {
     };
 
     return (
-        <div className="container py-4">
+        <div className="container-fluid py-4">
             <Header title="Holiday Tracker" subtitle="Holidays published by your admin" />
 
             <div className="d-flex flex-wrap gap-2 mb-3 align-items-center toolbar">
