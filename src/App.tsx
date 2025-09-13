@@ -16,7 +16,8 @@ const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDash
 const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
 const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
 const UserSettings = lazy(() => import("./components/common/userSettings/UserSettings"));
-const HolidayManagement = lazy(() => import("./components/admin/holiday/HolidayManagement")); // NEW
+const HolidayManagement = lazy(() => import("./components/admin/holiday/HolidayManagement")); // admin
+const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHolidayTracker")); // user tracker
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -129,6 +130,18 @@ const App: React.FC = () => {
                 <PrivateRoute>
                   <Layout>
                     <Reports />
+                  </Layout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* User Holiday Tracker (read-only) */}
+            <Route
+              path="/holiday-tracker"
+              element={
+                <PrivateRoute role="USER">
+                  <Layout>
+                    <UserHolidayTracker />
                   </Layout>
                 </PrivateRoute>
               }
