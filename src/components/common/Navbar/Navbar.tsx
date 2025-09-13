@@ -1,4 +1,3 @@
-// src/components/Navbar/Navbar.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -44,6 +43,7 @@ const Navbar: React.FC = () => {
               </Link>
             </li>
 
+            {/* Admin Tools Dropdown */}
             {user?.role === "ADMIN" && (
               <li className="nav-item dropdown">
                 <button
@@ -65,12 +65,27 @@ const Navbar: React.FC = () => {
                   </li>
                   <li>
                     <Link className="dropdown-item" to="/user-analytics">
-                      <i className="bi bi-bar-chart-fill me-2"></i> User Analytics
+                      <i className="bi bi-bar-chart-line-fill me-2"></i> User Analytics
                     </Link>
                   </li>
                   <li>
-                    <Link className="dropdown-item" to="/db-backup">
-                      <i className="bi bi-database-fill-lock me-2"></i> DB Backup
+                    <Link className="dropdown-item" to="/holiday-management">
+                      <i className="bi bi-calendar-event-fill me-2"></i> Holiday Management
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/leave-policies">
+                      <i className="bi bi-file-earmark-medical-fill me-2"></i> Leave Policy Management
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/admin/backup">
+                      <i className="bi bi-hdd-fill me-2"></i> DB Backup
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/attendance">
+                      <i className="bi bi-calendar-check-fill me-2"></i> Attendance
                     </Link>
                   </li>
                 </ul>
@@ -87,10 +102,9 @@ const Navbar: React.FC = () => {
                 Contact
               </Link>
             </li>
-
           </ul>
 
-          {/* Right side */}
+          {/* Right side (Profile / Settings / Logout) */}
           <ul className="navbar-nav ms-auto align-items-lg-center">
             {user ? (
               <li className="nav-item dropdown">
@@ -117,29 +131,15 @@ const Navbar: React.FC = () => {
                       <i className="bi bi-sliders2-vertical me-2"></i> Settings
                     </Link>
                   </li>
+                  <li><hr className="dropdown-divider" /></li>
                   <li>
-                    <hr className="dropdown-divider" />
-                  </li>
-                  <li>
-                    <button
-                      className="dropdown-item text-danger"
-                      onClick={logout}
-                    >
+                    <button className="dropdown-item text-danger" onClick={logout}>
                       <i className="bi bi-box-arrow-right me-2"></i> Logout
                     </button>
                   </li>
                 </ul>
               </li>
-            ) : (
-              <li className="nav-item">
-                {/* <Link
-                  className="btn btn-light btn-sm px-3 fw-semibold nav-auth-btn"
-                  to="/login"
-                >
-                  <i className="bi bi-box-arrow-in-right me-1"></i> Login
-                </Link> */}
-              </li>
-            )}
+            ) : null}
           </ul>
         </div>
       </div>
