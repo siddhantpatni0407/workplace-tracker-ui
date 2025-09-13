@@ -1,10 +1,17 @@
-// src/components/user/officeVisit/OfficeVisit.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, startOfMonth, endOfMonth } from "date-fns";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { toast } from "react-toastify";
+import {
+    ResponsiveContainer,
+    PieChart,
+    Pie,
+    Cell,
+    Tooltip as ReTooltip,
+    Legend,
+} from "recharts";
 import "./OfficeVisit.css";
 
 /* DTO shapes (local) */
@@ -20,7 +27,7 @@ type OfficeVisitDTO = {
 type DailyViewDTO = {
     date: string;
     dayOfWeek: number;
-    label: string; // "NONE" | "HOLIDAY" | ...
+    label: string; // "NONE" | "HOLIDAY" | "LEAVE" | ...
     holidayName?: string | null;
     holidayType?: string | null;
     leavePolicyCode?: string | null;
@@ -40,11 +47,13 @@ const visitTypes = [
     { value: "OTHERS", label: "Other" },
 ];
 
+const COLORS = ["#4a00e0", "#10b981", "#7a57ff", "#f97316"];
+
 const OfficeVisit: React.FC = () => {
     const { user } = useAuth();
     const userId = ((user as any)?.userId ?? (user as any)?.id) as number | undefined;
 
-    // date / month selection
+    // selected month/year (defaults to current)
     const today = new Date();
     const [year, setYear] = useState<number>(today.getFullYear());
     const [month, setMonth] = useState<number>(today.getMonth() + 1); // 1..12
@@ -63,6 +72,10 @@ const OfficeVisit: React.FC = () => {
 
     const formFirstRef = useRef<HTMLInputElement | null>(null);
 
+    // derived defaults for quick jump
+    const defaultFrom = startOfMonth(today);
+    const defaultTo = endOfMonth(today);
+
     // load monthly visits
     async function loadVisits(y = year, m = month) {
         if (!userId) return;
@@ -79,6 +92,7 @@ const OfficeVisit: React.FC = () => {
         } catch (err: any) {
             console.error("loadVisits", err);
             toast.error(err?.message ?? "Failed to load visits");
+            setVisits([]);
         } finally {
             setLoading(false);
         }
@@ -101,6 +115,7 @@ const OfficeVisit: React.FC = () => {
         } catch (err: any) {
             console.error("loadDailyView", err);
             toast.error(err?.message ?? "Failed to load daily view");
+            setDailyView([]);
         } finally {
             setLoading(false);
         }
@@ -137,6 +152,10 @@ const OfficeVisit: React.FC = () => {
             setMonth((m) => m + 1);
         }
     };
+    const jumpToCurrent = () => {
+        setYear(today.getFullYear());
+        setMonth(today.getMonth() + 1);
+    };
 
     // open create modal
     const openCreate = () => {
@@ -158,7 +177,7 @@ const OfficeVisit: React.FC = () => {
         setTimeout(() => formFirstRef.current?.focus(), 40);
     };
 
-    // upsert
+    // upsert (create/update)
     const submit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (!userId) {
@@ -175,16 +194,25 @@ const OfficeVisit: React.FC = () => {
         }
 
         try {
+            const day = new Date(formDate).getDay(); // 0 (Sun) - 6 (Sat)
+            // many backends expect 1=Mon .. 7=Sun — adapt mapping if needed:
+            const dayOfWeek = day === 0 ? 7 : day;
+
             const payload = {
                 userId,
                 visitDate: formDate,
-                dayOfWeek: (new Date(formDate)).getDay() === 0 ? 7 : (new Date(formDate)).getDay(), // 0->7 if backend expects mon-sun mapping; adapt if needed
+                dayOfWeek,
                 visitType: formType,
                 notes: formNotes || undefined,
+                // if editing and id present, backend may accept officeVisitId in payload
+                ...(editing?.officeVisitId ? { officeVisitId: editing.officeVisitId } : {}),
             };
 
-            const res = await fetch(API_ENDPOINTS.VISITS.UPSERT, {
-                method: "POST",
+            const method = editing?.officeVisitId ? "PUT" : "POST";
+            // UPSERT endpoint will handle create/update depending on presence of id or use specific update endpoint.
+            const url = API_ENDPOINTS.VISITS.UPSERT;
+            const res = await fetch(url, {
+                method,
                 headers: jsonHeaders,
                 body: JSON.stringify(payload),
             });
@@ -205,7 +233,7 @@ const OfficeVisit: React.FC = () => {
         }
     };
 
-    // delete
+    // delete with confirmation
     const remove = async (visit: OfficeVisitDTO) => {
         if (!visit.officeVisitId) return;
         if (!window.confirm(`Delete visit on ${formatDisplay(visit.visitDate)}?`)) return;
@@ -251,66 +279,91 @@ const OfficeVisit: React.FC = () => {
         return s;
     }, [dailyView]);
 
+    // pie data for visit mix
+    const pieData = useMemo(() => {
+        return [
+            { name: "WFO", value: summary.wfo },
+            { name: "WFH", value: summary.wfh },
+            { name: "Hybrid", value: summary.hybrid },
+            { name: "Other", value: summary.others },
+        ].filter((d) => d.value > 0);
+    }, [summary]);
+
     return (
-        <div className="container py-4">
+        <div className="container-fluid py-4">
             <Header title="Office Visits" subtitle="Log and view your office visits" />
 
-            <div className="d-flex gap-3 align-items-center mb-3 flex-wrap">
-                <div className="btn-group">
-                    <button className="btn btn-outline-secondary" onClick={prevMonth} aria-label="Previous month">◀</button>
-                    <button className="btn btn-outline-secondary" onClick={() => { setYear(today.getFullYear()); setMonth(today.getMonth() + 1); }}>Today</button>
-                    <button className="btn btn-outline-secondary" onClick={nextMonth} aria-label="Next month">▶</button>
-                </div>
+            {/* controls row */}
+            <div className="card mb-3 control-card shadow-sm">
+                <div className="card-body">
+                    <div className="row g-2 align-items-center">
+                        <div className="col-auto">
+                            <div className="btn-group">
+                                <button className="btn btn-outline-secondary" onClick={prevMonth} aria-label="Previous month">◀</button>
+                                <button className="btn btn-outline-secondary" onClick={jumpToCurrent}>Today</button>
+                                <button className="btn btn-outline-secondary" onClick={nextMonth} aria-label="Next month">▶</button>
+                            </div>
+                        </div>
 
-                <div>
-                    <select className="form-select form-select-sm d-inline-block" style={{ width: 160 }} value={month} onChange={(e) => setMonth(Number(e.target.value))}>
-                        {Array.from({ length: 12 }).map((_, i) => {
-                            const m = i + 1;
-                            const label = new Date(2000, i, 1).toLocaleString(undefined, { month: "long" });
-                            return <option key={m} value={m}>{label} {year}</option>;
-                        })}
-                    </select>
-                </div>
+                        <div className="col-auto">
+                            <select className="form-select form-select-sm" style={{ width: 220 }} value={month} onChange={(e) => setMonth(Number(e.target.value))}>
+                                {Array.from({ length: 12 }).map((_, i) => {
+                                    const m = i + 1;
+                                    const label = new Date(2000, i, 1).toLocaleString(undefined, { month: "long" });
+                                    return <option key={m} value={m}>{label} {year}</option>;
+                                })}
+                            </select>
+                        </div>
 
-                <div>
-                    <select className="form-select form-select-sm d-inline-block" style={{ width: 120 }} value={year} onChange={(e) => setYear(Number(e.target.value))}>
-                        {Array.from({ length: 6 }).map((_, i) => {
-                            const y = today.getFullYear() - 2 + i; // two years back .. +3
-                            return <option key={y} value={y}>{y}</option>;
-                        })}
-                    </select>
-                </div>
+                        <div className="col-auto">
+                            <select className="form-select form-select-sm" style={{ width: 120 }} value={year} onChange={(e) => setYear(Number(e.target.value))}>
+                                {Array.from({ length: 6 }).map((_, i) => {
+                                    const y = today.getFullYear() - 2 + i;
+                                    return <option key={y} value={y}>{y}</option>;
+                                })}
+                            </select>
+                        </div>
 
-                <div className="ms-auto d-flex gap-2">
-                    <div className="form-check form-switch d-flex align-items-center">
-                        <input id="showAll" className="form-check-input" type="checkbox" checked={showAllDaily} onChange={(e) => setShowAllDaily(e.target.checked)} />
-                        <label className="form-check-label ms-2" htmlFor="showAll">Show all details</label>
+                        <div className="col"></div>
+
+                        <div className="col-auto d-flex gap-2">
+                            <div className="form-check form-switch d-flex align-items-center">
+                                <input id="showAll" className="form-check-input" type="checkbox" checked={showAllDaily} onChange={(e) => setShowAllDaily(e.target.checked)} />
+                                <label className="form-check-label ms-2" htmlFor="showAll">Show all details</label>
+                            </div>
+
+                            <button className="btn btn-outline-primary" onClick={() => { loadVisits(year, month); loadDailyView(year, month, showAllDaily); toast.info("Refreshing..."); }}>
+                                <i className="bi bi-arrow-repeat me-1" /> Refresh
+                            </button>
+
+                            <button className="btn btn-primary" onClick={openCreate}><i className="bi bi-plus-lg me-1" /> Add Visit</button>
+                        </div>
                     </div>
-
-                    <button className="btn btn-outline-primary" onClick={() => { loadVisits(year, month); loadDailyView(year, month, showAllDaily); toast.info("Refreshing..."); }}>
-                        <i className="bi bi-arrow-repeat me-1"></i> Refresh
-                    </button>
-
-                    <button className="btn btn-primary" onClick={openCreate}><i className="bi bi-plus-lg me-1"></i> Add Visit</button>
                 </div>
             </div>
 
+            {/* KPI + main layout (full usage) */}
             <div className="row gx-4">
-                <div className="col-lg-7">
+                {/* Left side: tables (large) */}
+                <div className="col-xl-8">
                     <div className="card shadow-sm mb-3">
                         <div className="card-header d-flex justify-content-between align-items-center">
-                            <div className="fw-semibold">Visits ({month}/{year})</div>
+                            <div>
+                                <div className="fw-semibold">Visits ({month}/{year})</div>
+                                <div className="small text-muted">Recorded visits for this month</div>
+                            </div>
                             <div className="small text-muted">{visits.length} recorded</div>
                         </div>
+
                         <div className="card-body p-0">
                             <div className="table-responsive">
                                 <table className="table mb-0 table-hover">
                                     <thead className="table-light">
                                         <tr>
-                                            <th style={{ width: 120 }} className="text-center">Date</th>
-                                            <th>Type</th>
+                                            <th style={{ width: 130 }} className="text-center">Date</th>
+                                            <th style={{ width: 110 }}>Type</th>
                                             <th className="text-truncate">Notes</th>
-                                            <th className="text-end" style={{ width: 140 }}>Actions</th>
+                                            <th className="text-end" style={{ width: 160 }}>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -322,7 +375,7 @@ const OfficeVisit: React.FC = () => {
                                             <tr key={v.officeVisitId ?? `${v.visitDate}-${v.visitType}`}>
                                                 <td className="text-center fw-semibold">{formatDisplay(v.visitDate)}</td>
                                                 <td>{v.visitType}</td>
-                                                <td className="text-truncate" style={{ maxWidth: 360 }}>{v.notes}</td>
+                                                <td className="text-truncate" style={{ maxWidth: 420 }}>{v.notes}</td>
                                                 <td className="text-end">
                                                     <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(v)}><i className="bi bi-pencil-fill me-1" /> Edit</button>
                                                     <button className="btn btn-sm btn-outline-danger" onClick={() => remove(v)}><i className="bi bi-trash-fill me-1" /> Delete</button>
@@ -345,7 +398,7 @@ const OfficeVisit: React.FC = () => {
                                             <th style={{ width: 110 }} className="text-center">Date</th>
                                             <th style={{ width: 110 }} className="text-center">Label</th>
                                             <th>Details</th>
-                                            <th style={{ width: 140 }} className="text-end">Visit / Notes</th>
+                                            <th style={{ width: 160 }} className="text-end">Visit / Notes</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -371,18 +424,56 @@ const OfficeVisit: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Right column summary */}
-                <div className="col-lg-5">
+                {/* Right side: KPIs, pie chart, quick tips */}
+                <div className="col-xl-4">
                     <div className="card summary-card shadow-sm mb-3">
-                        <div className="card-header fw-semibold">Month summary</div>
                         <div className="card-body">
-                            <div className="d-flex justify-content-between mb-1"><div>WFO</div><div className="fw-semibold">{summary.wfo}</div></div>
-                            <div className="d-flex justify-content-between mb-1"><div>WFH</div><div className="fw-semibold">{summary.wfh}</div></div>
-                            <div className="d-flex justify-content-between mb-1"><div>Hybrid</div><div className="fw-semibold">{summary.hybrid}</div></div>
-                            <div className="d-flex justify-content-between mb-1"><div>Other</div><div className="fw-semibold">{summary.others}</div></div>
-                            <hr />
-                            <div className="d-flex justify-content-between"><div>Leaves</div><div className="fw-semibold">{summary.leave}</div></div>
-                            <div className="d-flex justify-content-between"><div>Holidays</div><div className="fw-semibold">{summary.holiday}</div></div>
+                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <div className="fw-semibold">Month summary</div>
+                                    <div className="small text-muted">{format(defaultFrom, "MMM yyyy")} — {format(defaultTo, "MMM yyyy")}</div>
+                                </div>
+                                <div className="small text-muted">{dailyView.length} days</div>
+                            </div>
+
+                            <div className="summary-grid mb-3">
+                                <div className="summary-item">
+                                    <div className="summary-label">WFO</div>
+                                    <div className="summary-value">{summary.wfo}</div>
+                                </div>
+                                <div className="summary-item">
+                                    <div className="summary-label">WFH</div>
+                                    <div className="summary-value">{summary.wfh}</div>
+                                </div>
+                                <div className="summary-item">
+                                    <div className="summary-label">Hybrid</div>
+                                    <div className="summary-value">{summary.hybrid}</div>
+                                </div>
+                                <div className="summary-item">
+                                    <div className="summary-label">Other</div>
+                                    <div className="summary-value">{summary.others}</div>
+                                </div>
+                                <div className="summary-item">
+                                    <div className="summary-label">Leaves</div>
+                                    <div className="summary-value text-danger">{summary.leave}</div>
+                                </div>
+                                <div className="summary-item">
+                                    <div className="summary-label">Holidays</div>
+                                    <div className="summary-value text-success">{summary.holiday}</div>
+                                </div>
+                            </div>
+
+                            <div style={{ height: 220 }}>
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie data={pieData} dataKey="value" nameKey="name" innerRadius={46} outerRadius={80} paddingAngle={3}>
+                                            {pieData.map((entry, idx) => <Cell key={idx} fill={COLORS[idx % COLORS.length]} />)}
+                                        </Pie>
+                                        <ReTooltip formatter={(val) => [val, "count"]} />
+                                        <Legend verticalAlign="bottom" />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
                         </div>
                     </div>
 
@@ -392,7 +483,8 @@ const OfficeVisit: React.FC = () => {
                             <ul className="small mb-0">
                                 <li>Use "Add Visit" to record WFO/WFH/Hybrid entries.</li>
                                 <li>Click Edit to modify a visit, or Delete to remove it.</li>
-                                <li>Toggle "Show all details" for more context (leaves / holidays).</li>
+                                <li>Toggle "Show all details" for leaves and holiday context.</li>
+                                <li>Use Refresh to fetch the latest server data.</li>
                             </ul>
                         </div>
                     </div>
@@ -428,7 +520,7 @@ const OfficeVisit: React.FC = () => {
 
                             <div className="d-flex justify-content-end gap-2">
                                 <button type="button" className="btn btn-outline-secondary" onClick={() => setShowModal(false)}>Cancel</button>
-                                <button type="submit" className="btn btn-primary">Save</button>
+                                <button type="submit" className="btn btn-primary">{editing ? "Save changes" : "Add visit"}</button>
                             </div>
                         </form>
                     </div>
