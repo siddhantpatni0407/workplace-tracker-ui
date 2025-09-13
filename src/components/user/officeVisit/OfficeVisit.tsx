@@ -47,7 +47,7 @@ const visitTypes = [
     { value: "OTHERS", label: "Other" },
 ];
 
-// colors used in pie and legend / rows
+// color palette
 const COLORS = {
     WFO: "#4a90e2",
     WFH: "#10b981",
@@ -66,17 +66,31 @@ const OfficeVisit: React.FC = () => {
     const [year, setYear] = useState<number>(today.getFullYear());
     const [month, setMonth] = useState<number>(today.getMonth() + 1); // 1..12
 
+    // filter & search for Daily View table
+    const [filterLabel, setFilterLabel] = useState<string>("ALL"); // NONE, HOLIDAY, LEAVE, ALL
+    const [filterVisitType, setFilterVisitType] = useState<string>("ALL"); // WFO, WFH, HYBRID, OTHERS, ALL
+    const [searchQ, setSearchQ] = useState<string>("");
+
     const [loading, setLoading] = useState(false);
     const [visits, setVisits] = useState<OfficeVisitDTO[]>([]);
     const [dailyView, setDailyView] = useState<DailyViewDTO[]>([]);
     const [showAllDaily, setShowAllDaily] = useState<boolean>(false);
 
-    // modal state for add/edit
-    const [showModal, setShowModal] = useState(false);
+    // modal states
+    const [showModal, setShowModal] = useState(false); // add/edit visit
     const [editing, setEditing] = useState<OfficeVisitDTO | null>(null);
     const [formDate, setFormDate] = useState<string>("");
     const [formType, setFormType] = useState<OfficeVisitDTO["visitType"]>("WFO");
     const [formNotes, setFormNotes] = useState<string>("");
+
+    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<OfficeVisitDTO | null>(null);
+
+    const [viewModalOpen, setViewModalOpen] = useState(false);
+    const [viewTarget, setViewTarget] = useState<DailyViewDTO | null>(null);
+
+    // tiny menu state for 3-dots per daily row (store date key)
+    const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
 
     const formFirstRef = useRef<HTMLInputElement | null>(null);
 
@@ -203,7 +217,7 @@ const OfficeVisit: React.FC = () => {
 
         try {
             const day = new Date(formDate).getDay(); // 0 (Sun) - 6 (Sat)
-            // many backends expect 1=Mon .. 7=Sun — adapt mapping if needed:
+            // mapping: 1..7 where 7 = Sunday (if backend expects that)
             const dayOfWeek = day === 0 ? 7 : day;
 
             const payload = {
@@ -212,7 +226,6 @@ const OfficeVisit: React.FC = () => {
                 dayOfWeek,
                 visitType: formType,
                 notes: formNotes || undefined,
-                // if editing and id present, backend may accept officeVisitId in payload
                 ...(editing?.officeVisitId ? { officeVisitId: editing.officeVisitId } : {}),
             };
 
@@ -241,11 +254,19 @@ const OfficeVisit: React.FC = () => {
     };
 
     // delete with confirmation
-    const remove = async (visit: OfficeVisitDTO) => {
-        if (!visit.officeVisitId) return;
-        if (!window.confirm(`Delete visit on ${formatDisplay(visit.visitDate)}?`)) return;
+    const requestDelete = (v: OfficeVisitDTO) => {
+        setDeleteTarget(v);
+        setConfirmDeleteOpen(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteTarget?.officeVisitId) {
+            setConfirmDeleteOpen(false);
+            setDeleteTarget(null);
+            return;
+        }
         try {
-            const url = API_ENDPOINTS.VISITS.DELETE(visit.officeVisitId);
+            const url = API_ENDPOINTS.VISITS.DELETE(deleteTarget.officeVisitId);
             const res = await fetch(url, { method: "DELETE" });
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
@@ -258,7 +279,15 @@ const OfficeVisit: React.FC = () => {
         } catch (err: any) {
             console.error("delete visit", err);
             toast.error(err?.message ?? "Failed to delete visit");
+        } finally {
+            setConfirmDeleteOpen(false);
+            setDeleteTarget(null);
         }
+    };
+
+    const cancelDelete = () => {
+        setConfirmDeleteOpen(false);
+        setDeleteTarget(null);
     };
 
     const formatDisplay = (iso?: string) => {
@@ -296,35 +325,90 @@ const OfficeVisit: React.FC = () => {
         ].filter((d) => d.value > 0);
     }, [summary]);
 
-    // create quick map date => dailyView record to fast lookup and determine coloring
+    // map by date for quick lookup
     const dailyMap = useMemo(() => {
         const m = new Map<string, DailyViewDTO>();
         for (const d of dailyView) m.set(d.date, d);
         return m;
     }, [dailyView]);
 
-    const getRowClass = (v: OfficeVisitDTO, d?: DailyViewDTO) => {
-        // priority: holiday/leave (from daily view) else visitType
-        if (d) {
-            if (d.label === "HOLIDAY" || d.holidayName) return "row-holiday";
-            if (d.label === "LEAVE" || d.leavePolicyCode) return "row-leave";
+    // Daily View filtering
+    const dailyFiltered = useMemo(() => {
+        return dailyView.filter((d) => {
+            // filter by label
+            if (filterLabel !== "ALL") {
+                if (filterLabel === "NONE" && d.label !== "NONE") return false;
+                if (filterLabel !== "NONE" && d.label !== filterLabel) return false;
+            }
+            // filter by visit type
+            if (filterVisitType !== "ALL") {
+                const vt = (d.visitType ?? "").toUpperCase();
+                if (vt !== filterVisitType) return false;
+            }
+            // search by notes / holiday name / visit notes
+            if (searchQ && searchQ.trim()) {
+                const q = searchQ.trim().toLowerCase();
+                const hay = [
+                    d.holidayName ?? "",
+                    d.holidayType ?? "",
+                    d.leavePolicyCode ?? "",
+                    String(d.leaveDays ?? ""),
+                    d.leaveDayPart ?? "",
+                    d.leaveNotes ?? "",
+                    d.visitType ?? "",
+                    d.visitNotes ?? "",
+                    d.date ?? "",
+                ].join(" ").toLowerCase();
+                if (!hay.includes(q)) return false;
+            }
+            return true;
+        });
+    }, [dailyView, filterLabel, filterVisitType, searchQ]);
+
+    // determine a class for daily row (colors)
+    const getDailyRowClass = (d: DailyViewDTO) => {
+        if (d.label === "HOLIDAY" || d.holidayName) return "dv-row-holiday";
+        if (d.label === "LEAVE" || d.leavePolicyCode) return "dv-row-leave";
+        const vt = (d.visitType || "").toUpperCase();
+        if (vt === "WFO") return "dv-row-wfo";
+        if (vt === "WFH") return "dv-row-wfh";
+        if (vt === "HYBRID") return "dv-row-hybrid";
+        return "dv-row-others";
+    };
+
+    // open view details popup for a daily record
+    const openViewDetails = (d: DailyViewDTO) => {
+        setViewTarget(d);
+        setViewModalOpen(true);
+        setMenuOpenFor(null);
+    };
+
+    // improved edit via daily -> opens visit edit if visit exists
+    const editFromDaily = (d: DailyViewDTO) => {
+        // try to find visit for this date
+        const v = visits.find((x) => x.visitDate === d.date);
+        if (v) {
+            openEdit(v);
+        } else {
+            // open new visit modal prefilled with date and default type
+            setEditing(null);
+            setFormDate(d.date);
+            setFormType((d.visitType as any) ?? "WFO");
+            setFormNotes(d.visitNotes ?? "");
+            setShowModal(true);
         }
-        const vt = (v.visitType || "").toUpperCase();
-        if (vt === "WFO") return "row-wfo";
-        if (vt === "WFH") return "row-wfh";
-        if (vt === "HYBRID") return "row-hybrid";
-        return "row-others";
+        setMenuOpenFor(null);
     };
 
     return (
-        <div className="container-fluid py-4">
-            <Header title="Office Visits" subtitle="Log and view your office visits" />
+        <div className="container-fluid py-3">
+            <Header title="Office Visits" subtitle="Log, view and analyze your office visits" />
 
-            {/* controls row */}
+            {/* Top filters */}
             <div className="card mb-3 control-card shadow-sm">
                 <div className="card-body">
                     <div className="row g-2 align-items-center">
-                        <div className="col-auto">
+                        <div className="col-auto d-flex gap-2">
                             <div className="btn-group">
                                 <button className="btn btn-outline-secondary" onClick={prevMonth} aria-label="Previous month">◀</button>
                                 <button className="btn btn-outline-secondary" onClick={jumpToCurrent}>Today</button>
@@ -351,19 +435,38 @@ const OfficeVisit: React.FC = () => {
                             </select>
                         </div>
 
-                        <div className="col"></div>
+                        {/* new filters */}
+                        <div className="col-auto">
+                            <select className="form-select form-select-sm" value={filterLabel} onChange={(e) => setFilterLabel(e.target.value)} >
+                                <option value="ALL">All labels</option>
+                                <option value="NONE">None</option>
+                                <option value="HOLIDAY">Holiday</option>
+                                <option value="LEAVE">Leave</option>
+                            </select>
+                        </div>
 
-                        <div className="col-auto d-flex gap-2">
-                            <div className="form-check form-switch d-flex align-items-center">
-                                <input id="showAll" className="form-check-input" type="checkbox" checked={showAllDaily} onChange={(e) => setShowAllDaily(e.target.checked)} />
-                                <label className="form-check-label ms-2" htmlFor="showAll">Show all details</label>
-                            </div>
+                        <div className="col-auto">
+                            <select className="form-select form-select-sm" value={filterVisitType} onChange={(e) => setFilterVisitType(e.target.value)}>
+                                <option value="ALL">All visit types</option>
+                                <option value="WFO">WFO</option>
+                                <option value="WFH">WFH</option>
+                                <option value="HYBRID">Hybrid</option>
+                                <option value="OTHERS">Other</option>
+                            </select>
+                        </div>
 
-                            <button className="btn btn-outline-primary" onClick={() => { loadVisits(year, month); loadDailyView(year, month, showAllDaily); toast.info("Refreshing..."); }}>
+                        <div className="col-md-3">
+                            <input className="form-control form-control-sm" placeholder="Search date/notes/holiday/leave..." value={searchQ} onChange={(e) => setSearchQ(e.target.value)} />
+                        </div>
+
+                        <div className="col text-end d-flex gap-2 justify-content-end">
+                            <button className="btn btn-outline-secondary btn-sm" onClick={() => { setFilterLabel("ALL"); setFilterVisitType("ALL"); setSearchQ(""); }}>
+                                Reset filters
+                            </button>
+                            <button className="btn btn-outline-primary btn-sm" onClick={() => { loadVisits(year, month); loadDailyView(year, month, showAllDaily); toast.info("Refreshing..."); }}>
                                 <i className="bi bi-arrow-repeat me-1" /> Refresh
                             </button>
-
-                            <button className="btn btn-primary" onClick={openCreate}><i className="bi bi-plus-lg me-1" /> Add Visit</button>
+                            <button className="btn btn-primary btn-sm" onClick={openCreate}><i className="bi bi-plus-lg me-1" /> Add Visit</button>
                         </div>
                     </div>
                 </div>
@@ -371,7 +474,7 @@ const OfficeVisit: React.FC = () => {
 
             {/* KPI + main layout (full usage) */}
             <div className="row gx-4">
-                {/* Left side: tables (large) */}
+                {/* Left side: visits & daily view */}
                 <div className="col-xl-8">
                     <div className="card shadow-sm mb-3">
                         <div className="card-header d-flex justify-content-between align-items-center">
@@ -381,20 +484,17 @@ const OfficeVisit: React.FC = () => {
                             </div>
 
                             <div className="d-flex align-items-center gap-3">
-                                {/* legend */}
                                 <div className="vis-legend d-flex gap-2 align-items-center">
                                     <span className="legend-pill" style={{ background: COLORS.HOLIDAY }} /> Holiday
                                     <span className="legend-pill" style={{ background: COLORS.LEAVE, marginLeft: 10 }} /> Leave
                                     <span className="legend-pill" style={{ background: COLORS.WFO, marginLeft: 10 }} /> WFO
                                     <span className="legend-pill" style={{ background: COLORS.WFH, marginLeft: 10 }} /> WFH
                                 </div>
-
                                 <div className="small text-muted">{visits.length} recorded</div>
                             </div>
                         </div>
 
                         <div className="card-body p-0">
-                            {/* wrapper with fixed height and scroll */}
                             <div className="visits-table-wrapper">
                                 <table className="table mb-0 visits-table">
                                     <thead className="table-light">
@@ -412,15 +512,17 @@ const OfficeVisit: React.FC = () => {
                                             <tr><td colSpan={4} className="py-4 text-center text-muted">No visits recorded for this month.</td></tr>
                                         ) : visits.map((v) => {
                                             const dv = dailyMap.get(v.visitDate ?? "");
-                                            const cls = getRowClass(v, dv);
+                                            // reuse earlier row-class logic
+                                            const primaryClass = dv ? (dv.label === "HOLIDAY" || dv.holidayName ? "row-holiday" : dv.label === "LEAVE" || dv.leavePolicyCode ? "row-leave" : "") : "";
+                                            const rowClass = primaryClass || (v.visitType ? `row-${(v.visitType || "").toLowerCase()}` : "row-others");
                                             return (
-                                                <tr key={v.officeVisitId ?? `${v.visitDate}-${v.visitType}`} className={cls}>
+                                                <tr key={v.officeVisitId ?? `${v.visitDate}-${v.visitType}`} className={rowClass}>
                                                     <td className="text-center fw-semibold">{formatDisplay(v.visitDate)}</td>
                                                     <td className="text-center">{v.visitType}</td>
                                                     <td className="text-center text-truncate" style={{ maxWidth: 420 }}>{v.notes ?? (dv?.visitNotes ?? "-")}</td>
                                                     <td className="text-end">
                                                         <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(v)}><i className="bi bi-pencil-fill me-1" /> Edit</button>
-                                                        <button className="btn btn-sm btn-outline-danger" onClick={() => remove(v)}><i className="bi bi-trash-fill me-1" /> Delete</button>
+                                                        <button className="btn btn-sm btn-outline-danger" onClick={() => requestDelete(v)}><i className="bi bi-trash-fill me-1" /> Delete</button>
                                                     </td>
                                                 </tr>
                                             );
@@ -434,32 +536,57 @@ const OfficeVisit: React.FC = () => {
                     <div className="card shadow-sm">
                         <div className="card-header fw-semibold">Daily view ({month}/{year})</div>
                         <div className="card-body p-0">
-                            <div className="table-responsive small">
-                                <table className="table mb-0">
+                            <div className="table-responsive small dv-table-wrapper">
+                                <table className="table mb-0 dv-table">
                                     <thead className="table-light">
                                         <tr>
                                             <th style={{ width: 110 }} className="text-center">Date</th>
                                             <th style={{ width: 110 }} className="text-center">Label</th>
                                             <th>Details</th>
-                                            <th style={{ width: 160 }} className="text-end">Visit / Notes</th>
+                                            <th style={{ width: 160 }} className="text-center">Visit</th>
+                                            <th style={{ width: 60 }} className="text-end">•••</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {dailyView.length === 0 ? (
-                                            <tr><td colSpan={4} className="py-4 text-center text-muted">No data for selected month.</td></tr>
-                                        ) : dailyView.map((d) => (
-                                            <tr key={d.date}>
-                                                <td className="text-center fw-semibold">{formatDisplay(d.date)}</td>
-                                                <td className="text-center">{d.label}</td>
-                                                <td>
-                                                    {d.holidayName ? <div><strong>{d.holidayName}</strong> <small className="text-muted">({d.holidayType})</small></div> : null}
-                                                    {d.leavePolicyCode ? <div>Leave: {d.leavePolicyCode} — {d.leaveDays}{d.leaveDayPart ? ` (${d.leaveDayPart})` : ""}</div> : null}
-                                                </td>
-                                                <td className="text-end">
-                                                    {d.visitType ? <div><strong>{d.visitType}</strong><div className="small text-muted">{d.visitNotes}</div></div> : <span className="text-muted">-</span>}
-                                                </td>
-                                            </tr>
-                                        ))}
+                                        {dailyFiltered.length === 0 ? (
+                                            <tr><td colSpan={5} className="py-4 text-center text-muted">No daily records for selected filters.</td></tr>
+                                        ) : dailyFiltered.map((d) => {
+                                            const cls = getDailyRowClass(d);
+                                            return (
+                                                <tr key={d.date} className={cls}>
+                                                    <td className="text-center fw-semibold">{formatDisplay(d.date)}</td>
+                                                    <td className="text-center">{d.label}</td>
+                                                    <td>
+                                                        {d.holidayName ? <div><strong>{d.holidayName}</strong> <small className="text-muted">({d.holidayType})</small></div> : null}
+                                                        {d.leavePolicyCode ? <div>Leave: {d.leavePolicyCode} — {d.leaveDays}{d.leaveDayPart ? ` (${d.leaveDayPart})` : ""} {d.leaveNotes ? <small className="text-muted"> - {d.leaveNotes}</small> : null}</div> : null}
+                                                    </td>
+                                                    <td className="text-center">
+                                                        {d.visitType ? <div><strong>{d.visitType}</strong><div className="small text-muted">{d.visitNotes}</div></div> : <span className="text-muted">-</span>}
+                                                    </td>
+                                                    <td className="text-end">
+                                                        <div className="dropdown">
+                                                            <button className="btn btn-sm btn-light" onClick={() => setMenuOpenFor(menuOpenFor === d.date ? null : d.date)}>
+                                                                <i className="bi bi-three-dots-vertical"></i>
+                                                            </button>
+
+                                                            {menuOpenFor === d.date && (
+                                                                <div className="dv-menu">
+                                                                    <button className="dv-menu-item" onClick={() => openViewDetails(d)}>View details</button>
+                                                                    <button className="dv-menu-item" onClick={() => editFromDaily(d)}>Edit / Create Visit</button>
+                                                                    <button className="dv-menu-item text-danger" onClick={async () => {
+                                                                        // try find visit and request delete
+                                                                        const v = visits.find((x) => x.visitDate === d.date);
+                                                                        if (v) requestDelete(v);
+                                                                        else toast.info("No visit recorded on this date to delete.");
+                                                                        setMenuOpenFor(null);
+                                                                    }}>Delete visit</button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
@@ -467,7 +594,7 @@ const OfficeVisit: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Right side: KPIs, pie chart, quick tips */}
+                {/* Right side */}
                 <div className="col-xl-4">
                     <div className="card summary-card shadow-sm mb-3">
                         <div className="card-body">
@@ -528,17 +655,16 @@ const OfficeVisit: React.FC = () => {
                         <div className="card-body">
                             <h6 className="mb-2">Quick Tips</h6>
                             <ul className="small mb-0">
-                                <li>Use "Add Visit" to record WFO/WFH/Hybrid entries.</li>
-                                <li>Click Edit to modify a visit, or Delete to remove it.</li>
-                                <li>Toggle "Show all details" for leaves and holiday context.</li>
-                                <li>Use Refresh to fetch the latest server data.</li>
+                                <li>Use "Add Visit" to record WFO / WFH / Hybrid entries.</li>
+                                <li>Use filters to narrow Daily View to holidays or leaves.</li>
+                                <li>Click the three dots on any daily row to view details or edit.</li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Modal - Add/Edit Visit */}
+            {/* Add/Edit modal */}
             {showModal && (
                 <div className="modal-backdrop-custom" role="dialog" aria-modal="true">
                     <div className="modal-card shadow-lg">
@@ -548,24 +674,26 @@ const OfficeVisit: React.FC = () => {
                         </div>
 
                         <form onSubmit={(e) => { e.preventDefault(); submit(); }} className="modal-body p-3">
-                            <div className="mb-3">
-                                <label className="form-label">Visit date</label>
-                                <input ref={formFirstRef} className="form-control" type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} required />
+                            <div className="row g-3">
+                                <div className="col-md-6">
+                                    <label className="form-label">Visit date</label>
+                                    <input ref={formFirstRef} className="form-control" type="date" value={formDate} onChange={(e) => setFormDate(e.target.value)} required />
+                                </div>
+
+                                <div className="col-md-6">
+                                    <label className="form-label">Visit type</label>
+                                    <select className="form-select" value={formType} onChange={(e) => setFormType(e.target.value as any)} required>
+                                        {visitTypes.map((vt) => <option key={vt.value} value={vt.value}>{vt.label}</option>)}
+                                    </select>
+                                </div>
+
+                                <div className="col-12">
+                                    <label className="form-label">Notes (optional)</label>
+                                    <input className="form-control" value={formNotes} onChange={(e) => setFormNotes(e.target.value)} />
+                                </div>
                             </div>
 
-                            <div className="mb-3">
-                                <label className="form-label">Visit type</label>
-                                <select className="form-select" value={formType} onChange={(e) => setFormType(e.target.value as any)} required>
-                                    {visitTypes.map((vt) => <option key={vt.value} value={vt.value}>{vt.label}</option>)}
-                                </select>
-                            </div>
-
-                            <div className="mb-3">
-                                <label className="form-label">Notes (optional)</label>
-                                <input className="form-control" value={formNotes} onChange={(e) => setFormNotes(e.target.value)} />
-                            </div>
-
-                            <div className="d-flex justify-content-end gap-2">
+                            <div className="d-flex justify-content-end gap-2 mt-3">
                                 <button type="button" className="btn btn-outline-secondary" onClick={() => setShowModal(false)}>Cancel</button>
                                 <button type="submit" className="btn btn-primary">{editing ? "Save changes" : "Add visit"}</button>
                             </div>
@@ -573,6 +701,53 @@ const OfficeVisit: React.FC = () => {
                     </div>
                 </div>
             )}
+
+            {/* Confirm delete modal */}
+            {confirmDeleteOpen && deleteTarget && (
+                <div className="modal-backdrop-custom" role="dialog" aria-modal="true">
+                    <div className="modal-card shadow-lg">
+                        <div className="modal-header d-flex justify-content-between align-items-center">
+                            <h6 className="mb-0 text-danger">Confirm delete</h6>
+                            <button className="btn btn-sm btn-outline-secondary" onClick={cancelDelete}>Close</button>
+                        </div>
+
+                        <div className="modal-body p-3">
+                            <p>Are you sure you want to delete the visit on <strong>{formatDisplay(deleteTarget.visitDate)}</strong>?</p>
+                            <div className="small text-muted">This action cannot be undone.</div>
+
+                            <div className="d-flex justify-content-end gap-2 mt-3">
+                                <button className="btn btn-outline-secondary" onClick={cancelDelete}>Cancel</button>
+                                <button className="btn btn-danger" onClick={confirmDelete}>Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* View details modal for Daily View row */}
+            {viewModalOpen && viewTarget && (
+                <div className="modal-backdrop-custom" role="dialog" aria-modal="true">
+                    <div className="modal-card shadow-lg">
+                        <div className="modal-header d-flex justify-content-between align-items-center">
+                            <h6 className="mb-0">Details — {formatDisplay(viewTarget.date)}</h6>
+                            <button className="btn btn-sm btn-outline-secondary" onClick={() => setViewModalOpen(false)}>Close</button>
+                        </div>
+
+                        <div className="modal-body p-3">
+                            <div className="mb-2"><strong>Label:</strong> <span className="ms-2">{viewTarget.label}</span></div>
+                            {viewTarget.holidayName && <div className="mb-2"><strong>Holiday:</strong> <span className="ms-2">{viewTarget.holidayName} ({viewTarget.holidayType})</span></div>}
+                            {viewTarget.leavePolicyCode && <div className="mb-2"><strong>Leave:</strong> <span className="ms-2">{viewTarget.leavePolicyCode} — {viewTarget.leaveDays}{viewTarget.leaveDayPart ? ` (${viewTarget.leaveDayPart})` : ""}</span></div>}
+                            {viewTarget.leaveNotes && <div className="mb-2"><strong>Leave notes:</strong> <div className="small text-muted ms-2">{viewTarget.leaveNotes}</div></div>}
+                            {viewTarget.visitType && <div className="mb-2"><strong>Visit:</strong> <span className="ms-2">{viewTarget.visitType}</span></div>}
+                            {viewTarget.visitNotes && <div className="mb-2"><strong>Visit notes:</strong> <div className="small text-muted ms-2">{viewTarget.visitNotes}</div></div>}
+                            <div className="d-flex justify-content-end mt-3">
+                                <button className="btn btn-outline-secondary" onClick={() => setViewModalOpen(false)}>Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

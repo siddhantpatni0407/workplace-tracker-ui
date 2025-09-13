@@ -1,18 +1,22 @@
-/* OfficeVisit.css - full width, polished UI + scroller + colored rows */
+/* OfficeVisit.css - full width, polished UI + scroller + colored rows + daily view filters */
+
+/* container small padding so page feels tight */
+.container-fluid.py-3 { padding-top: 12px; padding-bottom: 12px; }
 
 /* control card */
 .control-card {
-  border-radius: 12px;
+  border-radius: 10px;
   background: #fff;
   padding: 10px;
+  margin-bottom: 10px;
 }
 
 /* legend */
-.vis-legend { font-size: 0.85rem; color: #444; gap: 8px; }
+.vis-legend { font-size: 0.85rem; color: #444; gap: 12px; display:flex; align-items:center; }
 .legend-pill {
   width: 12px;
   height: 12px;
-  border-radius: 4px;
+  border-radius: 3px;
   display: inline-block;
   margin-right: 6px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
@@ -20,76 +24,104 @@
 
 /* visits table wrapper - scroller */
 .visits-table-wrapper {
-  max-height: 360px;
+  max-height: 340px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: 8px;
+  padding: 10px;
   background: linear-gradient(180deg, rgba(250,250,252,0.6), rgba(255,255,255,0.6));
-  border-radius: 0 0 12px 12px;
+  border-radius: 0 0 10px 10px;
 }
 
 /* table baseline */
-.visits-table {
+.visits-table, .dv-table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
   background: transparent;
 }
-.visits-table thead th {
+.visits-table thead th, .dv-table thead th {
   background: linear-gradient(180deg, #fbfbfd, #f3f6fb);
   border-bottom: 1px solid rgba(0,0,0,0.06);
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.78rem;
-  padding: 12px 10px;
+  padding: 10px;
   text-align: center;
   vertical-align: middle;
 }
-.visits-table tbody td {
-  padding: 12px 10px;
+.visits-table tbody td, .dv-table tbody td {
+  padding: 10px;
   vertical-align: middle;
 }
 
-/* center most content for clean visual */
-.visits-table tbody td.text-center,
-.visits-table thead th.text-center {
+/* center cells */
+.visits-table tbody td.text-center, .dv-table tbody td.text-center,
+.visits-table thead th.text-center, .dv-table thead th.text-center {
   text-align: center;
 }
 
-/* colored row variants */
-.row-wfo { background: linear-gradient(90deg, rgba(74,144,226,0.06), rgba(255,255,255,0)); border-left: 4px solid #4a90e2; }
-.row-wfh { background: linear-gradient(90deg, rgba(16,185,129,0.06), rgba(255,255,255,0)); border-left: 4px solid #10b981; }
-.row-hybrid { background: linear-gradient(90deg, rgba(122,87,255,0.06), rgba(255,255,255,0)); border-left: 4px solid #7a57ff; }
-.row-others { background: linear-gradient(90deg, rgba(249,115,22,0.06), rgba(255,255,255,0)); border-left: 4px solid #f97316; }
-.row-leave { background: linear-gradient(90deg, rgba(255,107,107,0.06), rgba(255,255,255,0)); border-left: 4px solid #ff6b6b; }
-.row-holiday { background: linear-gradient(90deg, rgba(255,209,102,0.06), rgba(255,255,255,0)); border-left: 4px solid #ffd166; }
+/* colored row variants for visits table (left column style) */
+.row-wfo { background: linear-gradient(90deg, rgba(74,144,226,0.05), rgba(255,255,255,0)); border-left: 4px solid #4a90e2; }
+.row-wfh { background: linear-gradient(90deg, rgba(16,185,129,0.05), rgba(255,255,255,0)); border-left: 4px solid #10b981; }
+.row-hybrid { background: linear-gradient(90deg, rgba(122,87,255,0.05), rgba(255,255,255,0)); border-left: 4px solid #7a57ff; }
+.row-others { background: linear-gradient(90deg, rgba(249,115,22,0.05), rgba(255,255,255,0)); border-left: 4px solid #f97316; }
+.row-leave { background: linear-gradient(90deg, rgba(255,107,107,0.05), rgba(255,255,255,0)); border-left: 4px solid #ff6b6b; }
+.row-holiday { background: linear-gradient(90deg, rgba(255,209,102,0.05), rgba(255,255,255,0)); border-left: 4px solid #ffd166; }
+
+/* daily view colored rows (slightly stronger for clarity) */
+.dv-row-wfo { background: linear-gradient(90deg, rgba(74,144,226,0.04), rgba(255,255,255,0)); border-left: 4px solid #4a90e2; }
+.dv-row-wfh { background: linear-gradient(90deg, rgba(16,185,129,0.04), rgba(255,255,255,0)); border-left: 4px solid #10b981; }
+.dv-row-hybrid { background: linear-gradient(90deg, rgba(122,87,255,0.04), rgba(255,255,255,0)); border-left: 4px solid #7a57ff; }
+.dv-row-others { background: linear-gradient(90deg, rgba(249,115,22,0.04), rgba(255,255,255,0)); border-left: 4px solid #f97316; }
+.dv-row-leave { background: linear-gradient(90deg, rgba(255,107,107,0.06), rgba(255,255,255,0)); border-left: 4px solid #ff6b6b; }
+.dv-row-holiday { background: linear-gradient(90deg, rgba(255,209,102,0.06), rgba(255,255,255,0)); border-left: 4px solid #ffd166; }
 
 /* rounded row look and spacing */
-.visits-table tbody tr {
-  transition: transform .15s ease, box-shadow .15s ease;
+.visits-table tbody tr, .dv-table tbody tr {
+  transition: transform .14s ease, box-shadow .14s ease;
   border-radius: 8px;
   margin-bottom: 8px;
   display: table-row;
 }
-.visits-table tbody tr:not(:last-child) td { border-bottom: none; }
+.visits-table tbody tr:not(:last-child) td, .dv-table tbody tr:not(:last-child) td { border-bottom: none; }
 
 /* hover lift */
-.visits-table tbody tr:hover {
+.visits-table tbody tr:hover, .dv-table tbody tr:hover {
   transform: translateY(-4px);
   box-shadow: 0 10px 28px rgba(18,38,63,0.06);
   z-index: 1;
 }
 
 /* notes cell - truncation */
-.visits-table .text-truncate {
-  max-width: 420px;
+.text-truncate { max-width: 420px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* dv menu (3-dots) */
+.dropdown { position: relative; display:inline-block; }
+.dv-menu {
+  position: absolute;
+  right: 0;
+  top: 32px;
+  min-width: 160px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(2,6,23,0.12);
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  z-index: 2200;
 }
+.dv-menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.92rem;
+}
+.dv-menu-item:hover { background: rgba(0,0,0,0.04); }
 
 /* header/toolbar polished */
-.card-header .vis-legend { display:flex; align-items:center; }
+.card-header .vis-legend { display:flex; align-items:center; margin-right: 12px; }
 .card-header .small.text-muted { margin-left: 8px; }
 
 /* modal */
@@ -127,21 +159,26 @@
   gap: 8px 12px;
   margin-bottom: 12px;
 }
-.summary-item { background: linear-gradient(90deg,#fbfbff,#fff); padding:8px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
+.summary-item { background: linear-gradient(90deg,#fbfbff,#fff); padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
 .summary-label { color:#666; font-weight:600; }
 .summary-value { font-size:1.05rem; font-weight:800; }
 
 /* quick-tips */
 .quick-tips .card-body { font-size: 0.92rem; }
 
-/* responsiveness */
+/* general card radius */
+.card.shadow-sm { border-radius: 10px; }
+
+/* reduce big white spaces and make layout compact on small screens */
 @media (max-width: 1200px) {
   .modal-card { width: 92%; }
+  .visits-table-wrapper { max-height: 300px; }
 }
 @media (max-width: 768px) {
   .summary-grid { grid-template-columns: repeat(3, 1fr); }
   .summary-label { font-size: 0.82rem; }
+  .dv-table-wrapper { overflow-x: auto; }
 }
 
-/* slight hover lift for other table rows */
+/* small shadow effect for hover across tables */
 .table-hover tbody tr:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(18,38,63,0.04); background: #fff !important; transition: all .18s ease; }
