@@ -459,6 +459,20 @@ const OfficeVisit: React.FC = () => {
                             <input className="form-control form-control-sm" placeholder="Search date/notes/holiday/leave..." value={searchQ} onChange={(e) => setSearchQ(e.target.value)} />
                         </div>
 
+                        {/* showAllDaily toggle (uses setShowAllDaily) */}
+                        <div className="col-auto d-flex align-items-center">
+                            <div className="form-check form-switch">
+                                <input
+                                    id="showAllTop"
+                                    className="form-check-input"
+                                    type="checkbox"
+                                    checked={showAllDaily}
+                                    onChange={(e) => setShowAllDaily(e.target.checked)}
+                                />
+                                <label className="form-check-label ms-2" htmlFor="showAllTop">Show all details</label>
+                            </div>
+                        </div>
+
                         <div className="col text-end d-flex gap-2 justify-content-end">
                             <button className="btn btn-outline-secondary btn-sm" onClick={() => { setFilterLabel("ALL"); setFilterVisitType("ALL"); setSearchQ(""); }}>
                                 Reset filters
