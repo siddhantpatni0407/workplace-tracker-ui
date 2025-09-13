@@ -94,7 +94,7 @@ const Navbar: React.FC = () => {
             )}
 
             {/* User Tools Dropdown (for non-admin users; also available to admins if you want) */}
-            {(user?.role === "USER" || user?.role === "ADMIN") && (
+            {(user?.role === "USER") && (
               <li className="nav-item dropdown">
                 <button
                   className="nav-link dropdown-toggle text-white btn btn-link nav-hover"
