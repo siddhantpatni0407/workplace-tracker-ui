@@ -75,6 +75,11 @@
   background: linear-gradient(135deg,#f59e0b 0%,#f97316 50%, #fb923c 100%);
 }
 
+/* NEW: green variant for Leave Policy */
+.card-green {
+  background: linear-gradient(135deg,#12b886 0%,#16a085 50%, #0ea57f 100%);
+}
+
 /* Animated shimmer overlay */
 .feature-card::after {
   content: "";
@@ -97,3 +102,22 @@
 /* small polish */
 .feature-card .bi { font-size: 1.6rem; color: rgba(255,255,255,0.95); }
 .feature-card .card-title, .feature-card .card-sub { text-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+
+/* Optional: slight variation to logo circle contrast for green so icon stands out */
+.card-green .card-logo {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+}
+
+/* Optional: accessible focus state for keyboard users */
+.feature-card:focus {
+  outline: none;
+  box-shadow: 0 8px 28px rgba(12,20,40,0.14), 0 0 0 3px rgba(99,102,241,0.12);
+}
+
+/* small screens adjustments */
+@media (max-width: 480px) {
+  .card-logo { width: 56px; height: 56px; font-size: 24px; }
+  .card-title { font-size: 1rem; }
+  .card-sub { font-size: .82rem; }
+}
