@@ -44,7 +44,7 @@ backdrop-filter: blur(6px);
 .card-teal { background: linear-gradient(135deg,#0d9488 0%,#10b981 50%, #34d399 100%); }
 .card-orange { background: linear-gradient(135deg,#f59e0b 0%,#f97316 50%, #fb923c 100%); }
 .card-indigo { background: linear-gradient(135deg,#3730a3 0%,#4f46e5 100%); }
-
+.card-green { background: linear-gradient(135deg,#16a34a 0%,#22c55e 50%, #4ade80 100%); }
 
 /* Animated shimmer overlay */
 .feature-card::after {
