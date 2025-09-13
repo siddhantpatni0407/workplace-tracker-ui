@@ -11,7 +11,7 @@ const UserDashboard: React.FC = () => {
     const cards = [
         {
             id: "tasks",
-            title: "Tasks",
+            title: "My Tasks",
             subtitle: "Create and manage your tasks",
             icon: "bi-list-task",
             colorClass: "card-blue",
@@ -24,6 +24,14 @@ const UserDashboard: React.FC = () => {
             icon: "bi-building",
             colorClass: "card-purple",
             route: "/office-visit",
+        },
+        {
+            id: "office-visit-analytics",
+            title: "Office Visit Analytics",
+            subtitle: "Monthly/weekly visit summaries",
+            icon: "bi-graph-up",
+            colorClass: "card-teal",
+            route: "/office-visit-analytics",
         },
         {
             id: "holidays",

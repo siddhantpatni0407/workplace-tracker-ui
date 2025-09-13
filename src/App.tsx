@@ -22,6 +22,7 @@ const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHoli
 const LeavePolicy = lazy(() => import("./components/user/leavePolicy/LeavePolicy"));
 const ApplyLeave = lazy(() => import("./components/user/leave/ApplyLeave"));
 const OfficeVisit = lazy(() => import("./components/user/officeVisit/OfficeVisit"));
+const OfficeVisitAnalytics = lazy(() => import("./components/user/officeVisitAnalytics/OfficeVisitAnalytics"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -191,6 +192,16 @@ const App: React.FC = () => {
                   <Layout>
                     <OfficeVisit />
                   </Layout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Office Visit Analytics - USER only (new) */}
+            <Route
+              path="/office-visit-analytics"
+              element={
+                <PrivateRoute role="USER">
+                  <Layout><OfficeVisitAnalytics /></Layout>
                 </PrivateRoute>
               }
             />
