@@ -1,3 +1,4 @@
+// src/components/Navbar/Navbar.tsx
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -86,6 +87,60 @@ const Navbar: React.FC = () => {
                   <li>
                     <Link className="dropdown-item" to="/attendance">
                       <i className="bi bi-calendar-check-fill me-2"></i> Attendance
+                    </Link>
+                  </li>
+                </ul>
+              </li>
+            )}
+
+            {/* User Tools Dropdown (for non-admin users; also available to admins if you want) */}
+            {(user?.role === "USER" || user?.role === "ADMIN") && (
+              <li className="nav-item dropdown">
+                <button
+                  className="nav-link dropdown-toggle text-white btn btn-link nav-hover"
+                  id="userTools"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i className="bi bi-tools me-1"></i> Tools
+                </button>
+
+                <ul
+                  className="dropdown-menu dropdown-menu-dark shadow-lg animate-fade"
+                  aria-labelledby="userTools"
+                >
+                  {/* Apply leave modal/page */}
+                  <li>
+                    <Link className="dropdown-item" to="/apply-leave">
+                      <i className="bi bi-plus-square-dotted me-2"></i> Apply Leave
+                    </Link>
+                  </li>
+
+                  {/* Read-only leave policy view */}
+                  <li>
+                    <Link className="dropdown-item" to="/leave-policy">
+                      <i className="bi bi-file-earmark-text-fill me-2"></i> Leave Policy
+                    </Link>
+                  </li>
+
+                  {/* Holidays tracker for user */}
+                  <li>
+                    <Link className="dropdown-item" to="/holiday-tracker">
+                      <i className="bi bi-calendar-event me-2"></i> Holidays
+                    </Link>
+                  </li>
+
+                  {/* My leaves (user's leave list) */}
+                  <li>
+                    <Link className="dropdown-item" to="/my-leaves">
+                      <i className="bi bi-journal-check me-2"></i> My Leaves
+                    </Link>
+                  </li>
+
+                  {/* Optional: quick access to notes */}
+                  <li>
+                    <Link className="dropdown-item" to="/notes">
+                      <i className="bi bi-journal-text me-2"></i> My Notes
                     </Link>
                   </li>
                 </ul>
