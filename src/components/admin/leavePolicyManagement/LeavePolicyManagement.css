@@ -9,12 +9,22 @@
   min-width: 140px;
 }
 
+/* Provide spacing consistent with Holiday page */
+.leave-policy-toolbar {
+  margin-top: 12px;
+  margin-bottom: 18px;
+  padding: 0 6px;
+}
+
 /* Card wrapper for table */
 .leave-policy-card {
   border: 0;
   border-radius: 12px;
   overflow: hidden;
   margin-bottom: 12px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Table container */
@@ -58,6 +68,14 @@
   vertical-align: middle;
   padding: 12px 16px;
   border-top: 1px solid rgba(0,0,0,0.04);
+}
+
+/* small responsive table truncation */
+.table td.text-truncate {
+  max-width: 420px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Modal backdrop */
