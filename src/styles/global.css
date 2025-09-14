@@ -1,65 +1,78 @@
-/* global.css — additions for Home / full-page layout */
+/* ===============================
+   Global Theme Variables
+   =============================== */
 
-/* Ensure full-height app root so 100vh math works reliably */
+/* Light theme (default) */
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: #6b7280;
+  --card: #f8fafc;
+  --accent: #2563eb;
+
+  --nav-gradient-start: #4a00e0;
+  --nav-gradient-end: #8e2de2;
+  --nav-text: #ffffff;
+  --brand-color: #ffffff;
+  --nav-hover: #ffd700;
+
+  --dropdown-bg: rgba(0, 0, 0, 0.85);
+  --dropdown-text: #ffffff;
+
+  --footer-bg: rgba(20, 20, 22, 0.9);
+  --footer-text: #ffffff;
+
+  --page-bg: #f9fafb;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --bg: #0b1220;
+  --text: #e6eef8;
+  --muted: #9aa6bb;
+  --card: #0f1724;
+  --accent: #60a5fa;
+
+  --nav-gradient-start: #071029;
+  --nav-gradient-end: #0f1724;
+  --nav-text: #e6eef8;
+  --brand-color: #e6eef8;
+  --nav-hover: #60a5fa;
+
+  --dropdown-bg: #0f1724;
+  --dropdown-text: #e6eef8;
+
+  --footer-bg: #0b1220;
+  --footer-text: #e6eef8;
+
+  --page-bg: #0b1220;
+}
+
+/* ===============================
+   Base Resets
+   =============================== */
 html, body, #root {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Utility class: hide page scroll (use on body when landing/Home mounted) */
+/* Utility: prevent scrolling (used by Home if needed) */
 .no-scroll {
   overflow: hidden !important;
-  /* keep touch scroll prevented on mobile when used */
   overscroll-behavior: none;
 }
 
-/* Footer styling helpers — keep the footer visible and above background */
-.site-footer {
-  position: relative;      /* default: not fixed; works with body padding-bottom technique */
-  z-index: 1200;
-  width: 100%;
-  left: 0;
-  right: 0;
-  background: rgba(20,20,22,0.9);
-  color: #fff;
-  padding: 0.6rem 1rem;
-  text-align: center;
-  box-shadow: 0 -6px 18px rgba(0,0,0,0.25);
-  font-size: 0.9rem;
-}
-
-/* Optional: if you prefer a sticky/footer-always-on-top version, toggle this class */
-.site-footer.fixed {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-/* Ensure page-wrapper animation doesn't create overflow */
-.page-wrapper {
-  overflow: visible; /* animation shouldn't cause a scrolling box */
-  -webkit-overflow-scrolling: touch;
-}
-
-/* If Home adds an overlay helper on body (home-body-overlay) */
-.home-body-overlay::before {
-  /* non-blocking overlay so it doesn't change layout/scroll */
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 2; /* sits behind your Home card but above background */
-}
-
-/* small responsive safeguard: prevent double-footers appearing under small viewports */
-@media (max-width: 520px) {
-  .site-footer { font-size: 0.82rem; padding: 0.5rem; }
-}
-/* App shell: full viewport */
+/* ===============================
+   Layout: App Shell
+   =============================== */
 .app-shell {
   display: flex;
   flex-direction: column;
@@ -72,7 +85,7 @@ html, body, #root {
   flex-shrink: 0;
   position: sticky;
   top: 0;
-  z-index: 1050; /* above page content */
+  z-index: 1050;
 }
 
 /* Footer fixed at bottom */
@@ -88,5 +101,52 @@ html, body, #root {
   flex: 1 1 auto;
   overflow-y: auto;
   overflow-x: hidden;
-  background: #f9fafb; /* optional light background */
+  background: var(--page-bg);
+  transition: background 0.3s ease;
+}
+
+/* ===============================
+   Footer
+   =============================== */
+.site-footer {
+  position: relative;
+  z-index: 1200;
+  width: 100%;
+  left: 0;
+  right: 0;
+  background: var(--footer-bg);
+  color: var(--footer-text);
+  padding: 0.6rem 1rem;
+  text-align: center;
+  box-shadow: 0 -6px 18px rgba(0,0,0,0.25);
+  font-size: 0.9rem;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.site-footer.fixed {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+/* ===============================
+   Home Overlay
+   =============================== */
+.home-body-overlay::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ===============================
+   Responsive tweaks
+   =============================== */
+@media (max-width: 520px) {
+  .site-footer {
+    font-size: 0.82rem;
+    padding: 0.5rem;
+  }
 }

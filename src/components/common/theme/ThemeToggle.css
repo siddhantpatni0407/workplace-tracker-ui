@@ -1,0 +1,38 @@
+/* ThemeToggle.css */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: var(--nav-text);
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  font-size: 1.02rem;
+  padding: 0;
+}
+
+.theme-toggle-btn:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.09);
+}
+
+[data-theme="dark"] .theme-toggle-btn {
+  background: rgba(255,255,255,0.04);
+}
+
+.theme-toggle-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.14);
+}
+
+/* small badge to indicate 'system' choice (optional) */
+.theme-badge {
+  font-size: 0.6rem;
+  margin-left: 4px;
+  color: var(--accent);
+  display: inline-block;
+}

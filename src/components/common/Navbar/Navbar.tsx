@@ -2,6 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import ThemeToggle from "../theme/ThemeToggle";
 import "./Navbar.css";
 
 const Navbar: React.FC = () => {
@@ -122,7 +123,7 @@ const Navbar: React.FC = () => {
                       <i className="bi bi-building me-2"></i> Office Visit
                     </Link>
                   </li>
-                  
+
                   {/* Office Visit Analytics */}
                   <li>
                     <Link className="dropdown-item" to="/office-visit-analytics">
@@ -164,8 +165,13 @@ const Navbar: React.FC = () => {
             </li>
           </ul>
 
-          {/* Right side (Profile / Settings / Logout) */}
+          {/* Right side (Theme Toggle + Profile / Settings / Logout) */}
           <ul className="navbar-nav ms-auto align-items-lg-center">
+            {/* THEME TOGGLE: added without removing existing code */}
+            <li className="nav-item d-flex align-items-center me-2">
+              <ThemeToggle />
+            </li>
+
             {user ? (
               <li className="nav-item dropdown">
                 <button

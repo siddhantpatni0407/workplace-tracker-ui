@@ -7,6 +7,7 @@ import Navbar from "./components/common/navbar/Navbar";
 import Footer from "./components/common/footer/Footer";
 import "./styles/global.css";
 import Reports from "./components/admin/reports/Reports";
+import { ThemeProvider } from "./theme/ThemeContext";
 
 // Lazy loading pages
 const Home = lazy(() => import("./components/common/home/Home"));
@@ -55,163 +56,165 @@ const Loader: React.FC = () => (
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Suspense fallback={<Loader />}>
-          <Routes>
-            {/* Home (marketing / cover page) */}
-            <Route path="/" element={<Layout><Home /></Layout>} />
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Suspense fallback={<Loader />}>
+            <Routes>
+              {/* Home (marketing / cover page) */}
+              <Route path="/" element={<Layout><Home /></Layout>} />
 
-            {/* Authentication pages */}
-            <Route path="/login" element={<Layout><Login /></Layout>} />
-            <Route path="/signup" element={<Layout><Signup /></Layout>} />
+              {/* Authentication pages */}
+              <Route path="/login" element={<Layout><Login /></Layout>} />
+              <Route path="/signup" element={<Layout><Signup /></Layout>} />
 
-            {/* Static pages */}
-            <Route path="/about" element={<Layout><About /></Layout>} />
-            <Route path="/contact" element={<Layout><Contact /></Layout>} />
+              {/* Static pages */}
+              <Route path="/about" element={<Layout><About /></Layout>} />
+              <Route path="/contact" element={<Layout><Contact /></Layout>} />
 
-            {/* Dashboards (protected) */}
-            <Route
-              path="/admin-dashboard"
-              element={
-                <PrivateRoute role="ADMIN">
-                  <Layout>
-                    <AdminDashboard />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* Dashboards (protected) */}
+              <Route
+                path="/admin-dashboard"
+                element={
+                  <PrivateRoute role="ADMIN">
+                    <Layout>
+                      <AdminDashboard />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/user-dashboard"
-              element={
-                <PrivateRoute role="USER">
-                  <Layout>
-                    <UserDashboard />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/user-dashboard"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout>
+                      <UserDashboard />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* User Management - ADMIN only */}
-            <Route
-              path="/user-management"
-              element={
-                <PrivateRoute role="ADMIN">
-                  <Layout>
-                    <UserManagement />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* User Management - ADMIN only */}
+              <Route
+                path="/user-management"
+                element={
+                  <PrivateRoute role="ADMIN">
+                    <Layout>
+                      <UserManagement />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* Holiday Management - ADMIN only (new) */}
-            <Route
-              path="/holiday-management"
-              element={
-                <PrivateRoute role="ADMIN">
-                  <Layout>
-                    <HolidayManagement />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* Holiday Management - ADMIN only (new) */}
+              <Route
+                path="/holiday-management"
+                element={
+                  <PrivateRoute role="ADMIN">
+                    <Layout>
+                      <HolidayManagement />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* Leave Policy Management - ADMIN only (new) */}
-            <Route
-              path="/leave-policies"
-              element={
-                <PrivateRoute role="ADMIN">
-                  <Layout>
-                    <LeavePolicyManagement />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* Leave Policy Management - ADMIN only (new) */}
+              <Route
+                path="/leave-policies"
+                element={
+                  <PrivateRoute role="ADMIN">
+                    <Layout>
+                      <LeavePolicyManagement />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* User Settings - any authenticated user (no role restriction) */}
-            <Route
-              path="/user-settings"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <UserSettings />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* User Settings - any authenticated user (no role restriction) */}
+              <Route
+                path="/user-settings"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <UserSettings />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            <Route
-              path="/user-analytics"
-              element={
-                <PrivateRoute>
-                  <Layout>
-                    <Reports />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              <Route
+                path="/user-analytics"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <Reports />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* User Holiday Tracker (read-only) */}
-            <Route
-              path="/holiday-tracker"
-              element={
-                <PrivateRoute role="USER">
-                  <Layout>
-                    <UserHolidayTracker />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* User Holiday Tracker (read-only) */}
+              <Route
+                path="/holiday-tracker"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout>
+                      <UserHolidayTracker />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* Leave Policy - USER only (new) */}
-            <Route
-              path="/leave-policy"
-              element={
-                <PrivateRoute role="USER">
-                  <Layout><LeavePolicy /></Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* Leave Policy - USER only (new) */}
+              <Route
+                path="/leave-policy"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout><LeavePolicy /></Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* Apply Leave - USER only (new) */}
-            <Route
-              path="/apply-leave"
-              element={
-                <PrivateRoute role="USER">
-                  <Layout><ApplyLeave /></Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* Apply Leave - USER only (new) */}
+              <Route
+                path="/apply-leave"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout><ApplyLeave /></Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* Office Visit - USER only (new) */}
-            <Route
-              path="/office-visit"
-              element={
-                <PrivateRoute role="USER">
-                  <Layout>
-                    <OfficeVisit />
-                  </Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* Office Visit - USER only (new) */}
+              <Route
+                path="/office-visit"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout>
+                      <OfficeVisit />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* Office Visit Analytics - USER only (new) */}
-            <Route
-              path="/office-visit-analytics"
-              element={
-                <PrivateRoute role="USER">
-                  <Layout><OfficeVisitAnalytics /></Layout>
-                </PrivateRoute>
-              }
-            />
+              {/* Office Visit Analytics - USER only (new) */}
+              <Route
+                path="/office-visit-analytics"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout><OfficeVisitAnalytics /></Layout>
+                  </PrivateRoute>
+                }
+              />
 
-            {/* 404 Page */}
-            <Route path="*" element={<Layout><NotFound /></Layout>} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
-    </AuthProvider>
+              {/* 404 Page */}
+              <Route path="*" element={<Layout><NotFound /></Layout>} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 
