@@ -143,7 +143,6 @@ const AdminDashboard: React.FC = memo(() => {
         <Header 
           title={t('dashboard.adminDashboard.title')} 
           subtitle={t('dashboard.adminDashboard.subtitle')}
-          eyebrow="Administration"
           showWave={true}
         />
         <p className="lead mb-4">Welcome, {userDisplayName} (Admin)</p>
