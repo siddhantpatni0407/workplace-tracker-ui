@@ -121,7 +121,6 @@ const UserDashboard: React.FC = memo(() => {
                 <Header
                     title={t('dashboard.userDashboard.title')}
                     subtitle={`${t('dashboard.userDashboard.subtitle')}${userDisplayName}`}
-                    eyebrow="Dashboard"
                     showWave={true}
                 />
 
