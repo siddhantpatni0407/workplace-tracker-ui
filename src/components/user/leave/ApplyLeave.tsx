@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
-import "./ApplyLeave.css";
+import "./apply-leave.css";
 
 /* DTO shapes (local) */
 type LeavePolicyDTO = {
@@ -295,7 +295,6 @@ const ApplyLeave: React.FC = () => {
             // so call it with userId instead of appending ?userId=...
             if (editing?.userLeaveId) {
                 const url = API_ENDPOINTS.USER_LEAVES.UPDATE(editing.userLeaveId);
-                console.log("PUT", url, payload);
                 const res = await fetch(url, {
                     method: "PUT",
                     headers: jsonHeaders,
@@ -310,7 +309,6 @@ const ApplyLeave: React.FC = () => {
             } else {
                 // create — use CREATE(userId) since API_ENDPOINTS now defines CREATE as a function
                 const url = API_ENDPOINTS.USER_LEAVES.CREATE(userId!);
-                console.log("POST", url, payload);
                 const res = await fetch(url, {
                     method: "POST",
                     headers: jsonHeaders,

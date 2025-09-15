@@ -11,6 +11,33 @@
   background-size: cover;
   background-position: center;
   color: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Clickable header styles */
+.header-clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.header-clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.header-clickable:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.5);
+  outline-offset: -3px;
+}
+
+.header-clickable:active {
+  transform: translateY(0);
+}
+
+/* Loading state */
+.header-loading {
+  pointer-events: none;
+  opacity: 0.7;
 }
 
 /* If user provided a bgImage via inline style, keep the gradient overlay readable */

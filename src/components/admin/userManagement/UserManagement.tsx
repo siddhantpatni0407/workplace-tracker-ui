@@ -2,39 +2,36 @@ import React, { useEffect, useMemo, useState, useRef, useCallback } from "react"
 import { useAuth } from "../../../context/AuthContext";
 import axiosInstance from "../../../services/axiosInstance";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
-import "./UserManagement.css";
-
-type Role = "ADMIN" | "USER";
+import { ErrorBoundary } from "../../ui";
+import { UserRole, SortDirection } from "../../../enums";
+import { useDebounce } from "../../../hooks";
+import { DEBOUNCE, PAGINATION } from "../../../constants/ui";
+import "./user-management.css";
 
 interface UserRow {
   userId: number;
   name: string;
   email: string;
   mobileNumber?: string | null;
-  role: Role;
+  role: UserRole;
   isActive: boolean;
   isAccountLocked: boolean;
   lastLoginTime?: string | null;
   loginAttempts?: number | null;
 }
 
-type SortDirection = "asc" | "desc" | null;
-
-const DEBOUNCE_MS = 280;
-const PAGE_SIZE = 12;
-
 const UserManagement: React.FC = () => {
   const { user } = useAuth();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
-  const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"ALL" | Role>("ALL");
+  const debouncedQuery = useDebounce(query, DEBOUNCE.SEARCH);
+  const [roleFilter, setRoleFilter] = useState<"ALL" | UserRole>("ALL");
   const [error, setError] = useState<string | null>(null);
 
   // sorting
   const [sortBy, setSortBy] = useState<keyof UserRow | null>(null);
-  const [sortDir, setSortDir] = useState<SortDirection>(null);
+  const [sortDir, setSortDir] = useState<SortDirection | null>(null);
 
   // pagination
   const [page, setPage] = useState(1);
@@ -74,11 +71,8 @@ const UserManagement: React.FC = () => {
   // modal focus ref
   const confirmConfirmBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  // debounce search
-  useEffect(() => {
-    const t = window.setTimeout(() => setDebouncedQuery(query.trim()), DEBOUNCE_MS);
-    return () => clearTimeout(t);
-  }, [query]);
+  // debounce search - handled by useDebounce hook
+  // Effect no longer needed as useDebounce handles it
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -91,7 +85,7 @@ const UserManagement: React.FC = () => {
           name: u.username || u.name || "",
           email: u.email || "",
           mobileNumber: u.mobileNumber || null,
-          role: (u.role as Role) || "USER",
+          role: (u.role as UserRole) || UserRole.USER,
           isActive: !!u.isActive,
           isAccountLocked: !!u.isAccountLocked,
           lastLoginTime: u.lastLoginTime || null,
@@ -152,25 +146,25 @@ const UserManagement: React.FC = () => {
   }, [users, debouncedQuery, roleFilter, sortBy, sortDir]);
 
   // pagination slice
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGINATION.DEFAULT_LIMIT));
   const pageSafe = Math.min(page, totalPages);
   useEffect(() => setPage(pageSafe), [pageSafe]);
   const paged = useMemo(() => {
-    const start = (pageSafe - 1) * PAGE_SIZE;
-    return filtered.slice(start, start + PAGE_SIZE);
+    const start = (pageSafe - 1) * PAGINATION.DEFAULT_LIMIT;
+    return filtered.slice(start, start + PAGINATION.DEFAULT_LIMIT);
   }, [filtered, pageSafe]);
 
   // util: toggle sort
   const handleSort = (col: keyof UserRow) => {
     if (sortBy !== col) {
       setSortBy(col);
-      setSortDir("asc");
+      setSortDir(SortDirection.ASC);
     } else {
-      if (sortDir === "asc") setSortDir("desc");
+      if (sortDir === SortDirection.ASC) setSortDir(SortDirection.DESC);
       else if (sortDir === "desc") {
         setSortBy(null);
         setSortDir(null);
-      } else setSortDir("asc");
+      } else setSortDir(SortDirection.ASC);
     }
   };
 
@@ -371,7 +365,8 @@ const UserManagement: React.FC = () => {
   }, [confirmState.open]);
 
   return (
-    <div className="user-management container-fluid py-4" data-animate="fade">
+    <ErrorBoundary>
+      <div className="user-management container-fluid py-4" data-animate="fade">
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
           <h1 className="um-title mb-0">User Management</h1>
@@ -486,7 +481,7 @@ const UserManagement: React.FC = () => {
           <input className="form-control flex-grow-1" placeholder="Search users by name, email, or mobile..." value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search users" />
           <select className="form-select w-auto" value={roleFilter} onChange={(e) => {
             const val = e.target.value;
-            if (val === "ALL" || val === "USER" || val === "ADMIN") setRoleFilter(val);
+            if (val === "ALL" || val === UserRole.USER || val === UserRole.ADMIN) setRoleFilter(val);
           }} aria-label="Filter by role">
             <option value="ALL">All</option>
             <option value="USER">User</option>
@@ -548,7 +543,7 @@ const UserManagement: React.FC = () => {
                       <td>
                         <input type="checkbox" aria-label={`Select user ${u.name}`} checked={selected.has(u.userId)} onChange={() => toggleSelect(u.userId)} />
                       </td>
-                      <td className="sno-col">{(pageSafe - 1) * PAGE_SIZE + idx + 1}</td>
+                      <td className="sno-col">{(pageSafe - 1) * PAGINATION.DEFAULT_LIMIT + idx + 1}</td>
                       <td className="userid-col">{u.userId}</td>
                       <td>{highlight(u.name, debouncedQuery)}</td>
                       <td className="text-truncate" style={{ maxWidth: 320 }}>{highlight(u.email, debouncedQuery)}</td>
@@ -571,7 +566,7 @@ const UserManagement: React.FC = () => {
 
               {/* Pagination */}
               <div className="d-flex align-items-center justify-content-between p-3 border-top">
-                <div className="small text-muted">Showing {(pageSafe - 1) * PAGE_SIZE + 1} - {Math.min(pageSafe * PAGE_SIZE, filtered.length)} of {filtered.length}</div>
+                <div className="small text-muted">Showing {(pageSafe - 1) * PAGINATION.DEFAULT_LIMIT + 1} - {Math.min(pageSafe * PAGINATION.DEFAULT_LIMIT, filtered.length)} of {filtered.length}</div>
                 <div className="btn-group" role="group" aria-label="Pagination">
                   <button className="btn btn-sm btn-outline-secondary" onClick={() => setPage(1)} disabled={pageSafe === 1}>« First</button>
                   <button className="btn btn-sm btn-outline-secondary" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={pageSafe === 1}>‹ Prev</button>
@@ -629,7 +624,8 @@ const UserManagement: React.FC = () => {
           {toast.message}
         </div>
       )}
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 };
 

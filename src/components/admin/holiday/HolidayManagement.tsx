@@ -3,10 +3,14 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { parseISO, format } from "date-fns";
 import { toast } from "react-toastify";
 import Header from "../../common/header/Header";
+import { ErrorBoundary } from "../../ui";
 import { HolidayDTO } from "../../../types/holiday";
 import { ResponseDTO } from "../../../types/api";
+import { MonthOption } from "../../../models";
+import { useDebounce } from "../../../hooks";
+import { DEBOUNCE } from "../../../constants/ui";
 import holidayService from "../../../services/holidayService";
-import "./HolidayManagement.css";
+import "./holiday-management.css";
 
 /**
  * Holiday Management - enhanced (Admin)
@@ -17,7 +21,7 @@ import "./HolidayManagement.css";
  * - Accessible create/edit modal + delete confirmation with optimistic delete & Undo
  */
 
-const MONTHS = [
+const MONTHS: MonthOption[] = [
     { value: "ALL", label: "All months" },
     { value: "01", label: "Jan" },
     { value: "02", label: "Feb" },
@@ -33,14 +37,7 @@ const MONTHS = [
     { value: "12", label: "Dec" },
 ];
 
-const useDebounced = <T,>(value: T, ms = 300) => {
-    const [v, setV] = useState(value);
-    useEffect(() => {
-        const t = setTimeout(() => setV(value), ms);
-        return () => clearTimeout(t);
-    }, [value, ms]);
-    return v;
-};
+// Remove local useDebounced as we're using the hook from infrastructure
 
 type DeleteIntent = {
     show: boolean;
@@ -62,7 +59,7 @@ const HolidayManagement: React.FC = () => {
 
     // filters
     const [q, setQ] = useState("");
-    const debouncedQ = useDebounced(q, 220);
+    const debouncedQ = useDebounce(q, DEBOUNCE.SEARCH);
     const [filterType, setFilterType] = useState<"ALL" | "MANDATORY" | "OPTIONAL">("ALL");
 
     // new admin filter controls
@@ -315,7 +312,8 @@ const HolidayManagement: React.FC = () => {
     };
 
     return (
-        <div className="container py-4">
+        <ErrorBoundary>
+            <div className="container py-4">
             <Header title="Holiday Management" subtitle="Add or update company holidays" />
 
             {/* toolbar */}
@@ -548,7 +546,8 @@ const HolidayManagement: React.FC = () => {
                     </div>
                 </div>
             )}
-        </div>
+            </div>
+        </ErrorBoundary>
     );
 };
 

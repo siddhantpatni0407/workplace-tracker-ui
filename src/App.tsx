@@ -5,9 +5,12 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import Navbar from "./components/common/navbar/Navbar";
 import Footer from "./components/common/footer/Footer";
+import { ErrorBoundary } from "./components/ui";
 import "./styles/global.css";
 import Reports from "./components/admin/reports/Reports";
 import { ThemeProvider } from "./theme/ThemeContext";
+// Initialize i18n
+import "./i18n";
 
 // Lazy loading pages
 const Home = lazy(() => import("./components/common/home/Home"));
@@ -17,6 +20,7 @@ const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDash
 const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
 const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
 const UserSettings = lazy(() => import("./components/common/userSettings/UserSettings"));
+const UserProfile = lazy(() => import("./components/common/userProfile/UserProfile"));
 const HolidayManagement = lazy(() => import("./components/admin/holiday/HolidayManagement")); // admin
 const LeavePolicyManagement = lazy(() => import("./components/admin/leavePolicyManagement/LeavePolicyManagement"));
 const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHolidayTracker")); // user tracker
@@ -56,7 +60,8 @@ const Loader: React.FC = () => (
 
 const App: React.FC = () => {
   return (
-    <ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
           <Suspense fallback={<Loader />}>
@@ -143,6 +148,18 @@ const App: React.FC = () => {
                 }
               />
 
+              {/* User Profile - any authenticated user (no role restriction) */}
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Layout>
+                      <UserProfile />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+
               <Route
                 path="/user-analytics"
                 element={
@@ -215,6 +232,7 @@ const App: React.FC = () => {
         </BrowserRouter>
       </AuthProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   );
 };
 

@@ -1,52 +1,64 @@
 // src/components/common/login/Login.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../../services/authService";
-import "./Login.css";
+import { ErrorBoundary, ErrorMessage } from "../../ui";
+import { ValidationUtils } from "../../../utils";
+import { useTranslation } from "../../../hooks/useTranslation";
+import "./login.css";
 
-const Login: React.FC = () => {
+interface LoginFormData {
+  email: string;
+  password: string;
+  captcha: string;
+}
+
+const Login: React.FC = memo(() => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [showPw, setShowPw] = useState(false);
+  const { t } = useTranslation();
+  
+  // Form state
+  const [form, setForm] = useState<LoginFormData>({
+    email: "",
+    password: "",
+    captcha: ""
+  });
+  
+  // UI state
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  // captcha states
-  const [captchaValue, setCaptchaValue] = useState(""); // text user types
-  const [captchaSolution, setCaptchaSolution] = useState(""); // expected
+  const [showPassword, setShowPassword] = useState(false);
+  const [captchaSolution, setCaptchaSolution] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // generate captcha on mount
-  useEffect(() => {
-    generateCaptcha();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Handle input changes
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
+    
+    // Clear error when user starts typing
+    if (error) {
+      setError(null);
+    }
+  }, [error]);
+
+  // Toggle password visibility
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(prev => !prev);
   }, []);
 
-  const canSubmit = useMemo(
-    () =>
-      form.email.trim() !== "" &&
-      form.password.trim() !== "" &&
-      captchaValue.trim() !== "" &&
-      !loading,
-    [form, loading, captchaValue]
-  );
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setForm((p) => ({ ...p, [name]: value }));
-  };
-
-  // Captcha generator (draws to canvas and sets solution)
-  const randomChar = () => {
-    const pool = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; // avoid ambiguous chars
+  // Generate random character for captcha
+  const randomChar = useCallback(() => {
+    const pool = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
     return pool.charAt(Math.floor(Math.random() * pool.length));
-  };
+  }, []);
 
-  const generateCaptcha = (length = 5) => {
+  // Generate new captcha
+  const generateCaptcha = useCallback((length = 5) => {
     const text = Array.from({ length }, randomChar).join("");
     setCaptchaSolution(text);
     drawCaptcha(text);
-  };
+  }, [randomChar]);
 
   const drawCaptcha = (text: string) => {
     const canvas = canvasRef.current;
@@ -114,205 +126,239 @@ const Login: React.FC = () => {
     }
   };
 
-  const handleRefreshCaptcha = (e?: React.MouseEvent) => {
+  // Generate captcha on mount
+  useEffect(() => {
+    generateCaptcha();
+  }, [generateCaptcha]);
+
+  const handleRefreshCaptcha = useCallback((e?: React.MouseEvent) => {
     e?.preventDefault();
     generateCaptcha();
-    setCaptchaValue("");
-  };
+    setForm(prev => ({ ...prev, captcha: "" }));
+  }, [generateCaptcha]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Validate form
+  const validateForm = useCallback((): string | null => {
+    if (!form.email.trim()) {
+      return t("validation.emailRequired");
+    }
+    if (!ValidationUtils.isValidEmail(form.email)) {
+      return t("validation.emailInvalid");
+    }
+    if (!form.password.trim()) {
+      return t("validation.passwordRequired");
+    }
+    if (form.password.length < 6) {
+      return t("validation.passwordMinLength");
+    }
+    if (!form.captcha.trim()) {
+      return t("validation.captchaRequired");
+    }
+    if (form.captcha.trim().toLowerCase() !== captchaSolution.trim().toLowerCase()) {
+      return t("validation.captchaInvalid");
+    }
+    return null;
+  }, [form, captchaSolution, t]);
+
+  // Check if form can be submitted
+  const canSubmit = form.email.trim() !== "" &&
+                   form.password.trim() !== "" &&
+                   form.captcha.trim() !== "" &&
+                   !loading;
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
 
-    // client-side captcha validation (case-insensitive)
-    if (captchaValue.trim().toLowerCase() !== captchaSolution.trim().toLowerCase()) {
-      setErr("Invalid captcha. Please try again.");
-      // regenerate to avoid brute force
-      generateCaptcha();
-      setCaptchaValue("");
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      if (validationError.includes("captcha")) {
+        handleRefreshCaptcha();
+      }
       return;
     }
 
-    setErr(null);
+    setError(null);
     setLoading(true);
+    
     try {
-      // send captcha answer as mathCaptchaAnswer (authService supports it)
-      const resp = await authService.login(form.email, form.password, {
-        mathCaptchaAnswer: captchaValue.trim(),
+      const response = await authService.login(form.email, form.password, {
+        mathCaptchaAnswer: form.captcha.trim(),
       });
 
-      // authService.normalizeAuthResponse maps token/accessToken into resp
-      if (resp.status === "SUCCESS" && (resp.token || resp.accessToken)) {
-        authService.saveSession(resp);
-        const role = resp.role || "USER";
+      if (response.status === "SUCCESS" && (response.token || response.accessToken)) {
+        authService.saveSession(response);
+        const role = response.role || "USER";
         navigate(role === "ADMIN" ? "/admin-dashboard" : "/user-dashboard");
         window.location.reload(); // let AuthProvider rehydrate from storage
       } else {
-        const msg =
-          resp.message?.toLowerCase().includes("locked")
-            ? "Your account is locked due to failed attempts. Reset your password or contact admin."
-            : resp.message || "Invalid credentials. Please try again.";
-        setErr(msg);
-        // regenerate captcha for next attempt
-        generateCaptcha();
-        setCaptchaValue("");
+        const message = response.message?.toLowerCase().includes("locked")
+          ? "Your account is locked due to failed attempts. Reset your password or contact admin."
+          : response.message || "Invalid credentials. Please try again.";
+        setError(message);
+        handleRefreshCaptcha();
       }
-    } catch (e: any) {
-      const msg =
-        e?.response?.data?.message ||
-        e?.message ||
-        "Something went wrong. Please try again.";
-      setErr(msg);
-      generateCaptcha();
-      setCaptchaValue("");
+    } catch (error: any) {
+      const message = error?.response?.data?.message ||
+                     error?.message ||
+                     "Something went wrong. Please try again.";
+      setError(message);
+      handleRefreshCaptcha();
     } finally {
       setLoading(false);
     }
-  };
+  }, [canSubmit, validateForm, form, handleRefreshCaptcha, navigate]);
 
   return (
-    <div className="login-bg d-flex align-items-center justify-content-center">
-      <div className="login-card shadow-lg">
-        <div className="login-head">
-          <i className="bi bi-shield-lock-fill me-2" aria-hidden />
-          Sign in
-        </div>
+    <ErrorBoundary>
+      <div className="login-bg d-flex align-items-center justify-content-center">
+        <div className="login-card shadow-lg">
+          <div className="login-head">
+            <i className="bi bi-shield-lock-fill me-2" aria-hidden />
+            Sign in
+          </div>
 
-        <div className="p-4 p-md-5">
-          {err && (
-            <div className="alert alert-danger d-flex align-items-start gap-2 mb-3" role="alert">
-              <i className="bi bi-exclamation-triangle-fill mt-1" />
-              <div>{err}</div>
-            </div>
-          )}
+          <div className="p-4 p-md-5">
+            {error && <ErrorMessage error={error} />}
 
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Email */}
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Email</label>
-              <div className="input-group input-group-lg">
-                <span className="input-group-text"><i className="bi bi-envelope-fill" /></span>
-                <input
-                  name="email"
-                  type="email"
-                  className="form-control"
-                  placeholder="you@example.com"
-                  value={form.email}
-                  onChange={handleChange}
-                  disabled={loading}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Password */}
-            <div className="mb-3">
-              <label className="form-label fw-semibold">Password</label>
-              <div className="input-group input-group-lg">
-                <span className="input-group-text"><i className="bi bi-key-fill" /></span>
-                <input
-                  name="password"
-                  type={showPw ? "text" : "password"}
-                  className="form-control"
-                  placeholder="Enter your password"
-                  value={form.password}
-                  onChange={handleChange}
-                  disabled={loading}
-                  required
-                />
-                <button
-                  type="button"
-                  className="input-group-text btn-toggle"
-                  onClick={() => setShowPw((s) => !s)}
-                  aria-label={showPw ? "Hide password" : "Show password"}
-                >
-                  <i className={`bi ${showPw ? "bi-eye-slash-fill" : "bi-eye-fill"}`} />
-                </button>
-              </div>
-            </div>
-
-            {/* CAPTCHA (image + refresh + input) */}
-            <div className="mb-3 captcha-block">
-              <label className="form-label fw-semibold small mb-2">Prove you're not a robot</label>
-
-              <div className="d-flex align-items-center gap-2 mb-2">
-                <canvas ref={canvasRef} className="captcha-canvas" aria-hidden />
-                <button
-                  type="button"
-                  className="btn btn-light captcha-refresh"
-                  onClick={handleRefreshCaptcha}
-                  title="Refresh captcha"
-                >
-                  <i className="bi bi-arrow-clockwise" />
-                </button>
+            <form onSubmit={handleSubmit} noValidate>
+              {/* Email */}
+              <div className="mb-3">
+                <label className="form-label fw-semibold">{t("auth.email")}</label>
+                <div className="input-group input-group-lg">
+                  <span className="input-group-text">
+                    <i className="bi bi-envelope-fill" />
+                  </span>
+                  <input
+                    name="email"
+                    type="email"
+                    className="form-control"
+                    placeholder={t("auth.emailPlaceholder")}
+                    value={form.email}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                  />
+                </div>
               </div>
 
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Enter Captcha"
-                value={captchaValue}
-                onChange={(e) => setCaptchaValue(e.target.value)}
-                disabled={loading}
-                aria-label="Enter captcha"
-                required
-              />
-            </div>
+              {/* Password */}
+              <div className="mb-3">
+                <label className="form-label fw-semibold">{t("auth.password")}</label>
+                <div className="input-group input-group-lg">
+                  <span className="input-group-text">
+                    <i className="bi bi-key-fill" />
+                  </span>
+                  <input
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    className="form-control"
+                    placeholder={t("auth.passwordPlaceholder")}
+                    value={form.password}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="input-group-text btn-toggle"
+                    onClick={togglePasswordVisibility}
+                    aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
+                  >
+                    <i className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"}`} />
+                  </button>
+                </div>
+              </div>
 
-            {/* Remember / Forgot */}
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="rememberMe" />
-                <label className="form-check-label" htmlFor="rememberMe">
-                  Remember me
+              {/* CAPTCHA */}
+              <div className="mb-3 captcha-block">
+                <label className="form-label fw-semibold small mb-2">
+                  {t("auth.captchaLabel")}
                 </label>
+
+                <div className="d-flex align-items-center gap-2 mb-2">
+                  <canvas ref={canvasRef} className="captcha-canvas" aria-hidden />
+                  <button
+                    type="button"
+                    className="btn btn-light captcha-refresh"
+                    onClick={handleRefreshCaptcha}
+                    title="Refresh captcha"
+                  >
+                    <i className="bi bi-arrow-clockwise" />
+                  </button>
+                </div>
+
+                <input
+                  type="text"
+                  name="captcha"
+                  className="form-control"
+                  placeholder={t("auth.captchaPlaceholder")}
+                  value={form.captcha}
+                  onChange={handleChange}
+                  disabled={loading}
+                  aria-label={t("auth.captchaAriaLabel")}
+                  required
+                />
               </div>
+
+              {/* Remember / Forgot */}
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="form-check">
+                  <input className="form-check-input" type="checkbox" id="rememberMe" />
+                  <label className="form-check-label" htmlFor="rememberMe">
+                    {t("auth.rememberMe")}
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-link p-0 small"
+                  onClick={() => navigate("/forgot-password")}
+                >
+                  {t("auth.forgotPassword")}
+                </button>
+              </div>
+
+              {/* Submit */}
+              <button
+                type="submit"
+                className="btn btn-primary btn-lg w-100 login-submit"
+                disabled={!canSubmit}
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden />
+                    {t("auth.signingIn")}
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-box-arrow-in-right me-2" />
+                    {t("auth.login")}
+                  </>
+                )}
+              </button>
+
+              {/* Divider */}
+              <div className="text-center text-muted my-3">or</div>
+
+              {/* Sign up */}
               <button
                 type="button"
-                className="btn btn-link p-0 small"
-                onClick={() => navigate("/forgot-password")}
+                className="btn btn-outline-secondary w-100"
+                onClick={() => navigate("/signup")}
+                disabled={loading}
               >
-                Forgot password?
+                <i className="bi bi-person-plus-fill me-2" />
+                Create an account
               </button>
-            </div>
-
-            {/* Submit */}
-            <button
-              type="submit"
-              className="btn btn-primary btn-lg w-100 login-submit"
-              disabled={!canSubmit}
-            >
-              {loading ? (
-                <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden />
-                  Signing in…
-                </>
-              ) : (
-                <>
-                  <i className="bi bi-box-arrow-in-right me-2" />
-                  Login
-                </>
-              )}
-            </button>
-
-            {/* Divider */}
-            <div className="text-center text-muted my-3">or</div>
-
-            {/* Sign up */}
-            <button
-              type="button"
-              className="btn btn-outline-secondary w-100"
-              onClick={() => navigate("/signup")}
-              disabled={loading}
-            >
-              <i className="bi bi-person-plus-fill me-2" />
-              Create an account
-            </button>
-          </form>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
-};
+});
+
+Login.displayName = "Login";
 
 export default Login;

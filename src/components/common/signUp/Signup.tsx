@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, memo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Role } from "../../../types/auth";
 import RoleSelect from "../../RoleSelect";
 import { authService } from "../../../services/authService";
-import "./Signup.css";
+import { ValidationUtils } from "../../../utils";
+import { ErrorBoundary, ErrorMessage } from "../../ui";
+import "./signup.css";
 
 interface FormData {
   name: string;
@@ -25,18 +27,18 @@ const initialForm: FormData = {
   acceptTerms: false,
 };
 
-const Signup: React.FC = () => {
+const Signup: React.FC = memo(() => {
   const navigate = useNavigate();
   const [form, setForm] = useState<FormData>(initialForm);
-  const [showPw, setShowPw] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof FormData, string>>>({});
 
-  const sanitizeMobile = (value: string) => value.replace(/\D/g, "").slice(0, 10);
+  const sanitizeMobile = useCallback((value: string) => value.replace(/\D/g, "").slice(0, 10), []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
     if (name === "mobileNumber") {
       setForm((p) => ({ ...p, mobileNumber: sanitizeMobile(value) }));
@@ -46,38 +48,58 @@ const Signup: React.FC = () => {
       setForm((p) => ({ ...p, [name]: value } as unknown as FormData));
     }
     setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
-    setErr(null);
-  };
+    setError(null);
+  }, [sanitizeMobile]);
 
-  const handleRoleChange = (role: Role) => setForm((p) => ({ ...p, role }));
+  const handleRoleChange = useCallback((role: Role) => setForm((p) => ({ ...p, role })), []);
 
-  // Basic validators
-  const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-  const passwordScore = (pw: string) => {
-    let score = 0;
-    if (pw.length >= 8) score++;
-    if (/[A-Z]/.test(pw)) score++;
-    if (/[0-9]/.test(pw)) score++;
-    if (/[^A-Za-z0-9]/.test(pw)) score++;
-    return score; // 0..4
-  };
+  // Password strength calculation using our validation utils
+  const passwordStrength = useMemo(() => {
+    return ValidationUtils.getPasswordStrength(form.password);
+  }, [form.password]);
 
-  const passwordStrengthLabel = (score: number) =>
-    score <= 1 ? "Weak" : score === 2 ? "Fair" : score === 3 ? "Good" : "Strong";
+  const passwordStrengthLabel = useCallback((strength: number) =>
+    strength <= 1 ? "Weak" : strength === 2 ? "Fair" : strength === 3 ? "Good" : "Strong"
+  , []);
 
-  const validate = (): boolean => {
-    const errs: Partial<Record<keyof FormData, string>> = {};
-    if (!form.name.trim()) errs.name = "Name is required";
-    if (!form.mobileNumber || form.mobileNumber.length !== 10) errs.mobileNumber = "Enter a 10-digit mobile number";
-    if (!form.email.trim() || !isEmail(form.email)) errs.email = "Enter a valid email address";
-    if (!form.password) errs.password = "Password is required";
-    else if (form.password.length < 6) errs.password = "Password must be at least 6 characters";
-    if (!form.confirmPassword) errs.confirmPassword = "Please confirm your password";
-    else if (form.confirmPassword !== form.password) errs.confirmPassword = "Passwords do not match";
-    if (!form.acceptTerms) errs.acceptTerms = "You must accept the terms and conditions";
-    setFieldErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
+  const validate = useCallback((): boolean => {
+    const errors: Partial<Record<keyof FormData, string>> = {};
+    
+    if (!form.name.trim()) {
+      errors.name = "Name is required";
+    } else if (form.name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters";
+    }
+    
+    if (!form.mobileNumber || form.mobileNumber.length !== 10) {
+      errors.mobileNumber = "Enter a 10-digit mobile number";
+    }
+    
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!ValidationUtils.isValidEmail(form.email)) {
+      errors.email = "Enter a valid email address";
+    }
+    
+    if (!form.password) {
+      errors.password = "Password is required";
+    } else if (form.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
+    }
+    
+    if (!form.confirmPassword) {
+      errors.confirmPassword = "Please confirm your password";
+    } else if (form.confirmPassword !== form.password) {
+      errors.confirmPassword = "Passwords do not match";
+    }
+    
+    if (!form.acceptTerms) {
+      errors.acceptTerms = "You must accept the terms and conditions";
+    }
+    
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }, [form]);
 
   const canSubmit = useMemo(() => {
     return (
@@ -85,20 +107,26 @@ const Signup: React.FC = () => {
       form.name.trim() !== "" &&
       form.email.trim() !== "" &&
       form.password !== "" &&
-      form.confirmPassword !== ""
+      form.confirmPassword !== "" &&
+      form.mobileNumber.length === 10 &&
+      form.acceptTerms
     );
   }, [form, loading]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword(prev => !prev);
+  }, []);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    setErr(null);
+    setError(null);
     setSuccess(null);
 
     if (!validate()) return;
 
     setLoading(true);
     try {
-      const resp = await authService.signup({
+      const response = await authService.signup({
         name: form.name,
         mobileNumber: form.mobileNumber,
         email: form.email,
@@ -106,46 +134,45 @@ const Signup: React.FC = () => {
         role: form.role,
       });
 
-      if (resp.status === "SUCCESS") {
-        setSuccess(resp.message || "Signup successful. Redirecting to login...");
+      if (response.status === "SUCCESS") {
+        setSuccess(response.message || "Signup successful. Redirecting to login...");
         // auto-login if token returned
-        if (resp.token || resp.accessToken) {
-          authService.saveSession(resp);
-          const role = resp.role || "USER";
+        if (response.token || response.accessToken) {
+          authService.saveSession(response);
+          const role = response.role || "USER";
           navigate(role === "ADMIN" ? "/admin-dashboard" : "/user-dashboard");
           window.location.reload();
           return;
         }
         setTimeout(() => navigate("/login"), 1200);
       } else {
-        setErr(resp.message || "Signup failed. Please try again.");
+        setError(response.message || "Signup failed. Please try again.");
       }
     } catch (error: any) {
       console.error("Signup error:", error);
-      setErr(error?.response?.data?.message || error?.message || "Network/server error");
+      setError(error?.response?.data?.message || error?.message || "Network/server error");
     } finally {
       setLoading(false);
     }
-  };
-
-  const strength = passwordScore(form.password);
+  }, [validate, form, navigate]);
 
   return (
-    <div className="signup-bg d-flex align-items-center justify-content-center">
-      <div className="signup-card shadow-lg">
-        <div className="signup-head">
-          <i className="bi bi-person-plus-fill me-2" />
-          Create account
-        </div>
+    <ErrorBoundary>
+      <div className="signup-bg d-flex align-items-center justify-content-center">
+        <div className="signup-card shadow-lg">
+          <div className="signup-head">
+            <i className="bi bi-person-plus-fill me-2" />
+            Create account
+          </div>
 
         <div className="p-4 p-md-5">
-          {err && (
-            <div className="alert alert-danger d-flex gap-2 align-items-start mb-3" role="alert">
-              <i className="bi bi-x-circle-fill mt-1" />
-              <div>{err}</div>
+          {error && <ErrorMessage error={error} />}
+          {success && (
+            <div className="alert alert-success mb-3" role="alert">
+              <i className="bi bi-check-circle-fill me-2" />
+              {success}
             </div>
           )}
-          {success && <div className="alert alert-success mb-3">{success}</div>}
 
           <form onSubmit={handleSubmit} noValidate>
             <div className="mb-3">
@@ -209,7 +236,7 @@ const Signup: React.FC = () => {
                 <span className="input-group-text"><i className="bi bi-key-fill" /></span>
                 <input
                   name="password"
-                  type={showPw ? "text" : "password"}
+                  type={showPassword ? "text" : "password"}
                   value={form.password}
                   onChange={handleChange}
                   className={`form-control ${fieldErrors.password ? "is-invalid" : ""}`}
@@ -220,18 +247,18 @@ const Signup: React.FC = () => {
                 <button
                   type="button"
                   className="input-group-text btn-toggle"
-                  onClick={() => setShowPw((s) => !s)}
-                  aria-label={showPw ? "Hide password" : "Show password"}
+                  onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  <i className={`bi ${showPw ? "bi-eye-slash-fill" : "bi-eye-fill"}`} />
+                  <i className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"}`} />
                 </button>
                 {fieldErrors.password && <div className="invalid-feedback">{fieldErrors.password}</div>}
               </div>
 
               <div className="password-hint mt-2 d-flex align-items-center justify-content-between">
                 <div className="strength">
-                  <div className={`strength-bar strength-${strength}`} aria-hidden />
-                  <small className="ms-2 text-muted">{passwordStrengthLabel(strength)}</small>
+                  <div className={`strength-bar strength-${passwordStrength}`} aria-hidden />
+                  <small className="ms-2 text-muted">{passwordStrengthLabel(passwordStrength)}</small>
                 </div>
                 <div className="small text-muted">Use 8+ chars, mix letters, numbers & symbols.</div>
               </div>
@@ -243,7 +270,7 @@ const Signup: React.FC = () => {
                 <span className="input-group-text"><i className="bi bi-lock-fill" /></span>
                 <input
                   name="confirmPassword"
-                  type={showPw ? "text" : "password"}
+                  type={showPassword ? "text" : "password"}
                   value={form.confirmPassword}
                   onChange={handleChange}
                   className={`form-control ${fieldErrors.confirmPassword ? "is-invalid" : ""}`}
@@ -299,8 +326,11 @@ const Signup: React.FC = () => {
           </form>
         </div>
       </div>
-    </div>
+      </div>
+    </ErrorBoundary>
   );
-};
+});
+
+Signup.displayName = "Signup";
 
 export default Signup;

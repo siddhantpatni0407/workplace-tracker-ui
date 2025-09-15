@@ -23,7 +23,7 @@ import {
     PolarRadiusAxis,
     Radar,
 } from "recharts";
-import "./OfficeVisitAnalytics.css";
+import "./office-visit-analytics.css";
 
 type AggRow = {
     period: string;
