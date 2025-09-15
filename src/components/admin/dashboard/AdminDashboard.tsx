@@ -1,27 +1,41 @@
 // src/components/admin/dashboard/AdminDashboard.tsx
-import React from "react";
+import React, { memo, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
-import "./AdminDashboard.css";
+import { UserRole } from "../../../enums";
+import { ErrorBoundary, LoadingSpinner } from "../../ui";
+import "./admin-dashboard.css";
 import LastLoginPopup from "../../common/login/lastLoginPopup/LastLoginPopup";
+
+interface AdminCard {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: string;
+  colorClass: string;
+  route: string;
+  requiresRole?: UserRole;
+}
 
 /**
  * Dashboard shows feature cards only (no stats / user table).
  * Cards use Bootstrap icons (make sure bootstrap & bootstrap-icons are included in your app).
  */
-const AdminDashboard: React.FC = () => {
-  const { user } = useAuth();
+const AdminDashboard: React.FC = memo(() => {
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
-  const cards = [
+  // Memoize admin cards configuration
+  const cards = useMemo<AdminCard[]>(() => [
     {
       id: "user-management",
       title: "User Management",
       subtitle: "Manage users, lock/unlock or change status",
       icon: "bi-people-fill",
       colorClass: "card-blue",
-      action: () => navigate("/user-management"),
+      route: "/user-management",
+      requiresRole: UserRole.ADMIN,
     },
     {
       id: "reports",
@@ -29,7 +43,8 @@ const AdminDashboard: React.FC = () => {
       subtitle: "User Analytics & Visualizations",
       icon: "bi-bar-chart-line-fill",
       colorClass: "card-purple",
-      action: () => navigate("/user-analytics"),
+      route: "/user-analytics",
+      requiresRole: UserRole.ADMIN,
     },
     {
       id: "holidays",
@@ -37,7 +52,8 @@ const AdminDashboard: React.FC = () => {
       subtitle: "Add / edit company holidays",
       icon: "bi-calendar-event-fill",
       colorClass: "card-teal",
-      action: () => navigate("/holiday-management"),
+      route: "/holiday-management",
+      requiresRole: UserRole.ADMIN,
     },
     {
       id: "leave-policies",
@@ -45,7 +61,8 @@ const AdminDashboard: React.FC = () => {
       subtitle: "Create and manage leave policies",
       icon: "bi-file-earmark-medical-fill",
       colorClass: "card-green",
-      action: () => navigate("/leave-policies"),
+      route: "/leave-policies",
+      requiresRole: UserRole.ADMIN,
     },
     {
       id: "backup",
@@ -53,7 +70,8 @@ const AdminDashboard: React.FC = () => {
       subtitle: "Create or download backups",
       icon: "bi-hdd-fill",
       colorClass: "card-teal",
-      action: () => navigate("/admin/backup"),
+      route: "/admin/backup",
+      requiresRole: UserRole.ADMIN,
     },
     {
       id: "attendance",
@@ -61,43 +79,104 @@ const AdminDashboard: React.FC = () => {
       subtitle: "Daily / Monthly summaries",
       icon: "bi-calendar-check-fill",
       colorClass: "card-orange",
-      action: () => navigate("/attendance"),
+      route: "/attendance",
+      requiresRole: UserRole.ADMIN,
     },
-  ];
+  ], []);
+
+  // Handle navigation with useCallback
+  const handleCardClick = useCallback((route: string) => {
+    navigate(route);
+  }, [navigate]);
+
+  // Check if user has admin role
+  const isAdmin = useMemo(() => {
+    return user?.role === UserRole.ADMIN;
+  }, [user?.role]);
+
+  // Filter cards based on user permissions
+  const visibleCards = useMemo(() => {
+    return cards.filter(card => 
+      !card.requiresRole || user?.role === card.requiresRole
+    );
+  }, [cards, user?.role]);
+
+  // Memoize user display name
+  const userDisplayName = useMemo(() => {
+    return user?.name || "Admin";
+  }, [user?.name]);
+
+  if (isLoading) {
+    return (
+      <div className="admin-page container-fluid py-4">
+        <Header 
+          title="Admin Dashboard" 
+          subtitle="Loading..." 
+          isLoading={true}
+        />
+        <div className="d-flex justify-content-center mt-4">
+          <LoadingSpinner size="xl" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <ErrorBoundary>
+        <div className="admin-page container-fluid py-4">
+          <Header 
+            title="Access Denied" 
+            subtitle="You don't have permission to access this page"
+            eyebrow="Error"
+          />
+        </div>
+      </ErrorBoundary>
+    );
+  }
 
   return (
-    <div className="admin-page container-fluid py-4">
-      <Header title="Admin Dashboard" subtitle="Manage users and reports" />
-      <p className="lead mb-4">Welcome, {user?.name} (Admin)</p>
+    <ErrorBoundary>
+      <div className="admin-page container-fluid py-4">
+        <Header 
+          title="Admin Dashboard" 
+          subtitle="Manage users and reports"
+          eyebrow="Administration"
+          showWave={true}
+        />
+        <p className="lead mb-4">Welcome, {userDisplayName} (Admin)</p>
 
-      <div className="cards-grid">
-        {cards.map((c) => (
-          <button
-            key={c.id}
-            className={`feature-card ${c.colorClass}`}
-            onClick={c.action}
-            aria-label={c.title}
-            type="button"
-          >
-            <div className="card-logo">
-              <i className={`bi ${c.icon}`} aria-hidden="true" />
-            </div>
+        <div className="cards-grid">
+          {visibleCards.map((c) => (
+            <button
+              key={c.id}
+              className={`feature-card ${c.colorClass}`}
+              onClick={() => handleCardClick(c.route)}
+              aria-label={`Navigate to ${c.title}`}
+              type="button"
+            >
+              <div className="card-logo">
+                <i className={`bi ${c.icon}`} aria-hidden="true" />
+              </div>
 
-            <div className="card-content">
-              <h5 className="card-title">{c.title}</h5>
-              <p className="card-sub">{c.subtitle}</p>
-            </div>
+              <div className="card-content">
+                <h5 className="card-title">{c.title}</h5>
+                <p className="card-sub">{c.subtitle}</p>
+              </div>
 
-            <div className="card-cta">
-              <span className="btn btn-sm btn-light">Open</span>
-            </div>
-          </button>
-        ))}
+              <div className="card-cta">
+                <span className="btn btn-sm btn-light">Open</span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <LastLoginPopup lastLoginTime={user?.lastLoginTime ?? null} />
       </div>
-
-      <LastLoginPopup lastLoginTime={user?.lastLoginTime ?? null} />
-    </div>
+    </ErrorBoundary>
   );
-};
+});
+
+AdminDashboard.displayName = 'AdminDashboard';
 
 export default AdminDashboard;

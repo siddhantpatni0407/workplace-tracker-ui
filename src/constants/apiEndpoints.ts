@@ -28,6 +28,11 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/user/settings?userId=${userId}`,
   },
 
+  USER: {
+    SETTINGS: `${API_BASE_URL}/user-settings`,
+    PROFILE: `${API_BASE_URL}/user-profile`,
+  },
+
   DASHBOARD: {
     ADMIN: `${API_BASE_URL}/dashboard/admin`,
     USER: `${API_BASE_URL}/dashboard/user`,

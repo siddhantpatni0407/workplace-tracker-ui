@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./Contact.css";
+import "./contact.css";
 
 type FormState = {
   name: string;

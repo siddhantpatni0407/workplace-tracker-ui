@@ -3,49 +3,170 @@
   --home-footer-gap: 72px; /* fallback */
 }
 
-/* full-bleed app base */
+/* Keyframe animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0px); 
+  }
+  50% { 
+    transform: translateY(-6px); 
+  }
+}
+
+/* full-bleed app base - remove all default spacing */
 html, body, #root {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-/* add subtle overlay on top of body background (non-blocking) */
-.home-body-overlay::before {
-  content: "";
+/* Hide body overflow only when home page is active */
+body.home-active {
+  overflow: hidden !important;
+  height: 100vh !important;
+}
+
+html:has(.home-root) {
+  overflow: hidden !important;
+}
+
+/* Ensure body has no default margins that could cause scrolling */
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Remove any default spacing from main containers */
+.App {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Ensure no container or wrapper adds unwanted spacing on home page */
+body.home-active .container, 
+body.home-active .container-fluid, 
+body.home-active main:not(.home-root) {
+  margin: 0 !important;
+  padding: 0 !important;
+  max-width: none !important;
+}
+
+/* Reset Bootstrap spacing only outside the home card */
+body.home-active .row:not(.home-card .row) {
+  margin: 0 !important;
+}
+
+/* Allow normal spacing inside the home card */
+.home-card .row {
+  margin: 0;
+}
+
+.home-card .col, 
+.home-card .col-md-6, 
+.home-card [class*="col-"] {
+  padding: inherit;
+}
+
+
+
+/* root: center the card within full viewport */
+.home-root {
   position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  padding-bottom: 60px; /* Space for smaller footer */
+  box-sizing: border-box;
+  overflow: hidden; /* Prevent any scrolling within home */
+  z-index: 3;
+  animation: fadeInUp 0.6s ease-out;
+  
+  /* Background image using CSS custom property with fallbacks */
+  background: 
+    var(--home-bg-image),
+    linear-gradient(135deg, #667eea 0%, #764ba2 100%),
+    linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #1a1a2e 100%);
+  background-size: cover, cover, cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  
+  /* Fallback background color */
+  background-color: #1a1a2e;
+}
+
+/* Add background overlay directly to home-root */
+.home-root::before {
+  content: "";
+  position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(8,10,26,0.18), rgba(13,110,253,0.03) 60%);
+  background: linear-gradient(
+    180deg, 
+    rgba(8,10,26,0.4) 0%, 
+    rgba(13,110,253,0.1) 40%,
+    rgba(8,10,26,0.3) 100%
+  );
   pointer-events: none;
   z-index: 1;
 }
 
-/* root: center the card within available viewport minus footer gap */
-.home-root {
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2.25rem;
-  min-height: calc(100vh - var(--home-footer-gap));
-  box-sizing: border-box;
-  overflow: visible; /* allow vertical scrolling if needed */
-  z-index: 3;
+/* Add backdrop blur for better visual separation */
+.home-root::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(1px) brightness(0.9);
+  pointer-events: none;
+  z-index: 2;
 }
 
-/* Card centered, consistent sizing */
+/* Card centered, responsive sizing */
 .home-card {
-  width: min(var(--card-max), 92%);
-  border-radius: 12px;
+  width: min(var(--card-max), 95vw);
+  max-height: 85vh;
+  border-radius: 16px;
   overflow: hidden;
-  background: linear-gradient(180deg, #ffffff, #fbfdff);
-  box-shadow: 0 22px 60px rgba(2,6,23,0.24);
-  z-index: 4;
-  /* ensure card never grows taller than available area */
-  max-height: calc(100vh - var(--home-footer-gap) - 40px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(251,253,255,0.92));
+  backdrop-filter: blur(15px) saturate(1.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  box-shadow: 
+    0 25px 70px rgba(2,6,23,0.4),
+    0 10px 30px rgba(2,6,23,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+  z-index: 10;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.8s ease-out;
+  position: relative;
+}
+
+/* Card hover effect */
+.home-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 35px 90px rgba(2,6,23,0.5),
+    0 15px 40px rgba(2,6,23,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.6);
 }
 
 /* if vertical space is tight, allow internal scrolling inside card rather than forcing body scroll */
@@ -76,9 +197,41 @@ html, body, #root {
 .home-sub { color: rgba(255,255,255,0.92); margin-bottom: 1rem; font-size: 1rem; }
 
 /* features */
-.home-features { margin: 1rem 0 0; padding: 0; list-style: none; color: rgba(255,255,255,0.95); font-size: 0.95rem; }
-.home-features li { display:flex; align-items:center; margin-bottom:0.6rem; }
-.home-features .dot { width:10px; height:10px; border-radius:50%; background:#ffd54a; margin-right:0.7rem; box-shadow: 0 6px 18px rgba(0,0,0,0.12); }
+.home-features { 
+  margin: 1rem 0 0; 
+  padding: 0; 
+  list-style: none; 
+  color: rgba(255,255,255,0.95); 
+  font-size: 0.95rem; 
+}
+
+.home-features li { 
+  display: flex; 
+  align-items: center; 
+  margin-bottom: 0.8rem;
+  opacity: 0;
+  animation: slideInLeft 0.6s ease forwards;
+}
+
+.home-features li:nth-child(1) { animation-delay: 0.2s; }
+.home-features li:nth-child(2) { animation-delay: 0.3s; }
+.home-features li:nth-child(3) { animation-delay: 0.4s; }
+.home-features li:nth-child(4) { animation-delay: 0.5s; }
+
+.home-features .dot { 
+  width: 12px; 
+  height: 12px; 
+  border-radius: 50%; 
+  background: linear-gradient(45deg, #ffd54a, #ffeb3b);
+  margin-right: 0.8rem; 
+  box-shadow: 0 8px 20px rgba(255,213,74,0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
 
 /* right column */
 .home-right { background: #fff; padding: 2rem; display:flex; align-items:center; justify-content:center; }
@@ -91,33 +244,99 @@ html, body, #root {
   background: linear-gradient(90deg,#1848ff,#5b2df8);
   border: none;
   color: #fff;
-  padding: 0.72rem 1rem;
+  padding: 0.82rem 1.2rem;
   font-weight: 600;
-  transition: transform .12s ease, box-shadow .12s ease;
-  box-shadow: 0 8px 28px rgba(24,72,255,0.12);
-  border-radius: 8px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 35px rgba(24,72,255,0.25);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
 }
-.btn-solid:hover, .btn-solid:focus { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(24,72,255,0.14); }
+
+.btn-solid::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-solid:hover::before {
+  left: 100%;
+}
+
+.btn-solid:hover, .btn-solid:focus { 
+  transform: translateY(-4px) scale(1.02); 
+  box-shadow: 0 20px 50px rgba(24,72,255,0.35);
+}
+
 .btn-outline {
-  background: transparent;
-  border: 1px solid rgba(24,72,255,0.12);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(24,72,255,0.2);
   color: #1848ff;
-  padding: 0.7rem 1rem;
+  padding: 0.8rem 1.2rem;
   font-weight: 600;
-  border-radius: 8px;
+  border-radius: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.btn-outline:hover, .btn-outline:focus { transform: translateY(-2px); background: rgba(24,72,255,0.04); }
-.btn-link-muted { color:#6c757d; text-decoration:underline; background:transparent; border:none; }
+
+.btn-outline:hover, .btn-outline:focus { 
+  transform: translateY(-3px); 
+  background: rgba(24,72,255,0.1);
+  border-color: rgba(24,72,255,0.4);
+  box-shadow: 0 15px 35px rgba(24,72,255,0.15);
+}
+
+.btn-link-muted { 
+  color:#6c757d; 
+  text-decoration:underline; 
+  background:transparent; 
+  border:none;
+  transition: all 0.2s ease;
+}
+
+.btn-link-muted:hover {
+  color: #1848ff;
+  text-decoration: none;
+}
 
 /* small meta */
 .small-meta { opacity:0.92; }
 
 /* responsive */
 @media (max-width: 991px) {
-  .home-card { width: 98%; }
-  .home-left { padding: 1.75rem; }
-  .home-right { padding: 1.25rem; }
-  .home-title { font-size: 1.6rem; }
+  .home-root {
+    padding: 0.5rem;
+  }
+  
+  .home-card { 
+    width: 98vw; 
+    max-height: 90vh;
+  }
+  
+  .home-left { padding: 1.5rem; }
+  .home-right { padding: 1rem; }
+  .home-title { font-size: 1.4rem; }
+}
+
+@media (max-width: 767px) {
+  .home-root {
+    padding: 0.25rem;
+  }
+  
+  .home-card {
+    width: 99vw;
+    max-height: 95vh;
+    border-radius: 12px;
+  }
+  
+  .home-left { padding: 1rem; }
+  .home-right { padding: 0.75rem; }
+  .home-title { font-size: 1.3rem; }
 }
 
 /* animations */
@@ -143,6 +362,20 @@ a.btn:focus, .btn:focus { outline: 3px solid rgba(24,72,255,0.12); outline-offse
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Make footer smaller on home page */
+body.home-active footer {
+  padding: 8px 12px !important;
+  font-size: 0.8rem !important;
+  min-height: auto !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 60 !important;
+  background: rgba(29, 31, 35, 0.85) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 /* if footer contains inner content elements, ensure they are visible */

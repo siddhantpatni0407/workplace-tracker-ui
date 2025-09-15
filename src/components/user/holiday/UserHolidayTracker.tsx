@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Header from "../../common/header/Header";
 import { HolidayDTO } from "../../../types/holiday";
 import holidayService from "../../../services/holidayService";
-import "./UserHolidayTracker.css";
+import "./user-holiday-tracker.css";
 
 /**
  * UserHolidayTracker - read-only user view of holidays configured by admin

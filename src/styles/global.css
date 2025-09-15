@@ -1,6 +1,13 @@
 /* ===============================
-   Global Theme Variables
+   Global Theme Variables & Font Support
    =============================== */
+
+/* Global font family with Devanagari support */
+* {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', 
+               'Noto Sans', 'Noto Sans Devanagari', 'Apple Color Emoji', 'Segoe UI Emoji', 
+               'Segoe UI Symbol', sans-serif;
+}
 
 /* Light theme (default) */
 :root {

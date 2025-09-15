@@ -1,9 +1,12 @@
 // src/components/common/userSettings/UserSettings.tsx
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from "react";
 import axiosInstance from "../../../services/axiosInstance";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { useAuth } from "../../../context/AuthContext";
-import "./UserSettings.css";
+import { ApiResponse } from "../../../models";
+import { ErrorBoundary, ErrorMessage, LoadingSpinner } from "../../ui";
+import Header from "../header/Header";
+import "./user-settings.css";
 
 import {
   Option,
@@ -13,24 +16,23 @@ import {
   DATE_FORMATS,
 } from "../../../constants/userSettingsOptions";
 
-type ApiResponse<T> = {
-  status: string;
-  message?: string;
-  data?: T;
-};
-
-type SettingsData = {
+interface UserSettingsData {
   userSettingId?: number | null;
   userId?: number | null;
   timezone?: string | null;
   workWeekStart?: number | null;
   language?: string | null;
   dateFormat?: string | null;
-};
+}
+
+interface ToastMessage {
+  message: string;
+  kind?: "success" | "error";
+}
 
 const AUTO_DISMISS_MS = 3500;
 
-const UserSettings: React.FC = () => {
+const UserSettings: React.FC = memo(() => {
   const { user } = useAuth();
   const authUserId = user?.userId ?? null;
 
@@ -39,7 +41,7 @@ const UserSettings: React.FC = () => {
   const [info, setInfo] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  const [settings, setSettings] = useState<SettingsData>({
+  const [settings, setSettings] = useState<UserSettingsData>({
     userSettingId: null,
     userId: authUserId ?? null,
     timezone: null,
@@ -54,7 +56,7 @@ const UserSettings: React.FC = () => {
 
   const clearMessageTimerRef = useRef<number | null>(null);
   const toastTimerRef = useRef<number | null>(null);
-  const [toast, setToast] = useState<{ message: string; kind?: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   useEffect(() => {
     return () => {
@@ -86,14 +88,47 @@ const UserSettings: React.FC = () => {
     setSuccess(null);
   }, []);
 
-  const axiosErrorMessage = (err: unknown): string | null => {
-    if (!err) return null;
-    // @ts-ignore
-    if (err?.response?.data?.message) return String(err.response.data.message);
-    // @ts-ignore
-    if (err?.message) return String(err.message);
+  // Enhanced error message handling
+  const getErrorMessage = useCallback((err: unknown): string => {
+    if (!err) return "An unknown error occurred";
+    
+    // Check for axios error response
+    if (typeof err === 'object' && err !== null && 'response' in err) {
+      const axiosError = err as any;
+      if (axiosError.response?.data?.message) {
+        return String(axiosError.response.data.message);
+      }
+    }
+    
+    // Check for general error message
+    if (typeof err === 'object' && err !== null && 'message' in err) {
+      return String((err as any).message);
+    }
+    
     return String(err);
-  };
+  }, []);
+
+  const validateSettings = useCallback((settingsData: UserSettingsData): string | null => {
+    // Basic validation for settings
+    if (settingsData.workWeekStart !== null && settingsData.workWeekStart !== undefined && 
+        (settingsData.workWeekStart < 0 || settingsData.workWeekStart > 6)) {
+      return "Work week start must be between 0 (Sunday) and 6 (Saturday)";
+    }
+    
+    if (settingsData.timezone && typeof settingsData.timezone !== 'string') {
+      return "Invalid timezone format";
+    }
+    
+    if (settingsData.language && typeof settingsData.language !== 'string') {
+      return "Invalid language format";
+    }
+    
+    if (settingsData.dateFormat && typeof settingsData.dateFormat !== 'string') {
+      return "Invalid date format";
+    }
+    
+    return null;
+  }, []);
 
   const handleNotFoundResponse = useCallback(
     (id: string | number, message: string) => {
@@ -116,7 +151,7 @@ const UserSettings: React.FC = () => {
       setLoading(true);
       try {
         const url = API_ENDPOINTS.USER_SETTINGS.GET(id);
-        const resp = await axiosInstance.get<ApiResponse<SettingsData>>(url);
+        const resp = await axiosInstance.get<ApiResponse<UserSettingsData>>(url);
 
         if (resp?.data?.status === "SUCCESS" && resp.data.data) {
           const d = resp.data.data;
@@ -136,7 +171,7 @@ const UserSettings: React.FC = () => {
       } catch (err: unknown) {
         // @ts-ignore
         const status = err?.response?.status;
-        const msgFromServer = axiosErrorMessage(err) ?? "Network/server error";
+        const msgFromServer = getErrorMessage(err);
         if (status === 404 || /not found/i.test(String(msgFromServer))) {
           handleNotFoundResponse(id, msgFromServer);
         } else {
@@ -148,7 +183,7 @@ const UserSettings: React.FC = () => {
         setLoading(false);
       }
     },
-    [resetMessages, showToast, handleNotFoundResponse]
+    [resetMessages, showToast, handleNotFoundResponse, getErrorMessage]
   );
 
   useEffect(() => {
@@ -159,6 +194,14 @@ const UserSettings: React.FC = () => {
     resetMessages();
     if (!authUserId) {
       setError("No authenticated user.");
+      return;
+    }
+
+    // Validate settings before saving
+    const validationError = validateSettings(settings);
+    if (validationError) {
+      setError(validationError);
+      showToast(validationError, "error");
       return;
     }
 
@@ -173,7 +216,7 @@ const UserSettings: React.FC = () => {
     setLoading(true);
     try {
       const url = API_ENDPOINTS.USER_SETTINGS.UPSERT(authUserId);
-      const resp = await axiosInstance.put<ApiResponse<SettingsData>>(url, payload);
+      const resp = await axiosInstance.put<ApiResponse<UserSettingsData>>(url, payload);
       if (resp?.data?.status === "SUCCESS" && resp.data.data) {
         setSettings({ ...resp.data.data });
         setSuccess(resp.data.message ?? "Settings saved.");
@@ -185,18 +228,18 @@ const UserSettings: React.FC = () => {
       }
     } catch (err: unknown) {
       console.error("saveSettings error:", err);
-      const msg = axiosErrorMessage(err) || "Network/server error";
+      const msg = getErrorMessage(err);
       setError(msg);
       showToast(msg, "error");
     } finally {
       setLoading(false);
     }
-  }, [authUserId, settings, resetMessages, showToast]);
+  }, [authUserId, settings, resetMessages, showToast, getErrorMessage, validateSettings]);
 
   // open modal instead of window.confirm
   const requestDelete = () => setConfirmOpen(true);
 
-  const performDelete = async () => {
+  const performDelete = useCallback(async () => {
     if (!authUserId) return;
     setConfirmLoading(true);
     setLoading(true);
@@ -221,7 +264,7 @@ const UserSettings: React.FC = () => {
       }
     } catch (err: unknown) {
       console.error("deleteSettings error:", err);
-      const msg = axiosErrorMessage(err) || "Network/server error";
+      const msg = getErrorMessage(err);
       setError(msg);
       showToast(msg, "error");
     } finally {
@@ -229,35 +272,58 @@ const UserSettings: React.FC = () => {
       setConfirmOpen(false);
       setLoading(false);
     }
-  };
+  }, [authUserId, getErrorMessage, showToast]);
+
+  // Form handlers with proper TypeScript
+  const handleTimezoneChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSettings((prev: UserSettingsData) => ({ ...prev, timezone: e.target.value || null }));
+  }, []);
+
+  const handleWorkWeekChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSettings((prev: UserSettingsData) => ({ 
+      ...prev, 
+      workWeekStart: e.target.value ? Number(e.target.value) : null 
+    }));
+  }, []);
+
+  const handleLanguageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSettings((prev: UserSettingsData) => ({ ...prev, language: e.target.value || null }));
+  }, []);
+
+  const handleDateFormatChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSettings((prev: UserSettingsData) => ({ ...prev, dateFormat: e.target.value || null }));
+  }, []);
 
   const canSave = useMemo(() => !!authUserId && !loading, [authUserId, loading]);
 
   return (
-    <>
-      <div className="user-settings container-fluid py-4">
-        <div className="d-flex align-items-center justify-content-between mb-3">
-          <div>
-            <h1 className="um-title mb-0">User Settings</h1>
-            <div className="text-muted small">Manage your preferences</div>
-          </div>
-
-          <div className="d-flex gap-2">
+    <ErrorBoundary>
+      <div className="user-settings">
+        <Header 
+          title="User Settings" 
+          subtitle="Manage your preferences and account settings"
+          actions={
             <button
-              className="btn btn-sm btn-outline-primary"
+              className="btn btn-outline-light btn-sm"
               onClick={() => authUserId && loadSettings(authUserId)}
               disabled={loading || !authUserId}
               title="Reload settings"
             >
-              {loading ? <span className="spinner-border spinner-border-sm me-2" /> : <i className="bi bi-arrow-clockwise me-1" />}
+              {loading ? (
+                <LoadingSpinner size="sm" className="me-2" />
+              ) : (
+                <i className="bi bi-arrow-clockwise me-1" />
+              )}
               Reload
             </button>
-          </div>
-        </div>
+          }
+        />
 
-        {info && <div className="alert alert-info narrow fade-in">{info}</div>}
-        {error && <div className="alert alert-danger narrow fade-in">{error}</div>}
-        {success && <div className="alert alert-success narrow fade-in">{success}</div>}
+        <div className="container py-4">
+          {/* Enhanced error/success message display */}
+          {info && <div className="alert alert-info narrow fade-in">{info}</div>}
+          {error && <ErrorMessage error={error} variant="danger" className="narrow fade-in" />}
+          {success && <div className="alert alert-success narrow fade-in">{success}</div>}
 
         <div className="card shadow-sm p-3 user-settings-card">
           <div className="row g-3 align-items-center">
@@ -269,7 +335,8 @@ const UserSettings: React.FC = () => {
                 <select
                   className="form-select"
                   value={settings.timezone ?? ""}
-                  onChange={(e) => setSettings((s) => ({ ...s, timezone: e.target.value || null }))}
+                  onChange={handleTimezoneChange}
+                  disabled={loading}
                 >
                   {TIMEZONES.map((tz: Option<string>) => (
                     <option key={String(tz.value ?? "empty")} value={tz.value ?? ""}>
@@ -288,9 +355,8 @@ const UserSettings: React.FC = () => {
                 <select
                   className="form-select"
                   value={settings.workWeekStart ?? ""}
-                  onChange={(e) =>
-                    setSettings((s) => ({ ...s, workWeekStart: e.target.value ? Number(e.target.value) : null }))
-                  }
+                  onChange={handleWorkWeekChange}
+                  disabled={loading}
                 >
                   {WORK_WEEK_STARTS.map((o: Option<number>) => (
                     <option key={String(o.value ?? "empty")} value={o.value ?? ""}>
@@ -309,7 +375,8 @@ const UserSettings: React.FC = () => {
                 <select
                   className="form-select"
                   value={settings.language ?? ""}
-                  onChange={(e) => setSettings((s) => ({ ...s, language: e.target.value || null }))}
+                  onChange={handleLanguageChange}
+                  disabled={loading}
                 >
                   {LANGUAGES.map((o: Option<string>) => (
                     <option key={String(o.value ?? "empty")} value={o.value ?? ""}>
@@ -328,7 +395,8 @@ const UserSettings: React.FC = () => {
                 <select
                   className="form-select"
                   value={settings.dateFormat ?? ""}
-                  onChange={(e) => setSettings((s) => ({ ...s, dateFormat: e.target.value || null }))}
+                  onChange={handleDateFormatChange}
+                  disabled={loading}
                 >
                   {DATE_FORMATS.map((o: Option<string>) => (
                     <option key={String(o.value ?? "empty")} value={o.value ?? ""}>
@@ -341,10 +409,28 @@ const UserSettings: React.FC = () => {
           </div>
 
           <div className="mt-3 d-flex gap-2">
-            <button className="btn btn-primary btn-lg" onClick={saveSettings} disabled={!canSave}>
-              <i className="bi bi-save me-1"></i> {loading ? "Saving..." : "Save"}
+            <button 
+              className="btn btn-primary btn-lg" 
+              onClick={saveSettings} 
+              disabled={!canSave}
+              aria-label="Save user settings"
+            >
+              <i className="bi bi-save me-1"></i> 
+              {loading ? (
+                <>
+                  <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" />
+                  Saving...
+                </>
+              ) : (
+                "Save"
+              )}
             </button>
-            <button className="btn btn-danger btn-lg" onClick={requestDelete} disabled={!canSave}>
+            <button 
+              className="btn btn-danger btn-lg" 
+              onClick={requestDelete} 
+              disabled={!canSave}
+              aria-label="Delete user settings"
+            >
               <i className="bi bi-trash me-1"></i> Delete
             </button>
           </div>
@@ -355,14 +441,15 @@ const UserSettings: React.FC = () => {
             {toast.message}
           </div>
         )}
+        </div>
       </div>
 
-      {/* Inline modal */}
+      {/* Enhanced confirmation modal */}
       {confirmOpen && (
-        <div className="us-modal-backdrop">
+        <div className="us-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
           <div className="us-modal">
             <div className="us-modal-header">
-              <h5 className="us-modal-title">Delete settings?</h5>
+              <h5 id="delete-modal-title" className="us-modal-title">Delete settings?</h5>
             </div>
             <div className="us-modal-body">
               <p>
@@ -371,18 +458,37 @@ const UserSettings: React.FC = () => {
               </p>
             </div>
             <div className="us-modal-footer">
-              <button className="btn btn-outline-secondary" onClick={() => setConfirmOpen(false)} disabled={confirmLoading}>
+              <button 
+                className="btn btn-outline-secondary" 
+                onClick={() => setConfirmOpen(false)} 
+                disabled={confirmLoading}
+                aria-label="Cancel deletion"
+              >
                 Cancel
               </button>
-              <button className="btn btn-danger" onClick={performDelete} disabled={confirmLoading}>
-                {confirmLoading ? "Deleting..." : "Delete"}
+              <button 
+                className="btn btn-danger" 
+                onClick={performDelete} 
+                disabled={confirmLoading}
+                aria-label="Confirm deletion"
+              >
+                {confirmLoading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete"
+                )}
               </button>
             </div>
           </div>
         </div>
       )}
-    </>
+    </ErrorBoundary>
   );
-};
+});
+
+UserSettings.displayName = "UserSettings";
 
 export default UserSettings;

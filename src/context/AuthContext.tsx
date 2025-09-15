@@ -1,14 +1,15 @@
 // src/context/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from "react";
 import { authService, SignupData, AuthResponse } from "../services/authService";
-import { Role } from "../types/auth";
+import { UserRole } from "../enums";
 
+// Legacy compatibility - keep the old interface temporarily
 export interface User {
   userId?: number;
   name: string;
   mobileNumber?: string;
   email?: string;
-  role?: Role;
+  role?: UserRole;
   isActive?: boolean;
   lastLoginTime?: string | null;
   loginAttempts?: number | null;
@@ -22,9 +23,18 @@ interface AuthContextType {
   signup: (user: SignupData) => Promise<AuthResponse>;
   logout: () => void;
   tryRefresh: () => Promise<boolean>;
+  updateUser: (updates: Partial<User>) => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Storage keys
+const STORAGE_KEYS = {
+  USER: 'workplace_tracker_user',
+  TOKEN: 'workplace_tracker_token',
+  REFRESH_TOKEN: 'workplace_tracker_refresh_token'
+} as const;
 
 function normalizeStoredUser(raw: any): User | null {
   if (!raw) return null;
@@ -36,13 +46,14 @@ function normalizeStoredUser(raw: any): User | null {
       name: obj?.name ?? "",
       mobileNumber: obj?.mobileNumber ?? obj?.mobile,
       email: obj?.email ?? obj?.username,
-      role: obj?.role,
+      role: obj?.role as UserRole,
       isActive: obj?.isActive,
       lastLoginTime: obj?.lastLoginTime ?? null,
       loginAttempts: typeof obj?.loginAttempts === "number" ? obj.loginAttempts : null,
       accountLocked: typeof obj?.accountLocked === "boolean" ? obj.accountLocked : null,
     };
-  } catch {
+  } catch (error) {
+    console.error('Error normalizing stored user:', error);
     return null;
   }
 }
@@ -53,11 +64,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return normalizeStoredUser(stored);
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   // Attempt to refresh token on app mount (if refresh cookie present)
   useEffect(() => {
     let mounted = true;
     const init = async () => {
       try {
+        setIsLoading(true);
         const refreshed = await authService.refresh();
         if (refreshed?.status === "SUCCESS" && (refreshed.accessToken || refreshed.token)) {
           authService.saveSession(refreshed);
@@ -68,6 +82,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       } catch {
         // ignore - user stays unauthenticated
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
     init();
@@ -76,6 +94,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const tryRefresh = useCallback(async (): Promise<boolean> => {
     try {
+      setIsLoading(true);
       const refreshed = await authService.refresh();
       if (refreshed?.status === "SUCCESS" && (refreshed.accessToken || refreshed.token)) {
         authService.saveSession(refreshed);
@@ -85,67 +104,102 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } catch {
       // ignore
+    } finally {
+      setIsLoading(false);
     }
     return false;
   }, []);
 
   const login = useCallback(async (email: string, password: string): Promise<AuthResponse> => {
-    const resp = await authService.login(email, password);
+    setIsLoading(true);
+    try {
+      const resp = await authService.login(email, password);
 
-    if (resp.status === "SUCCESS" && (resp.accessToken || resp.token)) {
-      authService.saveSession(resp);
-      const saved = normalizeStoredUser(authService.getUser());
+      if (resp.status === "SUCCESS" && (resp.accessToken || resp.token)) {
+        authService.saveSession(resp);
+        const saved = normalizeStoredUser(authService.getUser());
 
-      setUser(
-        saved ?? {
-          userId: resp.userId ?? undefined,
-          name: resp.name ?? "",
-          email,
-          role: resp.role ?? undefined,
-          isActive: resp.isActive ?? undefined,
-          lastLoginTime: resp.lastLoginTime ?? null,
-          loginAttempts: resp.loginAttempts ?? null,
-          accountLocked: resp.accountLocked ?? null,
-        }
-      );
+        setUser(
+          saved ?? {
+            userId: resp.userId ?? undefined,
+            name: resp.name ?? "",
+            email,
+            role: resp.role as UserRole ?? undefined,
+            isActive: resp.isActive ?? undefined,
+            lastLoginTime: resp.lastLoginTime ?? null,
+            loginAttempts: resp.loginAttempts ?? null,
+            accountLocked: resp.accountLocked ?? null,
+          }
+        );
 
-      localStorage.setItem("lastLoginShown", "false");
+        localStorage.setItem("lastLoginShown", "false");
+      }
+
+      return resp;
+    } finally {
+      setIsLoading(false);
     }
-
-    return resp;
   }, []);
 
   const signup = useCallback(async (newUser: SignupData): Promise<AuthResponse> => {
-    const resp = await authService.signup(newUser);
+    setIsLoading(true);
+    try {
+      const resp = await authService.signup(newUser);
 
-    if (resp.status === "SUCCESS" && (resp.accessToken || resp.token)) {
-      authService.saveSession(resp);
-      const saved = normalizeStoredUser(authService.getUser());
+      if (resp.status === "SUCCESS" && (resp.accessToken || resp.token)) {
+        authService.saveSession(resp);
+        const saved = normalizeStoredUser(authService.getUser());
 
-      setUser(
-        saved ?? {
-          userId: resp.userId ?? undefined,
-          name: newUser.name,
-          mobileNumber: (newUser as any).mobileNumber ?? (newUser as any).mobile ?? undefined,
-          email: (newUser as any).email,
-          role: (newUser as any).role,
-          lastLoginTime: resp.lastLoginTime ?? null,
-          isActive: resp.isActive ?? undefined,
-          loginAttempts: resp.loginAttempts ?? null,
-          accountLocked: resp.accountLocked ?? null,
-        }
-      );
+        setUser(
+          saved ?? {
+            userId: resp.userId ?? undefined,
+            name: newUser.name,
+            mobileNumber: (newUser as any).mobileNumber ?? (newUser as any).mobile ?? undefined,
+            email: (newUser as any).email,
+            role: (newUser as any).role as UserRole,
+            lastLoginTime: resp.lastLoginTime ?? null,
+            isActive: resp.isActive ?? undefined,
+            loginAttempts: resp.loginAttempts ?? null,
+            accountLocked: resp.accountLocked ?? null,
+          }
+        );
 
-      localStorage.setItem("lastLoginShown", "false");
+        localStorage.setItem("lastLoginShown", "false");
+      }
+
+      return resp;
+    } finally {
+      setIsLoading(false);
     }
-
-    return resp;
   }, []);
 
   const logout = useCallback(() => {
-    authService.logout();
-    setUser(null);
-    localStorage.removeItem("lastLoginShown");
+    setIsLoading(true);
+    try {
+      authService.logout();
+      setUser(null);
+      localStorage.removeItem("lastLoginShown");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  const updateUser = useCallback((updates: Partial<User>) => {
+    setUser(currentUser => {
+      if (!currentUser) return null;
+      
+      const updatedUser = { ...currentUser, ...updates };
+      
+      // Save to storage if auth service supports it
+      try {
+        const userData = JSON.stringify(updatedUser);
+        localStorage.setItem(STORAGE_KEYS.USER, userData);
+      } catch (error) {
+        console.error('Failed to save updated user to storage:', error);
+      }
+      
+      return updatedUser;
+    });
   }, []);
 
   const isAuthenticated = useMemo(() => !!user, [user]);
@@ -156,8 +210,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     login,
     signup,
     logout,
-    tryRefresh
-  }), [user, isAuthenticated, login, signup, logout, tryRefresh]);
+    tryRefresh,
+    updateUser,
+    isLoading
+  }), [user, isAuthenticated, login, signup, logout, tryRefresh, updateUser, isLoading]);
 
   return (
     <AuthContext.Provider value={contextValue}>

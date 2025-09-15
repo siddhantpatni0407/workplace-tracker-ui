@@ -1,4 +1,13 @@
 // src/constants/userSettingsOptions.ts
+import { 
+  WeekStartDay, 
+  WeekStartDayLabels, 
+  Language, 
+  LanguageLabels, 
+  DateFormat, 
+  DateFormatLabels 
+} from '../enums';
+
 export type Option<T = string> = {
   value: T | null; // null used for "empty" option
   label: string;
@@ -14,28 +23,29 @@ export const TIMEZONES: Option<string>[] = [
   // add more as needed
 ];
 
-export const WORK_WEEK_STARTS: Option<number>[] = [
+export const WORK_WEEK_STARTS: Option<WeekStartDay>[] = [
   { value: null, label: "-- Select start day --" },
-  { value: 1, label: "1 – Monday" },
-  { value: 2, label: "2 – Tuesday" },
-  { value: 3, label: "3 – Wednesday" },
-  { value: 4, label: "4 – Thursday" },
-  { value: 5, label: "5 – Friday" },
-  { value: 6, label: "6 – Saturday" },
-  { value: 7, label: "7 – Sunday" },
+  { value: WeekStartDay.MONDAY, label: `${WeekStartDay.MONDAY} – ${WeekStartDayLabels[WeekStartDay.MONDAY]}` },
+  { value: WeekStartDay.TUESDAY, label: `${WeekStartDay.TUESDAY} – ${WeekStartDayLabels[WeekStartDay.TUESDAY]}` },
+  { value: WeekStartDay.WEDNESDAY, label: `${WeekStartDay.WEDNESDAY} – ${WeekStartDayLabels[WeekStartDay.WEDNESDAY]}` },
+  { value: WeekStartDay.THURSDAY, label: `${WeekStartDay.THURSDAY} – ${WeekStartDayLabels[WeekStartDay.THURSDAY]}` },
+  { value: WeekStartDay.FRIDAY, label: `${WeekStartDay.FRIDAY} – ${WeekStartDayLabels[WeekStartDay.FRIDAY]}` },
+  { value: WeekStartDay.SATURDAY, label: `${WeekStartDay.SATURDAY} – ${WeekStartDayLabels[WeekStartDay.SATURDAY]}` },
+  { value: WeekStartDay.SUNDAY, label: `${WeekStartDay.SUNDAY} – ${WeekStartDayLabels[WeekStartDay.SUNDAY]}` },
 ];
 
-export const LANGUAGES: Option<string>[] = [
+export const LANGUAGES: Option<Language>[] = [
   { value: null, label: "-- Select language --" },
-  { value: "English", label: "English" },
-  { value: "Hindi", label: "Hindi" },
-  { value: "Spanish", label: "Spanish" },
+  { value: Language.ENGLISH, label: LanguageLabels[Language.ENGLISH] },
+  { value: Language.HINDI, label: LanguageLabels[Language.HINDI] },
+  { value: Language.SPANISH, label: LanguageLabels[Language.SPANISH] },
   // add more as needed
 ];
 
-export const DATE_FORMATS: Option<string>[] = [
+export const DATE_FORMATS: Option<DateFormat>[] = [
   { value: null, label: "-- Select date format --" },
-  { value: "yyyy-MM-dd", label: "yyyy-MM-dd (2025-09-06)" },
-  { value: "dd-MM-yyyy", label: "dd-MM-yyyy (06-09-2025)" },
-  { value: "MM/dd/yyyy", label: "MM/dd/yyyy (09/06/2025)" },
+  { value: DateFormat.ISO, label: DateFormatLabels[DateFormat.ISO] },
+  { value: DateFormat.EU, label: DateFormatLabels[DateFormat.EU] },
+  { value: DateFormat.US, label: DateFormatLabels[DateFormat.US] },
+  { value: DateFormat.LONG, label: DateFormatLabels[DateFormat.LONG] },
 ];

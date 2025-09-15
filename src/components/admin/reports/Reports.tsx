@@ -3,8 +3,9 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import axiosInstance from "../../../services/axiosInstance";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { useAuth } from "../../../context/AuthContext";
+import { ErrorBoundary } from "../../ui";
 import UserAnalyticsCharts, { UserRow } from "./UserAnalyticsCharts";
-import "./Reports.css";
+import "./reports.css";
 
 type ChartKey = "activePie" | "roleLocked" | "attemptsBar" | "overview" | "newUsers" | "domains";
 type Ref = React.RefObject<HTMLDivElement | null>;
@@ -203,7 +204,8 @@ const Reports: React.FC = () => {
     };
 
     return (
-        <div className="reports-page container-fluid py-3 px-3">
+        <ErrorBoundary>
+            <div className="reports-page container-fluid py-3 px-3">
             <div className="d-flex align-items-center justify-content-between mb-3">
                 <div>
                     <h1 className="reports-title mb-0">Reports</h1>
@@ -415,7 +417,8 @@ const Reports: React.FC = () => {
                     </div>
                 </div>
             )}
-        </div>
+            </div>
+        </ErrorBoundary>
     );
 };
 

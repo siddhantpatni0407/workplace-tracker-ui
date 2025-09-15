@@ -5,7 +5,7 @@ import Header from "../../common/header/Header";
 import { LeavePolicyDTO } from "../../../types/leavePolicy";
 import leavePolicyService from "../../../services/leavePolicyService";
 import { toast } from "react-toastify";
-import "./LeavePolicy.css";
+import "./leave-policy.css";
 
 const LeavePolicy: React.FC = () => {
     const [loading, setLoading] = useState(false);
