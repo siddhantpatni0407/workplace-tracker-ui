@@ -42,6 +42,8 @@
     "dbBackup": "DB Backup",
     "attendance": "Attendance",
     "myTasks": "My Tasks",
+    "userTasks": "User Tasks",
+    "userNotes": "User Notes",
     "officeVisit": "Office Visit",
     "officeVisitAnalytics": "Office Visit Analytics",
     "applyLeave": "Apply Leave",
@@ -295,5 +297,255 @@
     "noLocation": "No location provided",
     "noJoinDate": "No join date provided",
     "characters": "characters"
+  },
+  "notes": {
+    "title": "User Notes",
+    "subtitle": "Organize your thoughts and ideas",
+    "addNote": "Add Note",
+    "editNote": "Edit Note",
+    "deleteNote": "Delete Note",
+    "viewNote": "View Note",
+    "newNote": "New Note",
+    "quickNote": "Quick Note",
+    "voiceNote": "Voice Note",
+    "quickActions": "Quick Actions",
+    "templates": "Templates",
+    "recentlyViewed": "Recently Viewed",
+    "stickyNotes": "Sticky Notes",
+    "quickMode": "Quick Mode",
+    "searchNotes": "Search notes...",
+    "searchPlaceholder": "Search notes...",
+    "quickNotePlaceholder": "Quick note... (Press Enter to save)",
+    "moreTemplates": "More templates...",
+    "noteTitle": "Note Title",
+    "noteContent": "Note Content",
+    "noteType": "Note Type",
+    "noteColor": "Note Color",
+    "noteCategory": "Note Category",
+    "notePriority": "Priority",
+    "noteStatus": "Status",
+    "tags": "Tags",
+    "addTag": "Add Tag",
+    "removeTag": "Remove Tag",
+    "pinNote": "Pin Note",
+    "unpinNote": "Unpin Note",
+    "addToFavorites": "Add to Favorites",
+    "removeFromFavorites": "Remove from Favorites",
+    "saveNote": "Save Note",
+    "saveChanges": "Save Changes",
+    "cancelChanges": "Cancel Changes",
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this note?",
+    "cannotUndo": "This action cannot be undone.",
+    "noteSavedSuccessfully": "Note saved successfully",
+    "noteUpdatedSuccessfully": "Note updated successfully",
+    "noteDeletedSuccessfully": "Note deleted successfully",
+    "failedToSaveNote": "Failed to save note",
+    "failedToUpdateNote": "Failed to update note",
+    "failedToDeleteNote": "Failed to delete note",
+    "noNotesFound": "No notes found",
+    "createFirstNote": "Create your first note",
+    "totalNotes": "Total Notes",
+    "pinnedNotes": "Pinned Notes",
+    "favoriteNotes": "Favorite Notes",
+    "totalWordCount": "Total Words",
+    "pleaseLoginToViewNotes": "Please log in to view your notes.",
+    "viewModes": {
+      "grid": "Grid View",
+      "table": "Table View",
+      "compact": "Compact View",
+      "masonry": "Masonry View"
+    },
+    "types": {
+      "text": "Text",
+      "checklist": "Checklist",
+      "drawing": "Drawing",
+      "voice": "Voice",
+      "link": "Link"
+    },
+    "colors": {
+      "default": "Default",
+      "yellow": "Yellow",
+      "blue": "Blue",
+      "green": "Green",
+      "red": "Red",
+      "purple": "Purple",
+      "orange": "Orange",
+      "pink": "Pink"
+    },
+    "categories": {
+      "personal": "Personal",
+      "work": "Work",
+      "study": "Study",
+      "ideas": "Ideas",
+      "reminders": "Reminders",
+      "projects": "Projects"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "active": "Active",
+      "archived": "Archived",
+      "completed": "Completed"
+    },
+    "templatesSection": {
+      "meetingNotes": "Meeting Notes",
+      "projectPlan": "Project Plan",
+      "ideaCapture": "Idea Capture",
+      "meeting": "Meeting - {{date}}",
+      "project": "Project: {{name}}",
+      "idea": "Idea: {{title}}"
+    },
+    "voiceNoteComingSoon": "Voice notes coming soon!",
+    "moreTemplatesComingSoon": "More templates coming soon!"
+  },
+  "tasks": {
+    "title": "User Tasks",
+    "subtitle": "Manage your tasks and stay productive",
+    "addTask": "Add Task",
+    "editTask": "Edit Task",
+    "deleteTask": "Delete Task",
+    "viewTask": "View Task",
+    "newTask": "New Task",
+    "quickTask": "Quick Task",
+    "taskTitle": "Task Title",
+    "taskDescription": "Task Description",
+    "taskStatus": "Status",
+    "taskPriority": "Priority",
+    "taskCategory": "Category",
+    "dueDate": "Due Date",
+    "assignedTo": "Assigned To",
+    "tags": "Tags",
+    "saveTask": "Save Task",
+    "saveChanges": "Save Changes",
+    "cancelChanges": "Cancel Changes",
+    "confirmDelete": "Confirm Delete",
+    "confirmDeleteMessage": "Are you sure you want to delete this task?",
+    "cannotUndo": "This action cannot be undone.",
+    "taskSavedSuccessfully": "Task saved successfully",
+    "taskUpdatedSuccessfully": "Task updated successfully",
+    "taskDeletedSuccessfully": "Task deleted successfully",
+    "failedToSaveTask": "Failed to save task",
+    "failedToUpdateTask": "Failed to update task",
+    "failedToDeleteTask": "Failed to delete task",
+    "noTasksFound": "No tasks found",
+    "createFirstTask": "Create your first task",
+    "totalTasks": "Total Tasks",
+    "completedTasks": "Completed Tasks",
+    "pendingTasks": "Pending Tasks",
+    "overdueTasks": "Overdue Tasks",
+    "pleaseLoginToViewTasks": "Please log in to view your tasks.",
+    "viewModes": {
+      "grid": "Grid View",
+      "table": "Table View",
+      "kanban": "Kanban Board",
+      "timeline": "Timeline View"
+    },
+    "statuses": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "priorities": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "categories": {
+      "personal": "Personal",
+      "work": "Work",
+      "study": "Study",
+      "health": "Health",
+      "finance": "Finance",
+      "others": "Others"
+    },
+    "searchTasks": "Search tasks...",
+    "filterByStatus": "Filter by Status",
+    "filterByPriority": "Filter by Priority",
+    "filterByCategory": "Filter by Category",
+    "sortBy": "Sort By",
+    "bulkActions": "Bulk Actions",
+    "selectAll": "Select All",
+    "deselectAll": "Deselect All",
+    "markCompleted": "Mark Completed",
+    "markPending": "Mark Pending",
+    "deleteTasks": "Delete Tasks"
+  },
+  "dashboard": {
+    "userDashboard": {
+      "title": "User Dashboard",
+      "subtitle": "Welcome back! Here's what's happening",
+      "cards": {
+        "tasks": {
+          "title": "Tasks",
+          "subtitle": "Create and manage your tasks"
+        },
+        "notes": {
+          "title": "Notes",
+          "subtitle": "Capture and organize your thoughts"
+        },
+        "officeVisit": {
+          "title": "Office Visit",
+          "subtitle": "Log your office visits and work from home days"
+        },
+        "officeVisitAnalytics": {
+          "title": "Visit Analytics",
+          "subtitle": "Analyze your office visit patterns"
+        },
+        "leaveManagement": {
+          "title": "Leave Management",
+          "subtitle": "Apply for leaves and view leave history"
+        },
+        "holidays": {
+          "title": "Holidays",
+          "subtitle": "View upcoming holidays and events"
+        },
+        "leavePolicy": {
+          "title": "Leave Policy",
+          "subtitle": "View company leave policies"
+        },
+        "profile": {
+          "title": "My Profile",
+          "subtitle": "Update your personal information"
+        }
+      }
+    },
+    "adminDashboard": {
+      "title": "Admin Dashboard",
+      "subtitle": "Manage your workplace efficiently",
+      "cards": {
+        "userManagement": {
+          "title": "User Management",
+          "subtitle": "Manage users, roles and permissions"
+        },
+        "holidayManagement": {
+          "title": "Holiday Management",
+          "subtitle": "Manage company holidays and events"
+        },
+        "leavePolicyManagement": {
+          "title": "Leave Policy Management",
+          "subtitle": "Configure leave policies and rules"
+        },
+        "reports": {
+          "title": "Reports & Analytics",
+          "subtitle": "View comprehensive reports and insights"
+        },
+        "attendance": {
+          "title": "Attendance",
+          "subtitle": "Monitor employee attendance patterns"
+        },
+        "dbBackup": {
+          "title": "Database Backup",
+          "subtitle": "Backup and restore system data"
+        }
+      }
+    }
   }
 }

@@ -42,6 +42,8 @@
     "dbBackup": "Sauvegarde BD",
     "attendance": "Présence",
     "myTasks": "Mes Tâches",
+    "userTasks": "Tâches Utilisateur",
+    "userNotes": "Notes Utilisateur",
     "officeVisit": "Visite de Bureau",
     "officeVisitAnalytics": "Analyse des Visites de Bureau",
     "applyLeave": "Demander un Congé",
@@ -264,5 +266,96 @@
     "noLocation": "Aucun emplacement fourni",
     "noJoinDate": "Aucune date d'embauche fournie",
     "characters": "caractères"
+  },
+  "notes": {
+    "title": "Notes Utilisateur",
+    "subtitle": "Organisez vos pensées et idées",
+    "quickActions": "Actions Rapides",
+    "templates": "Modèles",
+    "recentlyViewed": "Récemment Consulté",
+    "stickyNotes": "Notes Épinglées",
+    "quickMode": "Mode Rapide",
+    "newNote": "Nouvelle Note",
+    "quickNote": "Note Rapide",
+    "voiceNote": "Note Vocale",
+    "quickNotePlaceholder": "Note rapide... (Appuyez sur Entrée pour sauvegarder)",
+    "moreTemplates": "Plus de modèles...",
+    "voiceNoteComingSoon": "Notes vocales bientôt disponibles !",
+    "moreTemplatesComingSoon": "Plus de modèles bientôt disponibles !"
+  },
+  "tasks": {
+    "title": "Tâches Utilisateur",
+    "subtitle": "Gérez vos tâches et restez productif",
+    "pleaseLoginToViewTasks": "Veuillez vous connecter pour voir vos tâches."
+  },
+  "dashboard": {
+    "userDashboard": {
+      "title": "Tableau de Bord Utilisateur",
+      "subtitle": "Bon retour ! Voici ce qui se passe",
+      "cards": {
+        "tasks": {
+          "title": "Tâches",
+          "subtitle": "Créer et gérer vos tâches"
+        },
+        "notes": {
+          "title": "Notes",
+          "subtitle": "Capturer et organiser vos pensées"
+        },
+        "officeVisit": {
+          "title": "Visite au Bureau",
+          "subtitle": "Enregistrer visites au bureau et jours de télétravail"
+        },
+        "officeVisitAnalytics": {
+          "title": "Analyse des Visites",
+          "subtitle": "Analyser les modèles de visites au bureau"
+        },
+        "leaveManagement": {
+          "title": "Gestion des Congés",
+          "subtitle": "Demander des congés et voir l'historique"
+        },
+        "holidays": {
+          "title": "Jours Fériés",
+          "subtitle": "Voir les prochains jours fériés et événements"
+        },
+        "leavePolicy": {
+          "title": "Politique de Congés",
+          "subtitle": "Voir les politiques de congés de l'entreprise"
+        },
+        "profile": {
+          "title": "Mon Profil",
+          "subtitle": "Mettre à jour les informations personnelles"
+        }
+      }
+    },
+    "adminDashboard": {
+      "title": "Tableau de Bord Admin",
+      "subtitle": "Gérez votre lieu de travail efficacement",
+      "cards": {
+        "userManagement": {
+          "title": "Gestion des Utilisateurs",
+          "subtitle": "Gérer les utilisateurs, rôles et permissions"
+        },
+        "holidayManagement": {
+          "title": "Gestion des Jours Fériés",
+          "subtitle": "Gérer les jours fériés et événements de l'entreprise"
+        },
+        "leavePolicyManagement": {
+          "title": "Gestion des Politiques de Congés",
+          "subtitle": "Configurer les politiques et règles de congés"
+        },
+        "reports": {
+          "title": "Rapports et Analyses",
+          "subtitle": "Voir les rapports et analyses complets"
+        },
+        "attendance": {
+          "title": "Présence",
+          "subtitle": "Surveiller les modèles de présence des employés"
+        },
+        "dbBackup": {
+          "title": "Sauvegarde de Base de Données",
+          "subtitle": "Sauvegarder et restaurer les données du système"
+        }
+      }
+    }
   }
 }

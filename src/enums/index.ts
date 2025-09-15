@@ -12,5 +12,11 @@ export * from './HolidayEnums';
 // Leave related enums
 export * from './LeaveEnums';
 
+// Task related enums
+export * from './TaskEnums';
+
+// Note related enums
+export * from './NoteEnums';
+
 // API related enums
 export * from './ApiEnums';

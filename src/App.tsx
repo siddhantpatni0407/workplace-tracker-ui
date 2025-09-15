@@ -3,8 +3,8 @@ import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
-import Navbar from "./components/common/navbar/Navbar";
-import Footer from "./components/common/footer/Footer";
+import Navbar from "./components/common/Navbar/Navbar";
+import Footer from "./components/common/Footer/Footer";
 import { ErrorBoundary } from "./components/ui";
 import "./styles/global.css";
 import Reports from "./components/admin/reports/Reports";
@@ -28,6 +28,8 @@ const LeavePolicy = lazy(() => import("./components/user/leavePolicy/LeavePolicy
 const ApplyLeave = lazy(() => import("./components/user/leave/ApplyLeave"));
 const OfficeVisit = lazy(() => import("./components/user/officeVisit/OfficeVisit"));
 const OfficeVisitAnalytics = lazy(() => import("./components/user/officeVisitAnalytics/OfficeVisitAnalytics"));
+const UserTasks = lazy(() => import("./components/user/tasks/UserTasks"));
+const UserNotes = lazy(() => import("./components/user/notes/UserNotes"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -221,6 +223,26 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute role="USER">
                     <Layout><OfficeVisitAnalytics /></Layout>
+                  </PrivateRoute>
+                }
+              />
+
+              {/* User Tasks - USER only (new) */}
+              <Route
+                path="/user-tasks"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout><UserTasks /></Layout>
+                  </PrivateRoute>
+                }
+              />
+
+              {/* User Notes - USER only (new) */}
+              <Route
+                path="/user-notes"
+                element={
+                  <PrivateRoute role="USER">
+                    <Layout><UserNotes /></Layout>
                   </PrivateRoute>
                 }
               />

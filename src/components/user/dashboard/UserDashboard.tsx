@@ -1,7 +1,8 @@
 import React, { memo, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import { useAuth } from "../../../context/AuthContext";
+import { useTranslation } from "../../../hooks/useTranslation";
 import { UserRole } from "../../../enums";
 import { ErrorBoundary } from "../../ui";
 import "./user-dashboard.css";
@@ -18,67 +19,68 @@ interface DashboardCard {
 
 const UserDashboard: React.FC = memo(() => {
     const { user, isLoading } = useAuth();
+    const { t } = useTranslation();
     const navigate = useNavigate();
 
     // Memoize dashboard cards configuration
     const cards = useMemo<DashboardCard[]>(() => [
         {
             id: "tasks",
-            title: "My Tasks",
-            subtitle: "Create and manage your tasks",
+            title: t('dashboard.userDashboard.cards.tasks.title'),
+            subtitle: t('dashboard.userDashboard.cards.tasks.subtitle'),
             icon: "bi-list-task",
             colorClass: "card-blue",
-            route: "/task-tracker",
+            route: "/user-tasks",
         },
         {
             id: "office-visit",
-            title: "Office Visit",
-            subtitle: "Log office visits & check-ins",
+            title: t('dashboard.userDashboard.cards.officeVisit.title'),
+            subtitle: t('dashboard.userDashboard.cards.officeVisit.subtitle'),
             icon: "bi-building",
             colorClass: "card-purple",
             route: "/office-visit",
         },
         {
             id: "office-visit-analytics",
-            title: "Office Visit Analytics",
-            subtitle: "Monthly/weekly visit summaries",
+            title: t('dashboard.userDashboard.cards.officeVisitAnalytics.title'),
+            subtitle: t('dashboard.userDashboard.cards.officeVisitAnalytics.subtitle'),
             icon: "bi-graph-up",
             colorClass: "card-teal",
             route: "/office-visit-analytics",
         },
         {
             id: "holidays",
-            title: "Holidays",
-            subtitle: "View company holidays",
+            title: t('dashboard.userDashboard.cards.holidays.title'),
+            subtitle: t('dashboard.userDashboard.cards.holidays.subtitle'),
             icon: "bi-sun-fill",
             colorClass: "card-orange",
             route: "/holiday-tracker",
         },
         {
             id: "apply-leave",
-            title: "Apply Leave",
-            subtitle: "Submit a new leave request",
+            title: t('dashboard.userDashboard.cards.leaveManagement.title'),
+            subtitle: t('dashboard.userDashboard.cards.leaveManagement.subtitle'),
             icon: "bi-plus-square-dotted",
             colorClass: "card-indigo",
             route: "/apply-leave",
         },
         {
             id: "leave-policy",
-            title: "Leave Policy",
-            subtitle: "Check leave policy rules",
+            title: t('dashboard.userDashboard.cards.leavePolicy.title'),
+            subtitle: t('dashboard.userDashboard.cards.leavePolicy.subtitle'),
             icon: "bi-file-earmark-text-fill",
             colorClass: "card-green",
             route: "/leave-policy",
         },
         {
             id: "my-notes",
-            title: "My Notes",
-            subtitle: "Personal notes & reminders",
+            title: t('dashboard.userDashboard.cards.notes.title'),
+            subtitle: t('dashboard.userDashboard.cards.notes.subtitle'),
             icon: "bi-journal-text",
             colorClass: "card-indigo",
-            route: "/notes",
+            route: "/user-notes",
         },
-    ], []);
+    ], [t]);
 
     // Memoize user display name
     const userDisplayName = useMemo(() => {
@@ -105,8 +107,8 @@ const UserDashboard: React.FC = memo(() => {
         return (
             <div className="user-dashboard container-fluid py-4">
                 <Header
-                    title="User Dashboard"
-                    subtitle="Loading..."
+                    title={t('dashboard.userDashboard.title')}
+                    subtitle={t('dashboard.userDashboard.subtitle')}
                     isLoading={true}
                 />
             </div>
@@ -117,8 +119,8 @@ const UserDashboard: React.FC = memo(() => {
         <ErrorBoundary>
             <div className="user-dashboard container-fluid py-4">
                 <Header
-                    title="User Dashboard"
-                    subtitle={`Welcome${userDisplayName}`}
+                    title={t('dashboard.userDashboard.title')}
+                    subtitle={`${t('dashboard.userDashboard.subtitle')}${userDisplayName}`}
                     eyebrow="Dashboard"
                     showWave={true}
                 />

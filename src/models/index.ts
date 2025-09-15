@@ -12,6 +12,12 @@ export * from './Holiday';
 // Leave related exports
 export * from './Leave';
 
+// Task related exports
+export * from './Task';
+
+// Note related exports
+export * from './Note';
+
 // API related exports
 export * from './Api';
 

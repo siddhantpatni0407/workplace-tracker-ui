@@ -6,7 +6,7 @@ import { UserRole } from "../../../enums";
 import ThemeToggle from "../theme/ThemeToggle";
 import LanguageSelector from "../language-selector/LanguageSelector";
 import { useTranslation } from "../../../hooks/useTranslation";
-import "./navbar.css";
+import "./Navbar.css";
 
 interface NavLinkItem {
   to: string;
@@ -37,12 +37,13 @@ const Navbar: React.FC = memo(() => {
 
   // Memoize user navigation items
   const userNavItems = useMemo<DropdownItem[]>(() => [
-    { to: "/my-tasks", label: t("navigation.myTasks"), icon: "bi-list-check" },
+    { to: "/user-tasks", label: t("navigation.userTasks"), icon: "bi-check2-square" },
     { to: "/office-visit", label: t("navigation.officeVisit"), icon: "bi-building" },
     { to: "/office-visit-analytics", label: t("navigation.officeVisitAnalytics"), icon: "bi-bar-chart-line-fill" },
     { to: "/apply-leave", label: t("navigation.applyLeave"), icon: "bi-plus-square-dotted" },
     { to: "/leave-policy", label: t("navigation.leavePolicy"), icon: "bi-file-earmark-text-fill" },
-    { to: "/holiday-tracker", label: t("navigation.holidayTracker"), icon: "bi-calendar-event" }
+    { to: "/holiday-tracker", label: t("navigation.holidayTracker"), icon: "bi-calendar-event" },
+    { to: "/user-notes", label: t("navigation.userNotes"), icon: "bi-journal-text" }
   ], [t]);
 
   // Memoize profile navigation items
@@ -68,6 +69,12 @@ const Navbar: React.FC = memo(() => {
   // Check if current path is active
   const isActiveLink = useCallback((path: string) => {
     return location.pathname === path;
+  }, [location.pathname]);
+
+  // Check if we're on any User Tools page
+  const isUserToolsActive = useCallback(() => {
+    const userToolsPaths = ['/user-tasks', '/user-notes', '/office-visit', '/office-visit-analytics', '/apply-leave', '/leave-policy', '/holiday-tracker'];
+    return userToolsPaths.includes(location.pathname);
   }, [location.pathname]);
 
   // Handle logout with confirmation
@@ -228,7 +235,7 @@ const Navbar: React.FC = memo(() => {
             {hasRole(UserRole.USER) && (
               <li className="nav-item dropdown">
                 <button
-                  className="nav-link dropdown-toggle text-white btn btn-link nav-hover"
+                  className={`nav-link dropdown-toggle text-white btn btn-link nav-hover ${isUserToolsActive() ? 'active' : ''}`}
                   id="userTools"
                   type="button"
                   onClick={() => handleDropdownToggle('user')}
@@ -238,6 +245,11 @@ const Navbar: React.FC = memo(() => {
                 >
                   <i className="bi bi-tools me-1" aria-hidden="true"></i> 
                   {t("navigation.userTools")}
+                  {(isActiveLink('/user-tasks') || isActiveLink('/user-notes')) && (
+                    <span className="badge bg-warning text-dark ms-2" style={{ fontSize: '0.6rem' }}>
+                      {isActiveLink('/user-tasks') ? 'Tasks' : 'Notes'}
+                    </span>
+                  )}
                 </button>
                 {renderDropdownMenu(userNavItems, 'userDropdown', 'userTools', activeDropdown === 'user')}
               </li>

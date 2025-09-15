@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { useAuth } from "../../../context/AuthContext";
 import { ErrorBoundary } from "../../ui";
 import UserAnalyticsCharts, { UserRow } from "./UserAnalyticsCharts";
-import "./reports.css";
+import "./Reports.css";
 
 type ChartKey = "activePie" | "roleLocked" | "attemptsBar" | "overview" | "newUsers" | "domains";
 type Ref = React.RefObject<HTMLDivElement | null>;

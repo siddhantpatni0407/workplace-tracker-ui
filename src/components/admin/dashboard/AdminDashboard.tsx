@@ -1,8 +1,9 @@
 // src/components/admin/dashboard/AdminDashboard.tsx
 import React, { memo, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import { useAuth } from "../../../context/AuthContext";
+import { useTranslation } from "../../../hooks/useTranslation";
 import { UserRole } from "../../../enums";
 import { ErrorBoundary, LoadingSpinner } from "../../ui";
 import "./admin-dashboard.css";
@@ -24,14 +25,15 @@ interface AdminCard {
  */
 const AdminDashboard: React.FC = memo(() => {
   const { user, isLoading } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Memoize admin cards configuration
   const cards = useMemo<AdminCard[]>(() => [
     {
       id: "user-management",
-      title: "User Management",
-      subtitle: "Manage users, lock/unlock or change status",
+      title: t('dashboard.adminDashboard.cards.userManagement.title'),
+      subtitle: t('dashboard.adminDashboard.cards.userManagement.subtitle'),
       icon: "bi-people-fill",
       colorClass: "card-blue",
       route: "/user-management",
@@ -39,8 +41,8 @@ const AdminDashboard: React.FC = memo(() => {
     },
     {
       id: "reports",
-      title: "User Analytics",
-      subtitle: "User Analytics & Visualizations",
+      title: t('dashboard.adminDashboard.cards.reports.title'),
+      subtitle: t('dashboard.adminDashboard.cards.reports.subtitle'),
       icon: "bi-bar-chart-line-fill",
       colorClass: "card-purple",
       route: "/user-analytics",
@@ -48,8 +50,8 @@ const AdminDashboard: React.FC = memo(() => {
     },
     {
       id: "holidays",
-      title: "Holiday Management",
-      subtitle: "Add / edit company holidays",
+      title: t('dashboard.adminDashboard.cards.holidayManagement.title'),
+      subtitle: t('dashboard.adminDashboard.cards.holidayManagement.subtitle'),
       icon: "bi-calendar-event-fill",
       colorClass: "card-teal",
       route: "/holiday-management",
@@ -57,8 +59,8 @@ const AdminDashboard: React.FC = memo(() => {
     },
     {
       id: "leave-policies",
-      title: "Leave Policy Management",
-      subtitle: "Create and manage leave policies",
+      title: t('dashboard.adminDashboard.cards.leavePolicyManagement.title'),
+      subtitle: t('dashboard.adminDashboard.cards.leavePolicyManagement.subtitle'),
       icon: "bi-file-earmark-medical-fill",
       colorClass: "card-green",
       route: "/leave-policies",
@@ -66,8 +68,8 @@ const AdminDashboard: React.FC = memo(() => {
     },
     {
       id: "backup",
-      title: "DB Backup",
-      subtitle: "Create or download backups",
+      title: t('dashboard.adminDashboard.cards.dbBackup.title'),
+      subtitle: t('dashboard.adminDashboard.cards.dbBackup.subtitle'),
       icon: "bi-hdd-fill",
       colorClass: "card-teal",
       route: "/admin/backup",
@@ -75,14 +77,14 @@ const AdminDashboard: React.FC = memo(() => {
     },
     {
       id: "attendance",
-      title: "Attendance",
-      subtitle: "Daily / Monthly summaries",
+      title: t('dashboard.adminDashboard.cards.attendance.title'),
+      subtitle: t('dashboard.adminDashboard.cards.attendance.subtitle'),
       icon: "bi-calendar-check-fill",
       colorClass: "card-orange",
       route: "/attendance",
       requiresRole: UserRole.ADMIN,
     },
-  ], []);
+  ], [t]);
 
   // Handle navigation with useCallback
   const handleCardClick = useCallback((route: string) => {
@@ -110,8 +112,8 @@ const AdminDashboard: React.FC = memo(() => {
     return (
       <div className="admin-page container-fluid py-4">
         <Header 
-          title="Admin Dashboard" 
-          subtitle="Loading..." 
+          title={t('dashboard.adminDashboard.title')} 
+          subtitle={t('dashboard.adminDashboard.subtitle')} 
           isLoading={true}
         />
         <div className="d-flex justify-content-center mt-4">
@@ -139,8 +141,8 @@ const AdminDashboard: React.FC = memo(() => {
     <ErrorBoundary>
       <div className="admin-page container-fluid py-4">
         <Header 
-          title="Admin Dashboard" 
-          subtitle="Manage users and reports"
+          title={t('dashboard.adminDashboard.title')} 
+          subtitle={t('dashboard.adminDashboard.subtitle')}
           eyebrow="Administration"
           showWave={true}
         />

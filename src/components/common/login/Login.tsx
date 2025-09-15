@@ -5,7 +5,7 @@ import { authService } from "../../../services/authService";
 import { ErrorBoundary, ErrorMessage } from "../../ui";
 import { ValidationUtils } from "../../../utils";
 import { useTranslation } from "../../../hooks/useTranslation";
-import "./login.css";
+import "./Login.css";
 
 interface LoginFormData {
   email: string;

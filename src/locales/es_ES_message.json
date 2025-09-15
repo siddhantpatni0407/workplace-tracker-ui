@@ -74,6 +74,8 @@
     "dbBackup": "Respaldo de BD",
     "attendance": "Asistencia",
     "myTasks": "Mis Tareas",
+    "userTasks": "Tareas de Usuario",
+    "userNotes": "Notas de Usuario",
     "officeVisit": "Visita de Oficina",
     "officeVisitAnalytics": "Análisis de Visitas de Oficina",
     "applyLeave": "Solicitar Licencia",
@@ -315,5 +317,96 @@
     "noLocation": "Sin ubicación proporcionada",
     "noJoinDate": "Sin fecha de ingreso proporcionada",
     "characters": "caracteres"
+  },
+  "notes": {
+    "title": "Notas de Usuario",
+    "subtitle": "Organiza tus pensamientos e ideas",
+    "quickActions": "Acciones Rápidas",
+    "templates": "Plantillas",
+    "recentlyViewed": "Visto Recientemente",
+    "stickyNotes": "Notas Fijas",
+    "quickMode": "Modo Rápido",
+    "newNote": "Nueva Nota",
+    "quickNote": "Nota Rápida",
+    "voiceNote": "Nota de Voz",
+    "quickNotePlaceholder": "Nota rápida... (Presiona Enter para guardar)",
+    "moreTemplates": "Más plantillas...",
+    "voiceNoteComingSoon": "¡Notas de voz próximamente!",
+    "moreTemplatesComingSoon": "¡Más plantillas próximamente!"
+  },
+  "tasks": {
+    "title": "Tareas de Usuario",
+    "subtitle": "Gestiona tus tareas y mantente productivo",
+    "pleaseLoginToViewTasks": "Por favor inicia sesión para ver tus tareas."
+  },
+  "dashboard": {
+    "userDashboard": {
+      "title": "Panel de Usuario",
+      "subtitle": "¡Bienvenido de vuelta! Esto es lo que está pasando",
+      "cards": {
+        "tasks": {
+          "title": "Tareas",
+          "subtitle": "Crear y gestionar tus tareas"
+        },
+        "notes": {
+          "title": "Notas",
+          "subtitle": "Capturar y organizar tus pensamientos"
+        },
+        "officeVisit": {
+          "title": "Visita a la Oficina",
+          "subtitle": "Registrar visitas a la oficina y días de trabajo desde casa"
+        },
+        "officeVisitAnalytics": {
+          "title": "Análisis de Visitas",
+          "subtitle": "Analizar patrones de visitas a la oficina"
+        },
+        "leaveManagement": {
+          "title": "Gestión de Permisos",
+          "subtitle": "Solicitar permisos y ver historial"
+        },
+        "holidays": {
+          "title": "Días Festivos",
+          "subtitle": "Ver próximos días festivos y eventos"
+        },
+        "leavePolicy": {
+          "title": "Política de Permisos",
+          "subtitle": "Ver políticas de permisos de la empresa"
+        },
+        "profile": {
+          "title": "Mi Perfil",
+          "subtitle": "Actualizar información personal"
+        }
+      }
+    },
+    "adminDashboard": {
+      "title": "Panel de Administración",
+      "subtitle": "Gestiona tu lugar de trabajo de manera eficiente",
+      "cards": {
+        "userManagement": {
+          "title": "Gestión de Usuarios",
+          "subtitle": "Gestionar usuarios, roles y permisos"
+        },
+        "holidayManagement": {
+          "title": "Gestión de Días Festivos",
+          "subtitle": "Gestionar días festivos y eventos de la empresa"
+        },
+        "leavePolicyManagement": {
+          "title": "Gestión de Políticas de Permisos",
+          "subtitle": "Configurar políticas y reglas de permisos"
+        },
+        "reports": {
+          "title": "Reportes y Análisis",
+          "subtitle": "Ver reportes e informes comprehensivos"
+        },
+        "attendance": {
+          "title": "Asistencia",
+          "subtitle": "Monitorear patrones de asistencia de empleados"
+        },
+        "dbBackup": {
+          "title": "Respaldo de Base de Datos",
+          "subtitle": "Respaldar y restaurar datos del sistema"
+        }
+      }
+    }
   }
 }

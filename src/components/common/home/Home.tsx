@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../../hooks/useTranslation";
-import "./home.css";
+import "./Home.css";
 import bgImage from "../../../assets/workplace-tracker-background.jpg"; 
 
 const Home: React.FC = () => {

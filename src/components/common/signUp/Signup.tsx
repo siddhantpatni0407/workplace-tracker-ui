@@ -5,7 +5,7 @@ import RoleSelect from "../../RoleSelect";
 import { authService } from "../../../services/authService";
 import { ValidationUtils } from "../../../utils";
 import { ErrorBoundary, ErrorMessage } from "../../ui";
-import "./signup.css";
+import "./Signup.css";
 
 interface FormData {
   name: string;
