@@ -281,6 +281,10 @@
       "emergencyContactPhone": "Ingresa teléfono de contacto de emergencia",
       "emergencyContactRelation": "Selecciona relación"
     },
+    "hints": {
+      "changeEmailInAccount": "Para actualizar su correo electrónico, vaya a la configuración de la cuenta.",
+      "changePhoneInAccount": "Para actualizar su número de teléfono, vaya a la configuración de la cuenta."
+    },
     "genders": {
       "male": "Masculino",
       "female": "Femenino",

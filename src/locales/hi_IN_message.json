@@ -230,6 +230,10 @@
       "emergencyContactPhone": "आपातकालीन संपर्क फोन दर्ज करें",
       "emergencyContactRelation": "संबंध चुनें"
     },
+    "hints": {
+      "changeEmailInAccount": "अपने ईमेल को अपडेट करने के लिए कृपया खाता सेटिंग में जाएं।",
+      "changePhoneInAccount": "अपने फ़ोन नंबर को अपडेट करने के लिए कृपया खाता सेटिंग में जाएं।"
+    },
     "genders": {
       "male": "पुरुष",
       "female": "महिला",

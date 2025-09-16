@@ -30,7 +30,7 @@ export const API_ENDPOINTS = {
 
   USER: {
     SETTINGS: `${API_BASE_URL}/user-settings`,
-    PROFILE: `${API_BASE_URL}/user-profile`,
+    PROFILE: `${API_BASE_URL}/user/profile`,
   },
 
   DASHBOARD: {

@@ -230,6 +230,10 @@
       "emergencyContactPhone": "Entrez le téléphone du contact d'urgence",
       "emergencyContactRelation": "Sélectionnez la relation"
     },
+    "hints": {
+      "changeEmailInAccount": "Pour modifier votre adresse e-mail, veuillez vous rendre dans les paramètres du compte.",
+      "changePhoneInAccount": "Pour modifier votre numéro de téléphone, veuillez vous rendre dans les paramètres du compte."
+    },
     "genders": {
       "male": "Masculin",
       "female": "Féminin",

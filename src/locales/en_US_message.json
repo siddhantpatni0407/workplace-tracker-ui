@@ -214,7 +214,7 @@
     "quickInfo": "Quick Information",
     "sections": {
       "basicInfo": "Basic Information",
-      "addressInfo": "Address Information", 
+      "addressInfo": "Address Information",
       "workInfo": "Work Information",
       "bio": "Biography",
       "emergencyContact": "Emergency Contact"
@@ -243,7 +243,7 @@
     },
     "placeholders": {
       "firstName": "Enter your first name",
-      "lastName": "Enter your last name", 
+      "lastName": "Enter your last name",
       "email": "Enter your email address",
       "phoneNumber": "Enter your phone number",
       "gender": "Select gender",
@@ -260,6 +260,10 @@
       "emergencyContactName": "Enter emergency contact name",
       "emergencyContactPhone": "Enter emergency contact phone",
       "emergencyContactRelation": "Select relationship"
+    },
+    "hints": {
+      "changeEmailInAccount": "To update your email, please go to Account settings.",
+      "changePhoneInAccount": "To update your phone number, please go to Account settings."
     },
     "genders": {
       "male": "Male",
