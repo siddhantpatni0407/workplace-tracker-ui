@@ -1,20 +1,62 @@
+/* Navbar.css - enhanced navbar look */
+
+/* Gradient navbar */
 .custom-navbar {
   background: linear-gradient(90deg, #4a00e0, #8e2de2);
-  padding: 0.75rem 1.5rem;
-  transition: background 0.4s ease;
+  padding: 0.6rem 1.25rem;
+  transition: background 0.35s ease, box-shadow 0.25s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  z-index: 1100;
 }
 
 .custom-navbar:hover {
-  background: linear-gradient(90deg, #5c2de2, #9c3dee);
+  filter: brightness(1.02);
 }
 
-.navbar .nav-link {
-  margin-right: 1rem;
-  transition: color 0.25s ease, transform 0.2s ease;
+/* Brand */
+.navbar-brand {
+  font-size: 1.18rem;
+  letter-spacing: 0.4px;
+  display: flex;
+  align-items: center;
+  color: #fff !important;
+}
+
+/* Toggler */
+.navbar-toggler {
+  border: none;
+  padding: 0.25rem;
+}
+.navbar-toggler-icon {
+  display: inline-block;
+  width: 22px;
+  height: 16px;
   position: relative;
 }
+.navbar-toggler-icon::before,
+.navbar-toggler-icon::after,
+.navbar-toggler-icon span {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255,255,255,0.92);
+  border-radius: 2px;
+}
+.navbar-toggler-icon::before { top: 0; }
+.navbar-toggler-icon span { top: 7px; }
+.navbar-toggler-icon::after { bottom: 0; }
 
-/* Hover underline effect */
+/* Nav links */
+.navbar .nav-link {
+  margin-right: 1rem;
+  transition: color 0.25s ease, transform 0.18s ease;
+  position: relative;
+  color: #fff !important;
+}
+
+/* Hover underline */
 .navbar .nav-link.nav-hover::after {
   content: "";
   position: absolute;
@@ -23,7 +65,7 @@
   width: 0%;
   height: 2px;
   background: #ffd700;
-  transition: width 0.3s ease;
+  transition: width 0.28s ease;
 }
 .navbar .nav-link.nav-hover:hover::after {
   width: 100%;
@@ -34,157 +76,112 @@
   transform: translateY(-1px);
 }
 
-.navbar-brand {
-  font-size: 1.35rem;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-}
-
-.dropdown-menu {
-  border-radius: 10px;
-  border: none;
-  min-width: 200px;
-}
-
-/* Fade animation for dropdowns */
-.animate-fade {
-  animation: fadeIn 0.25s ease;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Active link styles */
+/* Active links */
 .nav-link.active,
 .dropdown-item.active {
   color: #ffd700 !important;
   font-weight: 600;
 }
-
 .nav-link.active::after {
   width: 100%;
   background: #ffd700;
 }
-
 .dropdown-item.active {
   background-color: rgba(255, 215, 0, 0.1) !important;
 }
 
-/* Enhanced dropdown styles */
+/* Dropdown */
 .dropdown-menu {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.1);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 32px rgba(0,0,0,0.3);
+  min-width: 220px;
+  padding: 0.5rem 0;
 }
-
 .dropdown-item {
-  transition: all 0.2s ease;
-  padding: 0.75rem 1rem;
+  transition: all 0.16s ease;
+  padding: 0.65rem 0.9rem;
+  color: #fff;
 }
-
 .dropdown-item:hover {
-  background-color: rgba(255, 215, 0, 0.1);
+  background-color: rgba(255,255,255,0.06);
   color: #ffd700;
   transform: translateX(4px);
 }
 
-/* Login/Signup button */
-.nav-auth-btn {
-  border-radius: 20px;
-  transition: all 0.25s ease;
-}
-.nav-auth-btn:hover {
-  background: #ffd700;
-  color: #4a00e0;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+/* Divider */
+.dropdown-divider {
+  margin: 0.5rem 0;
+  border-top: 1px solid rgba(255,255,255,0.15);
 }
 
-/* Improved focus states for accessibility */
-.navbar .nav-link:focus,
-.navbar .dropdown-toggle:focus {
-  outline: 2px solid #ffd700;
-  outline-offset: 2px;
-  border-radius: 4px;
+/* Fade animation */
+.animate-fade {
+  animation: fadeIn 0.22s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* Mobile improvements */
+/* Featured items */
+.dropdown-menu .dropdown-item {
+  border-radius: 6px;
+  margin: 4px 8px;
+}
+.dropdown-menu .dropdown-item:first-child,
+.dropdown-menu .dropdown-item:nth-child(2) {
+  background: linear-gradient(45deg, rgba(0,123,255,0.08), rgba(0,86,179,0.06));
+  border-left: 3px solid #007bff;
+  font-weight: 600;
+}
+.dropdown-menu .dropdown-item:first-child:hover,
+.dropdown-menu .dropdown-item:nth-child(2):hover {
+  background: linear-gradient(45deg, rgba(0,123,255,0.14), rgba(0,86,179,0.12));
+  color: #007bff;
+  transform: translateX(4px);
+}
+
+/* Icons for Tasks & Notes */
+.dropdown-menu .dropdown-item i.bi-check2-square,
+.dropdown-menu .dropdown-item i.bi-journal-text {
+  color: #007bff;
+  font-weight: 700;
+}
+
+/* Badges */
+.badge.bg-warning {
+  font-size: 0.62rem !important;
+  padding: 0.18rem 0.42rem;
+  border-radius: 8px;
+  animation: pulse 2.2s infinite;
+}
+@keyframes pulse {
+  0% { opacity: 1; transform: none; }
+  50% { opacity: 0.75; transform: translateY(-1px); }
+  100% { opacity: 1; transform: none; }
+}
+
+/* Mobile */
 @media (max-width: 991.98px) {
   .navbar-nav .dropdown-menu {
     background: rgba(74, 0, 224, 0.95);
     border: none;
-    margin-top: 0.5rem;
+    margin-top: 0.4rem;
+    box-shadow: 0 12px 38px rgba(2,6,23,0.48);
   }
-  
   .dropdown-item:hover {
     transform: none;
     background-color: rgba(255, 215, 0, 0.2);
   }
 }
 
-/* Enhanced User Tools Styling */
-.dropdown-menu .dropdown-item {
-  transition: all 0.2s ease;
+/* Focus states */
+.navbar .nav-link:focus,
+.navbar .dropdown-toggle:focus,
+.dropdown-item:focus {
+  outline: 2px solid #ffd700;
+  outline-offset: 2px;
   border-radius: 6px;
-  margin: 2px 4px;
-}
-
-.dropdown-menu .dropdown-item:first-child,
-.dropdown-menu .dropdown-item:nth-child(2) {
-  background: linear-gradient(45deg, rgba(0, 123, 255, 0.1), rgba(0, 86, 179, 0.1));
-  border-left: 3px solid #007bff;
-  font-weight: 600;
-}
-
-.dropdown-menu .dropdown-item:first-child:hover,
-.dropdown-menu .dropdown-item:nth-child(2):hover {
-  background: linear-gradient(45deg, rgba(0, 123, 255, 0.2), rgba(0, 86, 179, 0.2));
-  color: #007bff;
-  transform: translateX(4px);
-}
-
-/* Featured items (Tasks and Notes) styling */
-.dropdown-menu .dropdown-item i.bi-check2-square,
-.dropdown-menu .dropdown-item i.bi-journal-text {
-  color: #007bff;
-  font-weight: bold;
-}
-
-/* Divider styling */
-.dropdown-divider {
-  margin: 0.5rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Active User Tools styling */
-.nav-link.active {
-  color: #ffd700 !important;
-  font-weight: 600;
-}
-
-.nav-link.active::after {
-  width: 100%;
-  background: #ffd700;
-}
-
-/* Badge styling for active page indicator */
-.badge.bg-warning {
-  font-size: 0.6rem !important;
-  padding: 0.2rem 0.4rem;
-  border-radius: 8px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
 }
