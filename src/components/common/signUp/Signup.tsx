@@ -1,4 +1,5 @@
-import React, { useState, memo, useCallback, useMemo } from "react";
+// src/components/common/signUp/SignUp.tsx
+import React, { useState, memo, useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Role } from "../../../types/auth";
 import { RoleSelect } from "../../forms";
@@ -33,17 +34,13 @@ const Signup: React.FC = memo(() => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Form state
   const [form, setForm] = useState<FormData>(initialForm);
-
-  // UI state
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
 
-  // Validation schema using our new validation hook
   const validationSchema = {
     name: { required: true, minLength: 2 },
     mobileNumber: {
@@ -90,7 +87,6 @@ const Signup: React.FC = memo(() => {
 
   const { errors, validate, clearError } = useFormValidation(form, validationSchema);
 
-  // Password strength calculation
   const passwordStrength = useMemo(() => {
     const password = form.password;
     if (!password) return 0;
@@ -110,26 +106,22 @@ const Signup: React.FC = memo(() => {
     return labels[strength] || "Very Weak";
   };
 
-  // Handle input changes
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value, type, checked } = e.target;
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
 
-      let newValue: any = value;
-      if (name === "mobileNumber") {
-        newValue = value.replace(/\D/g, "").slice(0, 10);
-      } else if (type === "checkbox") {
-        newValue = checked;
-      }
+    let newValue: any = value;
+    if (name === "mobileNumber") {
+      newValue = value.replace(/\D/g, "").slice(0, 10);
+    } else if (type === "checkbox") {
+      newValue = checked;
+    }
 
-      setForm(prev => ({ ...prev, [name]: newValue }));
+    setForm(prev => ({ ...prev, [name]: newValue }));
 
-      if (error) setError(null);
-      if (success) setSuccess(null);
-      if (errors[name as keyof FormData]) clearError(name);
-    },
-    [error, success, errors, clearError]
-  );
+    if (error) setError(null);
+    if (success) setSuccess(null);
+    if (errors[name as keyof FormData]) clearError(name);
+  }, [error, success, errors, clearError]);
 
   const handleRoleChange = useCallback((role: Role) => {
     setForm(prev => ({ ...prev, role }));
@@ -148,6 +140,16 @@ const Signup: React.FC = memo(() => {
       form.acceptTerms &&
       !loading;
   }, [form, loading]);
+
+  // Prevent background scroll while modal is open
+  useEffect(() => {
+    if (showModal) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = prev; };
+    }
+    return; // no-op when not modal
+  }, [showModal]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
@@ -170,29 +172,26 @@ const Signup: React.FC = memo(() => {
       });
 
       if (response.status === "SUCCESS") {
-        // show modal on same page
-        const message =
-          "Account created successfully. Your account is currently InActive — an administrator needs to activate it before you can sign in.";
-        setSuccess(message);
+        setSuccess("Account created successfully. Your account is currently InActive — an administrator needs to activate it before you can sign in.");
         setForm(initialForm);
+        // show modal and DO NOT auto-close
         setShowModal(true);
-
-        // redirect to Home after short delay
-        const homeRoute = (ROUTES as any).HOME || (ROUTES as any).PUBLIC?.HOME || "/";
-        setTimeout(() => {
-          setShowModal(false);
-          navigate(homeRoute);
-        }, 2500);
       } else {
         setError(response.message || "Signup failed. Please try again.");
       }
-    } catch (err: any) {
-      console.error("Signup error:", err);
-      setError(err?.response?.data?.message || err?.message || "Network/server error");
+    } catch (error: any) {
+      console.error("Signup error:", error);
+      setError(error?.response?.data?.message || error?.message || "Network/server error");
     } finally {
       setLoading(false);
     }
-  }, [canSubmit, validate, form, navigate]);
+  }, [canSubmit, validate, form]);
+
+  // Navigate only when user explicitly clicks Go to Home
+  const handleGoHome = useCallback(() => {
+    const homeRoute = (ROUTES as any).HOME || (ROUTES as any).PUBLIC?.HOME || "/";
+    navigate(homeRoute);
+  }, [navigate]);
 
   return (
     <ErrorBoundary>
@@ -207,22 +206,11 @@ const Signup: React.FC = memo(() => {
           </div>
 
           <div className="p-4 p-md-5">
-            {/* Global Alerts */}
             {error && (
               <Alert
                 variant="error"
                 message={error}
                 onClose={() => setError(null)}
-                className="mb-3"
-              />
-            )}
-
-            {/* Note: success is shown in modal; keeping this here in case you want inline success too */}
-            {success && !showModal && (
-              <Alert
-                variant="success"
-                message={success}
-                onClose={() => setSuccess(null)}
                 className="mb-3"
               />
             )}
@@ -418,7 +406,7 @@ const Signup: React.FC = memo(() => {
 
               {/* Login Link */}
               <div className="text-center text-muted small">
-                {t("auth.haveAccount")}{" "}
+                {t("auth.haveAccount")} {" "}
                 <button
                   type="button"
                   className="btn btn-link p-0"
@@ -431,24 +419,19 @@ const Signup: React.FC = memo(() => {
           </div>
         </div>
 
-        {/* INLINE CUSTOM MODAL (no dependency on ../../ui Modal) */}
         {showModal && (
           <div className="custom-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="signup-success-title">
-            <div className="custom-modal">
-              <button className="custom-modal-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
-              <i className="bi bi-check-circle-fill text-success" style={{ fontSize: "3rem" }} />
+            <div className="custom-modal" role="document">
+              <i className="bi bi-check-circle-fill text-success" style={{ fontSize: "3rem" }}></i>
               <h4 id="signup-success-title" className="mt-3">Signup Successful</h4>
-              <p className="mb-0">{success}</p>
-              <div className="mt-3">
+              <p>{success}</p>
+
+              <div className="mt-3 d-flex gap-2 justify-content-center">
                 <button
                   className="btn btn-primary"
-                  onClick={() => {
-                    setShowModal(false);
-                    const homeRoute = (ROUTES as any).HOME || (ROUTES as any).PUBLIC?.HOME || "/";
-                    navigate(homeRoute);
-                  }}
+                  onClick={handleGoHome}
                 >
-                  Go to Home
+                  Go to Home Now
                 </button>
               </div>
             </div>
