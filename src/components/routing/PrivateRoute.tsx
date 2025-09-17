@@ -10,25 +10,25 @@ interface PrivateRouteProps {
    * - If omitted => any authenticated user allowed.
    * - Can be a single role string like "USER" or "ADMIN", or an array of roles.
    */
-  role?: "ADMIN" | "USER" | Array<"ADMIN" | "USER">;
+  userRole?: "ADMIN" | "USER" | Array<"ADMIN" | "USER">;
 }
 
-const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, role }) => {
+const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, userRole }) => {
   const { user } = useAuth();
 
   // not authenticated -> redirect (keeps your existing behavior)
   if (!user) return <Navigate to={ROUTES.PUBLIC.HOME} replace />;
 
   // no role restriction -> allow any authenticated user
-  if (!role) return <>{children}</>;
+  if (!userRole) return <>{children}</>;
 
   // Normalize allowed roles to array for simple check
-  const allowed: string[] = Array.isArray(role) ? role.map((r) => r.toUpperCase()) : [String(role).toUpperCase()];
+  const allowed: string[] = Array.isArray(userRole) ? userRole.map((r) => r.toUpperCase()) : [String(userRole).toUpperCase()];
 
-  const userRole = user?.role ? String(user.role).toUpperCase() : undefined;
+  const currentUserRole = user?.role ? String(user.role).toUpperCase() : undefined;
 
   // if user's role is in allowed list -> allow, otherwise redirect
-  if (userRole && allowed.includes(userRole)) {
+  if (currentUserRole && allowed.includes(currentUserRole)) {
     return <>{children}</>;
   }
 

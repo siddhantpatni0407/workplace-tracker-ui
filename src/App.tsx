@@ -89,7 +89,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.ADMIN.DASHBOARD}
                 element={
-                  <PrivateRoute role="ADMIN">
+                  <PrivateRoute userRole="ADMIN">
                     <Layout>
                       <AdminDashboard />
                     </Layout>
@@ -100,7 +100,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.DASHBOARD}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout>
                       <UserDashboard />
                     </Layout>
@@ -112,7 +112,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.ADMIN.USER_MANAGEMENT}
                 element={
-                  <PrivateRoute role="ADMIN">
+                  <PrivateRoute userRole="ADMIN">
                     <Layout>
                       <UserManagement />
                     </Layout>
@@ -124,7 +124,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.ADMIN.HOLIDAY_MANAGEMENT}
                 element={
-                  <PrivateRoute role="ADMIN">
+                  <PrivateRoute userRole="ADMIN">
                     <Layout>
                       <HolidayManagement />
                     </Layout>
@@ -136,7 +136,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.ADMIN.LEAVE_POLICY_MANAGEMENT}
                 element={
-                  <PrivateRoute role="ADMIN">
+                  <PrivateRoute userRole="ADMIN">
                     <Layout>
                       <LeavePolicyManagement />
                     </Layout>
@@ -148,7 +148,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.ADMIN.REPORTS}
                 element={
-                  <PrivateRoute role="ADMIN">
+                  <PrivateRoute userRole="ADMIN">
                     <Layout>
                       <Reports />
                     </Layout>
@@ -160,7 +160,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.ADMIN.BACKUP}
                 element={
-                  <PrivateRoute role="ADMIN">
+                  <PrivateRoute userRole="ADMIN">
                     <Layout>
                       <DatabaseBackup />
                     </Layout>
@@ -207,7 +207,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.HOLIDAY_TRACKER}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout>
                       <UserHolidayTracker />
                     </Layout>
@@ -219,7 +219,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.LEAVE_POLICY}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout><LeavePolicy /></Layout>
                   </PrivateRoute>
                 }
@@ -229,7 +229,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.APPLY_LEAVE}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout><ApplyLeave /></Layout>
                   </PrivateRoute>
                 }
@@ -239,7 +239,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.OFFICE_VISIT}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout>
                       <OfficeVisit />
                     </Layout>
@@ -251,7 +251,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.OFFICE_VISIT_ANALYTICS}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout><OfficeVisitAnalytics /></Layout>
                   </PrivateRoute>
                 }
@@ -261,7 +261,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.USER_TASKS}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout><UserTasks /></Layout>
                   </PrivateRoute>
                 }
@@ -271,7 +271,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.USER_NOTES}
                 element={
-                  <PrivateRoute role="USER">
+                  <PrivateRoute userRole="USER">
                     <Layout><UserNotes /></Layout>
                   </PrivateRoute>
                 }
