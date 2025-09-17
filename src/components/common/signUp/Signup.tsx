@@ -1,10 +1,10 @@
 // src/components/common/signUp/SignUp.tsx
-import React, { useState, memo, useCallback, useMemo, useEffect } from "react";
+import React, { useState, memo, useCallback, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Role } from "../../../types/auth";
 import { RoleSelect } from "../../forms";
 import { authService } from "../../../services/authService";
-import { ErrorBoundary, Alert } from "../../ui"; // Modal removed
+import { ErrorBoundary, Alert, Captcha, FormInput, Button, FormProgress, PasswordRequirements } from "../../ui";
 import { useFormValidation } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES } from "../../../constants";
@@ -18,6 +18,7 @@ interface FormData {
   confirmPassword: string;
   role: Role;
   acceptTerms: boolean;
+  captcha: string;
 }
 
 const initialForm: FormData = {
@@ -28,11 +29,13 @@ const initialForm: FormData = {
   confirmPassword: "",
   role: "USER",
   acceptTerms: false,
+  captcha: "",
 };
 
 const Signup: React.FC = memo(() => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const captchaRef = useRef<any>(null);
 
   const [form, setForm] = useState<FormData>(initialForm);
   const [showPassword, setShowPassword] = useState(false);
@@ -82,10 +85,30 @@ const Signup: React.FC = memo(() => {
         if (!value) return "You must accept the terms and conditions";
         return null;
       }
+    },
+    captcha: {
+      required: true,
+      custom: (value: string) => {
+        if (!value) return "Please complete the CAPTCHA verification";
+        const solution = captchaRef.current?.getSolution();
+        if (value !== solution) return "Incorrect CAPTCHA, please try again";
+        return null;
+      }
     }
   };
 
   const { errors, validate, clearError } = useFormValidation(form, validationSchema);
+  
+  // Track form field completion status
+  const formSteps = useMemo(() => [
+    { id: 'name', label: 'Name', completed: !!form.name.trim() && !errors.name },
+    { id: 'mobileNumber', label: 'Mobile', completed: !!form.mobileNumber.trim() && form.mobileNumber.length === 10 && !errors.mobileNumber },
+    { id: 'email', label: 'Email', completed: !!form.email.trim() && !errors.email },
+    { id: 'password', label: 'Password', completed: !!form.password && !errors.password },
+    { id: 'confirmPassword', label: 'Confirm', completed: !!form.confirmPassword && form.password === form.confirmPassword },
+    { id: 'acceptTerms', label: 'Terms', completed: !!form.acceptTerms },
+    { id: 'captcha', label: 'CAPTCHA', completed: !!form.captcha && !errors.captcha }
+  ], [form, errors]);
 
   const passwordStrength = useMemo(() => {
     const password = form.password;
@@ -120,8 +143,26 @@ const Signup: React.FC = memo(() => {
 
     if (error) setError(null);
     if (success) setSuccess(null);
-    if (errors[name as keyof FormData]) clearError(name);
-  }, [error, success, errors, clearError]);
+    
+    // Live validation for specific fields
+    if (name === 'password' || name === 'confirmPassword') {
+      // Validate immediately for password fields to give quick feedback
+      setTimeout(() => {
+        validate(name);
+      }, 500);
+    } else if (name === 'email' && value.includes('@')) {
+      // Validate email when user types @ character
+      setTimeout(() => {
+        validate(name);
+      }, 800);
+    } else if (name === 'mobileNumber' && newValue.length === 10) {
+      // Validate mobile number when it reaches 10 digits
+      validate(name);
+    } else if (errors[name as keyof FormData]) {
+      // Clear errors for other fields
+      clearError(name);
+    }
+  }, [error, success, errors, clearError, validate]);
 
   const handleRoleChange = useCallback((role: Role) => {
     setForm(prev => ({ ...prev, role }));
@@ -130,6 +171,12 @@ const Signup: React.FC = memo(() => {
   const togglePasswordVisibility = useCallback(() => {
     setShowPassword(prev => !prev);
   }, []);
+  
+  const handleCaptchaSolutionChange = useCallback((solution: string) => {
+    // We don't set the form captcha value here because the user needs to type it
+    // The solution is stored in the captchaRef for validation
+    if (errors.captcha) clearError('captcha');
+  }, [errors.captcha, clearError]);
 
   const canSubmit = useMemo(() => {
     return form.name.trim() &&
@@ -138,6 +185,7 @@ const Signup: React.FC = memo(() => {
       form.password &&
       form.confirmPassword &&
       form.acceptTerms &&
+      form.captcha &&
       !loading;
   }, [form, loading]);
 
@@ -206,6 +254,9 @@ const Signup: React.FC = memo(() => {
           </div>
 
           <div className="p-4 p-md-5">
+            {/* Form Progress Indicator */}
+            <FormProgress steps={formSteps} showLabels={false} />
+            
             {error && (
               <Alert
                 variant="error"
@@ -217,28 +268,20 @@ const Signup: React.FC = memo(() => {
 
             <form onSubmit={handleSubmit} noValidate>
               {/* Full Name Input */}
-              <div className="mb-3">
-                <label className="form-label fw-semibold">
-                  {t("auth.fullName")}
-                  <span className="text-danger ms-1">*</span>
-                </label>
-                <div className="input-group input-group-lg">
-                  <span className="input-group-text">
-                    <i className="bi bi-person-fill" />
-                  </span>
-                  <input
-                    type="text"
-                    name="name"
-                    className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                    placeholder={t("auth.fullNamePlaceholder")}
-                    value={form.name}
-                    onChange={handleChange}
-                    disabled={loading}
-                    required
-                  />
-                  {errors.name && <div className="invalid-feedback">{errors.name}</div>}
-                </div>
-              </div>
+              <FormInput
+                name="name"
+                type="text"
+                label={t("auth.fullName")}
+                placeholder={t("auth.fullNamePlaceholder")}
+                value={form.name}
+                onChange={handleChange}
+                disabled={loading}
+                error={errors.name}
+                isRequired={true}
+                leftIcon="bi-person-fill"
+                className="form-control-lg"
+                required
+              />
 
               {/* Mobile Number Input */}
               <div className="mb-3">
@@ -248,110 +291,86 @@ const Signup: React.FC = memo(() => {
                 </label>
                 <div className="input-group input-group-lg">
                   <span className="input-group-text">+91</span>
-                  <input
+                  <FormInput
                     type="tel"
                     name="mobileNumber"
-                    className={`form-control ${errors.mobileNumber ? "is-invalid" : ""}`}
                     placeholder={t("auth.mobileNumberPlaceholder")}
                     value={form.mobileNumber}
                     onChange={handleChange}
                     disabled={loading}
+                    error={errors.mobileNumber}
+                    containerClassName="mb-0 flex-grow-1"
+                    hideLabel={true}
                     required
                   />
-                  {errors.mobileNumber && <div className="invalid-feedback">{errors.mobileNumber}</div>}
                 </div>
               </div>
 
               {/* Email Input */}
-              <div className="mb-3">
-                <label className="form-label fw-semibold">
-                  {t("auth.emailAddress")}
-                  <span className="text-danger ms-1">*</span>
-                </label>
-                <div className="input-group input-group-lg">
-                  <span className="input-group-text">
-                    <i className="bi bi-envelope-fill" />
-                  </span>
-                  <input
-                    type="email"
-                    name="email"
-                    className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                    placeholder={t("auth.emailAddressPlaceholder")}
-                    value={form.email}
-                    onChange={handleChange}
-                    disabled={loading}
-                    required
-                  />
-                  {errors.email && <div className="invalid-feedback">{errors.email}</div>}
-                </div>
-              </div>
+              <FormInput
+                type="email"
+                name="email"
+                label={t("auth.emailAddress")}
+                placeholder={t("auth.emailAddressPlaceholder")}
+                value={form.email}
+                onChange={handleChange}
+                disabled={loading}
+                error={errors.email}
+                isRequired={true}
+                leftIcon="bi-envelope-fill"
+                className="form-control-lg"
+                required
+              />
 
               {/* Password Input */}
-              <div className="mb-3">
-                <label className="form-label fw-semibold">
-                  {t("auth.password")}
-                  <span className="text-danger ms-1">*</span>
-                </label>
-                <div className="input-group input-group-lg">
-                  <span className="input-group-text">
-                    <i className="bi bi-lock-fill" />
-                  </span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                    placeholder={t("auth.createPasswordPlaceholder")}
-                    value={form.password}
-                    onChange={handleChange}
-                    disabled={loading}
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="input-group-text btn-toggle"
-                    onClick={togglePasswordVisibility}
-                    aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
-                  >
-                    <i className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"}`} />
-                  </button>
-                  {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-                </div>
+              <FormInput
+                type={showPassword ? "text" : "password"}
+                name="password"
+                label={t("auth.password")}
+                placeholder={t("auth.createPasswordPlaceholder")}
+                value={form.password}
+                onChange={handleChange}
+                disabled={loading}
+                error={errors.password}
+                isRequired={true}
+                leftIcon="bi-lock-fill"
+                showPasswordToggle={true}
+                onTogglePassword={togglePasswordVisibility}
+                className="form-control-lg"
+                helperText={t("auth.passwordStrengthHint")}
+                required
+              />
 
-                {/* Password Strength Indicator */}
-                {form.password && (
-                  <div className="password-hint mt-2 d-flex align-items-center justify-content-between">
-                    <div className="strength">
-                      <div className={`strength-bar strength-${passwordStrength}`} aria-hidden />
-                      <small className="ms-2 text-muted">{passwordStrengthLabel(passwordStrength)}</small>
-                    </div>
-                    <div className="small text-muted">{t("auth.passwordStrengthHint")}</div>
+              {/* Password Requirements and Strength Indicator */}
+              <div className="mb-3">
+                <div className="d-flex align-items-center justify-content-between">
+                  <div className="strength">
+                    {form.password && (
+                      <>
+                        <div className={`strength-bar strength-${passwordStrength}`} aria-hidden />
+                        <small className="ms-2 text-muted">{passwordStrengthLabel(passwordStrength)}</small>
+                      </>
+                    )}
                   </div>
-                )}
+                </div>
+                <PasswordRequirements password={form.password} className="mt-2" />
               </div>
 
               {/* Confirm Password Input */}
-              <div className="mb-3">
-                <label className="form-label fw-semibold">
-                  {t("auth.confirmPassword")}
-                  <span className="text-danger ms-1">*</span>
-                </label>
-                <div className="input-group input-group-lg">
-                  <span className="input-group-text">
-                    <i className="bi bi-lock-fill" />
-                  </span>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    className={`form-control ${errors.confirmPassword ? "is-invalid" : ""}`}
-                    placeholder={t("auth.confirmPasswordPlaceholder")}
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    disabled={loading}
-                    required
-                  />
-                  {errors.confirmPassword && <div className="invalid-feedback">{errors.confirmPassword}</div>}
-                </div>
-              </div>
+              <FormInput
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                label={t("auth.confirmPassword")}
+                placeholder={t("auth.confirmPasswordPlaceholder")}
+                value={form.confirmPassword}
+                onChange={handleChange}
+                disabled={loading}
+                error={errors.confirmPassword}
+                isRequired={true}
+                leftIcon="bi-lock-fill"
+                className="form-control-lg"
+                required
+              />
 
               {/* Role Selection */}
               <div className="mb-3">
@@ -384,25 +403,82 @@ const Signup: React.FC = memo(() => {
                 </label>
                 {errors.acceptTerms && <div className="invalid-feedback">{errors.acceptTerms}</div>}
               </div>
+              
+              {/* CAPTCHA Verification */}
+              <div className="mb-3">
+                <label className="form-label fw-semibold">
+                  {t("auth.captchaVerification") || "CAPTCHA Verification"}
+                  <span className="text-danger ms-1">*</span>
+                </label>
+                <div className="mb-2">
+                  <Captcha 
+                    ref={captchaRef}
+                    onSolutionChange={handleCaptchaSolutionChange}
+                    width={240}
+                    height={60}
+                  />
+                </div>
+                <FormInput
+                  type="text"
+                  name="captcha"
+                  placeholder={t("auth.enterCaptcha") || "Enter the code shown above"}
+                  value={form.captcha}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors.captcha}
+                  leftIcon="bi-shield-lock-fill"
+                  className="form-control-lg"
+                  helperText={t("auth.captchaHelp") || "Enter the characters exactly as shown in the image above"}
+                  hideLabel={true}
+                  required
+                />
+              </div>
 
               {/* Submit Button */}
-              <button
+              <Button
                 type="submit"
-                className="btn btn-primary btn-lg w-100 mb-3"
+                variant="primary"
+                size="lg"
+                fullWidth={true}
+                className="mb-3"
                 disabled={!canSubmit}
+                isLoading={loading}
+                loadingText={t("auth.creating")}
+                leftIcon="bi-check-circle-fill"
               >
-                {loading ? (
-                  <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden />
-                    {t("auth.creating")}
-                  </>
-                ) : (
-                  <>
-                    <i className="bi bi-check-circle-fill me-2" />
-                    {t("auth.signup")}
-                  </>
-                )}
-              </button>
+                {t("auth.signup")}
+              </Button>
+
+              {/* Social Signup Options */}
+              <div className="social-signup my-4">
+                <div className="text-center mb-3 position-relative">
+                  <hr className="position-absolute w-100 top-50" />
+                  <span className="bg-white px-3 position-relative">{t("auth.socialSignupOr")}</span>
+                </div>
+                
+                <div className="d-flex gap-2 mb-3">
+                  <Button 
+                    variant="outline-secondary"
+                    leftIcon="bi-google"
+                    fullWidth={true}
+                    onClick={() => alert("Google signup would be integrated here")}
+                  >
+                    {t("auth.signupWithGoogle")}
+                  </Button>
+                </div>
+                
+                <div className="d-flex gap-2">
+                  <Button 
+                    variant="outline-secondary"
+                    leftIcon="bi-microsoft"
+                    className="flex-1"
+                    fullWidth={true}
+                    onClick={() => alert("Microsoft signup would be integrated here")}
+                  >
+                    {t("auth.signupWithMicrosoft")}
+                  </Button>
+                </div>
+              </div>
 
               {/* Login Link */}
               <div className="text-center text-muted small">
@@ -423,16 +499,17 @@ const Signup: React.FC = memo(() => {
           <div className="custom-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="signup-success-title">
             <div className="custom-modal" role="document">
               <i className="bi bi-check-circle-fill text-success" style={{ fontSize: "3rem" }}></i>
-              <h4 id="signup-success-title" className="mt-3">Signup Successful</h4>
+              <h4 id="signup-success-title" className="mt-3">{t("auth.signupSuccessTitle")}</h4>
               <p>{success}</p>
 
               <div className="mt-3 d-flex gap-2 justify-content-center">
-                <button
-                  className="btn btn-primary"
+                <Button
+                  variant="primary"
                   onClick={handleGoHome}
+                  rightIcon="bi-house-fill"
                 >
-                  Go to Home Now
-                </button>
+                  {t("auth.goToHome")}
+                </Button>
               </div>
             </div>
           </div>

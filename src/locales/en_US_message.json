@@ -167,13 +167,21 @@
     "captchaLabel": "Prove you're not a robot",
     "captchaPlaceholder": "Enter Captcha",
     "captchaAriaLabel": "Enter captcha",
+    "captchaVerification": "CAPTCHA Verification",
+    "enterCaptcha": "Enter the code shown above",
+    "captchaHelp": "Enter the characters exactly as shown in the image above",
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "signingIn": "Signing in…",
     "loggingIn": "Logging in...",
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
-    "signin": "Sign In"
+    "signin": "Sign In",
+    "signupSuccessTitle": "Signup Successful",
+    "goToHome": "Go to Home Now",
+    "socialSignupOr": "OR",
+    "signupWithGoogle": "Sign up with Google",
+    "signupWithMicrosoft": "Sign up with Microsoft"
   },
   "validation": {
     "required": "This field is required",

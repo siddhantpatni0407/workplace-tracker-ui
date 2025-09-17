@@ -194,6 +194,9 @@
     "captchaLabel": "Demuestra que no eres un robot",
     "captchaPlaceholder": "Ingresa el Captcha",
     "captchaAriaLabel": "Ingresa el captcha",
+    "captchaVerification": "Verificación CAPTCHA",
+    "enterCaptcha": "Ingresa el código mostrado arriba",
+    "captchaHelp": "Ingresa los caracteres exactamente como se muestran en la imagen",
     "showPassword": "Mostrar contraseña",
     "hidePassword": "Ocultar contraseña",
     "signingIn": "Iniciando sesión…",
@@ -201,7 +204,12 @@
     "mobileNumberPlaceholder": "Ingresa número de 10 dígitos",
     "emailAddressPlaceholder": "Ingresa tu correo electrónico",
     "createPasswordPlaceholder": "Crea una contraseña segura",
-    "confirmPasswordPlaceholder": "Vuelve a ingresar la contraseña"
+    "confirmPasswordPlaceholder": "Vuelve a ingresar la contraseña",
+    "signupSuccessTitle": "Registro Exitoso",
+    "goToHome": "Ir a la Página Principal",
+    "socialSignupOr": "O",
+    "signupWithGoogle": "Registrarse con Google",
+    "signupWithMicrosoft": "Registrarse con Microsoft"
   },
   "home": {
     "welcomeTo": "Bienvenido a",

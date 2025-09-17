@@ -11,3 +11,5 @@ export { default as Button } from './Button';
 export { default as Alert } from './Alert';
 export { default as Captcha } from './Captcha';
 export type { CaptchaRef } from './Captcha';
+export { default as FormProgress } from './FormProgress';
+export { default as PasswordRequirements } from './PasswordRequirements';
