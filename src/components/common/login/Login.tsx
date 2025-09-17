@@ -5,7 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { ErrorBoundary, Alert, Captcha, CaptchaRef } from "../../ui";
 import { useFormValidation } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
-import { ROUTES } from "../../../constants";
+import { ROUTES, AUTH_FIELDS, AUTH_ERRORS } from "../../../constants";
 import "./login.css";
 
 interface LoginFormData {
@@ -101,7 +101,7 @@ const Login: React.FC = memo(() => {
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      setError(error?.response?.data?.message || error?.message || "Network/server error. Please try again.");
+      setError(error?.response?.data?.message || error?.message || AUTH_ERRORS.NETWORK);
       captchaRef.current?.refresh();
     } finally {
       setLoading(false);
@@ -113,8 +113,8 @@ const Login: React.FC = memo(() => {
       <div className="login-bg d-flex align-items-center justify-content-center">
         <div className="login-card shadow-lg">
           <div className="login-head">
-            <h3 className="fw-bold text-center mb-2">{t("auth.welcome")}</h3>
-            <p className="text-center mb-0 login-subtitle">{t("auth.loginSubtitle")}</p>
+            <h3 className="fw-bold text-center mb-2">{t(AUTH_FIELDS.HEADERS.WELCOME)}</h3>
+            <p className="text-center mb-0 login-subtitle">{t(AUTH_FIELDS.HEADERS.LOGIN_SUBTITLE)}</p>
           </div>
 
           <div className="p-4 p-md-5">
@@ -132,7 +132,7 @@ const Login: React.FC = memo(() => {
               {/* Email Input */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
-                  {t("auth.email")}
+                  {t(AUTH_FIELDS.LABELS.EMAIL)}
                   <span className="text-danger ms-1">*</span>
                 </label>
                 <div className="input-group input-group-lg">
@@ -143,7 +143,7 @@ const Login: React.FC = memo(() => {
                     type="email"
                     name="email"
                     className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                    placeholder={t("auth.emailPlaceholder")}
+                    placeholder={t(AUTH_FIELDS.PLACEHOLDERS.EMAIL)}
                     value={form.email}
                     onChange={handleChange}
                     disabled={loading}
@@ -156,7 +156,7 @@ const Login: React.FC = memo(() => {
               {/* Password Input */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
-                  {t("auth.password")}
+                  {t(AUTH_FIELDS.LABELS.PASSWORD)}
                   <span className="text-danger ms-1">*</span>
                 </label>
                 <div className="input-group input-group-lg">
@@ -167,7 +167,7 @@ const Login: React.FC = memo(() => {
                     type={showPassword ? "text" : "password"}
                     name="password"
                     className={`form-control ${errors.password ? "is-invalid" : ""}`}
-                    placeholder={t("auth.passwordPlaceholder")}
+                    placeholder={t(AUTH_FIELDS.PLACEHOLDERS.PASSWORD)}
                     value={form.password}
                     onChange={handleChange}
                     disabled={loading}
@@ -188,7 +188,7 @@ const Login: React.FC = memo(() => {
               {/* Captcha */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
-                  {t("auth.captchaLabel")}
+                  {t(AUTH_FIELDS.LABELS.CAPTCHA_LABEL)}
                   <span className="text-danger ms-1">*</span>
                 </label>
                 
@@ -206,7 +206,7 @@ const Login: React.FC = memo(() => {
                     type="text"
                     name="captcha"
                     className={`form-control ${errors.captcha ? "is-invalid" : ""}`}
-                    placeholder={t("auth.captchaPlaceholder")}
+                    placeholder={t(AUTH_FIELDS.PLACEHOLDERS.CAPTCHA)}
                     value={form.captcha}
                     onChange={handleChange}
                     disabled={loading}
@@ -225,25 +225,25 @@ const Login: React.FC = memo(() => {
                 {loading ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden />
-                    {t("auth.loggingIn")}
+                    {t(AUTH_FIELDS.BUTTONS.LOGGING_IN)}
                   </>
                 ) : (
                   <>
                     <i className="bi bi-check-circle-fill me-2" />
-                    {t("auth.login")}
+                    {t(AUTH_FIELDS.BUTTONS.LOGIN)}
                   </>
                 )}
               </button>
 
               {/* Sign Up Link */}
               <div className="text-center">
-                <span className="text-muted">{t("auth.noAccount")} </span>
+                <span className="text-muted">{t(AUTH_FIELDS.LINKS.NO_ACCOUNT)} </span>
                 <button
                   type="button"
                   className="btn btn-link p-0"
                   onClick={() => navigate(ROUTES.PUBLIC.SIGNUP)}
                 >
-                  {t("auth.signup")}
+                  {t(AUTH_FIELDS.BUTTONS.SIGNUP)}
                 </button>
               </div>
             </form>

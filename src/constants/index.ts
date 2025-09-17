@@ -20,6 +20,16 @@ export {
   FEATURES
 } from './app';
 
+// Authentication constants
+export {
+  AUTH_FIELDS,
+  PASSWORD_STRENGTH,
+  AUTH_VALIDATION,
+  COUNTRY_CODES,
+  AUTH_ERRORS,
+  SIGNUP_STEPS
+} from './auth';
+
 // API endpoints
 export { API_ENDPOINTS } from './apiEndpoints';
 

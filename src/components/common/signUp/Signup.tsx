@@ -7,7 +7,7 @@ import { authService } from "../../../services/authService";
 import { ErrorBoundary, Alert, Captcha, FormInput, Button, FormProgress, PasswordRequirements } from "../../ui";
 import { useFormValidation } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
-import { ROUTES } from "../../../constants";
+import { ROUTES, AUTH_FIELDS, AUTH_VALIDATION, COUNTRY_CODES, AUTH_ERRORS, SIGNUP_STEPS, PASSWORD_STRENGTH } from "../../../constants";
 import "./signup.css";
 
 interface FormData {
@@ -45,22 +45,22 @@ const Signup: React.FC = memo(() => {
   const [showModal, setShowModal] = useState(false);
 
   const validationSchema = {
-    name: { required: true, minLength: 2 },
+    name: { required: true, minLength: AUTH_VALIDATION.NAME.MIN_LENGTH },
     mobileNumber: {
       required: true,
       custom: (value: string) => {
         const sanitized = value.replace(/\D/g, "");
-        if (sanitized.length !== 10) return "Mobile number must be 10 digits";
+        if (sanitized.length !== AUTH_VALIDATION.MOBILE.LENGTH) return AUTH_ERRORS.MOBILE_FORMAT;
         return null;
       }
     },
     email: { required: true, email: true },
     password: {
       required: true,
-      minLength: 8,
+      minLength: AUTH_VALIDATION.PASSWORD.MIN_LENGTH,
       custom: (value: string) => {
-        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(value)) {
-          return "Password must contain uppercase, lowercase, number and special character";
+        if (!AUTH_VALIDATION.PASSWORD.PATTERN.test(value)) {
+          return AUTH_ERRORS.PASSWORD_REQUIREMENTS;
         }
         return null;
       }
@@ -68,30 +68,30 @@ const Signup: React.FC = memo(() => {
     confirmPassword: {
       required: true,
       custom: (value: string) => {
-        if (value !== form.password) return "Passwords do not match";
+        if (value !== form.password) return AUTH_ERRORS.PASSWORD_MISMATCH;
         return null;
       }
     },
     role: {
       required: true,
       custom: (value: Role) => {
-        if (!["USER", "ADMIN"].includes(value)) return "Please select a valid role";
+        if (!["USER", "ADMIN"].includes(value)) return AUTH_ERRORS.INVALID_ROLE;
         return null;
       }
     },
     acceptTerms: {
       required: true,
       custom: (value: boolean) => {
-        if (!value) return "You must accept the terms and conditions";
+        if (!value) return AUTH_ERRORS.TERMS_REQUIRED;
         return null;
       }
     },
     captcha: {
       required: true,
       custom: (value: string) => {
-        if (!value) return "Please complete the CAPTCHA verification";
+        if (!value) return AUTH_ERRORS.CAPTCHA_REQUIRED;
         const solution = captchaRef.current?.getSolution();
-        if (value !== solution) return "Incorrect CAPTCHA, please try again";
+        if (value !== solution) return AUTH_ERRORS.CAPTCHA_INVALID;
         return null;
       }
     }
@@ -100,15 +100,16 @@ const Signup: React.FC = memo(() => {
   const { errors, validate, clearError } = useFormValidation(form, validationSchema);
   
   // Track form field completion status
-  const formSteps = useMemo(() => [
-    { id: 'name', label: 'Name', completed: !!form.name.trim() && !errors.name },
-    { id: 'mobileNumber', label: 'Mobile', completed: !!form.mobileNumber.trim() && form.mobileNumber.length === 10 && !errors.mobileNumber },
-    { id: 'email', label: 'Email', completed: !!form.email.trim() && !errors.email },
-    { id: 'password', label: 'Password', completed: !!form.password && !errors.password },
-    { id: 'confirmPassword', label: 'Confirm', completed: !!form.confirmPassword && form.password === form.confirmPassword },
-    { id: 'acceptTerms', label: 'Terms', completed: !!form.acceptTerms },
-    { id: 'captcha', label: 'CAPTCHA', completed: !!form.captcha && !errors.captcha }
-  ], [form, errors]);
+  const formSteps = useMemo(() => SIGNUP_STEPS.map(step => ({
+    ...step,
+    completed: step.id === 'name' ? !!form.name.trim() && !errors.name :
+               step.id === 'mobileNumber' ? !!form.mobileNumber.trim() && form.mobileNumber.length === AUTH_VALIDATION.MOBILE.LENGTH && !errors.mobileNumber :
+               step.id === 'email' ? !!form.email.trim() && !errors.email :
+               step.id === 'password' ? !!form.password && !errors.password :
+               step.id === 'confirmPassword' ? !!form.confirmPassword && form.password === form.confirmPassword :
+               step.id === 'acceptTerms' ? !!form.acceptTerms :
+               step.id === 'captcha' ? !!form.captcha && !errors.captcha : false
+  })), [form, errors]);
 
   const passwordStrength = useMemo(() => {
     const password = form.password;
@@ -125,8 +126,7 @@ const Signup: React.FC = memo(() => {
   }, [form.password]);
 
   const passwordStrengthLabel = (strength: number) => {
-    const labels = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
-    return labels[strength] || "Very Weak";
+    return PASSWORD_STRENGTH.LEVELS[strength] || PASSWORD_STRENGTH.LEVELS[0];
   };
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -248,9 +248,9 @@ const Signup: React.FC = memo(() => {
           <div className="signup-head">
             <h3 className="fw-bold text-center mb-2">
               <i className="bi bi-person-plus-fill me-2" />
-              {t("auth.createAccount")}
+              {t(AUTH_FIELDS.HEADERS.CREATE_ACCOUNT)}
             </h3>
-            <p className="text-center mb-0 signup-subtitle">{t("auth.signupSubtitle")}</p>
+            <p className="text-center mb-0 signup-subtitle">{t(AUTH_FIELDS.HEADERS.SIGNUP_SUBTITLE)}</p>
           </div>
 
           <div className="p-4 p-md-5">
@@ -271,8 +271,8 @@ const Signup: React.FC = memo(() => {
               <FormInput
                 name="name"
                 type="text"
-                label={t("auth.fullName")}
-                placeholder={t("auth.fullNamePlaceholder")}
+                label={t(AUTH_FIELDS.LABELS.FULL_NAME)}
+                placeholder={t(AUTH_FIELDS.PLACEHOLDERS.FULL_NAME)}
                 value={form.name}
                 onChange={handleChange}
                 disabled={loading}
@@ -286,15 +286,15 @@ const Signup: React.FC = memo(() => {
               {/* Mobile Number Input */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
-                  {t("auth.mobileNumber")}
+                  {t(AUTH_FIELDS.LABELS.MOBILE_NUMBER)}
                   <span className="text-danger ms-1">*</span>
                 </label>
                 <div className="input-group input-group-lg">
-                  <span className="input-group-text">+91</span>
+                  <span className="input-group-text">{COUNTRY_CODES.INDIA}</span>
                   <FormInput
                     type="tel"
                     name="mobileNumber"
-                    placeholder={t("auth.mobileNumberPlaceholder")}
+                    placeholder={t(AUTH_FIELDS.PLACEHOLDERS.MOBILE_NUMBER)}
                     value={form.mobileNumber}
                     onChange={handleChange}
                     disabled={loading}
@@ -310,8 +310,8 @@ const Signup: React.FC = memo(() => {
               <FormInput
                 type="email"
                 name="email"
-                label={t("auth.emailAddress")}
-                placeholder={t("auth.emailAddressPlaceholder")}
+                label={t(AUTH_FIELDS.LABELS.EMAIL)}
+                placeholder={t(AUTH_FIELDS.PLACEHOLDERS.EMAIL_ADDRESS)}
                 value={form.email}
                 onChange={handleChange}
                 disabled={loading}
@@ -326,8 +326,8 @@ const Signup: React.FC = memo(() => {
               <FormInput
                 type={showPassword ? "text" : "password"}
                 name="password"
-                label={t("auth.password")}
-                placeholder={t("auth.createPasswordPlaceholder")}
+                label={t(AUTH_FIELDS.LABELS.PASSWORD)}
+                placeholder={t(AUTH_FIELDS.PLACEHOLDERS.CREATE_PASSWORD)}
                 value={form.password}
                 onChange={handleChange}
                 disabled={loading}
@@ -337,7 +337,7 @@ const Signup: React.FC = memo(() => {
                 showPasswordToggle={true}
                 onTogglePassword={togglePasswordVisibility}
                 className="form-control-lg"
-                helperText={t("auth.passwordStrengthHint")}
+                helperText={t(AUTH_FIELDS.HELPERS.PASSWORD_STRENGTH)}
                 required
               />
 
@@ -347,7 +347,7 @@ const Signup: React.FC = memo(() => {
                   <div className="strength">
                     {form.password && (
                       <>
-                        <div className={`strength-bar strength-${passwordStrength}`} aria-hidden />
+                        <div className={`strength-bar ${PASSWORD_STRENGTH.CLASSES[passwordStrength]}`} aria-hidden />
                         <small className="ms-2 text-muted">{passwordStrengthLabel(passwordStrength)}</small>
                       </>
                     )}
@@ -360,8 +360,8 @@ const Signup: React.FC = memo(() => {
               <FormInput
                 type={showPassword ? "text" : "password"}
                 name="confirmPassword"
-                label={t("auth.confirmPassword")}
-                placeholder={t("auth.confirmPasswordPlaceholder")}
+                label={t(AUTH_FIELDS.LABELS.CONFIRM_PASSWORD)}
+                placeholder={t(AUTH_FIELDS.PLACEHOLDERS.CONFIRM_PASSWORD)}
                 value={form.confirmPassword}
                 onChange={handleChange}
                 disabled={loading}
@@ -375,7 +375,7 @@ const Signup: React.FC = memo(() => {
               {/* Role Selection */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
-                  {t("auth.role")}
+                  {t(AUTH_FIELDS.LABELS.ROLE)}
                   <span className="text-danger ms-1">*</span>
                 </label>
                 <RoleSelect
@@ -399,7 +399,7 @@ const Signup: React.FC = memo(() => {
                   disabled={loading}
                 />
                 <label className="form-check-label" htmlFor="acceptTerms">
-                  {t("auth.acceptTerms")} <a href="/terms" target="_blank" rel="noopener noreferrer">{t("auth.termsAndConditions")}</a>
+                  {t(AUTH_FIELDS.LABELS.ACCEPT_TERMS)} <a href="/terms" target="_blank" rel="noopener noreferrer">{t(AUTH_FIELDS.LINKS.TERMS_CONDITIONS)}</a>
                 </label>
                 {errors.acceptTerms && <div className="invalid-feedback">{errors.acceptTerms}</div>}
               </div>
@@ -407,7 +407,7 @@ const Signup: React.FC = memo(() => {
               {/* CAPTCHA Verification */}
               <div className="mb-3">
                 <label className="form-label fw-semibold">
-                  {t("auth.captchaVerification") || "CAPTCHA Verification"}
+                  {t(AUTH_FIELDS.LABELS.CAPTCHA_VERIFICATION)}
                   <span className="text-danger ms-1">*</span>
                 </label>
                 <div className="mb-2">
@@ -421,14 +421,14 @@ const Signup: React.FC = memo(() => {
                 <FormInput
                   type="text"
                   name="captcha"
-                  placeholder={t("auth.enterCaptcha") || "Enter the code shown above"}
+                  placeholder={t(AUTH_FIELDS.PLACEHOLDERS.ENTER_CAPTCHA)}
                   value={form.captcha}
                   onChange={handleChange}
                   disabled={loading}
                   error={errors.captcha}
                   leftIcon="bi-shield-lock-fill"
                   className="form-control-lg"
-                  helperText={t("auth.captchaHelp") || "Enter the characters exactly as shown in the image above"}
+                  helperText={t(AUTH_FIELDS.HELPERS.CAPTCHA_HELP)}
                   hideLabel={true}
                   required
                 />
@@ -443,17 +443,17 @@ const Signup: React.FC = memo(() => {
                 className="mb-3"
                 disabled={!canSubmit}
                 isLoading={loading}
-                loadingText={t("auth.creating")}
+                loadingText={t(AUTH_FIELDS.BUTTONS.CREATING)}
                 leftIcon="bi-check-circle-fill"
               >
-                {t("auth.signup")}
+                {t(AUTH_FIELDS.BUTTONS.SIGNUP)}
               </Button>
 
               {/* Social Signup Options */}
               <div className="social-signup my-4">
                 <div className="text-center mb-3 position-relative">
                   <hr className="position-absolute w-100 top-50" />
-                  <span className="bg-white px-3 position-relative">{t("auth.socialSignupOr")}</span>
+                  <span className="bg-white px-3 position-relative">{t(AUTH_FIELDS.SOCIAL.OR)}</span>
                 </div>
                 
                 <div className="d-flex gap-2 mb-3">
@@ -463,7 +463,7 @@ const Signup: React.FC = memo(() => {
                     fullWidth={true}
                     onClick={() => alert("Google signup would be integrated here")}
                   >
-                    {t("auth.signupWithGoogle")}
+                    {t(AUTH_FIELDS.SOCIAL.GOOGLE)}
                   </Button>
                 </div>
                 
@@ -475,20 +475,20 @@ const Signup: React.FC = memo(() => {
                     fullWidth={true}
                     onClick={() => alert("Microsoft signup would be integrated here")}
                   >
-                    {t("auth.signupWithMicrosoft")}
+                    {t(AUTH_FIELDS.SOCIAL.MICROSOFT)}
                   </Button>
                 </div>
               </div>
 
               {/* Login Link */}
               <div className="text-center text-muted small">
-                {t("auth.haveAccount")} {" "}
+                {t(AUTH_FIELDS.LINKS.HAVE_ACCOUNT)} {" "}
                 <button
                   type="button"
                   className="btn btn-link p-0"
                   onClick={() => navigate(ROUTES.PUBLIC.LOGIN)}
                 >
-                  {t("auth.signin")}
+                  {t(AUTH_FIELDS.LINKS.SIGNIN)}
                 </button>
               </div>
             </form>
@@ -499,7 +499,7 @@ const Signup: React.FC = memo(() => {
           <div className="custom-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="signup-success-title">
             <div className="custom-modal" role="document">
               <i className="bi bi-check-circle-fill text-success" style={{ fontSize: "3rem" }}></i>
-              <h4 id="signup-success-title" className="mt-3">{t("auth.signupSuccessTitle")}</h4>
+              <h4 id="signup-success-title" className="mt-3">{t(AUTH_FIELDS.HEADERS.SIGNUP_SUCCESS)}</h4>
               <p>{success}</p>
 
               <div className="mt-3 d-flex gap-2 justify-content-center">
@@ -508,7 +508,7 @@ const Signup: React.FC = memo(() => {
                   onClick={handleGoHome}
                   rightIcon="bi-house-fill"
                 >
-                  {t("auth.goToHome")}
+                  {t(AUTH_FIELDS.BUTTONS.GO_TO_HOME)}
                 </Button>
               </div>
             </div>
