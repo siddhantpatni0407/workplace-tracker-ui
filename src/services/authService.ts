@@ -2,6 +2,7 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
+import { STORAGE_KEYS } from "../constants/app";
 import { Role } from "../types/auth";
 
 /**
@@ -104,10 +105,10 @@ export const authService = {
 
   logout: () => {
     // clear frontend stored tokens and user
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("lastLoginTime");
-    localStorage.removeItem("lastLoginShown");
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.USER);
+    localStorage.removeItem(STORAGE_KEYS.LAST_LOGIN_TIME);
+    localStorage.removeItem(STORAGE_KEYS.LAST_LOGIN_SHOWN);
 
     // Optionally call server logout to clear refresh cookie server-side (best-effort)
     try {
@@ -119,11 +120,11 @@ export const authService = {
     // prefer canonical accessToken then fallback to token
     const access = resp.accessToken ?? resp.token ?? null;
     if (resp.status === "SUCCESS" && access) {
-      localStorage.setItem("token", access);
+      localStorage.setItem(STORAGE_KEYS.TOKEN, access);
 
       // Save user object (minimal fields)
       localStorage.setItem(
-        "user",
+        STORAGE_KEYS.USER,
         JSON.stringify({
           userId: resp.userId ?? null,
           name: resp.name ?? null,
@@ -137,8 +138,8 @@ export const authService = {
       );
 
       if (resp.lastLoginTime) {
-        localStorage.setItem("lastLoginTime", resp.lastLoginTime);
-        localStorage.setItem("lastLoginShown", "false");
+        localStorage.setItem(STORAGE_KEYS.LAST_LOGIN_TIME, resp.lastLoginTime);
+        localStorage.setItem(STORAGE_KEYS.LAST_LOGIN_SHOWN, "false");
       }
     }
   },
@@ -153,7 +154,7 @@ export const authService = {
     loginAttempts?: number | null;
     accountLocked?: boolean | null;
   } | null => {
-    const stored = localStorage.getItem("user");
+    const stored = localStorage.getItem(STORAGE_KEYS.USER);
     return stored ? JSON.parse(stored) : null;
   },
 };

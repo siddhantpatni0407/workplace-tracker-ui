@@ -1,7 +1,8 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "../../../hooks/useTranslation";
-import "./Home.css";
+import { ROUTES } from "../../../constants";
+import "./home.css";
 import bgImage from "../../../assets/workplace-tracker-background.jpg"; 
 
 const Home: React.FC = () => {
@@ -57,7 +58,7 @@ const Home: React.FC = () => {
               </ul>
 
               <div className="mt-3 small text-white-75">
-                <small>Built for teams — sign up or log in to connect your organization.</small>
+                <small>{t("home.builtForTeams")}</small>
               </div>
             </div>
           </div>
@@ -68,9 +69,30 @@ const Home: React.FC = () => {
               <p className="cta-sub text-muted">{t("home.getStartedSubtitle")}</p>
 
               <div className="d-grid gap-3 w-100">
-                <Link to="/login" className="btn btn-solid btn-lg" aria-label={t("home.gotoLoginPage")}>{t("auth.login")}</Link>
-                <Link to="/signup" className="btn btn-outline btn-lg" aria-label={t("home.gotoSignupPage")}>{t("auth.signup")}</Link>
-                <Link to="/about" className="btn btn-link-muted btn-sm mt-2" aria-label={t("home.learnMore")}>{t("home.learnMore")}</Link>
+                <Link 
+                  to={ROUTES.PUBLIC.LOGIN} 
+                  className="btn btn-solid btn-lg" 
+                  aria-label={t("home.gotoLoginPage")}
+                >
+                  <i className="bi bi-box-arrow-in-right me-2" />
+                  {t("auth.login")}
+                </Link>
+                <Link 
+                  to={ROUTES.PUBLIC.SIGNUP} 
+                  className="btn btn-outline btn-lg" 
+                  aria-label={t("home.gotoSignupPage")}
+                >
+                  <i className="bi bi-person-plus me-2" />
+                  {t("auth.signup")}
+                </Link>
+                <Link 
+                  to={ROUTES.PUBLIC.ABOUT} 
+                  className="btn btn-link-muted btn-sm mt-2" 
+                  aria-label={t("home.learnMore")}
+                >
+                  <i className="bi bi-info-circle me-1" />
+                  {t("home.learnMore")}
+                </Link>
               </div>
 
               <div className="small-meta mt-4 text-muted text-center">

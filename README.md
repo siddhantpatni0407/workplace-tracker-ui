@@ -4,7 +4,7 @@ A comprehensive **React TypeScript** frontend application for the **Workplace Tr
 
 ---
 
-## **📝 Last Updated: `2025-09-15`**
+## **📝 Last Updated: `2025-09-17`**
 
 ## Table of Contents
 
@@ -102,6 +102,8 @@ The **Workplace Tracker UI** is a modern, feature-rich React application built w
 ### 🌐 **Internationalization**
 - **4 Language Support** - English, Spanish, French, Hindi
 - **Dynamic Language Switching** - Runtime language changes
+- **Authentication-Aware Language Management** - User-specific language preferences
+- **Automatic Language Restoration** - Saved preferences restored on login
 - **Localized Content** - Full UI translation
 - **Cultural Adaptation** - Locale-specific formatting
 - **Fallback System** - Robust translation fallbacks
@@ -113,6 +115,8 @@ The **Workplace Tracker UI** is a modern, feature-rich React application built w
 - **Custom Animations** - Smooth transitions and effects
 - **Glassmorphism Effects** - Modern visual aesthetics
 - **Accessibility** - WCAG compliant components
+- **Component Organization** - Well-structured component architecture
+- **Centralized Routing** - Constants-based route management
 
 ---
 
@@ -150,7 +154,26 @@ graph TB
 
 ---
 
-## 🚀 Tech Stack
+## Recent Improvements
+
+### Component Organization (Latest)
+- **Routing Components**: Moved `PrivateRoute.tsx` to `src/components/routing/` following React best practices
+- **Form Components**: Organized `RoleSelect.tsx` in `src/components/forms/` for better maintainability  
+- **Barrel Exports**: Implemented clean import patterns with index.ts files in component folders
+- **Import Path Updates**: Updated all component imports to use new organized structure
+
+### Authentication-Aware Language Management
+- **Smart Language Persistence**: Language preferences are now tied to user authentication state
+- **Secure Language Storage**: Authenticated users' language choices persist across sessions
+- **Anonymous User Handling**: Guest users get session-based language selection with automatic cleanup
+- **Improved UX**: Seamless language switching experience for both authenticated and anonymous users
+
+### UI/UX Enhancements
+- **Modern Navigation**: Updated routing structure with better organization and maintainability
+- **Enhanced Error Handling**: Improved error boundaries and user feedback mechanisms
+- **Responsive Design**: Better mobile and desktop experience across all components
+
+## 🚀 Getting Started
 
 ### **Core Technologies**
 - **React 19.1.1** - Modern React with latest features
@@ -285,6 +308,14 @@ workplace-tracker-ui/
 │   │   │   ├── userProfile/         # User profile
 │   │   │   └── userSettings/        # User settings
 │   │   │
+│   │   ├── forms/                   # Form-related components
+│   │   │   ├── RoleSelect.tsx       # Role selection component
+│   │   │   └── index.ts             # Form component exports
+│   │   │
+│   │   ├── routing/                 # Route-related components
+│   │   │   ├── PrivateRoute.tsx     # Route protection component
+│   │   │   └── index.ts             # Routing component exports
+│   │   │
 │   │   ├── ui/                      # Reusable UI components
 │   │   │   ├── ErrorBoundary.tsx    # Error boundary
 │   │   │   ├── ErrorMessage.tsx     # Error display
@@ -301,7 +332,8 @@ workplace-tracker-ui/
 │   │   │   ├── officeVisitAnalytics/ # Visit analytics
 │   │   │   └── tasks/               # Task management
 │   │   │
-│   │   └── PrivateRoute.tsx         # Route protection
+│   │   ├── index.ts                 # Main component exports
+│   │   └── README.md                # Component architecture documentation
 │   │
 │   ├── constants/                   # Application constants
 │   │   ├── apiEndpoints.ts          # API endpoint definitions

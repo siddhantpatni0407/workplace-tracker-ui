@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { format, differenceInCalendarDays, parseISO } from "date-fns";
 import { toast } from "react-toastify";
-import Header from "../../common/Header/Header";
+import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import "./apply-leave.css";

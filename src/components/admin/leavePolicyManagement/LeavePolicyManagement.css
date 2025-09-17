@@ -1,52 +1,75 @@
-/* LeavePolicyManagement.css - aligned like HolidayManagement */
+/* ----- LeavePolicyManagement.css ----- */
 
-/* Toolbar */
-.leave-policy-toolbar .input-group-text {
-  font-size: .82rem;
-}
-.leave-policy-toolbar .form-control, 
-.leave-policy-toolbar .form-select {
-  min-width: 140px;
+/* layout & base */
+.leave-policy-management { min-height: 60vh; }
+
+/* Title */
+.lpm-title { font-size: 2.1rem; color: #5b2df8; font-weight: 700; }
+
+/* stat cards */
+.stat-card { border-radius: 12px; background: #fff; }
+.stat-title { font-size: .9rem; color: #444; font-weight: 700; margin-top: .3rem; }
+.stat-icon { font-size: 1.1rem; opacity: .9; }
+
+/* small progress tweaks */
+.thin-progress { height: 8px; background: rgba(0,0,0,0.04); border-radius: 999px; overflow: hidden; }
+.thin-progress .progress-bar { box-shadow: none; }
+
+/* filter card */
+.lpm-filter-card { border-radius: 10px; }
+
+/* table glow card */
+.lpm-table-glow { border-radius: 10px; overflow: hidden; }
+
+/* highlight match */
+.lpm-highlight { background: #fff176; padding: 0 .12rem; border-radius: 2px; }
+
+/* row hover & selection */
+.leave-policy-table tbody tr.lpm-row { transition: background .14s ease, transform .12s ease; }
+.leave-policy-table tbody tr.lpm-row:hover { background: rgba(13,110,253,0.02); transform: translateY(-1px); }
+
+/* keyboard focus */
+.leave-policy-table tbody tr:focus { outline: 3px solid rgba(13,110,253,0.14); outline-offset: -2px; }
+
+/* action buttons */
+.leave-policy-table td .btn { padding: .28rem .55rem; font-size: .85rem; }
+
+/* Responsive: render table as stacked cards on small screens */
+@media (max-width: 640px) {
+  .leave-policy-table thead { display:none; }
+  .leave-policy-table table, .leave-policy-table tbody, .leave-policy-table tr, .leave-policy-table td { display:block; width:100%; }
+  .leave-policy-table tbody tr { margin-bottom: 12px; border-radius: 8px; padding: 12px; background: #fff; box-shadow: 0 6px 18px rgba(2,6,23,0.04); }
+  .leave-policy-table td { padding: .25rem 0; }
 }
 
-/* Provide spacing consistent with Holiday page */
-.leave-policy-toolbar {
-  margin-top: 12px;
-  margin-bottom: 18px;
-  padding: 0 6px;
+/* Modal (centered overlay) */
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 23, 45, 0.42);
+  backdrop-filter: blur(3px);
+  padding: 1.25rem;
 }
 
-/* Card wrapper for table */
-.leave-policy-card {
-  border: 0;
-  border-radius: 12px;
+/* modal box */
+.holiday-modal {
+  width: 520px;
+  max-width: calc(100% - 2rem);
+  background: linear-gradient(180deg,#ffffff,#fbfbff);
+  border-radius: 10px;
+  box-shadow: 0 28px 70px rgba(2,6,23,0.32);
   overflow: hidden;
-  margin-bottom: 12px;
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
+  border: 1px solid rgba(0,0,0,0.06);
+  animation: lpmModalIn 220ms cubic-bezier(.22,.9,.32,1);
 }
 
-/* Table container */
-.admin-leave-table {
-  border-collapse: separate;
-  border-spacing: 0;
-  width: 100%;
-}
-
-/* Sticky header */
-.admin-leave-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: linear-gradient(180deg, #fbfbfd, #f3f6fb);
-  border-bottom: 1px solid rgba(0,0,0,0.06);
-  color: #222;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  padding: 12px 16px;
-  text-align: center;
+/* animation */
+@keyframes lpmModalIn {
+  from { transform: translateY(10px) scale(.995); opacity: 0; } to { transform: none; opacity: 1; }
 }
 
 /* Rows */

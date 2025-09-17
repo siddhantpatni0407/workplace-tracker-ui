@@ -2,7 +2,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { parseISO, format } from "date-fns";
 import { toast } from "react-toastify";
-import Header from "../../common/Header/Header";
+import Header from "../../common/header/Header";
 import { HolidayDTO } from "../../../types/holiday";
 import holidayService from "../../../services/holidayService";
 import "./user-holiday-tracker.css";

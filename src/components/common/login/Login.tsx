@@ -1,11 +1,12 @@
 // src/components/common/login/Login.tsx
-import React, { useEffect, useRef, useState, memo, useCallback } from "react";
+import React, { useState, useRef, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
-import { authService } from "../../../services/authService";
-import { ErrorBoundary, ErrorMessage } from "../../ui";
-import { ValidationUtils } from "../../../utils";
+import { useAuth } from "../../../context/AuthContext";
+import { ErrorBoundary, Alert, Captcha, CaptchaRef } from "../../ui";
+import { useFormValidation } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
-import "./Login.css";
+import { ROUTES } from "../../../constants";
+import "./login.css";
 
 interface LoginFormData {
   email: string;
@@ -16,6 +17,8 @@ interface LoginFormData {
 const Login: React.FC = memo(() => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { login } = useAuth();
+  const captchaRef = useRef<CaptchaRef>(null);
   
   // Form state
   const [form, setForm] = useState<LoginFormData>({
@@ -29,153 +32,50 @@ const Login: React.FC = memo(() => {
   const [showPassword, setShowPassword] = useState(false);
   const [captchaSolution, setCaptchaSolution] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  // Form validation schema using our new validation hook
+  const validationSchema = {
+    email: { required: true, email: true },
+    password: { required: true, minLength: 6 },
+    captcha: {
+      required: true,
+      custom: (value: string) => {
+        if (value.trim().toLowerCase() !== captchaSolution.trim().toLowerCase()) {
+          return t("validation.captchaInvalid");
+        }
+        return null;
+      }
+    }
+  };
+
+  const { errors, validate, clearError } = useFormValidation(form, validationSchema);
 
   // Handle input changes
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-    
-    // Clear error when user starts typing
-    if (error) {
-      setError(null);
-    }
-  }, [error]);
+    if (error) setError(null);
+    if (errors[name]) clearError(name);
+  }, [error, errors, clearError]);
 
-  // Toggle password visibility
   const togglePasswordVisibility = useCallback(() => {
     setShowPassword(prev => !prev);
   }, []);
 
-  // Generate random character for captcha
-  const randomChar = useCallback(() => {
-    const pool = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-    return pool.charAt(Math.floor(Math.random() * pool.length));
+  const handleCaptchaSolutionChange = useCallback((solution: string) => {
+    setCaptchaSolution(solution);
+    setForm(prev => ({ ...prev, captcha: "" }));
   }, []);
 
-  // Generate new captcha
-  const generateCaptcha = useCallback((length = 5) => {
-    const text = Array.from({ length }, randomChar).join("");
-    setCaptchaSolution(text);
-    drawCaptcha(text);
-  }, [randomChar]);
-
-  const drawCaptcha = (text: string) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const w = 200;
-    const h = 50;
-    canvas.width = w;
-    canvas.height = h;
-
-    // background gradient
-    const grad = ctx.createLinearGradient(0, 0, w, h);
-    grad.addColorStop(0, "#f3f4f6");
-    grad.addColorStop(1, "#ffffff");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, w, h);
-
-    // add noise rectangles
-    for (let i = 0; i < 8; i++) {
-      ctx.fillStyle = `rgba(${Math.floor(Math.random() * 120)}, ${Math.floor(
-        Math.random() * 120
-      )}, ${Math.floor(Math.random() * 120)}, ${Math.random() * 0.12 + 0.02})`;
-      ctx.fillRect(Math.random() * w, Math.random() * h, Math.random() * 30, Math.random() * 10);
-    }
-
-    // draw text with varying rotation and position
-    const charSpacing = w / (text.length + 1);
-    for (let i = 0; i < text.length; i++) {
-      const fontSize = 24 + Math.floor(Math.random() * 10);
-      ctx.font = `${fontSize}px "Arial", sans-serif`;
-      ctx.textBaseline = "middle";
-      const x = charSpacing * (i + 1) + (Math.random() * 6 - 3);
-      const y = h / 2 + (Math.random() * 8 - 4);
-      const angle = (Math.random() * 30 - 15) * (Math.PI / 180);
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle);
-      ctx.fillStyle = `rgba(${50 + Math.floor(Math.random() * 120)}, ${50 +
-        Math.floor(Math.random() * 120)}, ${50 + Math.floor(Math.random() * 120)}, 0.9)`;
-      ctx.fillText(text[i], 0, 0);
-      ctx.restore();
-    }
-
-    // draw interfering lines
-    for (let i = 0; i < 4; i++) {
-      ctx.strokeStyle = `rgba(${40 + Math.floor(Math.random() * 160)}, ${40 +
-        Math.floor(Math.random() * 160)}, ${40 + Math.floor(Math.random() * 160)}, ${0.25 +
-        Math.random() * 0.35})`;
-      ctx.beginPath();
-      ctx.moveTo(Math.random() * w, Math.random() * h);
-      ctx.quadraticCurveTo(Math.random() * w, Math.random() * h, Math.random() * w, Math.random() * h);
-      ctx.stroke();
-    }
-
-    // dots noise
-    for (let i = 0; i < 40; i++) {
-      ctx.fillStyle = `rgba(${Math.floor(Math.random() * 200)}, ${Math.floor(Math.random() * 200)}, ${Math.floor(
-        Math.random() * 200
-      )}, ${Math.random() * 0.6})`;
-      ctx.beginPath();
-      ctx.arc(Math.random() * w, Math.random() * h, Math.random() * 1.6, 0, Math.PI * 2);
-      ctx.fill();
-    }
-  };
-
-  // Generate captcha on mount
-  useEffect(() => {
-    generateCaptcha();
-  }, [generateCaptcha]);
-
-  const handleRefreshCaptcha = useCallback((e?: React.MouseEvent) => {
-    e?.preventDefault();
-    generateCaptcha();
-    setForm(prev => ({ ...prev, captcha: "" }));
-  }, [generateCaptcha]);
-
-  // Validate form
-  const validateForm = useCallback((): string | null => {
-    if (!form.email.trim()) {
-      return t("validation.emailRequired");
-    }
-    if (!ValidationUtils.isValidEmail(form.email)) {
-      return t("validation.emailInvalid");
-    }
-    if (!form.password.trim()) {
-      return t("validation.passwordRequired");
-    }
-    if (form.password.length < 6) {
-      return t("validation.passwordMinLength");
-    }
-    if (!form.captcha.trim()) {
-      return t("validation.captchaRequired");
-    }
-    if (form.captcha.trim().toLowerCase() !== captchaSolution.trim().toLowerCase()) {
-      return t("validation.captchaInvalid");
-    }
-    return null;
-  }, [form, captchaSolution, t]);
-
-  // Check if form can be submitted
-  const canSubmit = form.email.trim() !== "" &&
-                   form.password.trim() !== "" &&
-                   form.captcha.trim() !== "" &&
-                   !loading;
+  const canSubmit = form.email.trim() && form.password.trim() && form.captcha.trim() && !loading;
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     if (!canSubmit) return;
 
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      if (validationError.includes("captcha")) {
-        handleRefreshCaptcha();
-      }
+    const isValid = validate();
+    if (!isValid) {
+      if (errors.captcha) captchaRef.current?.refresh();
       return;
     }
 
@@ -183,77 +83,90 @@ const Login: React.FC = memo(() => {
     setLoading(true);
     
     try {
-      const response = await authService.login(form.email, form.password, {
+      // Use AuthContext login which includes user settings loading
+      const response = await login(form.email, form.password, {
         mathCaptchaAnswer: form.captcha.trim(),
       });
 
       if (response.status === "SUCCESS" && (response.token || response.accessToken)) {
-        authService.saveSession(response);
         const role = response.role || "USER";
-        navigate(role === "ADMIN" ? "/admin-dashboard" : "/user-dashboard");
-        window.location.reload(); // let AuthProvider rehydrate from storage
+        navigate(role === "ADMIN" ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD);
+        // Note: No need for window.location.reload() as AuthContext handles state updates
       } else {
         const message = response.message?.toLowerCase().includes("locked")
           ? "Your account is locked due to failed attempts. Reset your password or contact admin."
           : response.message || "Invalid credentials. Please try again.";
         setError(message);
-        handleRefreshCaptcha();
+        captchaRef.current?.refresh();
       }
     } catch (error: any) {
-      const message = error?.response?.data?.message ||
-                     error?.message ||
-                     "Something went wrong. Please try again.";
-      setError(message);
-      handleRefreshCaptcha();
+      console.error("Login error:", error);
+      setError(error?.response?.data?.message || error?.message || "Network/server error. Please try again.");
+      captchaRef.current?.refresh();
     } finally {
       setLoading(false);
     }
-  }, [canSubmit, validateForm, form, handleRefreshCaptcha, navigate]);
+  }, [canSubmit, validate, errors.captcha, form, navigate, login]);
 
   return (
     <ErrorBoundary>
       <div className="login-bg d-flex align-items-center justify-content-center">
         <div className="login-card shadow-lg">
           <div className="login-head">
-            <i className="bi bi-shield-lock-fill me-2" aria-hidden />
-            Sign in
+            <h3 className="fw-bold text-center mb-2">{t("auth.welcome")}</h3>
+            <p className="text-center mb-0 login-subtitle">{t("auth.loginSubtitle")}</p>
           </div>
 
           <div className="p-4 p-md-5">
-            {error && <ErrorMessage error={error} />}
-
             <form onSubmit={handleSubmit} noValidate>
-              {/* Email */}
+              {/* Global Error Alert */}
+              {error && (
+                <Alert
+                  variant="error"
+                  message={error}
+                  onClose={() => setError(null)}
+                  className="mb-3"
+                />
+              )}
+
+              {/* Email Input */}
               <div className="mb-3">
-                <label className="form-label fw-semibold">{t("auth.email")}</label>
+                <label className="form-label fw-semibold">
+                  {t("auth.email")}
+                  <span className="text-danger ms-1">*</span>
+                </label>
                 <div className="input-group input-group-lg">
                   <span className="input-group-text">
                     <i className="bi bi-envelope-fill" />
                   </span>
                   <input
-                    name="email"
                     type="email"
-                    className="form-control"
+                    name="email"
+                    className={`form-control ${errors.email ? "is-invalid" : ""}`}
                     placeholder={t("auth.emailPlaceholder")}
                     value={form.email}
                     onChange={handleChange}
                     disabled={loading}
                     required
                   />
+                  {errors.email && <div className="invalid-feedback">{errors.email}</div>}
                 </div>
               </div>
 
-              {/* Password */}
+              {/* Password Input */}
               <div className="mb-3">
-                <label className="form-label fw-semibold">{t("auth.password")}</label>
+                <label className="form-label fw-semibold">
+                  {t("auth.password")}
+                  <span className="text-danger ms-1">*</span>
+                </label>
                 <div className="input-group input-group-lg">
                   <span className="input-group-text">
-                    <i className="bi bi-key-fill" />
+                    <i className="bi bi-lock-fill" />
                   </span>
                   <input
-                    name="password"
                     type={showPassword ? "text" : "password"}
-                    className="form-control"
+                    name="password"
+                    className={`form-control ${errors.password ? "is-invalid" : ""}`}
                     placeholder={t("auth.passwordPlaceholder")}
                     value={form.password}
                     onChange={handleChange}
@@ -264,93 +177,75 @@ const Login: React.FC = memo(() => {
                     type="button"
                     className="input-group-text btn-toggle"
                     onClick={togglePasswordVisibility}
-                    aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     <i className={`bi ${showPassword ? "bi-eye-slash-fill" : "bi-eye-fill"}`} />
                   </button>
+                  {errors.password && <div className="invalid-feedback">{errors.password}</div>}
                 </div>
               </div>
 
-              {/* CAPTCHA */}
-              <div className="mb-3 captcha-block">
-                <label className="form-label fw-semibold small mb-2">
+              {/* Captcha */}
+              <div className="mb-3">
+                <label className="form-label fw-semibold">
                   {t("auth.captchaLabel")}
+                  <span className="text-danger ms-1">*</span>
                 </label>
-
-                <div className="d-flex align-items-center gap-2 mb-2">
-                  <canvas ref={canvasRef} className="captcha-canvas" aria-hidden />
-                  <button
-                    type="button"
-                    className="btn btn-light captcha-refresh"
-                    onClick={handleRefreshCaptcha}
-                    title="Refresh captcha"
-                  >
-                    <i className="bi bi-arrow-clockwise" />
-                  </button>
-                </div>
-
-                <input
-                  type="text"
-                  name="captcha"
-                  className="form-control"
-                  placeholder={t("auth.captchaPlaceholder")}
-                  value={form.captcha}
-                  onChange={handleChange}
-                  disabled={loading}
-                  aria-label={t("auth.captchaAriaLabel")}
-                  required
+                
+                <Captcha
+                  ref={captchaRef}
+                  onSolutionChange={handleCaptchaSolutionChange}
+                  className="mb-2"
                 />
-              </div>
-
-              {/* Remember / Forgot */}
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <div className="form-check">
-                  <input className="form-check-input" type="checkbox" id="rememberMe" />
-                  <label className="form-check-label" htmlFor="rememberMe">
-                    {t("auth.rememberMe")}
-                  </label>
+                
+                <div className="input-group input-group-lg">
+                  <span className="input-group-text">
+                    <i className="bi bi-calculator" />
+                  </span>
+                  <input
+                    type="text"
+                    name="captcha"
+                    className={`form-control ${errors.captcha ? "is-invalid" : ""}`}
+                    placeholder={t("auth.captchaPlaceholder")}
+                    value={form.captcha}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                  />
+                  {errors.captcha && <div className="invalid-feedback">{errors.captcha}</div>}
                 </div>
-                <button
-                  type="button"
-                  className="btn btn-link p-0 small"
-                  onClick={() => navigate("/forgot-password")}
-                >
-                  {t("auth.forgotPassword")}
-                </button>
               </div>
 
-              {/* Submit */}
+              {/* Submit Button */}
               <button
                 type="submit"
-                className="btn btn-primary btn-lg w-100 login-submit"
+                className="btn btn-primary btn-lg w-100 mb-3"
                 disabled={!canSubmit}
               >
                 {loading ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden />
-                    {t("auth.signingIn")}
+                    {t("auth.loggingIn")}
                   </>
                 ) : (
                   <>
-                    <i className="bi bi-box-arrow-in-right me-2" />
+                    <i className="bi bi-check-circle-fill me-2" />
                     {t("auth.login")}
                   </>
                 )}
               </button>
 
-              {/* Divider */}
-              <div className="text-center text-muted my-3">or</div>
-
-              {/* Sign up */}
-              <button
-                type="button"
-                className="btn btn-outline-secondary w-100"
-                onClick={() => navigate("/signup")}
-                disabled={loading}
-              >
-                <i className="bi bi-person-plus-fill me-2" />
-                Create an account
-              </button>
+              {/* Sign Up Link */}
+              <div className="text-center">
+                <span className="text-muted">{t("auth.noAccount")} </span>
+                <button
+                  type="button"
+                  className="btn btn-link p-0"
+                  onClick={() => navigate(ROUTES.PUBLIC.SIGNUP)}
+                >
+                  {t("auth.signup")}
+                </button>
+              </div>
             </form>
           </div>
         </div>

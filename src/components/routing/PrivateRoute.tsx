@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
+import { ROUTES } from "../../constants";
 
 interface PrivateRouteProps {
   children: ReactNode; // same as your current typing
@@ -16,7 +17,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, role }) => {
   const { user } = useAuth();
 
   // not authenticated -> redirect (keeps your existing behavior)
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <Navigate to={ROUTES.PUBLIC.HOME} replace />;
 
   // no role restriction -> allow any authenticated user
   if (!role) return <>{children}</>;
@@ -32,7 +33,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, role }) => {
   }
 
   // authenticated but not authorized -> redirect (same as before)
-  return <Navigate to="/" replace />;
+  return <Navigate to={ROUTES.PUBLIC.HOME} replace />;
 };
 
 export default PrivateRoute;

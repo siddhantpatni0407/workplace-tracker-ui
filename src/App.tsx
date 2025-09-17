@@ -2,10 +2,11 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
-import PrivateRoute from "./components/PrivateRoute";
-import Navbar from "./components/common/Navbar/Navbar";
-import Footer from "./components/common/Footer/Footer";
+import { PrivateRoute } from "./components/routing";
+import Navbar from "./components/common/navbar/Navbar";
+import Footer from "./components/common/footer/Footer";
 import { ErrorBoundary } from "./components/ui";
+import { ROUTES } from "./constants";
 import "./styles/global.css";
 import Reports from "./components/admin/reports/Reports";
 import { ThemeProvider } from "./theme/ThemeContext";
@@ -15,7 +16,7 @@ import "./i18n";
 // Lazy loading pages
 const Home = lazy(() => import("./components/common/home/Home"));
 const Login = lazy(() => import("./components/common/login/Login"));
-const Signup = lazy(() => import("./components/common/signUp/Signup"));
+const Signup = lazy(() => import("./components/common/signUp/SignUp"));
 const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDashboard"));
 const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
 const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
@@ -23,6 +24,7 @@ const UserSettings = lazy(() => import("./components/common/userSettings/UserSet
 const UserProfile = lazy(() => import("./components/common/userProfile/UserProfile"));
 const HolidayManagement = lazy(() => import("./components/admin/holiday/HolidayManagement")); // admin
 const LeavePolicyManagement = lazy(() => import("./components/admin/leavePolicyManagement/LeavePolicyManagement"));
+const DatabaseBackup = lazy(() => import("./components/admin/databaseBackup/DatabaseBackup"));
 const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHolidayTracker")); // user tracker
 const LeavePolicy = lazy(() => import("./components/user/leavePolicy/LeavePolicy"));
 const ApplyLeave = lazy(() => import("./components/user/leave/ApplyLeave"));
@@ -69,19 +71,19 @@ const App: React.FC = () => {
           <Suspense fallback={<Loader />}>
             <Routes>
               {/* Home (marketing / cover page) */}
-              <Route path="/" element={<Layout><Home /></Layout>} />
+              <Route path={ROUTES.PUBLIC.HOME} element={<Layout><Home /></Layout>} />
 
               {/* Authentication pages */}
-              <Route path="/login" element={<Layout><Login /></Layout>} />
-              <Route path="/signup" element={<Layout><Signup /></Layout>} />
+              <Route path={ROUTES.PUBLIC.LOGIN} element={<Layout><Login /></Layout>} />
+              <Route path={ROUTES.PUBLIC.SIGNUP} element={<Layout><Signup /></Layout>} />
 
               {/* Static pages */}
-              <Route path="/about" element={<Layout><About /></Layout>} />
-              <Route path="/contact" element={<Layout><Contact /></Layout>} />
+              <Route path={ROUTES.PUBLIC.ABOUT} element={<Layout><About /></Layout>} />
+              <Route path={ROUTES.PUBLIC.CONTACT} element={<Layout><Contact /></Layout>} />
 
               {/* Dashboards (protected) */}
               <Route
-                path="/admin-dashboard"
+                path={ROUTES.ADMIN.DASHBOARD}
                 element={
                   <PrivateRoute role="ADMIN">
                     <Layout>
@@ -92,7 +94,7 @@ const App: React.FC = () => {
               />
 
               <Route
-                path="/user-dashboard"
+                path={ROUTES.USER.DASHBOARD}
                 element={
                   <PrivateRoute role="USER">
                     <Layout>
@@ -104,7 +106,7 @@ const App: React.FC = () => {
 
               {/* User Management - ADMIN only */}
               <Route
-                path="/user-management"
+                path={ROUTES.ADMIN.USER_MANAGEMENT}
                 element={
                   <PrivateRoute role="ADMIN">
                     <Layout>
@@ -116,7 +118,7 @@ const App: React.FC = () => {
 
               {/* Holiday Management - ADMIN only (new) */}
               <Route
-                path="/holiday-management"
+                path={ROUTES.ADMIN.HOLIDAY_MANAGEMENT}
                 element={
                   <PrivateRoute role="ADMIN">
                     <Layout>
@@ -128,7 +130,7 @@ const App: React.FC = () => {
 
               {/* Leave Policy Management - ADMIN only (new) */}
               <Route
-                path="/leave-policies"
+                path={ROUTES.ADMIN.LEAVE_POLICY_MANAGEMENT}
                 element={
                   <PrivateRoute role="ADMIN">
                     <Layout>
@@ -138,9 +140,33 @@ const App: React.FC = () => {
                 }
               />
 
+              {/* Reports & Analytics - ADMIN only */}
+              <Route
+                path={ROUTES.ADMIN.REPORTS}
+                element={
+                  <PrivateRoute role="ADMIN">
+                    <Layout>
+                      <Reports />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+
+              {/* Database Backup - ADMIN only */}
+              <Route
+                path={ROUTES.ADMIN.BACKUP}
+                element={
+                  <PrivateRoute role="ADMIN">
+                    <Layout>
+                      <DatabaseBackup />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+
               {/* User Settings - any authenticated user (no role restriction) */}
               <Route
-                path="/user-settings"
+                path={ROUTES.USER.SETTINGS}
                 element={
                   <PrivateRoute>
                     <Layout>
@@ -152,7 +178,7 @@ const App: React.FC = () => {
 
               {/* User Profile - any authenticated user (no role restriction) */}
               <Route
-                path="/profile"
+                path={ROUTES.USER.PROFILE}
                 element={
                   <PrivateRoute>
                     <Layout>
@@ -163,11 +189,11 @@ const App: React.FC = () => {
               />
 
               <Route
-                path="/user-analytics"
+                path={ROUTES.USER.ANALYTICS}
                 element={
                   <PrivateRoute>
                     <Layout>
-                      <Reports />
+                      <OfficeVisitAnalytics />
                     </Layout>
                   </PrivateRoute>
                 }
@@ -175,7 +201,7 @@ const App: React.FC = () => {
 
               {/* User Holiday Tracker (read-only) */}
               <Route
-                path="/holiday-tracker"
+                path={ROUTES.USER.HOLIDAY_TRACKER}
                 element={
                   <PrivateRoute role="USER">
                     <Layout>
@@ -187,7 +213,7 @@ const App: React.FC = () => {
 
               {/* Leave Policy - USER only (new) */}
               <Route
-                path="/leave-policy"
+                path={ROUTES.USER.LEAVE_POLICY}
                 element={
                   <PrivateRoute role="USER">
                     <Layout><LeavePolicy /></Layout>
@@ -197,7 +223,7 @@ const App: React.FC = () => {
 
               {/* Apply Leave - USER only (new) */}
               <Route
-                path="/apply-leave"
+                path={ROUTES.USER.APPLY_LEAVE}
                 element={
                   <PrivateRoute role="USER">
                     <Layout><ApplyLeave /></Layout>
@@ -207,7 +233,7 @@ const App: React.FC = () => {
 
               {/* Office Visit - USER only (new) */}
               <Route
-                path="/office-visit"
+                path={ROUTES.USER.OFFICE_VISIT}
                 element={
                   <PrivateRoute role="USER">
                     <Layout>
@@ -219,7 +245,7 @@ const App: React.FC = () => {
 
               {/* Office Visit Analytics - USER only (new) */}
               <Route
-                path="/office-visit-analytics"
+                path={ROUTES.USER.OFFICE_VISIT_ANALYTICS}
                 element={
                   <PrivateRoute role="USER">
                     <Layout><OfficeVisitAnalytics /></Layout>
@@ -229,7 +255,7 @@ const App: React.FC = () => {
 
               {/* User Tasks - USER only (new) */}
               <Route
-                path="/user-tasks"
+                path={ROUTES.USER.USER_TASKS}
                 element={
                   <PrivateRoute role="USER">
                     <Layout><UserTasks /></Layout>
@@ -239,7 +265,7 @@ const App: React.FC = () => {
 
               {/* User Notes - USER only (new) */}
               <Route
-                path="/user-notes"
+                path={ROUTES.USER.USER_NOTES}
                 element={
                   <PrivateRoute role="USER">
                     <Layout><UserNotes /></Layout>

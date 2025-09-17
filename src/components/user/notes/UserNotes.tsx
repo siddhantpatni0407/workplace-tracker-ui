@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import Header from "../../common/Header/Header";
+import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { useTranslation } from "../../../hooks/useTranslation";

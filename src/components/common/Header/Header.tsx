@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from "react";
-import "./Header.css";
+import "./header.css";
 
 export interface HeaderProps {
   /** Main title text - required */

@@ -4,10 +4,13 @@ import i18n from '../i18n';
 // Custom hook to provide translation functionality
 export const useTranslation = () => {
   const [language, setLanguage] = useState(i18n.language);
+  const [, forceUpdate] = useState(0);
 
   useEffect(() => {
     const handleLanguageChange = (event: CustomEvent) => {
       setLanguage(event.detail);
+      // Force re-render by updating a dummy state
+      forceUpdate(prev => prev + 1);
     };
 
     window.addEventListener('languageChanged', handleLanguageChange as EventListener);
@@ -17,12 +20,10 @@ export const useTranslation = () => {
     };
   }, []);
 
-  // Create a memoized t function that depends on the current language
-  // This ensures React components re-render when the language changes
-  // The 'language' dependency is intentional to trigger re-renders
+  // Create a t function that always uses the current language from i18n instance
   const t = useCallback((key: string, options?: { [key: string]: any }): string => {
     return i18n.t(key, options);
-  }, [language]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     t,

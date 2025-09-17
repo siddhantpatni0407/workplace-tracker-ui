@@ -1,6 +1,7 @@
 // src/services/axiosInstance.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
+import { API_CONFIG, STORAGE_KEYS } from "../constants/app";
 
 /**
  * Axios instance with:
@@ -13,14 +14,15 @@ import { API_ENDPOINTS } from "../constants/apiEndpoints";
  */
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:8010/api/v1/workplace-tracker-service",
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
   withCredentials: true,
 });
 
 // Attach access token to every request
 axiosInstance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
     // ensure headers object exists (cast to any to safely assign Authorization)
     config.headers = config.headers ?? {};
     if (token) {
@@ -88,7 +90,7 @@ axiosInstance.interceptors.response.use(
         }
 
         // persist new token
-        localStorage.setItem("token", newToken);
+        localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
 
         // retry queued requests
         processQueue(null, newToken);
@@ -100,7 +102,7 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError, null);
         // clear session on refresh failure
-        localStorage.removeItem("token");
+        localStorage.removeItem(STORAGE_KEYS.TOKEN);
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

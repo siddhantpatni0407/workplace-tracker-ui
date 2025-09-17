@@ -1,6 +1,7 @@
 // src/services/holidayService.ts
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
+import { STORAGE_KEYS } from "../constants/app";
 import { HolidayDTO } from "../types/holiday";
 import { ResponseDTO } from "../types/api";
 
@@ -36,7 +37,7 @@ function setAuthHeader(config: AxiosRequestConfig, token: string) {
 
 // attach token automatically (if present)
 client.interceptors.request.use((config) => {
-  const token = localStorage.getItem("auth_token");
+  const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
   if (token) {
     setAuthHeader(config, token);
   }

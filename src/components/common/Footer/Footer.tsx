@@ -2,7 +2,7 @@ import React, { memo, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { DateUtils } from "../../../utils";
 import { useTranslation } from "../../../hooks/useTranslation";
-import "./Footer.css";
+import "./footer.css";
 
 export interface FooterProps {
   /** Custom CSS class names */

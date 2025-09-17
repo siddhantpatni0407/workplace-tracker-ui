@@ -2,8 +2,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { parseISO, format } from "date-fns";
 import { toast } from "react-toastify";
-import Header from "../../common/Header/Header";
 import { ErrorBoundary } from "../../ui";
+import Header from "../../common/header/Header";
 import { HolidayDTO } from "../../../types/holiday";
 import { ResponseDTO } from "../../../types/api";
 import { MonthOption } from "../../../models";
@@ -68,8 +68,6 @@ const HolidayManagement: React.FC = () => {
     const [from, setFrom] = useState<string>("");
     const [to, setTo] = useState<string>("");
 
-    const [lastRefreshed, setLastRefreshed] = useState<string>("");
-
     // delete confirmation modal state
     const [deleteIntent, setDeleteIntent] = useState<DeleteIntent>({ show: false });
     const [processingDelete, setProcessingDelete] = useState(false);
@@ -79,13 +77,26 @@ const HolidayManagement: React.FC = () => {
 
     const formFirstRef = useRef<HTMLInputElement | null>(null);
 
+    // Statistics
+    const stats = useMemo(() => {
+        const total = holidays.length;
+        const mandatory = holidays.filter(h => h.holidayType === "MANDATORY").length;
+        const optional = holidays.filter(h => h.holidayType === "OPTIONAL").length;
+        const upcoming = holidays.filter(h => {
+            const holidayDate = new Date(h.holidayDate);
+            const today = new Date();
+            return holidayDate > today;
+        }).length;
+        
+        return { total, mandatory, optional, upcoming };
+    }, [holidays]);
+
     const load = async () => {
         setLoading(true);
         try {
             // currently load everything; client-side filters apply afterwards
             const payload = await holidayService.getHolidays(from || undefined, to || undefined);
             setHolidays(payload ?? []);
-            setLastRefreshed(new Date().toISOString());
         } catch (err) {
             console.error("load holidays", err);
             toast.error("Failed to load holidays");
@@ -267,29 +278,6 @@ const HolidayManagement: React.FC = () => {
         toast.success("Exported CSV");
     };
 
-    const printView = () => {
-        const source = filtered.length ? filtered : holidays;
-        const rows = source
-            .map((h) => `<tr><td>${displayDate(h.holidayDate)}</td><td>${escapeHtml(h.name)}</td><td>${h.holidayType}</td><td>${escapeHtml(h.description ?? "")}</td></tr>`)
-            .join("");
-        const html = `
-      <html><head><title>Holidays</title>
-      <style>table{width:100%;border-collapse:collapse}td,th{padding:8px;border:1px solid #ddd}</style>
-      </head><body>
-      <h3>Holidays</h3>
-      <table><thead><tr><th>Date</th><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>${rows}</tbody></table>
-      </body></html>`;
-        const w = window.open("", "_blank", "noopener,noreferrer");
-        if (!w) return;
-        w.document.write(html);
-        w.document.close();
-        w.print();
-    };
-
-    function escapeHtml(s: string) {
-        return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
-    }
-
     // keyboard: esc closes form or delete modal
     useEffect(() => {
         const onKey = (e: KeyboardEvent) => {
@@ -311,139 +299,226 @@ const HolidayManagement: React.FC = () => {
         setFilterMonth("ALL");
     };
 
+    // Helper function to highlight search matches
+    const highlight = (txt: string | null | undefined, q: string) => {
+        if (!txt || !q) return txt || "";
+        const idx = txt.toLowerCase().indexOf(q.toLowerCase());
+        if (idx === -1) return txt;
+        return (
+            <>
+                {txt.slice(0, idx)}
+                <mark className="hm-highlight">{txt.slice(idx, idx + q.length)}</mark>
+                {txt.slice(idx + q.length)}
+            </>
+        );
+    };
+
     return (
         <ErrorBoundary>
-            <div className="container py-4">
-            <Header title="Holiday Management" subtitle="Add or update company holidays" />
-
-            {/* toolbar */}
-            <div className="d-flex flex-wrap gap-2 mb-3 align-items-center toolbar">
-                <div className="d-flex gap-2 align-items-center">
-                    <button className="btn btn-primary btn-sm" onClick={openCreate} disabled={saving || loading} aria-label="Add holiday">
-                        <i className="bi bi-plus-lg me-1" /> Add Holiday
-                    </button>
-                    <button className="btn btn-outline-secondary btn-sm" onClick={() => load()} disabled={loading} aria-label="Refresh list">
-                        {loading ? (
-                            <>
-                                <span className="spinner-border spinner-border-sm me-1" role="status" />
-                                Refreshing
-                            </>
-                        ) : (
-                            <>
-                                <i className="bi bi-arrow-repeat me-1" /> Refresh
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                <div className="ms-auto d-flex gap-2 align-items-center">
-                    <div className="input-group input-group-sm">
-                        <span className="input-group-text">Search</span>
-                        <input aria-label="Search holidays" className="form-control" placeholder="name or description" value={q} onChange={(e) => setQ(e.target.value)} />
+            <Header 
+                title="Holiday Management"
+                subtitle="Manage company holidays and leave schedules"
+            />
+            
+            <div className="holiday-management container-fluid py-4" data-animate="fade">
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h1 className="hm-title mb-0 d-none">Holiday Management</h1>
                     </div>
 
-                    {/* Year / Month / Type filters */}
-                    <select className="form-select form-select-sm" value={filterYear} onChange={(e) => setFilterYear(e.target.value as any)} aria-label="Filter year" title="Year">
-                        {years.map((y) => (
-                            <option key={y} value={y}>
-                                {y === "ALL" ? "All years" : y}
-                            </option>
-                        ))}
-                    </select>
+                    <div className="d-flex gap-2 align-items-center">
+                        <div className="d-none d-md-flex gap-2">
+                            <button className="btn btn-sm btn-outline-secondary" onClick={exportCSV} disabled={loading || holidays.length === 0} title="Export to CSV">
+                                <i className="bi bi-file-earmark-arrow-down me-1" /> Export CSV
+                            </button>
 
-                    <select className="form-select form-select-sm" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} aria-label="Filter month" title="Month">
-                        {MONTHS.map((m) => (
-                            <option key={m.value} value={m.value}>
-                                {m.label}
-                            </option>
-                        ))}
-                    </select>
+                            <button className="btn btn-sm btn-outline-primary" onClick={() => load()} disabled={loading} title="Refresh">
+                                {loading ? <span className="spinner-border spinner-border-sm me-2" /> : <i className="bi bi-arrow-clockwise me-1" />} Refresh
+                            </button>
+                        </div>
 
-                    <select className="form-select form-select-sm" value={filterType} onChange={(e) => setFilterType(e.target.value as any)} aria-label="Filter by type">
-                        <option value="ALL">All types</option>
-                        <option value="MANDATORY">Mandatory</option>
-                        <option value="OPTIONAL">Optional</option>
-                    </select>
-
-                    <input type="date" className="form-control form-control-sm" value={from} onChange={(e) => setFrom(e.target.value)} title="From" aria-label="From date" />
-                    <input type="date" className="form-control form-control-sm" value={to} onChange={(e) => setTo(e.target.value)} title="To" aria-label="To date" />
-
-                    <button className="btn btn-link btn-sm text-decoration-none p-0 ms-2" onClick={clearFilters} title="Clear filters" aria-label="Clear filters">
-                        Clear
-                    </button>
-
-                    <div className="btn-group">
-                        <button className="btn btn-outline-success btn-sm" onClick={exportCSV} title="Export CSV" aria-label="Export CSV">
-                            <i className="bi bi-file-earmark-spreadsheet me-1" /> Export
-                        </button>
-                        <button className="btn btn-outline-secondary btn-sm" onClick={printView} title="Print" aria-label="Print">
-                            <i className="bi bi-printer me-1" /> Print
+                        <button className="btn btn-sm btn-primary" onClick={openCreate} disabled={loading} aria-label="Add holiday">
+                            <i className="bi bi-plus-lg me-1" /> Add Holiday
                         </button>
                     </div>
                 </div>
-            </div>
-
-            {/* Card + table */}
-            <div className="card holiday-card shadow-sm">
-                <div className="card-body p-0">
-                    <div className="table-toolbar d-flex justify-content-between align-items-center px-3 py-2">
-                        <div />
-                        <div className="small text-muted">Last refreshed: {lastRefreshed ? format(parseISO(lastRefreshed), "dd/MM/yyyy HH:mm") : "-"}</div>
+                {/* Stats Row */}
+                <div className="row g-3 mb-4">
+                    <div className="col-6 col-md-3">
+                        <div className="stat-card shadow-sm p-3 rounded text-center hm-card-acc d-flex flex-column justify-content-between border">
+                            <div className="d-flex w-100 justify-content-between align-items-start">
+                                <div className="text-start">
+                                    <div className="stat-icon"><i className="bi bi-calendar-event-fill" /></div>
+                                    <div className="stat-title">TOTAL</div>
+                                </div>
+                                <span className="badge bg-primary align-self-start">Holidays</span>
+                            </div>
+                            <div className="mt-2">
+                                <div className="stat-value h4 mb-0" aria-live="polite">{stats.total}</div>
+                                <div className="progress mt-2 thin-progress">
+                                    <div className="progress-bar" role="progressbar" style={{ width: `${Math.min(100, Math.round((stats.total || 1) / 1))}%` }} />
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
+                    <div className="col-6 col-md-3">
+                        <div className="stat-card shadow-sm p-3 rounded text-center hm-card-acc d-flex flex-column justify-content-between border">
+                            <div className="d-flex w-100 justify-content-between align-items-start">
+                                <div className="text-start">
+                                    <div className="stat-icon"><i className="bi bi-exclamation-circle-fill" /></div>
+                                    <div className="stat-title">MANDATORY</div>
+                                </div>
+                                <span className="badge bg-danger align-self-start">Required</span>
+                            </div>
+                            <div className="mt-2">
+                                <div className="stat-value h4 mb-0" aria-live="polite">{stats.mandatory}</div>
+                                <div className="progress mt-2 thin-progress">
+                                    <div className="progress-bar bg-danger" role="progressbar" style={{ width: `${Math.round((stats.mandatory / Math.max(1, stats.total)) * 100)}%` }} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-6 col-md-3">
+                        <div className="stat-card shadow-sm p-3 rounded text-center hm-card-acc d-flex flex-column justify-content-between border">
+                            <div className="d-flex w-100 justify-content-between align-items-start">
+                                <div className="text-start">
+                                    <div className="stat-icon"><i className="bi bi-hand-thumbs-up-fill" /></div>
+                                    <div className="stat-title">OPTIONAL</div>
+                                </div>
+                                <span className="badge bg-info text-dark align-self-start">Choice</span>
+                            </div>
+                            <div className="mt-2">
+                                <div className="stat-value h4 mb-0" aria-live="polite">{stats.optional}</div>
+                                <div className="progress mt-2 thin-progress">
+                                    <div className="progress-bar bg-info" role="progressbar" style={{ width: `${Math.round((stats.optional / Math.max(1, stats.total)) * 100)}%` }} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-6 col-md-3">
+                        <div className="stat-card shadow-sm p-3 rounded text-center hm-card-acc d-flex flex-column justify-content-between border">
+                            <div className="d-flex w-100 justify-content-between align-items-start">
+                                <div className="text-start">
+                                    <div className="stat-icon"><i className="bi bi-calendar-plus-fill" /></div>
+                                    <div className="stat-title">UPCOMING</div>
+                                </div>
+                                <span className="badge bg-success align-self-start">Future</span>
+                            </div>
+                            <div className="mt-2">
+                                <div className="stat-value h4 mb-0" aria-live="polite">{stats.upcoming}</div>
+                                <div className="progress mt-2 thin-progress">
+                                    <div className="progress-bar bg-success" role="progressbar" style={{ width: `${Math.round((stats.upcoming / Math.max(1, stats.total)) * 100)}%` }} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Filters Section */}
+                <div className="card mb-3 p-3 shadow-sm hm-filter-card">
+                    <div className="d-flex gap-2 align-items-center flex-wrap">
+                        <input 
+                            className="form-control flex-grow-1" 
+                            placeholder="Search holidays by name or description..." 
+                            value={q} 
+                            onChange={(e) => setQ(e.target.value)} 
+                            aria-label="Search holidays" 
+                        />
+                        
+                        <select className="form-select" style={{width: 'auto'}} value={filterYear} onChange={(e) => setFilterYear(e.target.value as any)} aria-label="Filter year">
+                            {years.map((y) => (
+                                <option key={y} value={y}>
+                                    {y === "ALL" ? "All years" : y}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select className="form-select" style={{width: 'auto'}} value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} aria-label="Filter month">
+                            {MONTHS.map((m) => (
+                                <option key={m.value} value={m.value}>
+                                    {m.label}
+                                </option>
+                            ))}
+                        </select>
+
+                        <select className="form-select" style={{width: 'auto'}} value={filterType} onChange={(e) => setFilterType(e.target.value as any)} aria-label="Filter by type">
+                            <option value="ALL">All types</option>
+                            <option value="MANDATORY">Mandatory</option>
+                            <option value="OPTIONAL">Optional</option>
+                        </select>
+
+                        <div className="d-flex gap-1">
+                            <input type="date" className="form-control" style={{width: 'auto'}} value={from} onChange={(e) => setFrom(e.target.value)} title="From" aria-label="From date" />
+                            <input type="date" className="form-control" style={{width: 'auto'}} value={to} onChange={(e) => setTo(e.target.value)} title="To" aria-label="To date" />
+                        </div>
+
+                        <button className="btn btn-outline-secondary btn-sm" onClick={clearFilters} title="Clear all filters">
+                            <i className="bi bi-x-lg me-1" /> Clear
+                        </button>
+                    </div>
+                </div>
+
+                {/* Table Section */}
+                <div className="card shadow-sm holiday-table hm-table-glow">
                     <div className="table-responsive">
-                        <table className="table table-hover mb-0 admin-holiday-table">
-                            <thead className="table-light">
-                                <tr>
-                                    <th className="text-center" style={{ width: 140 }}>Date</th>
-                                    <th className="text-center">Name</th>
-                                    <th className="text-center" style={{ width: 140 }}>Type</th>
-                                    <th className="text-center">Description</th>
-                                    <th className="text-end">Actions</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {loading ? (
+                        {loading ? (
+                            <div className="p-4 text-center"><div className="spinner-border" role="status" /></div>
+                        ) : filtered.length === 0 ? (
+                            <div className="p-4 text-muted text-center">No holidays found.</div>
+                        ) : (
+                            <table className="table table-hover table-striped table-sm m-0 align-middle">
+                                <thead className="table-light">
                                     <tr>
-                                        <td colSpan={5} className="py-5 text-center">
-                                            <div className="spinner-border text-primary me-2" role="status" />
-                                            Loading holidays...
-                                        </td>
+                                        <th style={{ width: 120 }} className="text-center">Date</th>
+                                        <th>Holiday Name</th>
+                                        <th style={{ width: 120 }} className="text-center">Type</th>
+                                        <th>Description</th>
+                                        <th style={{ width: 160 }} className="text-end">Actions</th>
                                     </tr>
-                                ) : filtered.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5} className="py-5 text-center text-muted">
-                                            No holidays match the filters.
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    filtered.map((h) => (
-                                        <tr key={h.holidayId ?? `${h.holidayDate}-${h.name}`} className="align-middle">
-                                            <td className="fw-semibold text-center">{displayDate(h.holidayDate)}</td>
-                                            <td>{h.name}</td>
+                                </thead>
+                                <tbody>
+                                    {filtered.map((h, idx) => (
+                                        <tr key={h.holidayId ?? `${h.holidayDate}-${h.name}`} className="hm-row" style={{ animationDelay: `${idx * 35}ms` }}>
+                                            <td className="fw-semibold text-center text-primary">{displayDate(h.holidayDate)}</td>
+                                            <td className="fw-medium">{highlight(h.name, debouncedQ)}</td>
                                             <td className="text-center">
-                                                <span className={`badge badge-type ${h.holidayType === "MANDATORY" ? "mandatory" : "optional"}`}>
+                                                <span className={`badge ${h.holidayType === "MANDATORY" ? 'bg-danger' : 'bg-info'}`}>
                                                     {h.holidayType === "MANDATORY" ? "Mandatory" : "Optional"}
                                                 </span>
                                             </td>
-                                            <td className="text-truncate" style={{ maxWidth: 500 }}>{h.description}</td>
+                                            <td className="text-truncate" style={{ maxWidth: 400 }}>
+                                                {highlight(h.description || "", debouncedQ)}
+                                            </td>
                                             <td className="text-end">
-                                                <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(h)} title="Edit" aria-label={`Edit ${h.name}`}>
-                                                    <i className="bi bi-pencil-fill" /> Edit
-                                                </button>
-                                                <button className="btn btn-sm btn-outline-danger" onClick={() => confirmDelete(h)} title="Delete" aria-label={`Delete ${h.name}`}>
-                                                    <i className="bi bi-trash-fill" /> Delete
-                                                </button>
+                                                <div className="d-inline-flex gap-1">
+                                                    <button 
+                                                        className="btn btn-sm btn-outline-primary" 
+                                                        onClick={() => openEdit(h)} 
+                                                        title="Edit holiday"
+                                                        aria-label={`Edit ${h.name}`}
+                                                    >
+                                                        <i className="bi bi-pencil-fill me-1" /> Edit
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-sm btn-outline-danger" 
+                                                        onClick={() => confirmDelete(h)} 
+                                                        title="Delete holiday"
+                                                        aria-label={`Delete ${h.name}`}
+                                                    >
+                                                        <i className="bi bi-trash-fill me-1" /> Delete
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                     </div>
                 </div>
-            </div>
 
             {/* create / edit modal */}
             {showForm && (
@@ -513,15 +588,15 @@ const HolidayManagement: React.FC = () => {
                         <div className="mb-3">
                             <p className="mb-1">Are you sure you want to delete the following holiday?</p>
                             <div className="p-2 border rounded bg-light">
-                                <strong>{deleteIntent.target.name}</strong>
-                                <div className="text-muted small">Date: {displayDate(deleteIntent.target.holidayDate)}</div>
+                                <strong>{deleteIntent.target?.name}</strong>
+                                <div className="text-muted small">Date: {deleteIntent.target?.holidayDate ? displayDate(deleteIntent.target.holidayDate) : 'N/A'}</div>
                                 <div className="mt-1">
                                     Type:{" "}
-                                    <span className={`badge badge-type ${deleteIntent.target.holidayType === "MANDATORY" ? "mandatory" : "optional"}`}>
-                                        {deleteIntent.target.holidayType === "MANDATORY" ? "Mandatory" : "Optional"}
+                                    <span className={`badge badge-type ${deleteIntent.target?.holidayType === "MANDATORY" ? "mandatory" : "optional"}`}>
+                                        {deleteIntent.target?.holidayType === "MANDATORY" ? "Mandatory" : "Optional"}
                                     </span>
                                 </div>
-                                {deleteIntent.target.description && <div className="mt-2 small">{deleteIntent.target.description}</div>}
+                                {deleteIntent.target?.description && <div className="mt-2 small">{deleteIntent.target.description}</div>}
                             </div>
                         </div>
 

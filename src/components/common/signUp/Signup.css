@@ -1,77 +1,178 @@
-/* Signup page styles — matches Login visual language but with added controls */
+/* Enhanced Signup Page Styling - Matches Login Design */
 
-.signup-bg{
-  min-height: calc(100vh - 56px);
-  padding: 28px;
-  background:
-    radial-gradient(1200px 600px at 10% -10%, rgba(102,16,242,.06), transparent 60%),
-    radial-gradient(1000px 600px at 110% 110%, rgba(13,110,253,.06), transparent 60%),
-    linear-gradient(180deg, #f7f8fc, #ffffff);
+/* Container that works with Layout (Navbar + Footer) - no scroll */
+.signup-bg {
+  min-height: calc(100vh - 120px); /* Account for navbar and footer */
+  max-height: calc(100vh - 120px);
+  overflow: hidden;
+  /* Cancel page-wrapper padding */
+  margin: -1.5rem;
+  padding: calc(1.5rem + 20px);
   display: flex;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.signup-card{
+/* Card with modern styling - Layout compatible */
+.signup-card {
   width: 100%;
   max-width: 720px;
-  border-radius: 14px;
+  max-height: calc(100vh - 160px); /* Account for navbar, footer, and padding */
+  margin: 0 auto;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(0,0,0,0.06);
-  animation: cardIn .36s ease both;
+  animation: cardIn 0.6s ease-out both;
+  display: flex;
+  flex-direction: column;
 }
 
-.signup-head{
-  padding: 14px 20px;
-  color:#fff;
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header styling - matches login */
+.signup-head {
+  padding: 30px 30px 20px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
   font-weight: 700;
-  background: linear-gradient(135deg, #0d6efd, #6610f2);
 }
 
-/* Input group details */
-.input-group-text{
-  background:#f8f9fb;
-  border-right:0;
-}
-.input-group .form-control{
-  border-left:0;
-}
-
-/* Toggle button at end of password field */
-.btn-toggle{
-  background:#f8f9fb;
-  border-left:0;
-  cursor:pointer;
+.signup-head h3 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 8px !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: white;
 }
 
-/* inline field error styling */
+.signup-head p,
+.signup-head .signup-subtitle {
+  font-size: 1rem;
+  opacity: 0.9;
+  margin-bottom: 0 !important;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Form container - scrollable content area within Layout */
+.signup-card .p-4,
+.signup-card .p-md-5 {
+  padding: 30px !important;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 280px); /* Account for navbar, footer, header, and padding */
+}
+
+/* Input groups - enhanced to match login */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group-text {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border: 2px solid #e9ecef;
+  border-right: none;
+  color: #6c757d;
+  font-size: 1.1rem;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.input-group .form-control {
+  border: 2px solid #e9ecef;
+  border-left: none;
+  padding: 12px 16px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.input-group:focus-within .input-group-text {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.input-group:focus-within .form-control {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  background: white;
+}
+
+/* Toggle button - enhanced */
+.btn-toggle {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border: 2px solid #e9ecef;
+  border-left: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  transition: all 0.3s ease;
+}
+
+.btn-toggle:hover {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+/* Enhanced error display */
 .is-invalid + .invalid-feedback,
 .input-group .is-invalid ~ .invalid-feedback,
 .form-check-input.is-invalid ~ .invalid-feedback {
   display: block;
+  font-size: 0.875rem !important;
+  color: #dc3545 !important;
+  margin-top: 6px !important;
 }
 
-/* Password strength bar */
+.is-invalid {
+  border-color: #dc3545 !important;
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Enhanced password strength indicator */
 .password-hint {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: 8px;
 }
+
 .strength {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .strength-bar {
-  width: 84px;
-  height: 8px;
+  width: 100px;
+  height: 6px;
   border-radius: 8px;
-  background: rgba(0,0,0,0.06);
-  box-shadow: inset 0 -2px 6px rgba(0,0,0,0.06);
+  background: rgba(0,0,0,0.1);
   position: relative;
+  overflow: hidden;
 }
+
 .strength-bar::after {
   content: "";
   position: absolute;
@@ -80,25 +181,457 @@
   height: 100%;
   width: 0%;
   border-radius: 8px;
-  transition: width .28s ease, background .28s ease;
+  transition: width 0.4s ease, background 0.4s ease;
 }
-.strength-0::after { width: 12%; background: #ef4444; }   /* very weak */
-.strength-1::after { width: 28%; background: #f97316; }   /* weak */
-.strength-2::after { width: 56%; background: #f59e0b; }   /* fair */
-.strength-3::after { width: 78%; background: #10b981; }   /* good */
+
+.strength-0::after { width: 15%; background: #ef4444; }   /* very weak */
+.strength-1::after { width: 35%; background: #f97316; }   /* weak */
+.strength-2::after { width: 60%; background: #f59e0b; }   /* fair */
+.strength-3::after { width: 80%; background: #10b981; }   /* good */
 .strength-4::after { width: 100%; background: #059669; }  /* strong */
 
-/* Buttons */
+/* Enhanced primary button - matches login */
 .btn-primary {
-  box-shadow: 0 10px 24px rgba(13,110,253,.12);
-  transition: transform .12s ease, box-shadow .12s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 14px 24px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(13,110,253,.18); }
 
-.form-text { font-size: 0.86rem; color: #6b7280; }
+.btn-primary:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4) !important;
+}
 
-/* small screens */
-@media (max-width: 576px){
-  .signup-card{ max-width: 100%; }
-  .signup-bg { padding: 14px; }
+.btn-primary:disabled {
+  background: #6c757d !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Links */
+.btn-link {
+  color: #667eea !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  transition: color 0.3s ease !important;
+}
+
+.btn-link:hover {
+  color: #764ba2 !important;
+  text-decoration: none !important;
+}
+
+/* Form labels */
+.form-label {
+  font-weight: 600 !important;
+  color: #495057 !important;
+  margin-bottom: 8px !important;
+  font-size: 0.95rem !important;
+}
+
+/* Form text */
+.form-text { 
+  font-size: 0.86rem; 
+  color: #6b7280; 
+}
+
+/* Role selection cards */
+.form-check {
+  margin-bottom: 12px;
+}
+
+.form-check-input {
+  margin-top: 0.25em;
+}
+
+.form-check-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+/* Terms and conditions */
+.form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+/* Enhanced responsive design - Layout compatible */
+@media (max-width: 768px) {
+  .signup-bg {
+    /* Cancel smaller page-wrapper padding on mobile */
+    margin: -1rem;
+    padding: calc(1rem + 16px);
+    min-height: calc(100vh - 100px); /* Smaller navbar/footer on mobile */
+    max-height: calc(100vh - 100px);
+  }
+  
+  .signup-card { 
+    max-width: 100%; 
+    max-height: calc(100vh - 140px);
+    margin: 0;
+  }
+  
+  .signup-head {
+    padding: 20px 20px 16px 20px;
+  }
+  
+  .signup-head h3 {
+    font-size: 1.5rem;
+  }
+  
+  .signup-card .p-4,
+  .signup-card .p-md-5 {
+    padding: 20px !important;
+    max-height: calc(100vh - 220px);
+  }
+}
+
+@media (max-width: 576px) {
+  .signup-bg {
+    margin: -1rem;
+    padding: calc(1rem + 16px);
+    min-height: calc(100vh - 80px);
+    max-height: calc(100vh - 80px);
+  }
+  
+  .signup-card {
+    border-radius: 16px;
+    max-height: calc(100vh - 120px);
+  }
+  
+  .signup-head {
+    padding: 16px 16px 12px 16px;
+  }
+  
+  .signup-card .p-4,
+  .signup-card .p-md-5 {
+    padding: 16px !important;
+    max-height: calc(100vh - 180px);
+  }
+  
+  .input-group-text,
+  .form-control,
+  .btn-toggle {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+  
+  .strength-bar {
+    width: 80px;
+  }
+}
+
+/* Enhanced role selection styling */
+.role-select-wrapper {
+  position: relative;
+}
+
+.role-select-wrapper .input-group {
+  position: relative;
+  overflow: visible;
+}
+
+.role-select-wrapper .input-group-text.role-icon {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: 2px solid #667eea;
+  color: white;
+  font-size: 1.1rem;
+  padding: 12px 16px;
+  transition: all 0.4s ease;
+  animation: roleIconPulse 2s infinite ease-in-out;
+}
+
+/* Role-specific badge colors */
+.role-icon.badge-admin {
+  background: linear-gradient(135deg, #dc3545, #c82333) !important;
+  border-color: #dc3545 !important;
+  animation: adminBadgePulse 2s infinite ease-in-out;
+}
+
+.role-icon.badge-user {
+  background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+  border-color: #28a745 !important;
+  animation: userBadgePulse 2s infinite ease-in-out;
+}
+
+@keyframes roleIconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes adminBadgePulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+  }
+}
+
+@keyframes userBadgePulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+  }
+}
+
+/* Role changing animation */
+.role-changing {
+  animation: roleChangeEffect 0.6s ease-out;
+}
+
+@keyframes roleChangeEffect {
+  0% { transform: scale(1); }
+  25% { transform: scale(1.02) rotateY(5deg); }
+  50% { transform: scale(1.05) rotateY(-5deg); }
+  75% { transform: scale(1.02) rotateY(3deg); }
+  100% { transform: scale(1) rotateY(0deg); }
+}
+
+.role-changing .role-icon {
+  animation: roleIconChange 0.6s ease-out !important;
+}
+
+@keyframes roleIconChange {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(90deg); }
+  50% { transform: scale(1.2) rotate(180deg); }
+  75% { transform: scale(1.1) rotate(270deg); }
+  100% { transform: scale(1) rotate(360deg); }
+}
+
+.role-dropdown {
+  border: 2px solid #e9ecef;
+  border-left: none;
+  border-right: none;
+  padding: 12px 16px;
+  font-size: 1rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+  transition: all 0.4s ease;
+  position: relative;
+}
+
+.role-dropdown:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+  background: white;
+  transform: translateY(-2px);
+}
+
+.role-dropdown:hover {
+  background: rgba(102, 126, 234, 0.05);
+  transform: translateY(-1px);
+}
+
+.role-dropdown option {
+  padding: 12px 16px;
+  font-weight: 500;
+  background: white;
+  color: #495057;
+  transition: all 0.3s ease;
+}
+
+.role-dropdown option:hover,
+.role-dropdown option:checked {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.input-group-text.role-indicator {
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border: 2px solid #e9ecef;
+  border-left: none;
+  color: #6c757d;
+  font-size: 1rem;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.4s ease;
+}
+
+.role-select-wrapper:focus-within .input-group-text.role-indicator {
+  border-color: #667eea;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  transform: rotate(180deg);
+}
+
+.role-select-wrapper:focus-within .input-group-text.role-icon {
+  animation: roleIconActive 0.6s ease-out;
+  box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
+}
+
+@keyframes roleIconActive {
+  0% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.1) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.role-description {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: all 0.4s ease;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  margin-top: 8px;
+}
+
+.role-select-wrapper:focus-within .role-description,
+.role-select-wrapper:hover .role-description {
+  opacity: 1;
+  transform: translateY(0);
+  border-left-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.role-description small {
+  font-weight: 500;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+  animation: roleDescriptionSlide 0.5s ease-out;
+}
+
+@keyframes roleDescriptionSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.role-description i {
+  color: #667eea;
+  transition: all 0.3s ease;
+}
+
+.role-select-wrapper:focus-within .role-description i {
+  color: #764ba2;
+  transform: scale(1.2);
+}
+
+/* Role badges */
+.role-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: badgeFloat 2s ease-in-out infinite;
+}
+
+.role-badge.badge-admin {
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.role-badge.badge-user {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-2px); }
+}
+
+.role-changing .role-badge {
+  animation: badgeChange 0.6s ease-out;
+}
+
+@keyframes badgeChange {
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.2) rotate(180deg); opacity: 0.7; }
+  100% { transform: scale(1) rotate(360deg); opacity: 1; }
+}
+
+/* Enhanced dropdown arrow animation */
+.role-indicator .bi-chevron-down {
+  transition: transform 0.3s ease;
+}
+
+.role-select-wrapper:focus-within .role-indicator .bi-chevron-down {
+  transform: rotate(180deg);
+  color: white;
+}
+
+/* Special hover effects for the entire role section */
+.role-select-wrapper {
+  position: relative;
+  overflow: visible;
+}
+
+.role-select-wrapper::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 12px;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.4s ease;
+  filter: blur(10px);
+}
+
+.role-select-wrapper:focus-within::before,
+.role-select-wrapper:hover::before {
+  opacity: 0.1;
+}
+
+/* Enhanced responsive design for role field */
+@media (max-width: 768px) {
+  .role-select-wrapper .input-group-text {
+    padding: 10px 12px;
+    font-size: 1rem;
+  }
+  
+  .role-dropdown {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+  
+  .role-description {
+    padding: 6px 10px;
+    margin-top: 6px;
+  }
+  
+  .role-badge {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

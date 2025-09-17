@@ -1,8 +1,10 @@
 // src/utils/storage.ts
 
 /**
- * Storage utility functions for localStorage and sessionStorage
+ * Enhanced storage utility functions for localStorage and sessionStorage
  */
+import { STORAGE_KEYS } from '../constants/app';
+
 export class StorageUtils {
   /**
    * Set item in localStorage with JSON serialization
@@ -328,5 +330,72 @@ export class StorageUtils {
       console.error('Error cleaning expired items:', error);
       return 0;
     }
+  }
+}
+
+// Specialized storage utilities for app-specific data
+export class AppStorage {
+  /**
+   * User-related storage operations
+   */
+  static user = {
+    get: () => StorageUtils.getLocal(STORAGE_KEYS.USER),
+    set: (userData: any) => StorageUtils.setLocal(STORAGE_KEYS.USER, userData),
+    remove: () => StorageUtils.removeLocal(STORAGE_KEYS.USER)
+  };
+
+  /**
+   * Authentication token operations
+   */
+  static token = {
+    get: () => StorageUtils.getLocal(STORAGE_KEYS.TOKEN),
+    set: (token: string) => StorageUtils.setLocal(STORAGE_KEYS.TOKEN, token),
+    remove: () => StorageUtils.removeLocal(STORAGE_KEYS.TOKEN)
+  };
+
+  /**
+   * Theme operations
+   */
+  static theme = {
+    get: () => StorageUtils.getLocal(STORAGE_KEYS.THEME, 'light'),
+    set: (theme: string) => StorageUtils.setLocal(STORAGE_KEYS.THEME, theme),
+    remove: () => StorageUtils.removeLocal(STORAGE_KEYS.THEME)
+  };
+
+  /**
+   * Language operations
+   */
+  static language = {
+    get: () => StorageUtils.getLocal(STORAGE_KEYS.LANGUAGE, 'en'),
+    set: (language: string) => StorageUtils.setLocal(STORAGE_KEYS.LANGUAGE, language),
+    remove: () => StorageUtils.removeLocal(STORAGE_KEYS.LANGUAGE)
+  };
+
+  /**
+   * User settings operations
+   */
+  static settings = {
+    get: () => StorageUtils.getLocal(STORAGE_KEYS.USER_SETTINGS, {}),
+    set: (settings: any) => StorageUtils.setLocal(STORAGE_KEYS.USER_SETTINGS, settings),
+    remove: () => StorageUtils.removeLocal(STORAGE_KEYS.USER_SETTINGS)
+  };
+
+  /**
+   * Clear all app-related storage
+   */
+  static clearAll(): void {
+    Object.values(STORAGE_KEYS).forEach(key => {
+      StorageUtils.removeLocal(key);
+    });
+  }
+
+  /**
+   * Clear only authentication-related storage
+   */
+  static clearAuth(): void {
+    StorageUtils.removeLocal(STORAGE_KEYS.TOKEN);
+    StorageUtils.removeLocal(STORAGE_KEYS.USER);
+    StorageUtils.removeLocal(STORAGE_KEYS.LAST_LOGIN_TIME);
+    StorageUtils.removeLocal(STORAGE_KEYS.LAST_LOGIN_SHOWN);
   }
 }

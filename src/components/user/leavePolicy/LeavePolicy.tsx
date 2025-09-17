@@ -1,7 +1,7 @@
 // src/components/user/leavePolicy/LeavePolicy.tsx
 
 import React, { useEffect, useMemo, useState } from "react";
-import Header from "../../common/Header/Header";
+import Header from "../../common/header/Header";
 import { LeavePolicyDTO } from "../../../types/leavePolicy";
 import leavePolicyService from "../../../services/leavePolicyService";
 import { toast } from "react-toastify";

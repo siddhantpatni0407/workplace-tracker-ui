@@ -2,6 +2,8 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from "react";
 import { authService, SignupData, AuthResponse } from "../services/authService";
 import { UserRole } from "../enums";
+import i18n from "../i18n";
+import UserSettingsService from "../services/userSettingsService";
 
 // Legacy compatibility - keep the old interface temporarily
 export interface User {
@@ -19,7 +21,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<AuthResponse>;
+  login: (email: string, password: string, options?: { mathCaptchaAnswer?: string }) => Promise<AuthResponse>;
   signup: (user: SignupData) => Promise<AuthResponse>;
   logout: () => void;
   tryRefresh: () => Promise<boolean>;
@@ -92,6 +94,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return () => { mounted = false; };
   }, []);
 
+  // Helper function to load user settings after successful authentication
+  const loadUserSettingsAfterAuth = useCallback(async (userId: number) => {
+    try {
+      await UserSettingsService.loadAndApplyUserSettings(userId);
+    } catch (error) {
+      console.warn('Failed to load user settings after authentication:', error);
+      // Don't block authentication flow if settings fail to load
+    }
+  }, []);
+
   const tryRefresh = useCallback(async (): Promise<boolean> => {
     try {
       setIsLoading(true);
@@ -100,6 +112,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         authService.saveSession(refreshed);
         const u = normalizeStoredUser(authService.getUser());
         setUser(u);
+
+        // Load user settings and apply language preference after session refresh
+        if (u?.userId) {
+          await loadUserSettingsAfterAuth(u.userId);
+        }
+
         return true;
       }
     } catch {
@@ -108,29 +126,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setIsLoading(false);
     }
     return false;
-  }, []);
+  }, [loadUserSettingsAfterAuth]);
 
-  const login = useCallback(async (email: string, password: string): Promise<AuthResponse> => {
+  const login = useCallback(async (email: string, password: string, options?: { mathCaptchaAnswer?: string }): Promise<AuthResponse> => {
     setIsLoading(true);
     try {
-      const resp = await authService.login(email, password);
+      const resp = await authService.login(email, password, options);
 
       if (resp.status === "SUCCESS" && (resp.accessToken || resp.token)) {
         authService.saveSession(resp);
         const saved = normalizeStoredUser(authService.getUser());
 
-        setUser(
-          saved ?? {
-            userId: resp.userId ?? undefined,
-            name: resp.name ?? "",
-            email,
-            role: resp.role as UserRole ?? undefined,
-            isActive: resp.isActive ?? undefined,
-            lastLoginTime: resp.lastLoginTime ?? null,
-            loginAttempts: resp.loginAttempts ?? null,
-            accountLocked: resp.accountLocked ?? null,
-          }
-        );
+        const newUser = saved ?? {
+          userId: resp.userId ?? undefined,
+          name: resp.name ?? "",
+          email,
+          role: resp.role as UserRole ?? undefined,
+          isActive: resp.isActive ?? undefined,
+          lastLoginTime: resp.lastLoginTime ?? null,
+          loginAttempts: resp.loginAttempts ?? null,
+          accountLocked: resp.accountLocked ?? null,
+        };
+
+        setUser(newUser);
+
+        // Load user settings and apply language preference after successful login
+        if (newUser.userId) {
+          await loadUserSettingsAfterAuth(newUser.userId);
+        }
 
         localStorage.setItem("lastLoginShown", "false");
       }
@@ -139,7 +162,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [loadUserSettingsAfterAuth]);
 
   const signup = useCallback(async (newUser: SignupData): Promise<AuthResponse> => {
     setIsLoading(true);
@@ -179,6 +202,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       authService.logout();
       setUser(null);
       localStorage.removeItem("lastLoginShown");
+      
+      // Language will be automatically reset to English by the useEffect
+      // when isAuthenticated becomes false
     } finally {
       setIsLoading(false);
     }
@@ -203,6 +229,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   const isAuthenticated = useMemo(() => !!user, [user]);
+
+  // Initialize language based on authentication state
+  useEffect(() => {
+    i18n.initializeForAuthState(isAuthenticated);
+  }, [isAuthenticated]);
 
   const contextValue = useMemo(() => ({
     user,

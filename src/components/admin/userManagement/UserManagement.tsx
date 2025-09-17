@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
-import { useAuth } from "../../../context/AuthContext";
 import axiosInstance from "../../../services/axiosInstance";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { ErrorBoundary } from "../../ui";
+import Header from "../../common/header/Header";
 import { UserRole, SortDirection } from "../../../enums";
 import { useDebounce } from "../../../hooks";
 import { DEBOUNCE, PAGINATION } from "../../../constants/ui";
@@ -21,7 +21,6 @@ interface UserRow {
 }
 
 const UserManagement: React.FC = () => {
-  const { user } = useAuth();
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState("");
@@ -366,11 +365,15 @@ const UserManagement: React.FC = () => {
 
   return (
     <ErrorBoundary>
+      <Header 
+        title="User Management"
+        subtitle="Manage user accounts and permissions"
+      />
+      
       <div className="user-management container-fluid py-4" data-animate="fade">
       <div className="d-flex align-items-center justify-content-between mb-3">
         <div>
-          <h1 className="um-title mb-0">User Management</h1>
-          <div className="text-muted small">Welcome, {user?.name}</div>
+          <h1 className="um-title mb-0 d-none">User Management</h1>
         </div>
 
         <div className="d-flex gap-2 align-items-center">

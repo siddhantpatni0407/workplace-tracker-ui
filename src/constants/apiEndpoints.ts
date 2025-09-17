@@ -1,5 +1,7 @@
 // src/constants/apiEndpoints.ts
-const API_BASE_URL = "http://localhost:8010/api/v1/workplace-tracker-service";
+import { API_CONFIG } from './app';
+
+const API_BASE_URL = API_CONFIG.BASE_URL;
 
 export const API_ENDPOINTS = {
   AUTH: {

@@ -5,7 +5,9 @@ import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { useAuth } from "../../../context/AuthContext";
 import { ApiResponse } from "../../../models";
 import { ErrorBoundary, ErrorMessage, LoadingSpinner } from "../../ui";
-import Header from "../Header/Header";
+import { useTranslation } from "../../../hooks/useTranslation";
+import { getI18nCode, getLanguageFromI18nCode } from "../../../utils/languageMapping";
+import Header from "../header/Header";
 import "./user-settings.css";
 
 import {
@@ -34,6 +36,7 @@ const AUTO_DISMISS_MS = 3500;
 
 const UserSettings: React.FC = memo(() => {
   const { user } = useAuth();
+  const { i18n, language: currentI18nLanguage } = useTranslation();
   const authUserId = user?.userId ?? null;
 
   const [loading, setLoading] = useState(false);
@@ -74,6 +77,17 @@ const UserSettings: React.FC = memo(() => {
       clearMessageTimerRef.current = null;
     }, AUTO_DISMISS_MS);
   }, [info, success]);
+
+  // Sync language with current i18n state when component mounts or i18n language changes
+  useEffect(() => {
+    if (currentI18nLanguage && !loading) {
+      const correspondingLanguage = getLanguageFromI18nCode(currentI18nLanguage);
+      setSettings(prev => ({
+        ...prev,
+        language: correspondingLanguage
+      }));
+    }
+  }, [currentI18nLanguage, loading]);
 
   const showToast = useCallback((message: string, kind: "success" | "error" = "success") => {
     setToast({ message, kind });
@@ -163,6 +177,13 @@ const UserSettings: React.FC = memo(() => {
             language: d.language ?? null,
             dateFormat: d.dateFormat ?? null,
           });
+          
+          // Sync loaded language with i18n
+          if (d.language) {
+            const i18nCode = getI18nCode(d.language as any);
+            i18n.changeLanguage(i18nCode);
+          }
+          
           setSuccess(resp.data.message ?? "User settings retrieved.");
           showToast(resp.data.message ?? "User settings retrieved.", "success");
         } else {
@@ -183,7 +204,7 @@ const UserSettings: React.FC = memo(() => {
         setLoading(false);
       }
     },
-    [resetMessages, showToast, handleNotFoundResponse, getErrorMessage]
+    [resetMessages, showToast, handleNotFoundResponse, getErrorMessage, i18n]
   );
 
   useEffect(() => {
@@ -219,6 +240,13 @@ const UserSettings: React.FC = memo(() => {
       const resp = await axiosInstance.put<ApiResponse<UserSettingsData>>(url, payload);
       if (resp?.data?.status === "SUCCESS" && resp.data.data) {
         setSettings({ ...resp.data.data });
+        
+        // Sync the saved language with i18n
+        if (resp.data.data.language) {
+          const i18nCode = getI18nCode(resp.data.data.language as any);
+          i18n.changeLanguage(i18nCode);
+        }
+        
         setSuccess(resp.data.message ?? "Settings saved.");
         showToast(resp.data.message ?? "Settings saved.", "success");
       } else {
@@ -234,7 +262,7 @@ const UserSettings: React.FC = memo(() => {
     } finally {
       setLoading(false);
     }
-  }, [authUserId, settings, resetMessages, showToast, getErrorMessage, validateSettings]);
+  }, [authUserId, settings, resetMessages, showToast, getErrorMessage, validateSettings, i18n]);
 
   // open modal instead of window.confirm
   const requestDelete = () => setConfirmOpen(true);
@@ -287,8 +315,17 @@ const UserSettings: React.FC = memo(() => {
   }, []);
 
   const handleLanguageChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSettings((prev: UserSettingsData) => ({ ...prev, language: e.target.value || null }));
-  }, []);
+    const selectedLanguage = e.target.value || null;
+    setSettings((prev: UserSettingsData) => ({ ...prev, language: selectedLanguage }));
+    
+    // Immediately sync with i18n for instant UI update
+    // Note: This language preference only applies to authenticated users
+    // Public pages (home, login, signup) always use English by default
+    if (selectedLanguage) {
+      const i18nCode = getI18nCode(selectedLanguage as any);
+      i18n.changeLanguage(i18nCode);
+    }
+  }, [i18n]);
 
   const handleDateFormatChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setSettings((prev: UserSettingsData) => ({ ...prev, dateFormat: e.target.value || null }));

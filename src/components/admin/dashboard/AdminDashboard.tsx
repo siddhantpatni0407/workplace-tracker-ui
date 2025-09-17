@@ -1,11 +1,12 @@
 // src/components/admin/dashboard/AdminDashboard.tsx
 import React, { memo, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../common/Header/Header";
+import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { UserRole } from "../../../enums";
 import { ErrorBoundary, LoadingSpinner } from "../../ui";
+import { ROUTES } from "../../../constants";
 import "./admin-dashboard.css";
 import LastLoginPopup from "../../common/login/lastLoginPopup/LastLoginPopup";
 
@@ -36,7 +37,7 @@ const AdminDashboard: React.FC = memo(() => {
       subtitle: t('dashboard.adminDashboard.cards.userManagement.subtitle'),
       icon: "bi-people-fill",
       colorClass: "card-blue",
-      route: "/user-management",
+      route: ROUTES.ADMIN.USER_MANAGEMENT,
       requiresRole: UserRole.ADMIN,
     },
     {
@@ -45,7 +46,7 @@ const AdminDashboard: React.FC = memo(() => {
       subtitle: t('dashboard.adminDashboard.cards.reports.subtitle'),
       icon: "bi-bar-chart-line-fill",
       colorClass: "card-purple",
-      route: "/user-analytics",
+      route: ROUTES.ADMIN.REPORTS,
       requiresRole: UserRole.ADMIN,
     },
     {
@@ -54,7 +55,7 @@ const AdminDashboard: React.FC = memo(() => {
       subtitle: t('dashboard.adminDashboard.cards.holidayManagement.subtitle'),
       icon: "bi-calendar-event-fill",
       colorClass: "card-teal",
-      route: "/holiday-management",
+      route: ROUTES.ADMIN.HOLIDAY_MANAGEMENT,
       requiresRole: UserRole.ADMIN,
     },
     {
@@ -63,7 +64,7 @@ const AdminDashboard: React.FC = memo(() => {
       subtitle: t('dashboard.adminDashboard.cards.leavePolicyManagement.subtitle'),
       icon: "bi-file-earmark-medical-fill",
       colorClass: "card-green",
-      route: "/leave-policies",
+      route: ROUTES.ADMIN.LEAVE_POLICY_MANAGEMENT,
       requiresRole: UserRole.ADMIN,
     },
     {
@@ -72,7 +73,7 @@ const AdminDashboard: React.FC = memo(() => {
       subtitle: t('dashboard.adminDashboard.cards.dbBackup.subtitle'),
       icon: "bi-hdd-fill",
       colorClass: "card-teal",
-      route: "/admin/backup",
+      route: ROUTES.ADMIN.BACKUP,
       requiresRole: UserRole.ADMIN,
     },
     {
@@ -81,7 +82,7 @@ const AdminDashboard: React.FC = memo(() => {
       subtitle: t('dashboard.adminDashboard.cards.attendance.subtitle'),
       icon: "bi-calendar-check-fill",
       colorClass: "card-orange",
-      route: "/attendance",
+      route: ROUTES.ADMIN.ATTENDANCE,
       requiresRole: UserRole.ADMIN,
     },
   ], [t]);

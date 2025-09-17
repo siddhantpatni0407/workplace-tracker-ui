@@ -37,9 +37,9 @@ export const WORK_WEEK_STARTS: Option<WeekStartDay>[] = [
 export const LANGUAGES: Option<Language>[] = [
   { value: null, label: "-- Select language --" },
   { value: Language.ENGLISH, label: LanguageLabels[Language.ENGLISH] },
-  { value: Language.HINDI, label: LanguageLabels[Language.HINDI] },
   { value: Language.SPANISH, label: LanguageLabels[Language.SPANISH] },
-  // add more as needed
+  { value: Language.FRENCH, label: LanguageLabels[Language.FRENCH] },
+  { value: Language.HINDI, label: LanguageLabels[Language.HINDI] },
 ];
 
 export const DATE_FORMATS: Option<DateFormat>[] = [

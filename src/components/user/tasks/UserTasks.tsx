@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import Header from "../../common/Header/Header";
+import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { toast } from "react-toastify";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -465,7 +465,7 @@ const UserTasks: React.FC = () => {
             <div className="card stat-card text-center">
               <div className="card-body">
                 <h5 className="card-title text-primary">{stats.totalTasks}</h5>
-                <p className="card-text">Total Tasks</p>
+                <p className="card-text">{t('tasks.totalTasks')}</p>
               </div>
             </div>
           </div>
@@ -473,7 +473,7 @@ const UserTasks: React.FC = () => {
             <div className="card stat-card text-center">
               <div className="card-body">
                 <h5 className="card-title text-success">{stats.completedTasks}</h5>
-                <p className="card-text">Completed</p>
+                <p className="card-text">{t('tasks.completedTasks')}</p>
               </div>
             </div>
           </div>
@@ -481,7 +481,7 @@ const UserTasks: React.FC = () => {
             <div className="card stat-card text-center">
               <div className="card-body">
                 <h5 className="card-title text-warning">{stats.inProgressTasks}</h5>
-                <p className="card-text">Pending</p>
+                <p className="card-text">{t('tasks.pendingTasks')}</p>
               </div>
             </div>
           </div>
@@ -489,7 +489,7 @@ const UserTasks: React.FC = () => {
             <div className="card stat-card text-center">
               <div className="card-body">
                 <h5 className="card-title text-danger">{stats.overdueTasks}</h5>
-                <p className="card-text">Overdue</p>
+                <p className="card-text">{t('tasks.overdueTasks')}</p>
               </div>
             </div>
           </div>
@@ -502,7 +502,7 @@ const UserTasks: React.FC = () => {
           <div className="row g-3 align-items-center">
             <div className="col-auto">
               <button className="btn btn-primary btn-sm" onClick={openNewTaskModal}>
-                <i className="fa fa-plus me-2"></i>New Task
+                <i className="fa fa-plus me-2"></i>{t('tasks.newTask')}
               </button>
             </div>
             
@@ -510,7 +510,7 @@ const UserTasks: React.FC = () => {
               <input
                 type="text"
                 className="form-control form-control-sm"
-                placeholder="Search tasks..."
+                placeholder={t('tasks.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{ width: "200px" }}
@@ -523,7 +523,7 @@ const UserTasks: React.FC = () => {
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as TaskStatus | "ALL")}
               >
-                <option value="ALL">All Status</option>
+                <option value="ALL">{t('tasks.allStatus')}</option>
                 {Object.values(TaskStatus).map(status => (
                   <option key={status} value={status}>
                     {TASK_STATUS_CONFIG[status].label}
@@ -538,7 +538,7 @@ const UserTasks: React.FC = () => {
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value as TaskPriority | "ALL")}
               >
-                <option value="ALL">All Priority</option>
+                <option value="ALL">{t('tasks.allPriority')}</option>
                 {Object.values(TaskPriority).map(priority => (
                   <option key={priority} value={priority}>
                     {TASK_PRIORITY_CONFIG[priority].label}
@@ -553,7 +553,7 @@ const UserTasks: React.FC = () => {
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value as TaskCategory | "ALL")}
               >
-                <option value="ALL">All Categories</option>
+                <option value="ALL">{t('tasks.allCategories')}</option>
                 {Object.values(TaskCategory).map(category => (
                   <option key={category} value={category}>
                     {category}
@@ -568,11 +568,11 @@ const UserTasks: React.FC = () => {
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value as typeof dateFilter)}
               >
-                <option value="all">All Tasks</option>
-                <option value="today">Due Today</option>
-                <option value="week">Due This Week</option>
-                <option value="month">Due This Month</option>
-                <option value="overdue">Overdue</option>
+                <option value="all">{t('tasks.allTasks')}</option>
+                <option value="today">{t('tasks.dueToday')}</option>
+                <option value="week">{t('tasks.dueThisWeek')}</option>
+                <option value="month">{t('tasks.dueThisMonth')}</option>
+                <option value="overdue">{t('tasks.overdue')}</option>
               </select>
             </div>
 
@@ -582,21 +582,21 @@ const UserTasks: React.FC = () => {
                 <button
                   className={`btn btn-outline-secondary btn-sm ${viewMode === 'table' ? "active" : ""}`}
                   onClick={() => setViewMode('table')}
-                  title="Table View"
+                  title={t('tasks.tableView')}
                 >
                   <i className="fa fa-table"></i>
                 </button>
                 <button
                   className={`btn btn-outline-secondary btn-sm ${viewMode === 'kanban' ? "active" : ""}`}
                   onClick={() => setViewMode('kanban')}
-                  title="Kanban View"
+                  title={t('tasks.kanbanView')}
                 >
                   <i className="fa fa-th"></i>
                 </button>
                 <button
                   className={`btn btn-outline-secondary btn-sm ${viewMode === 'calendar' ? "active" : ""}`}
                   onClick={() => setViewMode('calendar')}
-                  title="Calendar View"
+                  title={t('tasks.calendarView')}
                 >
                   <i className="fa fa-calendar"></i>
                 </button>
@@ -608,29 +608,29 @@ const UserTasks: React.FC = () => {
               <div className="btn-group" role="group">
                 <button
                   className="btn btn-outline-info btn-sm"
-                  onClick={() => toast.info("Templates feature coming soon!")}
-                  title="Use Templates"
+                  onClick={() => toast.info(t('tasks.templatesComingSoon'))}
+                  title={t('tasks.useTemplates')}
                 >
                   <i className="fa fa-file-text"></i>
                 </button>
                 <button
                   className="btn btn-outline-success btn-sm"
-                  onClick={() => toast.info("Import feature coming soon!")}
-                  title="Import Tasks"
+                  onClick={() => toast.info(t('tasks.importComingSoon'))}
+                  title={t('tasks.importTasks')}
                 >
                   <i className="fa fa-upload"></i>
                 </button>
                 <button
                   className="btn btn-outline-warning btn-sm"
                   onClick={() => exportTasks()}
-                  title="Export Tasks"
+                  title={t('tasks.exportTasks')}
                 >
                   <i className="fa fa-download"></i>
                 </button>
                 <button
                   className="btn btn-outline-secondary btn-sm"
                   onClick={() => setShowQuickAdd(!showQuickAdd)}
-                  title="Quick Add Task"
+                  title={t('tasks.quickAddTask')}
                 >
                   <i className="fa fa-plus-circle"></i>
                 </button>
@@ -644,10 +644,10 @@ const UserTasks: React.FC = () => {
                   <button
                     className="btn btn-outline-primary btn-sm"
                     onClick={() => setShowBulkActions(!showBulkActions)}
-                    title="Bulk Actions"
+                    title={t('tasks.bulkActions')}
                   >
                     <i className="fa fa-check-square me-1"></i>
-                    {selectedTasks.length} selected
+                    {selectedTasks.length} {t('tasks.selected')}
                   </button>
                   {showBulkActions && (
                     <div className="dropdown-menu show position-relative">
@@ -655,26 +655,26 @@ const UserTasks: React.FC = () => {
                         className="dropdown-item"
                         onClick={() => handleBulkStatusChange(TaskStatus.COMPLETED)}
                       >
-                        <i className="fa fa-check me-2"></i>Mark Completed
+                        <i className="fa fa-check me-2"></i>{t('tasks.markCompleted')}
                       </button>
                       <button
                         className="dropdown-item"
                         onClick={() => handleBulkStatusChange(TaskStatus.IN_PROGRESS)}
                       >
-                        <i className="fa fa-play me-2"></i>Mark In Progress
+                        <i className="fa fa-play me-2"></i>{t('tasks.markInProgress')}
                       </button>
                       <button
                         className="dropdown-item"
                         onClick={() => handleBulkPriorityChange(TaskPriority.HIGH)}
                       >
-                        <i className="fa fa-exclamation me-2"></i>Set High Priority
+                        <i className="fa fa-exclamation me-2"></i>{t('tasks.setHighPriority')}
                       </button>
                       <div className="dropdown-divider"></div>
                       <button
                         className="dropdown-item text-danger"
                         onClick={() => handleBulkDelete()}
                       >
-                        <i className="fa fa-trash me-2"></i>Delete Selected
+                        <i className="fa fa-trash me-2"></i>{t('tasks.deleteSelected')}
                       </button>
                     </div>
                   )}
@@ -707,32 +707,32 @@ const UserTasks: React.FC = () => {
         <div className="card-header">
           <div className="d-flex justify-content-between align-items-center">
             <h6 className="mb-0">
-              Tasks ({filteredTasks.length})
+              {t('tasks.tasksList')} ({filteredTasks.length})
               {selectedTasks.length > 0 && (
-                <span className="ms-2 text-muted">({selectedTasks.length} selected)</span>
+                <span className="ms-2 text-muted">({selectedTasks.length} {t('tasks.selected')})</span>
               )}
             </h6>
             <div className="d-flex align-items-center gap-2">
-              <small className="text-muted">View:</small>
+              <small className="text-muted">{t('tasks.view')}:</small>
               <div className="btn-group btn-group-sm" role="group">
                 <button
                   className={`btn ${viewMode === 'table' ? 'btn-primary' : 'btn-outline-secondary'}`}
                   onClick={() => setViewMode('table')}
-                  title="Table View"
+                  title={t('tasks.tableView')}
                 >
                   <i className="fa fa-list"></i>
                 </button>
                 <button
                   className={`btn ${viewMode === 'kanban' ? 'btn-primary' : 'btn-outline-secondary'}`}
                   onClick={() => setViewMode('kanban')}
-                  title="Card View"
+                  title={t('tasks.kanbanView')}
                 >
                   <i className="fa fa-th"></i>
                 </button>
                 <button
                   className={`btn ${viewMode === 'calendar' ? 'btn-primary' : 'btn-outline-secondary'}`}
                   onClick={() => setViewMode('calendar')}
-                  title="Timeline View"
+                  title={t('tasks.calendarView')}
                 >
                   <i className="fa fa-calendar"></i>
                 </button>
@@ -744,16 +744,16 @@ const UserTasks: React.FC = () => {
           {isLoading ? (
             <div className="text-center p-4">
               <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
+                <span className="visually-hidden">{t('tasks.loading')}</span>
               </div>
             </div>
           ) : filteredTasks.length === 0 ? (
             <div className="text-center p-4 text-muted">
               <i className="fa fa-tasks fa-3x mb-3 text-primary"></i>
-              <h5>No tasks found</h5>
-              <p className="mb-3">Get started by creating your first task</p>
+              <h5>{t('tasks.noTasksFound')}</h5>
+              <p className="mb-3">{t('tasks.getStartedMessage')}</p>
               <button className="btn btn-primary" onClick={openNewTaskModal}>
-                <i className="fa fa-plus me-2"></i>Create Your First Task
+                <i className="fa fa-plus me-2"></i>{t('tasks.createFirstTask')}
               </button>
             </div>
           ) : viewMode === 'table' ? (
@@ -775,13 +775,13 @@ const UserTasks: React.FC = () => {
                         }}
                       />
                     </th>
-                    <th>Task</th>
-                    <th>Priority</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Due Date</th>
-                    <th>Progress</th>
-                    <th style={{ width: '120px' }}>Actions</th>
+                    <th>{t('tasks.task')}</th>
+                    <th>{t('tasks.priority')}</th>
+                    <th>{t('tasks.category')}</th>
+                    <th>{t('tasks.status')}</th>
+                    <th>{t('tasks.dueDate')}</th>
+                    <th>{t('tasks.progress')}</th>
+                    <th style={{ width: '120px' }}>{t('tasks.actions')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -868,7 +868,7 @@ const UserTasks: React.FC = () => {
                           ) : (
                             <span className="text-muted">
                               <i className="fa fa-calendar-times me-1"></i>
-                              No due date
+                              {t('tasks.noDueDate')}
                             </span>
                           )}
                         </div>
@@ -889,7 +889,7 @@ const UserTasks: React.FC = () => {
                           <button
                             className="btn btn-outline-primary btn-sm"
                             onClick={() => openEditTaskModal(task)}
-                            title="Edit Task"
+                            title={t('tasks.editTask')}
                           >
                             <i className="fa fa-edit"></i>
                           </button>
@@ -899,7 +899,7 @@ const UserTasks: React.FC = () => {
                               setDeletingTask(task);
                               setShowDeleteModal(true);
                             }}
-                            title="Delete Task"
+                            title={t('tasks.deleteTask')}
                           >
                             <i className="fa fa-trash"></i>
                           </button>
@@ -991,7 +991,7 @@ const UserTasks: React.FC = () => {
                         </div>
                         
                         <div className="d-flex justify-content-between align-items-center mb-2">
-                          <small className="text-muted">Progress: {getTaskProgress(task.status)}%</small>
+                          <small className="text-muted">{t('tasks.progress')}: {getTaskProgress(task.status)}%</small>
                           <select
                             className={`form-select form-select-sm status-select status-${task.status.toLowerCase().replace('_', '-')}`}
                             value={task.status}
@@ -1009,7 +1009,7 @@ const UserTasks: React.FC = () => {
                         {task.dueDate && (
                           <div className={`due-date-card ${isOverdue(task) ? "overdue" : ""}`}>
                             <i className="fa fa-calendar-alt me-1"></i>
-                            <small>Due: {formatDate(task.dueDate)}</small>
+                            <small>{t('tasks.due')}: {formatDate(task.dueDate)}</small>
                             {isOverdue(task) && <i className="fa fa-exclamation-triangle ms-1"></i>}
                             <div className="days-remaining-small">
                               {getDaysRemaining(task.dueDate)}
@@ -1020,7 +1020,7 @@ const UserTasks: React.FC = () => {
                       <div className="card-footer p-2 bg-transparent">
                         <small className="text-muted">
                           <i className="fa fa-clock me-1"></i>
-                          Created {formatDate(task.createdAt)}
+                          {t('tasks.created')} {formatDate(task.createdAt)}
                         </small>
                       </div>
                     </div>
@@ -1031,7 +1031,7 @@ const UserTasks: React.FC = () => {
           ) : (
             <div className="p-3">
               <div className="timeline-view">
-                <h6 className="mb-3"><i className="fa fa-calendar me-2"></i>Timeline View</h6>
+                <h6 className="mb-3"><i className="fa fa-calendar me-2"></i>{t('tasks.timelineView')}</h6>
                 <div className="timeline-container">
                   {filteredTasks
                     .filter(task => task.dueDate)
@@ -1074,7 +1074,7 @@ const UserTasks: React.FC = () => {
                     ))}
                   {filteredTasks.filter(task => !task.dueDate).length > 0 && (
                     <div className="mt-4">
-                      <h6 className="text-muted">Tasks without due dates:</h6>
+                      <h6 className="text-muted">{t('tasks.tasksWithoutDueDates')}:</h6>
                       {filteredTasks.filter(task => !task.dueDate).map(task => (
                         <div key={task.taskId} className="timeline-item no-date">
                           <div className="timeline-marker">
@@ -1112,7 +1112,7 @@ const UserTasks: React.FC = () => {
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">
-                  {editing ? "Edit Task" : "New Task"}
+                  {editing ? t('tasks.editTask') : t('tasks.newTask')}
                 </h5>
                 <button
                   type="button"
@@ -1124,7 +1124,7 @@ const UserTasks: React.FC = () => {
                 <div className="modal-body">
                   <div className="row g-3">
                     <div className="col-12">
-                      <label className="form-label">Task Title *</label>
+                      <label className="form-label">{t('tasks.taskTitle')} *</label>
                       <input
                         ref={formRef}
                         type="text"
@@ -1136,7 +1136,7 @@ const UserTasks: React.FC = () => {
                     </div>
                     
                     <div className="col-12">
-                      <label className="form-label">Description</label>
+                      <label className="form-label">{t('tasks.description')}</label>
                       <textarea
                         className="form-control"
                         rows={3}
@@ -1146,7 +1146,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">Priority</label>
+                      <label className="form-label">{t('tasks.priority')}</label>
                       <select
                         className="form-select"
                         value={formData.priority}
@@ -1161,7 +1161,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">Category</label>
+                      <label className="form-label">{t('tasks.category')}</label>
                       <select
                         className="form-select"
                         value={formData.category}
@@ -1176,7 +1176,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">Task Date</label>
+                      <label className="form-label">{t('tasks.taskDate')}</label>
                       <input
                         type="date"
                         className="form-control"
@@ -1186,7 +1186,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">Due Date</label>
+                      <label className="form-label">{t('tasks.dueDate')}</label>
                       <input
                         type="date"
                         className="form-control"
@@ -1196,7 +1196,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">Status</label>
+                      <label className="form-label">{t('tasks.status')}</label>
                       <select
                         className="form-select"
                         value={formData.status}
@@ -1217,10 +1217,10 @@ const UserTasks: React.FC = () => {
                     className="btn btn-secondary"
                     onClick={() => setShowModal(false)}
                   >
-                    Cancel
+                    {t('tasks.cancel')}
                   </button>
                   <button type="submit" className="btn btn-primary">
-                    {editing ? "Update Task" : "Create Task"}
+                    {editing ? t('tasks.updateTask') : t('tasks.createTask')}
                   </button>
                 </div>
               </form>
@@ -1245,7 +1245,7 @@ const UserTasks: React.FC = () => {
               <div className="modal-body">
                 <div className="row g-3">
                   <div className="col-md-6">
-                    <strong>Priority:</strong>
+                    <strong>{t('tasks.priority')}:</strong>
                     <span 
                       className="badge ms-2"
                       style={{
@@ -1258,14 +1258,14 @@ const UserTasks: React.FC = () => {
                     </span>
                   </div>
                   <div className="col-md-6">
-                    <strong>Category:</strong>
+                    <strong>{t('tasks.category')}:</strong>
                     <span className="badge bg-secondary ms-2">
                       <i className="fa fa-folder me-1"></i>
                       {viewingTask.category}
                     </span>
                   </div>
                   <div className="col-md-6">
-                    <strong>Status:</strong>
+                    <strong>{t('tasks.status')}:</strong>
                     <span 
                       className="badge ms-2"
                       style={{
@@ -1277,21 +1277,21 @@ const UserTasks: React.FC = () => {
                     </span>
                   </div>
                   <div className="col-md-6">
-                    <strong>Due Date:</strong>
+                    <strong>{t('tasks.dueDate')}:</strong>
                     <span className="ms-2">
-                      {viewingTask.dueDate ? formatDate(viewingTask.dueDate) : "No due date"}
+                      {viewingTask.dueDate ? formatDate(viewingTask.dueDate) : t('tasks.noDueDate')}
                     </span>
                   </div>
                   <div className="col-12">
-                    <strong>Description:</strong>
-                    <p className="mt-2">{viewingTask.taskDescription || "No description"}</p>
+                    <strong>{t('tasks.description')}:</strong>
+                    <p className="mt-2">{viewingTask.taskDescription || t('tasks.noDescription')}</p>
                   </div>
                   <div className="col-md-6">
-                    <strong>Created:</strong>
+                    <strong>{t('tasks.created')}:</strong>
                     <span className="ms-2">{formatDate(viewingTask.createdAt)}</span>
                   </div>
                   <div className="col-md-6">
-                    <strong>Last Modified:</strong>
+                    <strong>{t('tasks.lastModified')}:</strong>
                     <span className="ms-2">{formatDate(viewingTask.updatedAt || viewingTask.createdAt)}</span>
                   </div>
                 </div>
@@ -1302,7 +1302,7 @@ const UserTasks: React.FC = () => {
                   className="btn btn-secondary"
                   onClick={() => setShowViewModal(false)}
                 >
-                  Close
+                  {t('tasks.close')}
                 </button>
                 <button
                   type="button"
@@ -1312,7 +1312,7 @@ const UserTasks: React.FC = () => {
                     openEditTaskModal(viewingTask);
                   }}
                 >
-                  Edit Task
+                  {t('tasks.editTask')}
                 </button>
               </div>
             </div>
@@ -1326,7 +1326,7 @@ const UserTasks: React.FC = () => {
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Confirm Delete</h5>
+                <h5 className="modal-title">{t('tasks.confirmDelete')}</h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -1334,8 +1334,8 @@ const UserTasks: React.FC = () => {
                 ></button>
               </div>
               <div className="modal-body">
-                <p>Are you sure you want to delete the task "{deletingTask.taskTitle}"?</p>
-                <p className="text-muted">This action cannot be undone.</p>
+                <p>{t('tasks.confirmDeleteMessage')}: "{deletingTask.taskTitle}"?</p>
+                <p className="text-muted">{t('tasks.actionCannotBeUndone')}</p>
               </div>
               <div className="modal-footer">
                 <button
@@ -1343,14 +1343,14 @@ const UserTasks: React.FC = () => {
                   className="btn btn-secondary"
                   onClick={() => setShowDeleteModal(false)}
                 >
-                  Cancel
+                  {t('tasks.cancel')}
                 </button>
                 <button
                   type="button"
                   className="btn btn-danger"
                   onClick={handleDelete}
                 >
-                  Delete Task
+                  {t('tasks.deleteTask')}
                 </button>
               </div>
             </div>

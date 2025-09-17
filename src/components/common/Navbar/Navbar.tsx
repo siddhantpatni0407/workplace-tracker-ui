@@ -6,7 +6,8 @@ import { UserRole } from "../../../enums";
 import ThemeToggle from "../theme/ThemeToggle";
 import LanguageSelector from "../language-selector/LanguageSelector";
 import { useTranslation } from "../../../hooks/useTranslation";
-import "./Navbar.css";
+import { ROUTES } from "../../../constants";
+import "./navbar.css";
 
 interface NavLinkItem {
   to: string;
@@ -35,60 +36,62 @@ const Navbar: React.FC = memo(() => {
   // Admin & User items
   const adminNavItems = useMemo<DropdownItem[]>(
     () => [
-      { to: "/user-management", label: t("navigation.userManagement"), icon: "bi-people-fill" },
-      { to: "/user-analytics", label: t("navigation.userAnalytics"), icon: "bi-bar-chart-line-fill" },
-      { to: "/holiday-management", label: t("navigation.holidayManagement"), icon: "bi-calendar-event-fill" },
-      { to: "/leave-policies", label: t("navigation.leavePolicies"), icon: "bi-file-earmark-medical-fill" },
-      { to: "/admin/backup", label: t("navigation.dbBackup"), icon: "bi-hdd-fill" },
-      { to: "/attendance", label: t("navigation.attendance"), icon: "bi-calendar-check-fill" }
+      { to: ROUTES.ADMIN.USER_MANAGEMENT, label: t("navigation.userManagement"), icon: "bi-people-fill" },
+      { to: ROUTES.ADMIN.REPORTS, label: t("navigation.userAnalytics"), icon: "bi-bar-chart-line-fill" },
+      { to: ROUTES.ADMIN.HOLIDAY_MANAGEMENT, label: t("navigation.holidayManagement"), icon: "bi-calendar-event-fill" },
+      { to: ROUTES.ADMIN.LEAVE_POLICY_MANAGEMENT, label: t("navigation.leavePolicies"), icon: "bi-file-earmark-medical-fill" },
+      { to: ROUTES.ADMIN.BACKUP, label: t("navigation.dbBackup"), icon: "bi-hdd-fill" },
+      { to: ROUTES.ADMIN.SYSTEM, label: t("navigation.attendance"), icon: "bi-calendar-check-fill" }
     ],
     [t]
   );
 
   const userNavItems = useMemo<DropdownItem[]>(
     () => [
-      { to: "/user-tasks", label: t("navigation.userTasks"), icon: "bi-check2-square" },
-      { to: "/office-visit", label: t("navigation.officeVisit"), icon: "bi-building" },
-      { to: "/office-visit-analytics", label: t("navigation.officeVisitAnalytics"), icon: "bi-bar-chart-line-fill" },
-      { to: "/apply-leave", label: t("navigation.applyLeave"), icon: "bi-plus-square-dotted" },
-      { to: "/leave-policy", label: t("navigation.leavePolicy"), icon: "bi-file-earmark-text-fill" },
-      { to: "/holiday-tracker", label: t("navigation.holidayTracker"), icon: "bi-calendar-event" },
-      { to: "/user-notes", label: t("navigation.userNotes"), icon: "bi-journal-text" }
+      { to: ROUTES.USER.USER_TASKS, label: t("navigation.userTasks"), icon: "bi-check2-square" },
+      { to: ROUTES.USER.OFFICE_VISIT, label: t("navigation.officeVisit"), icon: "bi-building" },
+      { to: ROUTES.USER.OFFICE_VISIT_ANALYTICS, label: t("navigation.officeVisitAnalytics"), icon: "bi-bar-chart-line-fill" },
+      { to: ROUTES.USER.APPLY_LEAVE, label: t("navigation.applyLeave"), icon: "bi-plus-square-dotted" },
+      { to: ROUTES.USER.LEAVE_POLICY, label: t("navigation.leavePolicy"), icon: "bi-file-earmark-text-fill" },
+      { to: ROUTES.USER.HOLIDAY_TRACKER, label: t("navigation.holidayTracker"), icon: "bi-calendar-event" },
+      { to: ROUTES.USER.USER_NOTES, label: t("navigation.userNotes"), icon: "bi-journal-text" }
     ],
     [t]
   );
 
   const profileNavItems = useMemo<DropdownItem[]>(
     () => [
-      { to: "/profile", label: t("navigation.myProfile"), icon: "bi-person-badge-fill" },
-      { to: "/user-settings", label: t("navigation.settings"), icon: "bi-sliders2-vertical" },
+      { to: ROUTES.USER.PROFILE, label: t("navigation.myProfile"), icon: "bi-person-badge-fill" },
+      { to: ROUTES.USER.SETTINGS, label: t("navigation.settings"), icon: "bi-sliders2-vertical" },
       { to: "", label: "", icon: "", divider: true },
-      { to: "/logout", label: t("navigation.logout"), icon: "bi-box-arrow-right" }
+      { to: ROUTES.PUBLIC.HOME, label: t("navigation.logout"), icon: "bi-box-arrow-right" }
     ],
     [t]
   );
 
   const brandLink = useMemo(() => {
-    if (!user) return "/";
-    return user.role === UserRole.ADMIN ? "/admin-dashboard" : "/user-dashboard";
+    if (!user) return ROUTES.PUBLIC.HOME;
+    return user.role === UserRole.ADMIN ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD;
   }, [user]);
 
   const homeLink = useMemo(() => {
-    if (!user) return "/";
-    return user.role === UserRole.ADMIN ? "/admin-dashboard" : "/user-dashboard";
+    if (!user) return ROUTES.PUBLIC.HOME;
+    return user.role === UserRole.ADMIN ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD;
   }, [user]);
 
   // Active when location startsWith path (handles nested routes)
   const isActiveLink = useCallback((path: string) => {
     if (!path) return false;
     // exact match for root paths
-    if (path === "/" || path === "") return location.pathname === "/";
+    if (path === ROUTES.PUBLIC.HOME || path === "") return location.pathname === ROUTES.PUBLIC.HOME;
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   }, [location.pathname]);
 
   const isUserToolsActive = useCallback(() => {
     const userToolsPaths = [
-      "/user-tasks", "/user-notes", "/office-visit", "/office-visit-analytics", "/apply-leave", "/leave-policy", "/holiday-tracker"
+      ROUTES.USER.USER_TASKS, ROUTES.USER.USER_NOTES, ROUTES.USER.OFFICE_VISIT, 
+      ROUTES.USER.OFFICE_VISIT_ANALYTICS, ROUTES.USER.APPLY_LEAVE, 
+      ROUTES.USER.LEAVE_POLICY, ROUTES.USER.HOLIDAY_TRACKER
     ];
     return userToolsPaths.some(p => isActiveLink(p));
   }, [isActiveLink]);
@@ -303,10 +306,10 @@ const Navbar: React.FC = memo(() => {
             )}
 
             <li className="nav-item">
-              {renderNavLink("/about", t("navigation.about"))}
+              {renderNavLink(ROUTES.PUBLIC.ABOUT, t("navigation.about"))}
             </li>
             <li className="nav-item">
-              {renderNavLink("/contact", t("navigation.contact"))}
+              {renderNavLink(ROUTES.PUBLIC.CONTACT, t("navigation.contact"))}
             </li>
           </ul>
 
@@ -341,7 +344,7 @@ const Navbar: React.FC = memo(() => {
               </li>
             ) : (
               <li className="nav-item">
-                {renderNavLink("/login",
+                {renderNavLink(ROUTES.PUBLIC.LOGIN,
                   <>
                     <i className="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
                     {t("navigation.login")}

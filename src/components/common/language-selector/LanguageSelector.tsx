@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
-import './language-selector.css';
+import './languageselector.css';
 
 interface Language {
   code: string;
@@ -20,6 +20,11 @@ const LanguageSelector: React.FC = () => {
 
   const handleLanguageChange = (langCode: string) => {
     i18n.changeLanguage(langCode);
+    
+    // Note: When user changes language from navbar, it will be immediately reflected
+    // and if they have user settings page open, it will sync there too via the useEffect in UserSettings
+    // However, to persist this change to their user settings in the database,
+    // they need to go to User Settings page and click Save
   };
 
   const currentLanguage = languages.find(lang => lang.code === language) || languages[0];

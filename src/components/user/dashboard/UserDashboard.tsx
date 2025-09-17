@@ -1,10 +1,11 @@
 import React, { memo, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../../common/Header/Header";
+import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { UserRole } from "../../../enums";
 import { ErrorBoundary } from "../../ui";
+import { ROUTES } from "../../../constants";
 import "./user-dashboard.css";
 
 interface DashboardCard {
@@ -30,7 +31,7 @@ const UserDashboard: React.FC = memo(() => {
             subtitle: t('dashboard.userDashboard.cards.tasks.subtitle'),
             icon: "bi-list-task",
             colorClass: "card-blue",
-            route: "/user-tasks",
+            route: ROUTES.USER.USER_TASKS,
         },
         {
             id: "office-visit",
@@ -38,7 +39,7 @@ const UserDashboard: React.FC = memo(() => {
             subtitle: t('dashboard.userDashboard.cards.officeVisit.subtitle'),
             icon: "bi-building",
             colorClass: "card-purple",
-            route: "/office-visit",
+            route: ROUTES.USER.OFFICE_VISIT,
         },
         {
             id: "office-visit-analytics",
@@ -46,7 +47,7 @@ const UserDashboard: React.FC = memo(() => {
             subtitle: t('dashboard.userDashboard.cards.officeVisitAnalytics.subtitle'),
             icon: "bi-graph-up",
             colorClass: "card-teal",
-            route: "/office-visit-analytics",
+            route: ROUTES.USER.OFFICE_VISIT_ANALYTICS,
         },
         {
             id: "holidays",
@@ -54,7 +55,7 @@ const UserDashboard: React.FC = memo(() => {
             subtitle: t('dashboard.userDashboard.cards.holidays.subtitle'),
             icon: "bi-sun-fill",
             colorClass: "card-orange",
-            route: "/holiday-tracker",
+            route: ROUTES.USER.HOLIDAY_TRACKER,
         },
         {
             id: "apply-leave",
@@ -62,7 +63,7 @@ const UserDashboard: React.FC = memo(() => {
             subtitle: t('dashboard.userDashboard.cards.leaveManagement.subtitle'),
             icon: "bi-plus-square-dotted",
             colorClass: "card-indigo",
-            route: "/apply-leave",
+            route: ROUTES.USER.APPLY_LEAVE,
         },
         {
             id: "leave-policy",
@@ -70,7 +71,7 @@ const UserDashboard: React.FC = memo(() => {
             subtitle: t('dashboard.userDashboard.cards.leavePolicy.subtitle'),
             icon: "bi-file-earmark-text-fill",
             colorClass: "card-green",
-            route: "/leave-policy",
+            route: ROUTES.USER.LEAVE_POLICY,
         },
         {
             id: "my-notes",
@@ -78,7 +79,7 @@ const UserDashboard: React.FC = memo(() => {
             subtitle: t('dashboard.userDashboard.cards.notes.subtitle'),
             icon: "bi-journal-text",
             colorClass: "card-indigo",
-            route: "/user-notes",
+            route: ROUTES.USER.USER_NOTES,
         },
     ], [t]);
 

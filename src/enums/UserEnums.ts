@@ -34,7 +34,8 @@ export enum Theme {
 export enum Language {
   ENGLISH = 'English',
   HINDI = 'Hindi',
-  SPANISH = 'Spanish'
+  SPANISH = 'Spanish',
+  FRENCH = 'French'
 }
 
 export enum DateFormat {
@@ -76,7 +77,8 @@ export const ThemeLabels: Record<Theme, string> = {
 export const LanguageLabels: Record<Language, string> = {
   [Language.ENGLISH]: 'English',
   [Language.HINDI]: 'हिंदी',
-  [Language.SPANISH]: 'Español'
+  [Language.SPANISH]: 'Español',
+  [Language.FRENCH]: 'Français'
 };
 
 export const DateFormatLabels: Record<DateFormat, string> = {

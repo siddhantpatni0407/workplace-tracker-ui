@@ -4,6 +4,7 @@ import axiosInstance from "../../../services/axiosInstance";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { useAuth } from "../../../context/AuthContext";
 import { ErrorBoundary } from "../../ui";
+import Header from "../../common/header/Header";
 import UserAnalyticsCharts, { UserRow } from "./UserAnalyticsCharts";
 import "./Reports.css";
 
@@ -205,11 +206,15 @@ const Reports: React.FC = () => {
 
     return (
         <ErrorBoundary>
+            <Header 
+                title="Reports"
+                subtitle="Analytics & visualizations"
+            />
+            
             <div className="reports-page container-fluid py-3 px-3">
             <div className="d-flex align-items-center justify-content-between mb-3">
                 <div>
-                    <h1 className="reports-title mb-0">Reports</h1>
-                    <div className="text-muted small">Analytics & visualizations</div>
+                    <h1 className="reports-title mb-0 d-none">Reports</h1>
                 </div>
                 <div className="text-end small text-muted">
                     <div>Signed in as: <strong>{user?.name}</strong></div>

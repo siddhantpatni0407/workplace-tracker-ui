@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import Header from "../../common/Header/Header";
 import { LeavePolicyDTO } from "../../../types/leavePolicy";
+import { ErrorBoundary } from "../../ui";
+import Header from "../../common/header/Header";
 import leavePolicyService from "../../../services/leavePolicyService";
 import "./LeavePolicyManagement.css";
 
@@ -33,6 +34,27 @@ const LeavePolicyManagement: React.FC = () => {
 
   const formFirstRef = useRef<HTMLInputElement | null>(null);
 
+  // Statistics
+  const stats = useMemo(() => {
+    const total = policies.length;
+    const active = policies.filter(p => p.defaultAnnualDays > 0).length;
+    const highAllowance = policies.filter(p => p.defaultAnnualDays >= 20).length;
+    const lowAllowance = policies.filter(p => p.defaultAnnualDays < 10).length;
+    
+    return { total, active, highAllowance, lowAllowance };
+  }, [policies]);
+
+  // Filtered policies
+  const filtered = useMemo(() => {
+    if (!debouncedQ) return policies;
+    const lowerQ = debouncedQ.toLowerCase();
+    return policies.filter(p => 
+      p.policyCode?.toLowerCase().includes(lowerQ) ||
+      p.policyName?.toLowerCase().includes(lowerQ) ||
+      p.description?.toLowerCase().includes(lowerQ)
+    );
+  }, [policies, debouncedQ]);
+
   const load = async () => {
     setLoading(true);
     try {
@@ -55,15 +77,6 @@ const LeavePolicyManagement: React.FC = () => {
     if (showForm) setTimeout(() => formFirstRef.current?.focus(), 30);
   }, [showForm]);
 
-  const openCreate = () => {
-    setEditing(null);
-    setPolicyCode("");
-    setPolicyName("");
-    setDefaultAnnualDays("");
-    setDescription("");
-    setShowForm(true);
-  };
-
   const openEdit = async (p: LeavePolicyDTO) => {
     try {
       setLoading(true);
@@ -76,16 +89,6 @@ const LeavePolicyManagement: React.FC = () => {
       setLoading(false);
     }
   };
-
-  const filtered = useMemo(() => {
-    return policies
-      .filter((p) => {
-        if (!debouncedQ) return true;
-        const hay = `${p.policyCode} ${p.policyName} ${p.description ?? ""}`.toLowerCase();
-        return hay.includes(debouncedQ.toLowerCase());
-      })
-      .sort((a, b) => (a.policyCode < b.policyCode ? -1 : a.policyCode > b.policyCode ? 1 : 0));
-  }, [policies, debouncedQ]);
 
   // reflect editing into inputs
   useEffect(() => {
@@ -159,110 +162,190 @@ const LeavePolicyManagement: React.FC = () => {
     toast.success("Exported CSV");
   };
 
-  const printView = () => {
-    const rows = (filtered || [])
-      .map((p) => `<tr><td>${escapeHtml(p.policyCode)}</td><td>${escapeHtml(p.policyName)}</td><td>${p.defaultAnnualDays}</td><td>${escapeHtml(p.description ?? "")}</td></tr>`)
-      .join("");
-    const html = `<html><head><title>Leave Policies</title><style>table{width:100%;border-collapse:collapse}td,th{padding:8px;border:1px solid #ddd}</style></head><body><h3>Leave Policies</h3><table><thead><tr><th>Code</th><th>Name</th><th>Default Days</th><th>Description</th></tr></thead><tbody>${rows}</tbody></table></body></html>`;
-    const w = window.open("", "_blank", "noopener,noreferrer");
-    if (!w) return;
-    w.document.write(html);
-    w.document.close();
-    w.print();
-  };
-
-  function escapeHtml(s: string) {
-    return (s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
-  }
-
   const clearSearch = () => setQ("");
 
+  // Helper function to highlight search matches
+  const highlight = (txt: string | null | undefined, q: string) => {
+    if (!txt || !q) return txt || "";
+    const idx = txt.toLowerCase().indexOf(q.toLowerCase());
+    if (idx === -1) return txt;
+    return (
+      <>
+        {txt.slice(0, idx)}
+        <mark className="lpm-highlight">{txt.slice(idx, idx + q.length)}</mark>
+        {txt.slice(idx + q.length)}
+      </>
+    );
+  };
+
   return (
-    <div className="container py-4">
-      {/* header — only title/subtitle/eyebrow; actions moved to toolbar below */}
-      <Header title="Leave Policy Management" subtitle="Create and manage leave policies" />
-
-      {/* toolbar directly under header (matches Holiday layout) */}
-      <div className="d-flex flex-wrap gap-2 mb-3 align-items-center leave-policy-toolbar">
-        <div className="input-group input-group-sm" style={{ minWidth: 240 }}>
-          <span className="input-group-text">Search</span>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            className="form-control"
-            placeholder="Search code or name"
-            aria-label="Search leave policies"
-          />
-        </div>
-
-        <div className="ms-auto d-flex gap-2 align-items-center">
-          <button className="btn btn-link btn-sm p-0 text-decoration-none" onClick={clearSearch} title="Clear search">Clear</button>
-
-          <div className="btn-group">
-            <button className="btn btn-outline-success btn-sm" onClick={exportCSV} title="Export CSV" aria-label="Export CSV">
-              <i className="bi bi-file-earmark-spreadsheet me-1" /> Export
-            </button>
-            <button className="btn btn-outline-secondary btn-sm" onClick={printView} title="Print" aria-label="Print">
-              <i className="bi bi-printer me-1" /> Print
-            </button>
+    <ErrorBoundary>
+      <Header 
+        title="Leave Policy Management"
+        subtitle="Configure and manage company leave policies"
+      />
+      
+      <div className="leave-policy-management container-fluid py-4" data-animate="fade">
+        <div className="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h1 className="lpm-title mb-0 d-none">Leave Policy Management</h1>
           </div>
 
-          <button className="btn btn-primary btn-sm" onClick={openCreate} disabled={saving} title="Create new policy">
-            <i className="bi bi-plus-lg me-1" /> New Policy
-          </button>
+          <div className="d-flex gap-2 align-items-center">
+            <div className="d-none d-md-flex gap-2">
+              <button className="btn btn-sm btn-outline-secondary" onClick={exportCSV} disabled={loading || policies.length === 0} title="Export to CSV">
+                <i className="bi bi-file-earmark-arrow-down me-1" /> Export CSV
+              </button>
 
-          <button className="btn btn-outline-secondary btn-sm" onClick={load} title="Refresh policies" disabled={loading}>
-            {loading ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-1" role="status" /> Refreshing
-              </>
-            ) : (
-              <>
-                <i className="bi bi-arrow-repeat me-1" /> Refresh
-              </>
-            )}
-          </button>
+              <button className="btn btn-sm btn-outline-primary" onClick={load} disabled={loading} title="Refresh">
+                {loading ? <span className="spinner-border spinner-border-sm me-2" /> : <i className="bi bi-arrow-clockwise me-1" />} Refresh
+              </button>
+            </div>
+
+            <button className="btn btn-sm btn-primary" onClick={() => setShowForm(true)} disabled={loading}>
+              <i className="bi bi-plus-lg me-1" /> New Policy
+            </button>
+          </div>
         </div>
-      </div>
+        {/* Stats Row */}
+        <div className="row g-3 mb-4">
+          <div className="col-6 col-md-3">
+            <div className="stat-card shadow-sm p-3 rounded text-center lpm-card-acc d-flex flex-column justify-content-between border">
+              <div className="d-flex w-100 justify-content-between align-items-start">
+                <div className="text-start">
+                  <div className="stat-icon"><i className="bi bi-file-text-fill" /></div>
+                  <div className="stat-title">TOTAL</div>
+                </div>
+                <span className="badge bg-primary align-self-start">Policies</span>
+              </div>
+              <div className="mt-2">
+                <div className="stat-value h4 mb-0" aria-live="polite">{stats.total}</div>
+                <div className="progress mt-2 thin-progress">
+                  <div className="progress-bar" role="progressbar" style={{ width: `${Math.min(100, Math.round((stats.total || 1) / 1))}%` }} />
+                </div>
+              </div>
+            </div>
+          </div>
 
-      <div className="leave-policy-stage">
-        <div className="card leave-policy-card shadow-sm">
-          <div className="card-body p-0">
-            <div className="table-responsive">
-              <table className="table table-hover mb-0 admin-leave-table">
-                <thead className="table-light">
-                  <tr>
-                    <th style={{ width: 160 }} className="text-center">CODE</th>
-                    <th className="text-center">NAME</th>
-                    <th style={{ width: 140 }} className="text-center">DEFAULT DAYS</th>
-                    <th className="text-center">DESCRIPTION</th>
-                    <th className="text-end">ACTIONS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <tr><td colSpan={5} className="py-5 text-center"><div className="spinner-border text-primary me-2" role="status" />Loading policies...</td></tr>
-                  ) : filtered.length === 0 ? (
-                    <tr><td colSpan={5} className="py-5 text-center text-muted">No leave policies found.</td></tr>
-                  ) : (
-                    filtered.map((p) => (
-                      <tr key={p.policyId}>
-                        <td className="fw-semibold text-center">{p.policyCode}</td>
-                        <td>{p.policyName}</td>
-                        <td className="text-center">{p.defaultAnnualDays}</td>
-                        <td className="text-truncate" style={{ maxWidth: 500 }}>{p.description}</td>
-                        <td className="text-end">
-                          <button className="btn btn-sm btn-light me-2" onClick={() => openEdit(p)} title="Edit" aria-label={`Edit ${p.policyName}`}><i className="bi bi-pencil-fill" /> Edit</button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+          <div className="col-6 col-md-3">
+            <div className="stat-card shadow-sm p-3 rounded text-center lpm-card-acc d-flex flex-column justify-content-between border">
+              <div className="d-flex w-100 justify-content-between align-items-start">
+                <div className="text-start">
+                  <div className="stat-icon"><i className="bi bi-check-circle-fill" /></div>
+                  <div className="stat-title">ACTIVE</div>
+                </div>
+                <span className="badge bg-success align-self-start">Live</span>
+              </div>
+              <div className="mt-2">
+                <div className="stat-value h4 mb-0" aria-live="polite">{stats.active}</div>
+                <div className="progress mt-2 thin-progress">
+                  <div className="progress-bar bg-success" role="progressbar" style={{ width: `${Math.round((stats.active / Math.max(1, stats.total)) * 100)}%` }} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-6 col-md-3">
+            <div className="stat-card shadow-sm p-3 rounded text-center lpm-card-acc d-flex flex-column justify-content-between border">
+              <div className="d-flex w-100 justify-content-between align-items-start">
+                <div className="text-start">
+                  <div className="stat-icon"><i className="bi bi-calendar-plus-fill" /></div>
+                  <div className="stat-title">HIGH DAYS</div>
+                </div>
+                <span className="badge bg-info text-dark align-self-start">20+ Days</span>
+              </div>
+              <div className="mt-2">
+                <div className="stat-value h4 mb-0" aria-live="polite">{stats.highAllowance}</div>
+                <div className="progress mt-2 thin-progress">
+                  <div className="progress-bar bg-info" role="progressbar" style={{ width: `${Math.round((stats.highAllowance / Math.max(1, stats.total)) * 100)}%` }} />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-6 col-md-3">
+            <div className="stat-card shadow-sm p-3 rounded text-center lpm-card-acc d-flex flex-column justify-content-between border">
+              <div className="d-flex w-100 justify-content-between align-items-start">
+                <div className="text-start">
+                  <div className="stat-icon"><i className="bi bi-calendar-x-fill" /></div>
+                  <div className="stat-title">LOW DAYS</div>
+                </div>
+                <span className="badge bg-warning text-dark align-self-start">&lt;10 Days</span>
+              </div>
+              <div className="mt-2">
+                <div className="stat-value h4 mb-0 text-warning" aria-live="polite">{stats.lowAllowance}</div>
+                <div className="progress mt-2 thin-progress">
+                  <div className="progress-bar bg-warning" role="progressbar" style={{ width: `${Math.round((stats.lowAllowance / Math.max(1, stats.total)) * 100)}%` }} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+
+        {/* Search Filter */}
+        <div className="card mb-3 p-3 shadow-sm lpm-filter-card">
+          <div className="d-flex gap-2 align-items-center flex-column flex-md-row">
+            <input 
+              className="form-control flex-grow-1" 
+              placeholder="Search policies by code, name, or description..." 
+              value={q} 
+              onChange={(e) => setQ(e.target.value)} 
+              aria-label="Search policies" 
+            />
+            <button className="btn btn-outline-secondary btn-sm" onClick={clearSearch} disabled={!q}>
+              <i className="bi bi-x-lg me-1" /> Clear
+            </button>
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="card shadow-sm leave-policy-table lpm-table-glow">
+          <div className="table-responsive">
+            {loading ? (
+              <div className="p-4 text-center"><div className="spinner-border" role="status" /></div>
+            ) : filtered.length === 0 ? (
+              <div className="p-4 text-muted text-center">No leave policies found.</div>
+            ) : (
+              <table className="table table-hover table-striped table-sm m-0 align-middle">
+                <thead className="table-light">
+                  <tr>
+                    <th style={{ width: 120 }} className="text-center">Code</th>
+                    <th>Policy Name</th>
+                    <th style={{ width: 140 }} className="text-center">Annual Days</th>
+                    <th>Description</th>
+                    <th style={{ width: 120 }} className="text-end">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((p, idx) => (
+                    <tr key={p.policyId} className="lpm-row" style={{ animationDelay: `${idx * 35}ms` }}>
+                      <td className="fw-semibold text-center text-primary">{p.policyCode}</td>
+                      <td className="fw-medium">{highlight(p.policyName, debouncedQ)}</td>
+                      <td className="text-center">
+                        <span className={`badge ${p.defaultAnnualDays >= 20 ? 'bg-success' : p.defaultAnnualDays >= 10 ? 'bg-warning' : 'bg-danger'}`}>
+                          {p.defaultAnnualDays} days
+                        </span>
+                      </td>
+                      <td className="text-truncate" style={{ maxWidth: 400 }}>
+                        {highlight(p.description, debouncedQ)}
+                      </td>
+                      <td className="text-end">
+                        <button 
+                          className="btn btn-sm btn-outline-primary" 
+                          onClick={() => openEdit(p)} 
+                          title="Edit policy"
+                          aria-label={`Edit ${p.policyName}`}
+                        >
+                          <i className="bi bi-pencil-fill me-1" /> Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
 
       {/* Create/Edit modal */}
       {showForm && (
@@ -306,7 +389,8 @@ const LeavePolicyManagement: React.FC = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 };
 

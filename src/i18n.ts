@@ -13,11 +13,13 @@ import enTranslations from './locales/en_US_message.json';
 import esTranslations from './locales/es_ES_message.json';
 import frTranslations from './locales/fr_FR_message.json';
 import hiTranslations from './locales/hi_IN_message.json';
+import { STORAGE_KEYS } from './constants';
 
 // Simple i18n implementation without packages (temporary)
 export interface I18nInstance {
   t: (key: string, options?: { [key: string]: any }) => string;
   changeLanguage: (lng: string) => void;
+  initializeForAuthState: (isAuthenticated: boolean) => void;
   language: string;
 }
 
@@ -31,12 +33,32 @@ class SimpleI18n implements I18nInstance {
   };
 
   constructor() {
-    // Try to get language from localStorage
-    const savedLang = localStorage.getItem('i18nextLng');
+    // Initialize with default language
+    const savedLang = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
     if (savedLang && this.translations[savedLang]) {
       this.currentLanguage = savedLang;
     }
   }
+
+  // Method to check authentication and reset language if needed
+  initializeForAuthState = (isAuthenticated: boolean): void => {
+    if (!isAuthenticated) {
+      // For non-authenticated users, always use English
+      this.currentLanguage = 'en';
+      localStorage.setItem(STORAGE_KEYS.LANGUAGE, 'en');
+      window.dispatchEvent(new CustomEvent('languageChanged', { detail: 'en' }));
+    } else {
+      // For authenticated users, use saved language or default to English
+      const savedLang = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
+      if (savedLang && this.translations[savedLang]) {
+        this.currentLanguage = savedLang;
+      } else {
+        this.currentLanguage = 'en';
+        localStorage.setItem(STORAGE_KEYS.LANGUAGE, 'en');
+      }
+      window.dispatchEvent(new CustomEvent('languageChanged', { detail: this.currentLanguage }));
+    }
+  };
 
   get language(): string {
     return this.currentLanguage;
@@ -82,7 +104,7 @@ class SimpleI18n implements I18nInstance {
   changeLanguage = (lng: string): void => {
     if (this.translations[lng]) {
       this.currentLanguage = lng;
-      localStorage.setItem('i18nextLng', lng);
+      localStorage.setItem(STORAGE_KEYS.LANGUAGE, lng);
       // Trigger re-render by dispatching a custom event
       window.dispatchEvent(new CustomEvent('languageChanged', { detail: lng }));
     }
