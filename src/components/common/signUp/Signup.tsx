@@ -1,10 +1,9 @@
-// src/components/common/signUp/SignUp.tsx
 import React, { useState, memo, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Role } from "../../../types/auth";
 import { RoleSelect } from "../../forms";
 import { authService } from "../../../services/authService";
-import { ErrorBoundary, Alert } from "../../ui";
+import { ErrorBoundary, Alert } from "../../ui"; // Modal removed
 import { useFormValidation } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES } from "../../../constants";
@@ -33,15 +32,16 @@ const initialForm: FormData = {
 const Signup: React.FC = memo(() => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+
   // Form state
   const [form, setForm] = useState<FormData>(initialForm);
-  
+
   // UI state
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
 
   // Validation schema using our new validation hook
   const validationSchema = {
@@ -94,14 +94,14 @@ const Signup: React.FC = memo(() => {
   const passwordStrength = useMemo(() => {
     const password = form.password;
     if (!password) return 0;
-    
+
     let strength = 0;
     if (password.length >= 8) strength++;
     if (/[a-z]/.test(password)) strength++;
     if (/[A-Z]/.test(password)) strength++;
     if (/\d/.test(password)) strength++;
     if (/[@$!%*?&]/.test(password)) strength++;
-    
+
     return Math.min(strength, 4);
   }, [form.password]);
 
@@ -111,22 +111,25 @@ const Signup: React.FC = memo(() => {
   };
 
   // Handle input changes
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    
-    let newValue: any = value;
-    if (name === "mobileNumber") {
-      newValue = value.replace(/\D/g, "").slice(0, 10);
-    } else if (type === "checkbox") {
-      newValue = checked;
-    }
-    
-    setForm(prev => ({ ...prev, [name]: newValue }));
-    
-    if (error) setError(null);
-    if (success) setSuccess(null);
-    if (errors[name as keyof FormData]) clearError(name);
-  }, [error, success, errors, clearError]);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value, type, checked } = e.target;
+
+      let newValue: any = value;
+      if (name === "mobileNumber") {
+        newValue = value.replace(/\D/g, "").slice(0, 10);
+      } else if (type === "checkbox") {
+        newValue = checked;
+      }
+
+      setForm(prev => ({ ...prev, [name]: newValue }));
+
+      if (error) setError(null);
+      if (success) setSuccess(null);
+      if (errors[name as keyof FormData]) clearError(name);
+    },
+    [error, success, errors, clearError]
+  );
 
   const handleRoleChange = useCallback((role: Role) => {
     setForm(prev => ({ ...prev, role }));
@@ -137,13 +140,13 @@ const Signup: React.FC = memo(() => {
   }, []);
 
   const canSubmit = useMemo(() => {
-    return form.name.trim() && 
-           form.mobileNumber.trim() && 
-           form.email.trim() && 
-           form.password && 
-           form.confirmPassword && 
-           form.acceptTerms && 
-           !loading;
+    return form.name.trim() &&
+      form.mobileNumber.trim() &&
+      form.email.trim() &&
+      form.password &&
+      form.confirmPassword &&
+      form.acceptTerms &&
+      !loading;
   }, [form, loading]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
@@ -167,15 +170,25 @@ const Signup: React.FC = memo(() => {
       });
 
       if (response.status === "SUCCESS") {
-        setSuccess("Account created successfully! You can now sign in.");
+        // show modal on same page
+        const message =
+          "Account created successfully. Your account is currently InActive — an administrator needs to activate it before you can sign in.";
+        setSuccess(message);
         setForm(initialForm);
-        setTimeout(() => navigate(ROUTES.PUBLIC.LOGIN), 2000);
+        setShowModal(true);
+
+        // redirect to Home after short delay
+        const homeRoute = (ROUTES as any).HOME || (ROUTES as any).PUBLIC?.HOME || "/";
+        setTimeout(() => {
+          setShowModal(false);
+          navigate(homeRoute);
+        }, 2500);
       } else {
         setError(response.message || "Signup failed. Please try again.");
       }
-    } catch (error: any) {
-      console.error("Signup error:", error);
-      setError(error?.response?.data?.message || error?.message || "Network/server error");
+    } catch (err: any) {
+      console.error("Signup error:", err);
+      setError(err?.response?.data?.message || err?.message || "Network/server error");
     } finally {
       setLoading(false);
     }
@@ -203,8 +216,9 @@ const Signup: React.FC = memo(() => {
                 className="mb-3"
               />
             )}
-            
-            {success && (
+
+            {/* Note: success is shown in modal; keeping this here in case you want inline success too */}
+            {success && !showModal && (
               <Alert
                 variant="success"
                 message={success}
@@ -357,9 +371,9 @@ const Signup: React.FC = memo(() => {
                   {t("auth.role")}
                   <span className="text-danger ms-1">*</span>
                 </label>
-                <RoleSelect 
-                  value={form.role} 
-                  onChange={handleRoleChange} 
+                <RoleSelect
+                  value={form.role}
+                  onChange={handleRoleChange}
                   disabled={loading}
                   showIcon={true}
                   error={errors.role}
@@ -416,6 +430,30 @@ const Signup: React.FC = memo(() => {
             </form>
           </div>
         </div>
+
+        {/* INLINE CUSTOM MODAL (no dependency on ../../ui Modal) */}
+        {showModal && (
+          <div className="custom-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="signup-success-title">
+            <div className="custom-modal">
+              <button className="custom-modal-close" aria-label="Close" onClick={() => setShowModal(false)}>×</button>
+              <i className="bi bi-check-circle-fill text-success" style={{ fontSize: "3rem" }} />
+              <h4 id="signup-success-title" className="mt-3">Signup Successful</h4>
+              <p className="mb-0">{success}</p>
+              <div className="mt-3">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setShowModal(false);
+                    const homeRoute = (ROUTES as any).HOME || (ROUTES as any).PUBLIC?.HOME || "/";
+                    navigate(homeRoute);
+                  }}
+                >
+                  Go to Home
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </ErrorBoundary>
   );
