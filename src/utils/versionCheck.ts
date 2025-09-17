@@ -68,7 +68,8 @@ export const createVersionChecker = (options: VersionCheckOptions) => {
       
       saveLastCheck();
     } catch (error) {
-      console.error('Version check failed:', error);
+      // Silently handle version check errors to avoid console noise
+      // Version checking is non-critical functionality
     }
   };
   

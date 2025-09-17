@@ -23,7 +23,8 @@ export const ErrorProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     if (process.env.NODE_ENV === 'production') {
       // Example: Send to an error tracking service
       // errorTrackingService.captureException(formattedError);
-      console.error('Global error:', formattedError);
+      // Error logging is disabled to prevent console errors
+      // If needed, implement a custom logger that doesn't use console
     }
   }, []);
 

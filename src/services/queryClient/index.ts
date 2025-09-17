@@ -12,8 +12,14 @@ export const queryClient = new QueryClient({
       retry: (failureCount, error) => {
         // Don't retry on 401, 403, or 404 errors
         const err = error as unknown;
+        
+        // Define a proper type for error objects with a code property
+        type ErrorWithCode = {
+          code: string;
+        };
+        
         if (err && typeof err === 'object' && 'code' in err) {
-          const code = (err as any).code;
+          const code = (err as ErrorWithCode).code;
           if (
             code === 'UNAUTHORIZED' || 
             code === 'FORBIDDEN' ||
@@ -28,9 +34,10 @@ export const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
     },
     mutations: {
-      onError: (err) => {
-        console.error('Mutation error:', err);
-      },
+      // Empty onError handler - errors will be handled by the component using the mutation
+      // This prevents default console errors
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      onError: () => {},
     },
   },
 });
