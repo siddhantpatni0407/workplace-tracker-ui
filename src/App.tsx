@@ -10,6 +10,8 @@ import { ROUTES } from "./constants";
 import "./styles/global.css";
 import Reports from "./components/admin/reports/Reports";
 import { ThemeProvider } from "./theme/ThemeContext";
+import QueryProvider from "./services/queryClient/QueryProvider";
+import { ErrorProvider } from "./utils/errorHandling/ErrorContext";
 // Initialize i18n
 import "./i18n";
 
@@ -65,11 +67,13 @@ const Loader: React.FC = () => (
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-      <AuthProvider>
-        <BrowserRouter>
-          <Suspense fallback={<Loader />}>
-            <Routes>
+      <QueryProvider>
+        <ErrorProvider>
+          <ThemeProvider>
+          <AuthProvider>
+            <BrowserRouter>
+            <Suspense fallback={<Loader />}>
+              <Routes>
               {/* Home (marketing / cover page) */}
               <Route path={ROUTES.PUBLIC.HOME} element={<Layout><Home /></Layout>} />
 
@@ -278,8 +282,10 @@ const App: React.FC = () => {
             </Routes>
           </Suspense>
         </BrowserRouter>
-      </AuthProvider>
-    </ThemeProvider>
+          </AuthProvider>
+          </ThemeProvider>
+        </ErrorProvider>
+      </QueryProvider>
     </ErrorBoundary>
   );
 };
