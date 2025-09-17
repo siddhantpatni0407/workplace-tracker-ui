@@ -2,6 +2,7 @@ import React, { memo, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { DateUtils } from "../../../utils";
 import { useTranslation } from "../../../hooks/useTranslation";
+import { APP_VERSION } from "../../../constants";
 import "./footer.css";
 
 export interface FooterProps {
@@ -76,47 +77,55 @@ const Footer: React.FC<FooterProps> = memo(({
   }, [className]);
 
   // Render footer link
-  const renderFooterLink = useMemo(() => (link: FooterLink) => {
-    if (link.external) {
+  const renderFooterLink = useMemo(() => {
+    const FooterLinkComponent = (link: FooterLink) => {
+      if (link.external) {
+        return (
+          <a
+            key={link.to}
+            href={link.to}
+            className="footer-link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`${link.label} (opens in new tab)`}
+          >
+            {link.label}
+          </a>
+        );
+      }
+  
       return (
-        <a
+        <Link
           key={link.to}
-          href={link.to}
+          to={link.to}
           className="footer-link"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${link.label} (opens in new tab)`}
+          aria-label={link.label}
         >
           {link.label}
-        </a>
+        </Link>
       );
-    }
-
-    return (
-      <Link
-        key={link.to}
-        to={link.to}
-        className="footer-link"
-        aria-label={link.label}
-      >
-        {link.label}
-      </Link>
-    );
+    };
+    FooterLinkComponent.displayName = "FooterLinkComponent";
+    return FooterLinkComponent;
   }, []);
 
   // Render social link
-  const renderSocialLink = useMemo(() => (social: SocialLink) => (
-    <a
-      key={social.url}
-      href={social.url}
-      className="social-link"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label={`Follow us on ${social.label} (opens in new tab)`}
-    >
-      <i className={social.icon} aria-hidden="true"></i>
-    </a>
-  ), []);
+  const renderSocialLink = useMemo(() => {
+    const SocialLinkComponent = (social: SocialLink) => (
+      <a
+        key={social.url}
+        href={social.url}
+        className="social-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={`Follow us on ${social.label} (opens in new tab)`}
+      >
+        <i className={social.icon} aria-hidden="true"></i>
+      </a>
+    );
+    SocialLinkComponent.displayName = "SocialLinkComponent";
+    return SocialLinkComponent;
+  }, []);
 
   // Memoize developer section
   const developerSection = useMemo(() => {
@@ -153,6 +162,9 @@ const Footer: React.FC<FooterProps> = memo(({
           <div className="col-lg-4 col-md-6">
             <small className="footer-copy">
               © {currentYear} {companyName}. All rights reserved.
+              <div className="mt-1 text-muted small">
+                {APP_VERSION.formatted}
+              </div>
             </small>
           </div>
 

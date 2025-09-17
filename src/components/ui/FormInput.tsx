@@ -23,7 +23,6 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       isRequired = false,
       showPasswordToggle = false,
       onTogglePassword,
-      className,
       inputClassName,
       containerClassName,
       type = 'text',

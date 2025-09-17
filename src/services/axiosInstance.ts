@@ -2,6 +2,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
 import { API_CONFIG, STORAGE_KEYS } from "../constants/app";
+import { getApiVersionHeader } from "../constants/version";
 
 /**
  * Axios instance with:
@@ -28,6 +29,9 @@ axiosInstance.interceptors.request.use(
     if (token) {
       (config.headers as any)["Authorization"] = `Bearer ${token}`;
     }
+    
+    // Add app version header to API requests
+    (config.headers as any)["X-App-Version"] = getApiVersionHeader();
     return config;
   },
   (err) => Promise.reject(err)

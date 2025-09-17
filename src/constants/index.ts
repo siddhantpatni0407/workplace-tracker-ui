@@ -5,6 +5,13 @@
  * Single point of import for all application constants
  */
 
+// App version information
+export {
+  APP_VERSION,
+  isNewerVersion,
+  getApiVersionHeader
+} from './version';
+
 // App-wide constants
 export {
   APP,

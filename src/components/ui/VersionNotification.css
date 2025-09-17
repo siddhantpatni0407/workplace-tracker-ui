@@ -1,0 +1,101 @@
+.version-notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+  max-width: 400px;
+  width: calc(100% - 40px);
+  animation: version-slide-in 0.3s ease-out;
+}
+
+.version-notification-content {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background: linear-gradient(135deg, #3b82f6, #4f46e5);
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15), 0 3px 8px rgba(0, 0, 0, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.version-notification-icon {
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+}
+
+.version-notification-icon i {
+  font-size: 18px;
+}
+
+.version-notification-text {
+  flex-grow: 1;
+}
+
+.version-notification-title {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.version-notification-message {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.version-notification-actions {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+
+.version-notification-reload {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  font-size: 12px;
+  margin-right: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.version-notification-reload:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.version-notification-dismiss {
+  background-color: transparent;
+  border: none;
+  padding: 5px;
+  color: white;
+  opacity: 0.7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.version-notification-dismiss:hover {
+  opacity: 1;
+}
+
+@keyframes version-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

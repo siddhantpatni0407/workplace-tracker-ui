@@ -1,17 +1,19 @@
 // src/App.tsx
-import React, { Suspense, lazy } from "react";
+import React, { Suspense, lazy, useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/routing";
 import Navbar from "./components/common/navbar/Navbar";
 import Footer from "./components/common/footer/Footer";
-import { ErrorBoundary } from "./components/ui";
+import { ErrorBoundary, VersionNotification } from "./components/ui";
 import { ROUTES } from "./constants";
 import "./styles/global.css";
 import Reports from "./components/admin/reports/Reports";
 import { ThemeProvider } from "./theme/ThemeContext";
 import QueryProvider from "./services/queryClient/QueryProvider";
 import { ErrorProvider } from "./utils/errorHandling/ErrorContext";
+import { APP_VERSION } from "./constants";
+import { createVersionChecker } from "./utils";
 // Initialize i18n
 import "./i18n";
 
@@ -65,6 +67,48 @@ const Loader: React.FC = () => (
 );
 
 const App: React.FC = () => {
+  const [newVersion, setNewVersion] = useState<string | null>(null);
+  
+  // Set up version checking
+  useEffect(() => {
+    // We would normally use an actual version API endpoint here
+    // This is just for demonstration purposes
+    const versionCheckUrl = `${window.location.origin}/api/version`;
+    
+    // Create but don't start the version checker in development
+    // In production, you would uncomment the start() call below
+    const checker = createVersionChecker({
+      versionUrl: versionCheckUrl,
+      checkInterval: 60 * 60 * 1000, // Check every hour
+      onNewVersion: (version: string) => {
+        setNewVersion(version);
+      }
+    });
+    
+    // For demo purposes, simulate a version update after 5 seconds
+    if (process.env.NODE_ENV === 'development') {
+      const timer = setTimeout(() => {
+        // Simulate receiving a newer version
+        // Remove this in production
+        const mockNewVersion = '0.2.0';
+        if (mockNewVersion !== APP_VERSION.full) {
+          setNewVersion(mockNewVersion);
+        }
+      }, 5000);
+      
+      return () => {
+        clearTimeout(timer);
+        checker.stop(); // Use checker to avoid unused variable warning
+      };
+    }
+    
+    // In production environments, uncomment these lines:
+    // checker.start();
+    // return () => checker.stop();
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
   return (
     <ErrorBoundary>
       <QueryProvider>
@@ -73,6 +117,13 @@ const App: React.FC = () => {
           <AuthProvider>
             <BrowserRouter>
             <Suspense fallback={<Loader />}>
+              {newVersion && (
+                <VersionNotification
+                  newVersion={newVersion}
+                  currentVersion={APP_VERSION.full}
+                  onDismiss={() => setNewVersion(null)}
+                />
+              )}
               <Routes>
               {/* Home (marketing / cover page) */}
               <Route path={ROUTES.PUBLIC.HOME} element={<Layout><Home /></Layout>} />
