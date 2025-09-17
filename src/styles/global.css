@@ -181,11 +181,11 @@ html, body, #root {
 
 /* Medium buttons (default) - more compact */
 .btn {
-  padding: 0.35rem 0.7rem !important;
+  padding: 0.25rem 0.5rem !important;
   font-size: 0.8rem !important;
-  line-height: 1.4 !important;
-  min-height: 32px !important;
-  border-radius: 5px !important;
+  line-height: 1.35 !important;
+  min-height: 30px !important;
+  border-radius: 4px !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -211,9 +211,10 @@ html, body, #root {
 
 /* Compact variant for tighter layouts */
 .btn-compact {
-  padding: 0.2rem 0.4rem !important;
-  min-height: 26px !important;
-  font-size: 0.75rem !important;
+  padding: 0.15rem 0.3rem !important;
+  min-height: 24px !important;
+  font-size: 0.7rem !important;
+  line-height: 1.25 !important;
 }
 
 /* Icon spacing adjustments for different sizes */
