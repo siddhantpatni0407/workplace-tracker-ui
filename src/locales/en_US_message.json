@@ -23,7 +23,28 @@
     "date": "Date",
     "notes": "Notes",
     "optional": "optional",
-    "required": "required"
+    "required": "required",
+    "create": "Create",
+    "update": "Update",
+    "saving": "Saving...",
+    "actions": "Actions",
+    "refresh": "Refresh",
+    "allMonths": "All months",
+    "allYears": "All years",
+    "months": {
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun",
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec"
+    }
   },
   "navigation": {
     "home": "Home",
@@ -632,6 +653,235 @@
           "subtitle": "Backup and restore system data"
         }
       }
+    },
+    "userManagement": {
+      "title": "User Management",
+      "subtitle": "Manage users, roles and permissions",
+      "actions": {
+        "addUser": "Add User",
+        "search": "Search users by name, email, or mobile...",
+        "searchLabel": "Search users",
+        "filterByRole": "Filter by role",
+        "all": "All",
+        "admin": "Admin",
+        "user": "User",
+        "bulkActions": "Bulk Actions",
+        "enableSelected": "Enable Selected",
+        "disableSelected": "Disable Selected",
+        "unlockSelected": "Unlock Selected",
+        "lockSelected": "Lock Selected"
+      },
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "email": "Email",
+        "mobileNumber": "Mobile",
+        "role": "Role",
+        "status": "Status",
+        "locked": "Locked",
+        "lastLogin": "Last Login",
+        "loginAttempts": "Login Attempts",
+        "actions": "Actions"
+      },
+      "stats": {
+        "totalUsers": "Total Users",
+        "activeUsers": "Active Users",
+        "lockedAccounts": "Locked Accounts",
+        "adminUsers": "Admin Users"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "locked": "Locked",
+        "unlocked": "Unlocked"
+      },
+      "confirmations": {
+        "toggleActive": "Are you sure you want to {{action}} this user?",
+        "toggleLock": "Are you sure you want to {{action}} this user account?",
+        "bulkAction": "Are you sure you want to {{action}} the selected users?",
+        "enable": "enable",
+        "disable": "disable",
+        "lock": "lock",
+        "unlock": "unlock"
+      },
+      "notifications": {
+        "userToggled": "User {{name}} {{action}} successfully",
+        "userLockToggled": "User {{name}} account {{action}} successfully",
+        "bulkActionComplete": "{{count}} users {{action}} successfully",
+        "activated": "activated",
+        "deactivated": "deactivated",
+        "locked": "locked",
+        "unlocked": "unlocked"
+      }
+    },
+    "holidayManagement": {
+      "title": "Holiday Management",
+      "subtitle": "Configure company holidays and events",
+      "filterMonth": "Filter by month",
+      "types": {
+        "all": "All types",
+        "mandatory": "Mandatory",
+        "optional": "Optional"
+      },
+      "actions": {
+        "addHoliday": "Add Holiday",
+        "search": "Search holidays...",
+        "filterByType": "Filter by Type",
+        "all": "All",
+        "mandatory": "Mandatory",
+        "optional": "Optional",
+        "filterByYear": "Filter by Year",
+        "filterByMonth": "Filter by Month",
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "refresh": "Refresh"
+      },
+      "table": {
+        "name": "Holiday Name",
+        "date": "Date",
+        "type": "Type",
+        "description": "Description",
+        "actions": "Actions"
+      },
+      "form": {
+        "title": "Add/Edit Holiday",
+        "editDialogLabel": "Edit holiday dialog",
+        "createDialogLabel": "Create holiday dialog",
+        "editHoliday": "Edit Holiday",
+        "createHoliday": "Create Holiday",
+        "name": "Holiday Name",
+        "date": "Date",
+        "type": "Type",
+        "description": "Description",
+        "mandatory": "Mandatory",
+        "optional": "Optional"
+      },
+      "stats": {
+        "total": "Total Holidays",
+        "mandatory": "Mandatory",
+        "optional": "Optional",
+        "upcoming": "Upcoming"
+      },
+      "confirmations": {
+        "deleteHoliday": "Are you sure you want to delete this holiday?",
+        "cannotUndo": "This action cannot be undone."
+      },
+      "notifications": {
+        "holidayAdded": "Holiday added successfully",
+        "holidayUpdated": "Holiday updated successfully",
+        "holidayDeleted": "Holiday deleted successfully",
+        "undoDelete": "Undo Delete"
+      }
+    },
+    "leavePolicyManagement": {
+      "title": "Leave Policy Management",
+      "subtitle": "Configure leave policies and rules",
+      "actions": {
+        "addPolicy": "Add Policy",
+        "search": "Search policies..."
+      },
+      "table": {
+        "code": "Policy Code",
+        "name": "Policy Name",
+        "days": "Annual Days",
+        "description": "Description",
+        "actions": "Actions"
+      },
+      "form": {
+        "title": "Add/Edit Leave Policy",
+        "code": "Policy Code",
+        "name": "Policy Name",
+        "days": "Annual Leave Days",
+        "description": "Description"
+      },
+      "stats": {
+        "total": "Total Policies",
+        "active": "Active Policies",
+        "highAllowance": "High Allowance",
+        "lowAllowance": "Low Allowance"
+      },
+      "confirmations": {
+        "deletePolicy": "Are you sure you want to delete this leave policy?",
+        "cannotUndo": "This action cannot be undone."
+      },
+      "notifications": {
+        "policyAdded": "Leave policy added successfully",
+        "policyUpdated": "Leave policy updated successfully",
+        "policyDeleted": "Leave policy deleted successfully"
+      }
+    },
+    "reports": {
+      "title": "Reports & Analytics",
+      "subtitle": "View comprehensive reports and insights",
+      "userAnalytics": {
+        "title": "User Analytics",
+        "subtitle": "User statistics and trends",
+        "activeUsers": "Active Users",
+        "usersByRole": "Users by Role",
+        "loginAttempts": "Login Attempts",
+        "accountStatus": "Account Status",
+        "newUsersOverTime": "New Users Over Time",
+        "emailDomains": "Email Domains"
+      },
+      "actions": {
+        "enlarge": "Enlarge",
+        "download": "Download",
+        "refresh": "Refresh Data"
+      },
+      "export": {
+        "asImage": "Export as Image",
+        "asPDF": "Export as PDF",
+        "asCSV": "Export as CSV"
+      },
+      "noData": "No data available for this report"
+    }
+  },
+  "admin": {
+    "common": {
+      "create": "Create",
+      "update": "Update",
+      "saving": "Saving...",
+      "actions": "Actions",
+      "refresh": "Refresh"
+    },
+    "leavePolicy": {
+      "title": "Leave Policy Management",
+      "subtitle": "Configure and manage company leave policies",
+      "headerDescription": "Manage your leave policies.",
+      "exportCsv": "Export CSV",
+      "exportCsvTitle": "Export to CSV",
+      "newPolicy": "New Policy",
+      "editPolicy": "Edit Leave Policy",
+      "editPolicyTitle": "Edit policy",
+      "editPolicyAriaLabel": "Edit leave policy",
+      "createPolicy": "Create Leave Policy",
+      "createPolicyAriaLabel": "Create leave policy",
+      "policyCode": "Policy Code",
+      "policyName": "Policy Name",
+      "defaultAnnualDays": "Default Annual Days",
+      "annualDays": "Annual Days",
+      "descriptionField": "Description",
+      "code": "Code",
+      "noPoliciesFound": "No leave policies found.",
+      "loadError": "Failed to load leave policies",
+      "loadPolicyError": "Failed to load policy",
+      "saveError": "Failed to save policy",
+      "invalidPolicyId": "Invalid policy ID"
+    },
+    "userManagement": {
+      "title": "User Management",
+      "subtitle": "Manage system users and their access",
+      "description": "Add, edit, and delete users"
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "View and analyze system reports",
+      "description": "Generate and download reports"
+    },
+    "holiday": {
+      "title": "Holiday Management",
+      "subtitle": "Configure company holidays",
+      "description": "Add and manage holidays"
     }
   }
 }
