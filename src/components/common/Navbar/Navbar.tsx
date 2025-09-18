@@ -7,6 +7,7 @@ import ThemeToggle from "../theme/ThemeToggle";
 import LanguageSelector from "../language-selector/LanguageSelector";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES } from "../../../constants";
+import UserNotifications, { NotificationBadge } from "../notifications/UserNotifications";
 import "./navbar.css";
 
 interface NavLinkItem {
@@ -28,6 +29,7 @@ const Navbar: React.FC = memo(() => {
   // UI state
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   // refs for outside click handling
   const navRef = useRef<HTMLElement | null>(null);
@@ -113,12 +115,14 @@ const Navbar: React.FC = memo(() => {
       if (!navRef.current.contains(target)) {
         setActiveDropdown(null);
         setMobileOpen(false);
+        setNotificationsOpen(false);
       }
     }
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
         setActiveDropdown(null);
         setMobileOpen(false);
+        setNotificationsOpen(false);
       }
     }
     document.addEventListener("click", onDocClick);
@@ -322,6 +326,19 @@ const Navbar: React.FC = memo(() => {
             <li className="nav-item d-flex align-items-center me-2">
               <ThemeToggle />
             </li>
+            
+            {/* Notifications dropdown - only show for users */}
+            {user && user.role === UserRole.USER && (
+              <li className="nav-item d-flex align-items-center me-2 position-relative">
+                <NotificationBadge onClick={() => setNotificationsOpen(!notificationsOpen)} />
+                {notificationsOpen && (
+                  <UserNotifications 
+                    isOpen={notificationsOpen} 
+                    onClose={() => setNotificationsOpen(false)} 
+                  />
+                )}
+              </li>
+            )}
 
             {user ? (
               <li className="nav-item dropdown">
