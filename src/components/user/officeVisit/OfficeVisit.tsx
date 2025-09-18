@@ -15,31 +15,8 @@ import {
 } from "recharts";
 import "./office-visit.css";
 
-/* DTO shapes (local) */
-type OfficeVisitDTO = {
-    officeVisitId?: number;
-    userId?: number;
-    visitDate?: string; // yyyy-MM-dd
-    dayOfWeek?: number;
-    visitType?: "WFO" | "WFH" | "HYBRID" | "OTHERS";
-    notes?: string | null;
-};
-
-type DailyViewDTO = {
-    date: string;
-    dayOfWeek: number;
-    label: string; // "NONE" | "HOLIDAY" | "LEAVE" | ...
-    holidayName?: string | null;
-    holidayType?: string | null;
-    leavePolicyCode?: string | null;
-    leaveDays?: number | null;
-    leaveDayPart?: string | null;
-    leaveNotes?: string | null;
-    visitType?: string | null;
-    visitNotes?: string | null;
-};
-
-const jsonHeaders = { "Content-Type": "application/json" };
+import { OfficeVisitDTO, DailyViewDTO } from "../../../models/OfficeVisit";
+import { HTTP } from "../../../constants/app";
 
 // color palette
 const COLORS = {
@@ -205,7 +182,7 @@ const OfficeVisit: React.FC = () => {
             const url = API_ENDPOINTS.VISITS.UPSERT;
             const res = await fetch(url, {
                 method,
-                headers: jsonHeaders,
+                headers: HTTP.HEADERS.JSON,
                 body: JSON.stringify(payload),
             });
 
@@ -275,7 +252,7 @@ const OfficeVisit: React.FC = () => {
             const url = API_ENDPOINTS.VISITS.UPSERT;
             const res = await fetch(url, {
                 method,
-                headers: jsonHeaders,
+                headers: HTTP.HEADERS.JSON,
                 body: JSON.stringify(payload),
             });
 

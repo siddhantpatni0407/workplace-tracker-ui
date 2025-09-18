@@ -1,14 +1,13 @@
 // src/services/leavePolicyService.ts
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
 import { LeavePolicyDTO } from "../types/leavePolicy";
+import { HTTP } from "../constants/app";
 
 type ApiResponse<T> = {
   status?: string;
   message?: string;
   data?: T;
 };
-
-const jsonHeaders = { "Content-Type": "application/json" };
 
 async function handleFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
   const res = await fetch(input, init);
@@ -33,7 +32,7 @@ const getById = async (policyId: number | string): Promise<LeavePolicyDTO> => {
 const createPolicy = async (payload: Partial<LeavePolicyDTO>): Promise<LeavePolicyDTO> => {
   return handleFetch<LeavePolicyDTO>(API_ENDPOINTS.LEAVE_POLICIES.CREATE, {
     method: "POST",
-    headers: jsonHeaders,
+    headers: HTTP.HEADERS.JSON,
     body: JSON.stringify(payload),
   });
 };
@@ -44,7 +43,7 @@ const updatePolicy = async (
 ): Promise<LeavePolicyDTO> => {
   return handleFetch<LeavePolicyDTO>(API_ENDPOINTS.LEAVE_POLICIES.UPDATE(policyId), {
     method: "PUT",
-    headers: jsonHeaders,
+    headers: HTTP.HEADERS.JSON,
     body: JSON.stringify(payload),
   });
 };

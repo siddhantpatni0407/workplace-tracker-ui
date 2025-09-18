@@ -28,6 +28,29 @@ export interface DailyView {
   isWeekend: boolean;
 }
 
+export interface OfficeVisitDTO {
+  officeVisitId?: number;
+  userId?: number;
+  visitDate?: string; // yyyy-MM-dd
+  dayOfWeek?: number;
+  visitType?: VisitType;
+  notes?: string | null;
+}
+
+export interface DailyViewDTO {
+  date: string;
+  dayOfWeek: number;
+  label: string; // Uses values from DayLabel enum
+  holidayName?: string | null;
+  holidayType?: string | null;
+  leavePolicyCode?: string | null;
+  leaveDays?: number | null;
+  leaveDayPart?: string | null;
+  leaveNotes?: string | null;
+  visitType?: string | null;
+  visitNotes?: string | null;
+}
+
 export interface VisitSummary {
   totalDays: number;
   wfo: number;

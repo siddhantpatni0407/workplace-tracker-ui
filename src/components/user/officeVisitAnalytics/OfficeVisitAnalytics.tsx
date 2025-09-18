@@ -23,6 +23,7 @@ import {
     PolarRadiusAxis,
     Radar,
 } from "recharts";
+import { HTTP } from "../../../constants/app";
 import "./office-visit-analytics.css";
 
 type AggRow = {
@@ -35,7 +36,6 @@ type AggRow = {
     holiday?: number;
 };
 
-const jsonHeaders = { "Content-Type": "application/json" };
 const COLORS = ["#4a00e0", "#10b981", "#7a57ff", "#f97316", "#dc3545", "#16a34a"];
 
 const VISIT_TYPES = ["ALL", "WFO", "WFH", "HYBRID", "OTHER"] as const;
@@ -79,7 +79,7 @@ const OfficeVisitAnalytics: React.FC = () => {
             });
 
             // server side grouping - we just call the same endpoint; client-side visitType filtering performed below
-            const res = await fetch(url, { headers: jsonHeaders });
+            const res = await fetch(url, { headers: HTTP.HEADERS.JSON });
             if (!res.ok) {
                 const b = await res.json().catch(() => ({}));
                 throw new Error(b?.message || res.statusText || "Request failed");

@@ -5,11 +5,10 @@ import { toast } from "react-toastify";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
+import { HTTP } from "../../../constants/app";
 import { DayPart } from "../../../enums/LeaveEnums";
 import { LeavePolicyDTO, UserLeaveBalanceDTO, UserLeaveDTO } from "../../../models/Leave";
 import "./leave-management.css";
-
-const jsonHeaders = { "Content-Type": "application/json" };
 
 /**
  * LeaveManagement Component
@@ -275,7 +274,7 @@ const LeaveManagement: React.FC = () => {
                 const url = API_ENDPOINTS.USER_LEAVES.UPDATE(editing.userLeaveId);
                 const res = await fetch(url, {
                     method: "PUT",
-                    headers: jsonHeaders,
+                    headers: HTTP.HEADERS.JSON,
                     body: JSON.stringify(payload),
                 });
                 if (!res.ok) {
@@ -289,7 +288,7 @@ const LeaveManagement: React.FC = () => {
                 const url = API_ENDPOINTS.USER_LEAVES.CREATE(userId!);
                 const res = await fetch(url, {
                     method: "POST",
-                    headers: jsonHeaders,
+                    headers: HTTP.HEADERS.JSON,
                     body: JSON.stringify(payload),
                 });
                 if (!res.ok) {

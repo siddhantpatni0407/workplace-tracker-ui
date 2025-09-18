@@ -18,6 +18,15 @@ export const APP = {
 export const ENVIRONMENT = {
   DEVELOPMENT: 'development',
   PRODUCTION: 'production',
+} as const;
+
+// HTTP Constants
+export const HTTP = {
+  HEADERS: {
+    JSON: { "Content-Type": "application/json" },
+    MULTIPART: { "Content-Type": "multipart/form-data" },
+    AUTH: (token: string) => ({ Authorization: `Bearer ${token}` })
+  },
   TESTING: 'testing'
 } as const;
 
