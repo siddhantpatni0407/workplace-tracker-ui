@@ -99,15 +99,13 @@ const OfficeVisitAnalytics: React.FC = () => {
     // initial load
     useEffect(() => {
         load();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+            }, []);
 
     // reload when filters change (debounced-ish)
     useEffect(() => {
         const t = setTimeout(() => load(), 220);
         return () => clearTimeout(t);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [from, to, groupBy, visitType, showAll]);
+            }, [from, to, groupBy, visitType, showAll]);
 
     // derived totals (optionally filter by visitType)
     const totals = useMemo(() => {

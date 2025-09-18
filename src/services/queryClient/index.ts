@@ -36,8 +36,7 @@ export const queryClient = new QueryClient({
     mutations: {
       // Empty onError handler - errors will be handled by the component using the mutation
       // This prevents default console errors
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      onError: () => {},
+            onError: () => {},
     },
   },
 });

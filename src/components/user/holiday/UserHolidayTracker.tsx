@@ -63,8 +63,7 @@ const UserHolidayTracker: React.FC = () => {
 
     useEffect(() => {
         load();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+            }, []);
 
     const todayIso = new Date().toISOString().slice(0, 10);
 

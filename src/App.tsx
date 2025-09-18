@@ -105,8 +105,6 @@ const App: React.FC = () => {
     // In production environments, uncomment these lines:
     // checker.start();
     // return () => checker.stop();
-    
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   return (

@@ -190,8 +190,7 @@ const Reports: React.FC = () => {
             img.src = svgUrl;
         } catch (e) {
             console.warn("downloadChart error:", e);
-            // eslint-disable-next-line no-alert
-            alert("Unable to export chart image. Try opening the chart first and then download.");
+                        alert("Unable to export chart image. Try opening the chart first and then download.");
         }
     };
 

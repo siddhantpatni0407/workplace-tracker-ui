@@ -70,8 +70,7 @@ const LeavePolicyManagement: React.FC = () => {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      }, []);
 
   useEffect(() => {
     if (showForm) setTimeout(() => formFirstRef.current?.focus(), 30);

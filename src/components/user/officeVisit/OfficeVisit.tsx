@@ -146,15 +146,13 @@ const OfficeVisit: React.FC = () => {
         // initial load
         loadVisits();
         loadDailyView();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+            }, []);
 
     // reload whenever month/year or showAllDaily changes
     useEffect(() => {
         loadVisits(year, month);
         loadDailyView(year, month, showAllDaily);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [year, month, showAllDaily]);
+            }, [year, month, showAllDaily]);
 
     // helpers for month navigation
     const prevMonth = () => {

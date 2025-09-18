@@ -173,19 +173,16 @@ const ApplyLeave: React.FC = () => {
         (async () => {
             await loadPolicies();
         })();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+            }, []);
 
     useEffect(() => {
         loadUserLeaves();
         loadAllBalances(balanceYear);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [policies]);
+            }, [policies]);
 
     useEffect(() => {
         loadAllBalances(balanceYear);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [balanceYear]);
+            }, [balanceYear]);
 
     // helpers
     const resetForm = () => {
