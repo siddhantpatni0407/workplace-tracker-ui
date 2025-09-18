@@ -58,12 +58,12 @@ const UserDashboard: React.FC = memo(() => {
             route: ROUTES.USER.HOLIDAY_TRACKER,
         },
         {
-            id: "apply-leave",
+            id: "leave-management",
             title: t('dashboard.userDashboard.cards.leaveManagement.title'),
             subtitle: t('dashboard.userDashboard.cards.leaveManagement.subtitle'),
-            icon: "bi-plus-square-dotted",
+            icon: "bi-calendar-check",
             colorClass: "card-indigo",
-            route: ROUTES.USER.APPLY_LEAVE,
+            route: ROUTES.USER.LEAVE_MANAGEMENT,
         },
         {
             id: "leave-policy",

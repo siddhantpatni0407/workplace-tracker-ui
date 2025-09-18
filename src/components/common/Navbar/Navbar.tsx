@@ -51,12 +51,12 @@ const Navbar: React.FC = memo(() => {
   const userNavItems = useMemo<DropdownItem[]>(
     () => [
       { to: ROUTES.USER.USER_TASKS, label: t("navigation.userTasks"), icon: "bi-check2-square" },
+      { to: ROUTES.USER.USER_NOTES, label: t("navigation.userNotes"), icon: "bi-journal-text" },
       { to: ROUTES.USER.OFFICE_VISIT, label: t("navigation.officeVisit"), icon: "bi-building" },
       { to: ROUTES.USER.OFFICE_VISIT_ANALYTICS, label: t("navigation.officeVisitAnalytics"), icon: "bi-bar-chart-line-fill" },
-      { to: ROUTES.USER.APPLY_LEAVE, label: t("navigation.applyLeave"), icon: "bi-plus-square-dotted" },
+      { to: ROUTES.USER.LEAVE_MANAGEMENT, label: t("navigation.leaveManagement"), icon: "bi-calendar-check" },
       { to: ROUTES.USER.LEAVE_POLICY, label: t("navigation.leavePolicy"), icon: "bi-file-earmark-text-fill" },
-      { to: ROUTES.USER.HOLIDAY_TRACKER, label: t("navigation.holidayTracker"), icon: "bi-calendar-event" },
-      { to: ROUTES.USER.USER_NOTES, label: t("navigation.userNotes"), icon: "bi-journal-text" }
+      { to: ROUTES.USER.HOLIDAY_TRACKER, label: t("navigation.holidayTracker"), icon: "bi-calendar-event" }
     ],
     [t]
   );
@@ -64,7 +64,7 @@ const Navbar: React.FC = memo(() => {
   const profileNavItems = useMemo<DropdownItem[]>(
     () => [
       { to: ROUTES.USER.PROFILE, label: t("navigation.myProfile"), icon: "bi-person-badge-fill" },
-      { to: ROUTES.USER.SETTINGS, label: t("navigation.settings"), icon: "bi-sliders2-vertical" },
+      { to: ROUTES.USER.SETTINGS, label: t("navigation.settings"), icon: "bi-sliders2-vertical" }, 
       { to: "", label: "", icon: "", divider: true },
       { to: ROUTES.PUBLIC.HOME, label: t("navigation.logout"), icon: "bi-box-arrow-right" }
     ],
@@ -92,7 +92,7 @@ const Navbar: React.FC = memo(() => {
   const isUserToolsActive = useCallback(() => {
     const userToolsPaths = [
       ROUTES.USER.USER_TASKS, ROUTES.USER.USER_NOTES, ROUTES.USER.OFFICE_VISIT, 
-      ROUTES.USER.OFFICE_VISIT_ANALYTICS, ROUTES.USER.APPLY_LEAVE, 
+      ROUTES.USER.OFFICE_VISIT_ANALYTICS, ROUTES.USER.LEAVE_MANAGEMENT, 
       ROUTES.USER.LEAVE_POLICY, ROUTES.USER.HOLIDAY_TRACKER
     ];
     return userToolsPaths.some(p => isActiveLink(p));

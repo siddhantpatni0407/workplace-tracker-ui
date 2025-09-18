@@ -78,7 +78,8 @@
     "userNotes": "Notas de Usuario",
     "officeVisit": "Visita de Oficina",
     "officeVisitAnalytics": "Análisis de Visitas de Oficina",
-    "applyLeave": "Solicitar Licencia",
+    "applyLeave": "Gestión de Licencias",
+    "leaveManagement": "Gestión de Licencias",
     "leavePolicy": "Política de Licencia",
     "holidayTracker": "Feriados",
     "myProfile": "Mi Perfil",
@@ -480,7 +481,7 @@
           "subtitle": "Analizar patrones de visitas a la oficina"
         },
         "leaveManagement": {
-          "title": "Gestión de Permisos",
+          "title": "Gestión de Licencias",
           "subtitle": "Solicitar permisos y ver historial"
         },
         "holidays": {

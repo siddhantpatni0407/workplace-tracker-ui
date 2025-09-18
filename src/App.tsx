@@ -1,6 +1,6 @@
 // src/App.tsx
 import React, { Suspense, lazy, useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/routing";
 import Navbar from "./components/common/navbar/Navbar";
@@ -31,7 +31,7 @@ const LeavePolicyManagement = lazy(() => import("./components/admin/leavePolicyM
 const DatabaseBackup = lazy(() => import("./components/admin/databaseBackup/DatabaseBackup"));
 const UserHolidayTracker = lazy(() => import("./components/user/holiday/UserHolidayTracker")); // user tracker
 const LeavePolicy = lazy(() => import("./components/user/leavePolicy/LeavePolicy"));
-const ApplyLeave = lazy(() => import("./components/user/leave/ApplyLeave"));
+const LeaveManagement = lazy(() => import("./components/user/leaveManagement/LeaveManagement"));
 const OfficeVisit = lazy(() => import("./components/user/officeVisit/OfficeVisit"));
 const OfficeVisitAnalytics = lazy(() => import("./components/user/officeVisitAnalytics/OfficeVisitAnalytics"));
 const UserTasks = lazy(() => import("./components/user/tasks/UserTasks"));
@@ -274,16 +274,16 @@ const App: React.FC = () => {
                 }
               />
 
-              {/* Apply Leave - USER only (new) */}
+              {/* Leave Management - USER only */}
               <Route
-                path={ROUTES.USER.APPLY_LEAVE}
+                path={ROUTES.USER.LEAVE_MANAGEMENT}
                 element={
                   <PrivateRoute userRole="USER">
-                    <Layout><ApplyLeave /></Layout>
+                    <Layout><LeaveManagement /></Layout>
                   </PrivateRoute>
                 }
               />
-
+              
               {/* Office Visit - USER only (new) */}
               <Route
                 path={ROUTES.USER.OFFICE_VISIT}

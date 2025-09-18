@@ -1,4 +1,4 @@
-/* ApplyLeave.css - improved UI */
+/* leave-management.css - improved UI */
 
 /* container cards */
 .leave-apply-card,
@@ -97,14 +97,3 @@
 
 /* quick help */
 .quick-help-card .card-body { font-size: 0.92rem; }
-
-/* responsive */
-@media (max-width: 992px) {
-  .leave-balance-card { margin-top: 12px; }
-  .modal-container { max-width: 92%; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}

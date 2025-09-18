@@ -46,7 +46,8 @@
     "userNotes": "उपयोगकर्ता नोट्स",
     "officeVisit": "ऑफिस विज़िट",
     "officeVisitAnalytics": "ऑफिस विज़िट विश्लेषण",
-    "applyLeave": "अवकाश के लिए आवेदन",
+    "applyLeave": "अवकाश प्रबंधन",
+    "leaveManagement": "अवकाश प्रबंधन",
     "leavePolicy": "अवकाश नीति",
     "holidayTracker": "छुट्टियां",
     "myProfile": "मेरी प्रोफाइल",
@@ -456,7 +457,7 @@
           "subtitle": "कार्यालय की यात्रा पैटर्न का विश्लेषण करें"
         },
         "leaveManagement": {
-          "title": "छुट्टी प्रबंधन",
+          "title": "अवकाश प्रबंधन",
           "subtitle": "छुट्टी के लिए आवेदन करें और इतिहास देखें"
         },
         "holidays": {

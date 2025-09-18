@@ -20,6 +20,12 @@ export enum LeaveStatus {
   WITHDRAWN = 'WITHDRAWN'
 }
 
+export enum DayPart {
+  FULL = 'FULL',
+  AM = 'AM',
+  PM = 'PM'
+}
+
 export enum LeaveTypeFilter {
   ANNUAL = 'ANNUAL',
   SICK = 'SICK',

@@ -1,11 +1,12 @@
-// src/components/user/leave/ApplyLeave.tsx
+// src/components/user/leaveManagement/LeaveManagement.tsx
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { format, differenceInCalendarDays, parseISO } from "date-fns";
 import { toast } from "react-toastify";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
-import "./apply-leave.css";
+import { DayPart } from "../../../enums/LeaveEnums";
+import "./leave-management.css";
 
 /* DTO shapes (local) */
 type LeavePolicyDTO = {
@@ -39,7 +40,16 @@ type UserLeaveBalanceDTO = {
 
 const jsonHeaders = { "Content-Type": "application/json" };
 
-const ApplyLeave: React.FC = () => {
+/**
+ * LeaveManagement Component
+ * 
+ * This component allows users to manage their leave requests, including:
+ * - Applying for new leaves
+ * - Viewing existing leave requests
+ * - Editing or canceling leave requests
+ * - Viewing leave balance by policy
+ */
+const LeaveManagement: React.FC = () => {
     const { user } = useAuth();
     const userId = ((user as any)?.userId ?? (user as any)?.id) as number | undefined;
 
@@ -55,7 +65,7 @@ const ApplyLeave: React.FC = () => {
     const [policyId, setPolicyId] = useState<number | "">("");
     const [startDate, setStartDate] = useState<string>("");
     const [endDate, setEndDate] = useState<string>("");
-    const [dayPart, setDayPart] = useState<"FULL" | "AM" | "PM">("FULL");
+    const [dayPart, setDayPart] = useState<DayPart>(DayPart.FULL);
     const [notes, setNotes] = useState<string>("");
 
     // delete confirm
@@ -67,14 +77,14 @@ const ApplyLeave: React.FC = () => {
     const [balanceYear, setBalanceYear] = useState<number>(currentYear);
 
     // compute inclusive days, half-day single-day -> 0.5
-    const computeDays = (s?: string, e?: string, part?: "FULL" | "AM" | "PM") => {
+    const computeDays = (s?: string, e?: string, part?: DayPart) => {
         if (!s || !e) return 0;
         try {
             const a = parseISO(s);
             const b = parseISO(e);
             const diff = differenceInCalendarDays(b, a) + 1;
             if (isNaN(diff) || diff < 0) return 0;
-            if (diff === 1 && part && part !== "FULL") return 0.5;
+            if (diff === 1 && part && part !== DayPart.FULL) return 0.5;
             return diff;
         } catch {
             return 0;
@@ -173,16 +183,16 @@ const ApplyLeave: React.FC = () => {
         (async () => {
             await loadPolicies();
         })();
-            }, []);
+    }, []);
 
     useEffect(() => {
         loadUserLeaves();
         loadAllBalances(balanceYear);
-            }, [policies]);
+    }, [policies]);
 
     useEffect(() => {
         loadAllBalances(balanceYear);
-            }, [balanceYear]);
+    }, [balanceYear]);
 
     // helpers
     const resetForm = () => {
@@ -190,7 +200,7 @@ const ApplyLeave: React.FC = () => {
         setPolicyId("");
         setStartDate("");
         setEndDate("");
-        setDayPart("FULL");
+        setDayPart(DayPart.FULL);
         setNotes("");
         setTimeout(() => selectRef.current?.focus(), 60);
     };
@@ -200,7 +210,7 @@ const ApplyLeave: React.FC = () => {
         setPolicyId(l.policyId ?? "");
         setStartDate(l.startDate ?? "");
         setEndDate(l.endDate ?? "");
-        setDayPart((l.dayPart as any) ?? "FULL");
+        setDayPart((l.dayPart as DayPart) ?? DayPart.FULL);
         setNotes(l.notes ?? "");
         setShowFormModal(true);
         setTimeout(() => selectRef.current?.focus(), 60);
@@ -363,7 +373,7 @@ const ApplyLeave: React.FC = () => {
 
     return (
         <div className="container-fluid py-4">
-            <Header title="Apply Leave" subtitle="Apply for leaves & view your balances" />
+            <Header title="Leave Management" subtitle="Apply for leaves & view your balances" />
 
             <div className="row gx-4">
                 <div className="col-lg-8">
@@ -581,10 +591,10 @@ const ApplyLeave: React.FC = () => {
 
                                         <div className="col-md-6">
                                             <label className="form-label">Day Part</label>
-                                            <select className="form-select" value={dayPart} onChange={(e) => setDayPart(e.target.value as any)}>
-                                                <option value="FULL">Full Day</option>
-                                                <option value="AM">Half Day - AM</option>
-                                                <option value="PM">Half Day - PM</option>
+                                            <select className="form-select" value={dayPart} onChange={(e) => setDayPart(e.target.value as DayPart)}>
+                                                <option value={DayPart.FULL}>Full Day</option>
+                                                <option value={DayPart.AM}>Half Day - AM</option>
+                                                <option value={DayPart.PM}>Half Day - PM</option>
                                             </select>
                                         </div>
 
@@ -665,4 +675,4 @@ const ApplyLeave: React.FC = () => {
     );
 };
 
-export default ApplyLeave;
+export default LeaveManagement;
