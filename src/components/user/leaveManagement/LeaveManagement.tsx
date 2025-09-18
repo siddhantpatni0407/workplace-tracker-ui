@@ -6,37 +6,8 @@ import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { DayPart } from "../../../enums/LeaveEnums";
+import { LeavePolicyDTO, UserLeaveBalanceDTO, UserLeaveDTO } from "../../../models/Leave";
 import "./leave-management.css";
-
-/* DTO shapes (local) */
-type LeavePolicyDTO = {
-    policyId?: number;
-    policyCode?: string;
-    policyName?: string;
-    defaultAnnualDays?: number;
-    description?: string;
-};
-
-type UserLeaveDTO = {
-    userLeaveId?: number;
-    userId?: number;
-    policyId?: number;
-    startDate?: string;
-    endDate?: string;
-    days?: number;
-    dayPart?: "FULL" | "AM" | "PM";
-    notes?: string;
-};
-
-type UserLeaveBalanceDTO = {
-    userLeaveBalanceId?: number;
-    userId?: number;
-    policyId?: number;
-    year?: number;
-    allocatedDays?: number;
-    usedDays?: number;
-    remainingDays?: number;
-};
 
 const jsonHeaders = { "Content-Type": "application/json" };
 
@@ -210,7 +181,7 @@ const LeaveManagement: React.FC = () => {
         setPolicyId(l.policyId ?? "");
         setStartDate(l.startDate ?? "");
         setEndDate(l.endDate ?? "");
-        setDayPart((l.dayPart as DayPart) ?? DayPart.FULL);
+        setDayPart(l.dayPart ?? DayPart.FULL);
         setNotes(l.notes ?? "");
         setShowFormModal(true);
         setTimeout(() => selectRef.current?.focus(), 60);
@@ -591,7 +562,18 @@ const LeaveManagement: React.FC = () => {
 
                                         <div className="col-md-6">
                                             <label className="form-label">Day Part</label>
-                                            <select className="form-select" value={dayPart} onChange={(e) => setDayPart(e.target.value as DayPart)}>
+                                            <select 
+                                                className="form-select" 
+                                                value={dayPart} 
+                                                onChange={(e) => {
+                                                    // Type-safe conversion using enum values directly
+                                                    if (e.target.value === DayPart.FULL || 
+                                                        e.target.value === DayPart.AM || 
+                                                        e.target.value === DayPart.PM) {
+                                                        setDayPart(e.target.value);
+                                                    }
+                                                }}
+                                            >
                                                 <option value={DayPart.FULL}>Full Day</option>
                                                 <option value={DayPart.AM}>Half Day - AM</option>
                                                 <option value={DayPart.PM}>Half Day - PM</option>

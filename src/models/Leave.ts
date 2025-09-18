@@ -1,5 +1,6 @@
 // src/models/Leave.ts
 import { UserRole } from './User';
+import { DayPart } from '../enums/LeaveEnums';
 
 export interface Leave {
   leaveId?: number;
@@ -27,6 +28,35 @@ export interface LeaveFormData {
   reason: string;
   emergencyContact?: string;
   attachments?: File[];
+}
+
+export interface UserLeaveDTO {
+  userLeaveId?: number;
+  userId?: number;
+  policyId?: number;
+  startDate?: string;
+  endDate?: string;
+  days?: number;
+  dayPart?: DayPart;
+  notes?: string;
+}
+
+export interface LeavePolicyDTO {
+  policyId?: number;
+  policyCode?: string;
+  policyName?: string;
+  defaultAnnualDays?: number;
+  description?: string;
+}
+
+export interface UserLeaveBalanceDTO {
+  userLeaveBalanceId?: number;
+  userId?: number;
+  policyId?: number;
+  year?: number;
+  allocatedDays?: number;
+  usedDays?: number;
+  remainingDays?: number;
 }
 
 export interface LeavePolicy {
