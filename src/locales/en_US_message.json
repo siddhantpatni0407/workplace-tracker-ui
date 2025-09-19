@@ -622,6 +622,10 @@
         "profile": {
           "title": "My Profile",
           "subtitle": "Update your personal information"
+        },
+        "settings": {
+          "title": "Settings",
+          "subtitle": "Manage account preferences"
         }
       }
     },

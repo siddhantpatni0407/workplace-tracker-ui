@@ -8,3 +8,6 @@ export * from './forms';
 
 // UI components
 export * from './ui';
+
+// Common components
+export * from './common/calendar';
