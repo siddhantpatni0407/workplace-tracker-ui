@@ -765,7 +765,7 @@ const UserDashboard: React.FC = memo(() => {
 
                         {/* Sidebar Footer */}
                         <div className="sidebar-footer">
-                            <div className="user-info">
+                            <div className="user-info" onClick={() => navigate(ROUTES.USER.PROFILE)}>
                                 <div className="user-avatar">
                                     <i className="bi bi-person-circle"></i>
                                 </div>
