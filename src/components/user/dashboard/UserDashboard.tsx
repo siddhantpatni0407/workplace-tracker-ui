@@ -100,20 +100,72 @@ const UserDashboard: React.FC = memo(() => {
             const policiesBody = await policies.json();
             const policiesList = policiesBody?.data ?? [];
             
+            console.log('Leave Policies Data:', policiesList); // Debug log to check policy data
+            
             const currentYear = new Date().getFullYear();
             const balancePromises = policiesList.map(async (policy: any) => {
                 try {
                     const res = await fetch(API_ENDPOINTS.USER_LEAVE_BALANCE.GET(userId, policy.policyId, currentYear));
-                    if (!res.ok) return null;
+                    if (!res.ok) {
+                        // If no balance data, create default entry with policy info
+                        const defaultAllocation = policy.defaultAnnualDays || policy.defaultDays || policy.default_days || policy.defaultAllocation || 1;
+                        return {
+                            policyId: policy.policyId,
+                            policyCode: policy.policyCode,
+                            policyName: policy.policyName,
+                            policyDescription: policy.description,
+                            defaultDays: defaultAllocation,
+                            allocatedDays: defaultAllocation,
+                            usedDays: 0,
+                            remainingDays: defaultAllocation,
+                            year: currentYear
+                        };
+                    }
                     const body = await res.json();
-                    return body?.data;
+                    const balanceData = body?.data;
+                    if (balanceData) {
+                        // Combine policy info with balance data
+                        return {
+                            ...balanceData,
+                            policyCode: policy.policyCode,
+                            policyName: policy.policyName,
+                            policyDescription: policy.description,
+                            defaultDays: policy.defaultDays
+                        };
+                    } else {
+                        // If API returns but no data, create default entry
+                        const defaultAllocation = policy.defaultAnnualDays || policy.defaultDays || policy.default_days || policy.defaultAllocation || 1;
+                        return {
+                            policyId: policy.policyId,
+                            policyCode: policy.policyCode,
+                            policyName: policy.policyName,
+                            policyDescription: policy.description,
+                            defaultDays: defaultAllocation,
+                            allocatedDays: defaultAllocation,
+                            usedDays: 0,
+                            remainingDays: defaultAllocation,
+                            year: currentYear
+                        };
+                    }
                 } catch {
-                    return null;
+                    // If API call fails, create default entry with policy info
+                    const defaultAllocation = policy.defaultAnnualDays || policy.defaultDays || policy.default_days || policy.defaultAllocation || 1;
+                    return {
+                        policyId: policy.policyId,
+                        policyCode: policy.policyCode,
+                        policyName: policy.policyName,
+                        policyDescription: policy.description,
+                        defaultDays: defaultAllocation,
+                        allocatedDays: defaultAllocation,
+                        usedDays: 0,
+                        remainingDays: defaultAllocation,
+                        year: currentYear
+                    };
                 }
             });
             
             const balances = await Promise.all(balancePromises);
-            return balances.filter(Boolean);
+            return balances; // Return all policies, don't filter out any
         } catch (err) {
             console.error('loadLeaveBalance', err);
             return [];
@@ -163,7 +215,11 @@ const UserDashboard: React.FC = memo(() => {
                     value: "Loading...",
                     icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
-                    bgGradient: "loading-gradient"
+                    bgGradient: "loading-gradient",
+                    hasBreakdown: true,
+                    breakdown: [
+                        { type: "Loading...", remaining: "...", used: "...", allocated: "..." }
+                    ]
                 },
                 {
                     label: "Office Visits",
@@ -176,6 +232,13 @@ const UserDashboard: React.FC = memo(() => {
                     label: "WFH Days",
                     value: "Loading...",
                     icon: "bi-hourglass-split", 
+                    colorClass: "stat-loading",
+                    bgGradient: "loading-gradient"
+                },
+                {
+                    label: "Attendance Rate",
+                    value: "Loading...",
+                    icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient"
                 },
@@ -211,6 +274,22 @@ const UserDashboard: React.FC = memo(() => {
         // Total holidays count (all holidays like Holiday Tracker, not filtered by year)
         const totalHolidays = dashboardData.holidays.length;
 
+        // Calculate attendance rate for current month
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentYear = currentDate.getFullYear();
+        const workingDaysInMonth = 22;
+        
+        const currentMonthOfficeVisits = dashboardData.visits.filter((visit: any) => {
+            const visitDate = new Date(visit.visitDate);
+            const isCurrentMonth = visitDate.getMonth() + 1 === currentMonth && 
+                                   visitDate.getFullYear() === currentYear;
+            const isOfficeVisit = visit.visitType === 'WFO';
+            return isCurrentMonth && isOfficeVisit;
+        }).length;
+        
+        const attendanceRate = Math.round((currentMonthOfficeVisits / workingDaysInMonth) * 100);
+
         return [
             {
                 label: "Leave Balance", 
@@ -240,6 +319,15 @@ const UserDashboard: React.FC = memo(() => {
                 valueColor: "#6f42c1"
             },
             {
+                label: "Attendance Rate",
+                value: `${attendanceRate}`,
+                unit: "%",
+                icon: "bi-graph-up-arrow",
+                colorClass: StatColorClass.OFFICE,
+                bgGradient: BgGradientClass.OFFICE,
+                valueColor: "#20c997"
+            },
+            {
                 label: "Total Holidays",
                 value: totalHolidays.toString(),
                 unit: "holidays",
@@ -250,6 +338,68 @@ const UserDashboard: React.FC = memo(() => {
             }
         ];
     }, [dashboardData, filters]);
+
+    // Leave Policy Breakdown data
+    const leaveBreakdownData = useMemo(() => {
+        if (dashboardData.loading) {
+            return [
+                { type: "Loading...", code: "", remaining: 0, used: 0, allocated: 0, description: "" }
+            ];
+        }
+
+        return dashboardData.leaveBalance.map((balance: any) => {
+            // Create user-friendly policy name
+            let displayName = balance?.policyName || '';
+            
+            // If no policy name, create one from policy code
+            if (!displayName && balance?.policyCode) {
+                const code = balance.policyCode.toUpperCase();
+                switch (code) {
+                    case 'ANNUAL':
+                        displayName = 'Annual Leave';
+                        break;
+                    case 'CASUAL':
+                        displayName = 'Casual Leave';
+                        break;
+                    case 'SICK':
+                        displayName = 'Sick Leave';
+                        break;
+                    case 'SPECIAL':
+                        displayName = 'Special Leave';
+                        break;
+                    case 'MATERNITY':
+                        displayName = 'Maternity Leave';
+                        break;
+                    case 'PATERNITY':
+                        displayName = 'Paternity Leave';
+                        break;
+                    case 'COMP':
+                    case 'COMPENSATORY':
+                        displayName = 'Compensatory Leave';
+                        break;
+                    case 'PERSONAL':
+                        displayName = 'Personal Leave';
+                        break;
+                    default:
+                        displayName = `${code} Leave`;
+                }
+            }
+            
+            // Final fallback
+            if (!displayName) {
+                displayName = 'Leave Policy';
+            }
+            
+            return {
+                type: displayName,
+                code: balance?.policyCode || '',
+                remaining: balance?.remainingDays ?? ((balance?.allocatedDays || balance?.defaultDays || balance?.defaultAnnualDays || 1) - (balance?.usedDays || 0)),
+                used: balance?.usedDays || 0,
+                allocated: balance?.allocatedDays || balance?.defaultDays || balance?.defaultAnnualDays || 1,
+                description: balance?.policyDescription || ''
+            };
+        });
+    }, [dashboardData]);
 
     // Real-time analytics data from API
     const analyticsData = useMemo(() => {
@@ -841,26 +991,95 @@ const UserDashboard: React.FC = memo(() => {
                             </div>
                         </div>
 
-                        {/* Quick Stats Row */}
+                        {/* Quick Stats Section */}
                         <div className="quick-stats-section">
+                            <div className="stats-header">
+                                <div className="stats-title-container">
+                                    <h4 className="stats-title">
+                                        <i className="bi bi-speedometer2 me-2"></i>
+                                        Quick Analytics
+                                    </h4>
+                                    <p className="stats-subtitle">Real-time insights into your work patterns and performance</p>
+                                </div>
+                                <div className="stats-header-decoration">
+                                    <div className="decoration-line"></div>
+                                    <div className="decoration-dot"></div>
+                                </div>
+                            </div>
+                            
                             <div className="row g-3">
                                 {quickStats.map((stat, index) => (
-                                    <div key={index} className="col-lg-3 col-md-6">
+                                    <div key={index} className="col-xl-2 col-lg-4 col-md-6">
                                         <div className={`quick-stat-card ${stat.colorClass} ${(stat as any).bgGradient || ''}`}>
-                                            <div className="stat-icon">
-                                                <i className={`bi ${stat.icon}`}></i>
-                                            </div>
                                             <div className="stat-content">
-                                                <div className="stat-value" style={{ color: (stat as any).valueColor || '#333' }}>
-                                                    <span className="stat-number">{stat.value}</span>
+                                                <div className="stat-header">
+                                                    <i className={stat.icon}></i>
+                                                    <span className="stat-label">{stat.label}</span>
+                                                </div>
+                                                <div className="stat-value-container">
+                                                    <span className="stat-value" style={{ color: (stat as any).valueColor || 'inherit' }}>{stat.value}</span>
                                                     {(stat as any).unit && <span className="stat-unit">{(stat as any).unit}</span>}
                                                 </div>
-                                                <div className="stat-label">{stat.label}</div>
                                             </div>
                                             <div className="stat-animation"></div>
+                                            <div className="stat-hover-effect"></div>
                                         </div>
                                     </div>
                                 ))}
+
+                                {/* Leave Policy Breakdown Card */}
+                                {!dashboardData.loading && leaveBreakdownData.length > 0 && (
+                                    <div className="col-xl-4 col-lg-6 col-md-12">
+                                        <div className="leave-policy-breakdown-card">
+                                            <div className="breakdown-card-header">
+                                                <div className="breakdown-title">
+                                                    <i className="bi bi-list-ul me-2"></i>
+                                                    <span>Leave Policy Breakdown</span>
+                                                </div>
+                                                <div className="breakdown-subtitle">Detailed view of your leave policies</div>
+                                            </div>
+                                            <div className="breakdown-card-content">
+                                                {leaveBreakdownData.map((item: any, idx: number) => (
+                                                    <div key={idx} className="policy-breakdown-item">
+                                                        <div className="policy-header">
+                                                            {item.code && (
+                                                                <span className="policy-code-badge">{item.code}</span>
+                                                            )}
+                                                            <span className="policy-name">{item.type}</span>
+                                                        </div>
+                                                        <div className="policy-stats">
+                                                            <div className="stat-group remaining">
+                                                                <span className="stat-number">{item.remaining}</span>
+                                                                <span className="stat-label">Available</span>
+                                                            </div>
+                                                            <div className="stat-group used">
+                                                                <span className="stat-number">{item.used}</span>
+                                                                <span className="stat-label">Used</span>
+                                                            </div>
+                                                            <div className="stat-group total">
+                                                                <span className="stat-number">{item.allocated}</span>
+                                                                <span className="stat-label">Total</span>
+                                                            </div>
+                                                            <div className="stat-progress">
+                                                                <div className="progress-bar">
+                                                                    <div 
+                                                                        className="progress-fill" 
+                                                                        style={{
+                                                                            width: `${item.allocated > 0 ? ((item.used / item.allocated) * 100) : 0}%`
+                                                                        }}
+                                                                    ></div>
+                                                                </div>
+                                                                <span className="progress-text">
+                                                                    {item.allocated > 0 ? Math.round((item.used / item.allocated) * 100) : 0}% Used
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
