@@ -259,6 +259,15 @@ const UserDashboard: React.FC = memo(() => {
             return sum + remaining;
         }, 0);
 
+        // Calculate total used and allocated leaves for enhanced Leave Balance card
+        const totalUsedLeave = dashboardData.leaveBalance.reduce((sum: number, balance: any) => {
+            return sum + (balance?.usedDays || 0);
+        }, 0);
+
+        const totalAllocatedLeave = dashboardData.leaveBalance.reduce((sum: number, balance: any) => {
+            return sum + (balance?.allocatedDays || 0);
+        }, 0);
+
         // Filter visits based on selected month/year
         const filteredVisits = dashboardData.visits.filter((visit: any) => {
             const visitDate = new Date(visit.visitDate);
@@ -292,22 +301,27 @@ const UserDashboard: React.FC = memo(() => {
 
         return [
             {
-                label: "Leave Balance", 
+                label: "Total Holidays",
+                value: totalHolidays.toString(),
+                unit: "holidays",
+                icon: "bi-calendar-heart",
+                colorClass: StatColorClass.HOLIDAYS,
+                bgGradient: BgGradientClass.HOLIDAYS,
+                valueColor: "#fd7e14"
+            },
+            {
+                label: "Leave", 
                 value: `${totalLeaveBalance}`,
                 unit: "days",
                 icon: "bi-calendar-check",
                 colorClass: StatColorClass.LEAVE,
                 bgGradient: BgGradientClass.LEAVE,
-                valueColor: "#28a745"
-            },
-            {
-                label: "Office Visits",
-                value: officeVisits.toString(),
-                unit: "visits",
-                icon: "bi-building",
-                colorClass: StatColorClass.OFFICE,
-                bgGradient: BgGradientClass.OFFICE,
-                valueColor: "#007bff"
+                valueColor: "#28a745",
+                equationInfo: {
+                    availed: totalUsedLeave,
+                    available: totalLeaveBalance,
+                    total: totalAllocatedLeave
+                }
             },
             {
                 label: "WFH Days",
@@ -319,22 +333,22 @@ const UserDashboard: React.FC = memo(() => {
                 valueColor: "#6f42c1"
             },
             {
-                label: "Attendance Rate",
+                label: "Office Visits",
+                value: officeVisits.toString(),
+                unit: "visits",
+                icon: "bi-building",
+                colorClass: StatColorClass.OFFICE,
+                bgGradient: BgGradientClass.OFFICE,
+                valueColor: "#007bff"
+            },
+            {
+                label: "Office Visit Attendance Rate",
                 value: `${attendanceRate}`,
                 unit: "%",
                 icon: "bi-graph-up-arrow",
                 colorClass: StatColorClass.OFFICE,
                 bgGradient: BgGradientClass.OFFICE,
                 valueColor: "#20c997"
-            },
-            {
-                label: "Total Holidays",
-                value: totalHolidays.toString(),
-                unit: "holidays",
-                icon: "bi-calendar-heart",
-                colorClass: StatColorClass.HOLIDAYS,
-                bgGradient: BgGradientClass.HOLIDAYS,
-                valueColor: "#fd7e14"
             }
         ];
     }, [dashboardData, filters]);
@@ -663,6 +677,14 @@ const UserDashboard: React.FC = memo(() => {
         console.log('Filters applied:', filters);
     };
 
+    const resetFilters = () => {
+        setFilters({
+            month: new Date().getMonth() + 1,
+            year: new Date().getFullYear(),
+            status: ''
+        });
+    };
+
     // Calculate notification badges for quick access items
     const getNotificationCount = useCallback((cardId: string): number => {
         if (dashboardData.loading) return 0;
@@ -929,11 +951,14 @@ const UserDashboard: React.FC = memo(() => {
 
                     {/* Main Content Area */}
                     <div className="main-content">
-                        {/* Filters Section */}
-                        <div className="filters-section mb-4">
-                            <div className="row g-3 align-items-center">
-                                <div className="col-md-3">
-                                    <label htmlFor="monthFilter" className="form-label">Month</label>
+                        {/* Enhanced Filters Section */}
+                        <div className="filters-section">
+                            <div className="row g-4 align-items-end">
+                                <div className="col-lg-2 col-md-3">
+                                    <label htmlFor="monthFilter" className="form-label">
+                                        <i className="bi bi-calendar-month filter-icon"></i>
+                                        Month
+                                    </label>
                                     <select 
                                         className="form-select" 
                                         id="monthFilter"
@@ -955,8 +980,11 @@ const UserDashboard: React.FC = memo(() => {
                                         <option value="12">December</option>
                                     </select>
                                 </div>
-                                <div className="col-md-3">
-                                    <label htmlFor="yearFilter" className="form-label">Year</label>
+                                <div className="col-lg-2 col-md-3">
+                                    <label htmlFor="yearFilter" className="form-label">
+                                        <i className="bi bi-calendar-year filter-icon"></i>
+                                        Year
+                                    </label>
                                     <select 
                                         className="form-select" 
                                         id="yearFilter"
@@ -968,8 +996,11 @@ const UserDashboard: React.FC = memo(() => {
                                         ))}
                                     </select>
                                 </div>
-                                <div className="col-md-3">
-                                    <label htmlFor="statusFilter" className="form-label">Status</label>
+                                <div className="col-lg-3 col-md-3">
+                                    <label htmlFor="statusFilter" className="form-label">
+                                        <i className="bi bi-check-circle filter-icon"></i>
+                                        Status
+                                    </label>
                                     <select 
                                         className="form-select" 
                                         id="statusFilter"
@@ -977,15 +1008,20 @@ const UserDashboard: React.FC = memo(() => {
                                         onChange={(e) => handleFilterChange('status', e.target.value)}
                                     >
                                         <option value="">All Status</option>
-                                        <option value="WFO">Work From Office</option>
-                                        <option value="WFH">Work From Home</option>
-                                        <option value="HOLIDAY">Holiday</option>
-                                        <option value="LEAVE">On Leave</option>
+                                        <option value="WFO">🏢 Work From Office</option>
+                                        <option value="WFH">🏠 Work From Home</option>
+                                        <option value="HOLIDAY">🎉 Holiday</option>
+                                        <option value="LEAVE">📅 On Leave</option>
                                     </select>
                                 </div>
-                                <div className="col-md-3">
-                                    <button className="btn btn-primary mt-4" onClick={applyFilters}>
-                                        <i className="bi bi-funnel me-2"></i>Apply Filters
+                                <div className="col-lg-2 col-md-3">
+                                    <button className="btn btn-primary w-100" onClick={applyFilters}>
+                                        <i className="bi bi-funnel me-2"></i>Apply
+                                    </button>
+                                </div>
+                                <div className="col-lg-2 col-md-3">
+                                    <button className="btn btn-outline-secondary w-100" onClick={resetFilters}>
+                                        <i className="bi bi-arrow-clockwise me-2"></i>Reset
                                     </button>
                                 </div>
                             </div>
@@ -1007,9 +1043,9 @@ const UserDashboard: React.FC = memo(() => {
                                 </div>
                             </div>
                             
-                            <div className="row g-3">
+                            <div className="row g-1">
                                 {quickStats.map((stat, index) => (
-                                    <div key={index} className="col-xl-2 col-lg-4 col-md-6">
+                                    <div key={index} className="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                                         <div className={`quick-stat-card ${stat.colorClass} ${(stat as any).bgGradient || ''}`}>
                                             <div className="stat-content">
                                                 <div className="stat-header">
@@ -1017,9 +1053,34 @@ const UserDashboard: React.FC = memo(() => {
                                                     <span className="stat-label">{stat.label}</span>
                                                 </div>
                                                 <div className="stat-value-container">
-                                                    <span className="stat-value" style={{ color: (stat as any).valueColor || 'inherit' }}>{stat.value}</span>
-                                                    {(stat as any).unit && <span className="stat-unit">{(stat as any).unit}</span>}
+                                                    {!(stat as any).equationInfo && (
+                                                        <div className="main-value-section">
+                                                            <span className="stat-value" style={{ color: (stat as any).valueColor || 'inherit' }}>{stat.value}</span>
+                                                            {(stat as any).unit && <span className="stat-unit">{(stat as any).unit}</span>}
+                                                        </div>
+                                                    )}
+                                                    {(stat as any).equationInfo && (
+                                                        <div className="stat-equation-inline">
+                                                            <div className="equation-labels">
+                                                                <span className="eq-label">Availed</span>
+                                                                <span className="eq-label">Available</span>
+                                                                <span className="eq-label">Total</span>
+                                                            </div>
+                                                            <div className="equation-values">
+                                                                <span className="eq-value availed">{(stat as any).equationInfo.availed}</span>
+                                                                <span className="eq-operator">+</span>
+                                                                <span className="eq-value available">{(stat as any).equationInfo.available}</span>
+                                                                <span className="eq-operator">=</span>
+                                                                <span className="eq-value total">{(stat as any).equationInfo.total}</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
                                                 </div>
+                                                {(stat as any).additionalInfo && !(stat as any).equationInfo && (
+                                                    <div className="stat-additional-info">
+                                                        <span className="additional-text">{(stat as any).additionalInfo}</span>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="stat-animation"></div>
                                             <div className="stat-hover-effect"></div>
@@ -1029,16 +1090,16 @@ const UserDashboard: React.FC = memo(() => {
 
                                 {/* Leave Policy Breakdown Card */}
                                 {!dashboardData.loading && leaveBreakdownData.length > 0 && (
-                                    <div className="col-xl-4 col-lg-6 col-md-12">
+                                    <div className="col-12">
                                         <div className="leave-policy-breakdown-card">
                                             <div className="breakdown-card-header">
                                                 <div className="breakdown-title">
                                                     <i className="bi bi-list-ul me-2"></i>
-                                                    <span>Leave Policy Breakdown</span>
+                                                    <span>Leave Details</span>
                                                 </div>
                                                 <div className="breakdown-subtitle">Detailed view of your leave policies</div>
                                             </div>
-                                            <div className="breakdown-card-content">
+                                            <div className="breakdown-card-content">{/* Rest of the content remains the same */}
                                                 {leaveBreakdownData.map((item: any, idx: number) => (
                                                     <div key={idx} className="policy-breakdown-item">
                                                         <div className="policy-header">
@@ -1086,7 +1147,7 @@ const UserDashboard: React.FC = memo(() => {
                         {/* Dashboard Content Grid */}
                         <div className="row g-4 mt-2">
                             {/* Main Dashboard Section */}
-                            <div className="col-xl-8 col-lg-7">
+                            <div className="col-xl-9 col-lg-8">
                                 {/* Calendar Section */}
                                 <div className="dashboard-section">
                                     <div className="section-header">
@@ -1164,7 +1225,7 @@ const UserDashboard: React.FC = memo(() => {
                             </div>
 
                             {/* Right Sidebar with Real-time Data */}
-                            <div className="col-xl-4 col-lg-5">
+                            <div className="col-xl-3 col-lg-4">
                                 {/* Leave Balance Section */}
                                 <div className="sidebar-section">
                                     <div className="section-header">
