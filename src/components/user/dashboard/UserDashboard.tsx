@@ -803,6 +803,14 @@ const UserDashboard: React.FC = memo(() => {
             icon: "bi-journal-text",
             colorClass: "card-primary",
             route: ROUTES.USER.USER_NOTES
+        },
+        {
+            id: "pf-management",
+            title: "PF Management",
+            subtitle: "EPF Portal Access & PF Services",
+            icon: "bi-piggy-bank-fill",
+            colorClass: "card-success",
+            route: ROUTES.USER.PF_MANAGEMENT
         }
     ], [t]);
 

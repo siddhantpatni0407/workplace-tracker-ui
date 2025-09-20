@@ -188,3 +188,27 @@ export const FEATURES = {
   OFFLINE_MODE: false,
   REAL_TIME_UPDATES: false
 } as const;
+
+// PF (Provident Fund) related constants
+export const PF_LINKS = {
+  MEMBER_LOGIN: {
+    URL: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/',
+    TITLE: 'Member Login Portal',
+    DESCRIPTION: 'Access your EPF account and services'
+  },
+  MEMBER_PASSBOOK: {
+    URL: 'https://passbook.epfindia.gov.in/MemberPassBook/login',
+    TITLE: 'Member Passbook',
+    DESCRIPTION: 'View your EPF passbook and transaction history'
+  },
+  UAN_PORTAL: {
+    URL: 'https://unifiedportal-mem.epfindia.gov.in/memberinterface/',
+    TITLE: 'UAN Portal',
+    DESCRIPTION: 'Unified Member Portal for all EPF services'
+  },
+  GRIEVANCE_PORTAL: {
+    URL: 'https://pgportal.epfindia.gov.in/epfgrivances/',
+    TITLE: 'Grievance Portal',
+    DESCRIPTION: 'Register and track your EPF related grievances'
+  }
+} as const;
