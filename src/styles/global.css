@@ -1,5 +1,12 @@
 /* ===============================
-   Global Theme Variables & Font Support
+   Global The  --secondary-300: #d4d4d4;
+  --secondary-400: #a3a3a3;
+  --secondary-500: #737373;
+  --secondary-600: #525252;
+  --secondary-700: #404040;
+  --secondary-800: #262626;
+  --secondary-900: #171717;
+}bles & Font Support
    =============================== */
 
 /* Global font family with Devanagari support */
@@ -9,50 +16,107 @@
                'Segoe UI Symbol', sans-serif;
 }
 
-/* Light theme (default) */
+/* Light theme (default) - Enhanced Purple and Gray theme */
 :root {
   --bg: #ffffff;
-  --text: #111111;
-  --muted: #6b7280;
-  --card: #f8fafc;
-  --accent: #2563eb;
+  --text: #1e293b;
+  --muted: #64748b;
+  --card: #faf5ff;
+  --accent: #7c3aed;
 
-  --nav-gradient-start: #4a00e0;
-  --nav-gradient-end: #8e2de2;
+  --nav-gradient-start: #6d28d9;
+  --nav-gradient-end: #7c3aed;
   --nav-text: #ffffff;
   --brand-color: #ffffff;
-  --nav-hover: #ffd700;
+  --nav-hover: #ede9fe;
 
-  --dropdown-bg: rgba(0, 0, 0, 0.85);
+  --dropdown-bg: rgba(124, 58, 237, 0.95);
   --dropdown-text: #ffffff;
 
-  --footer-bg: rgba(20, 20, 22, 0.9);
+  --footer-bg: rgba(71, 85, 105, 0.95);
   --footer-text: #ffffff;
 
-  --page-bg: #f9fafb;
+  --page-bg: #faf5ff;
+
+  /* Enhanced primary purple colors */
+  --primary-50: #faf5ff;
+  --primary-100: #f3e8ff;
+  --primary-200: #e9d5ff;
+  --primary-300: #d8b4fe;
+  --primary-400: #c084fc;
+  --primary-500: #a855f7;
+  --primary-600: #9333ea;
+  --primary-700: #7c3aed;
+  --primary-800: #6d28d9;
+  --primary-900: #581c87;
+
+  /* Enhanced secondary gray colors */
+  --secondary-50: #f8fafc;
+  --secondary-100: #f1f5f9;
+  --secondary-200: #e2e8f0;
+  --secondary-300: #cbd5e1;
+  --secondary-400: #94a3b8;
+  --secondary-500: #64748b;
+  --secondary-600: #475569;
+  --secondary-700: #334155;
+  --secondary-800: #1e293b;
+  --secondary-900: #0f172a;
+
+  /* Success colors */
+  --success-50: #f0fdf4;
+  --success-100: #dcfce7;
+  --success-200: #bbf7d0;
+  --success-300: #86efac;
+  --success-400: #4ade80;
+  --success-500: #22c55e;
+  --success-600: #16a34a;
+  --success-700: #15803d;
+
+  /* Warning colors */
+  --warning-50: #fffbeb;
+  --warning-100: #fef3c7;
+  --warning-200: #fde68a;
+  --warning-300: #fcd34d;
+  --warning-400: #fbbf24;
+  --warning-500: #f59e0b;
+  --warning-600: #d97706;
+
+  /* Error colors */
+  --error-50: #fef2f2;
+  --error-100: #fee2e2;
+  --error-200: #fecaca;
+  --error-300: #fca5a5;
+  --error-400: #f87171;
+  --error-500: #ef4444;
+  --error-600: #dc2626;
 }
 
-/* Dark theme */
+/* Dark theme - Enhanced Purple and Gray theme */
 [data-theme="dark"] {
-  --bg: #0b1220;
-  --text: #e6eef8;
-  --muted: #9aa6bb;
-  --card: #0f1724;
-  --accent: #60a5fa;
+  --bg: #0f172a;
+  --text: #f8fafc;
+  --muted: #94a3b8;
+  --card: #1e293b;
+  --accent: #c084fc;
 
-  --nav-gradient-start: #071029;
-  --nav-gradient-end: #0f1724;
-  --nav-text: #e6eef8;
-  --brand-color: #e6eef8;
-  --nav-hover: #60a5fa;
+  --nav-gradient-start: #581c87;
+  --nav-gradient-end: #6d28d9;
+  --nav-text: #f8fafc;
+  --brand-color: #f8fafc;
+  --nav-hover: #d8b4fe;
 
-  --dropdown-bg: #0f1724;
-  --dropdown-text: #e6eef8;
+  --dropdown-bg: #1e293b;
+  --dropdown-text: #f8fafc;
 
-  --footer-bg: #0b1220;
-  --footer-text: #e6eef8;
+  --footer-bg: rgba(30, 41, 59, 0.95);
+  --footer-text: #f8fafc;
 
-  --page-bg: #0b1220;
+  --page-bg: #020617;
+
+  --footer-bg: #020617;
+  --footer-text: #e2e8f0;
+
+  --page-bg: #020617;
 }
 
 /* ===============================

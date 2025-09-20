@@ -36,6 +36,7 @@ const OfficeVisit = lazy(() => import("./components/user/officeVisit/OfficeVisit
 const OfficeVisitAnalytics = lazy(() => import("./components/user/officeVisitAnalytics/OfficeVisitAnalytics"));
 const UserTasks = lazy(() => import("./components/user/tasks/UserTasks"));
 const UserNotes = lazy(() => import("./components/user/notes/UserNotes"));
+const PFManagement = lazy(() => import("./components/user/pfManagement/PFManagement"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
@@ -322,6 +323,16 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute userRole="USER">
                     <Layout><UserNotes /></Layout>
+                  </PrivateRoute>
+                }
+              />
+
+              {/* PF Management - USER only (new) */}
+              <Route
+                path={ROUTES.USER.PF_MANAGEMENT}
+                element={
+                  <PrivateRoute userRole="USER">
+                    <Layout><PFManagement /></Layout>
                   </PrivateRoute>
                 }
               />

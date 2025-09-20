@@ -18,5 +18,8 @@ export * from './TaskEnums';
 // Note related enums
 export * from './NoteEnums';
 
+// Dashboard related enums
+export * from './DashboardEnums';
+
 // API related enums
 export * from './ApiEnums';

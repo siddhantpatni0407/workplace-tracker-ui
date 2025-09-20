@@ -46,7 +46,8 @@ export const ROUTES = {
     ANALYTICS: '/user-analytics',
     HOLIDAY_TRACKER: '/holiday-tracker',
     USER_TASKS: '/user-tasks',
-    USER_NOTES: '/user-notes'
+    USER_NOTES: '/user-notes',
+    PF_MANAGEMENT: '/user/pf-management'
   },
 
   // Admin routes

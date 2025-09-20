@@ -160,3 +160,6 @@ export const THEME_COLORS = {
   LIGHT: 'var(--bs-light)',
   DARK: 'var(--bs-dark)'
 } as const;
+
+// Re-export filter constants
+export * from './filters';

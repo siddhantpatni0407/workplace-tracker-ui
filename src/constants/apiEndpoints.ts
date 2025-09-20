@@ -176,4 +176,12 @@ export const API_ENDPOINTS = {
     IMPORT: `${API_BASE_URL}/notes/import`,
     SYNC: `${API_BASE_URL}/notes/sync`,
   },
+
+  // Special Days
+  SPECIAL_DAYS: {
+    GET_ALL: `${API_BASE_URL}/special-days`, // GET with query params: ?month=9&year=2025&page=1&limit=10
+    CURRENT_MONTH: `${API_BASE_URL}/special-days/current-month`, // GET with query params: ?month=9&year=2025&limit=5
+    BIRTHDAYS: `${API_BASE_URL}/special-days/birthdays`, // GET with query params: ?month=9&year=2025&page=1&limit=8
+    ANNIVERSARIES: `${API_BASE_URL}/special-days/anniversaries`, // GET with query params: ?month=9&year=2025
+  },
 };

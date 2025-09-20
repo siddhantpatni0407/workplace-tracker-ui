@@ -18,6 +18,12 @@ export * from './Task';
 // Note related exports
 export * from './Note';
 
+// Dashboard related exports
+export * from './Dashboard';
+
+// Calendar related exports
+export * from './Calendar';
+
 // API related exports
 export * from './Api';
 

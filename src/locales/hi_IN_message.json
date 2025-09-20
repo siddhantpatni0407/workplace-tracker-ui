@@ -439,6 +439,101 @@
     "userDashboard": {
       "title": "उपयोगकर्ता डैशबोर्ड",
       "subtitle": "वापसी पर स्वागत है! यहाँ क्या हो रहा है",
+      "loading": "डैशबोर्ड डेटा लोड हो रहा है...",
+      "errorMessage": "डैशबोर्ड डेटा लोड नहीं हो सका। कृपया पृष्ठ को रीफ्रेश करें।",
+      "quickAccess": {
+        "title": "त्वरित पहुंच",
+        "searchPlaceholder": "त्वरित पहुंच खोजें...",
+        "noItemsFound": "कोई आइटम नहीं मिला",
+        "pfManagement": "पीएफ प्रबंधन",
+        "pfManagementDesc": "ईपीएफ पोर्टल पहुंच और पीएफ सेवाएं"
+      },
+      "sidebar": {
+        "userRole": "कर्मचारी"
+      },
+      "filters": {
+        "month": "महीना",
+        "year": "वर्ष",
+        "status": "स्थिति",
+        "allMonths": "सभी महीने",
+        "allStatus": "सभी स्थितियां",
+        "apply": "लागू करें",
+        "reset": "रीसेट करें",
+        "months": {
+          "january": "जनवरी",
+          "february": "फरवरी",
+          "march": "मार्च",
+          "april": "अप्रैल",
+          "may": "मई",
+          "june": "जून",
+          "july": "जुलाई",
+          "august": "अगस्त",
+          "september": "सितंबर",
+          "october": "अक्टूबर",
+          "november": "नवंबर",
+          "december": "दिसंबर"
+        },
+        "statusOptions": {
+          "wfo": "कार्यालय से कार्य",
+          "wfh": "घर से कार्य",
+          "holiday": "छुट्टी",
+          "leave": "अवकाश पर"
+        }
+      },
+      "analytics": {
+        "title": "त्वरित विश्लेषण",
+        "subtitle": "आपके कार्य पैटर्न और प्रदर्शन की वास्तविक समय की जानकारी",
+        "leaveBalance": {
+          "label": "अवकाश शेष",
+          "unit": "दिन",
+          "totalUsed": "कुल उपयोग",
+          "totalAllocated": "कुल आवंटित",
+          "remaining": "शेष",
+          "breakdown": "नीति विवरण"
+        },
+        "officeVisits": {
+          "label": "कार्यालय यात्राएं",
+          "unit": "यात्राएं"
+        },
+        "wfhDays": {
+          "label": "घर से कार्य दिन",
+          "unit": "दिन"
+        },
+        "attendanceRate": {
+          "label": "उपस्थिति दर",
+          "unit": "%"
+        },
+        "totalHolidays": {
+          "label": "कुल छुट्टियाँ",
+          "unit": "छुट्टियाँ"
+        },
+        "officeVisitAttendanceRate": {
+          "label": "कार्यालय उपस्थिति दर",
+          "unit": "%"
+        }
+      },
+      "charts": {
+        "officeAttendance": {
+          "title": "कार्यालय उपस्थिति",
+          "description": "अपनी कार्यालय यात्राओं और कार्य पैटर्न को ट्रैक करें"
+        },
+        "taskCompletion": {
+          "title": "कार्य पूर्णता",
+          "description": "आपकी उत्पादकता और कार्य प्रबंधन"
+        },
+        "leaveApplications": {
+          "title": "अवकाश आवेदन",
+          "description": "आपके अवकाश अनुरोध और अनुमोदन"
+        }
+      },
+      "calendar": {
+        "title": "कैलेंडर",
+        "subtitle": "आपके आगामी कार्यक्रम और छुट्टियाँ",
+        "todayEvents": "आज के कार्यक्रम",
+        "upcomingEvents": "आगामी कार्यक्रम",
+        "noEvents": "कोई कार्यक्रम निर्धारित नहीं",
+        "viewMore": "और देखें"
+      },
       "cards": {
         "tasks": {
           "title": "कार्य",
@@ -471,6 +566,14 @@
         "profile": {
           "title": "मेरी प्रोफ़ाइल",
           "subtitle": "व्यक्तिगत जानकारी अपडेट करें"
+        },
+        "settings": {
+          "title": "सेटिंग्स",
+          "subtitle": "खाता प्राथमिकताएं प्रबंधित करें"
+        },
+        "pfManagement": {
+          "title": "पीएफ प्रबंधन",
+          "subtitle": "ईपीएफ पोर्टल पहुंच और पीएफ सेवाएं"
         }
       }
     },

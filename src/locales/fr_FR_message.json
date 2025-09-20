@@ -439,6 +439,101 @@
     "userDashboard": {
       "title": "Tableau de Bord Utilisateur",
       "subtitle": "Bon retour ! Voici ce qui se passe",
+      "loading": "Chargement des données du tableau de bord...",
+      "errorMessage": "Impossible de charger les données du tableau de bord. Veuillez actualiser la page.",
+      "quickAccess": {
+        "title": "Accès Rapide",
+        "searchPlaceholder": "Rechercher accès rapide...",
+        "noItemsFound": "Aucun élément trouvé",
+        "pfManagement": "Gestion PF",
+        "pfManagementDesc": "Accès Portail EPF et Services PF"
+      },
+      "sidebar": {
+        "userRole": "Employé"
+      },
+      "filters": {
+        "month": "Mois",
+        "year": "Année",
+        "status": "Statut",
+        "allMonths": "Tous les Mois",
+        "allStatus": "Tous les Statuts",
+        "apply": "Appliquer",
+        "reset": "Réinitialiser",
+        "months": {
+          "january": "Janvier",
+          "february": "Février",
+          "march": "Mars",
+          "april": "Avril",
+          "may": "Mai",
+          "june": "Juin",
+          "july": "Juillet",
+          "august": "Août",
+          "september": "Septembre",
+          "october": "Octobre",
+          "november": "Novembre",
+          "december": "Décembre"
+        },
+        "statusOptions": {
+          "wfo": "Travail au Bureau",
+          "wfh": "Télétravail",
+          "holiday": "Jour Férié",
+          "leave": "En Congé"
+        }
+      },
+      "analytics": {
+        "title": "Analyses Rapides",
+        "subtitle": "Informations en temps réel sur vos habitudes de travail et performances",
+        "leaveBalance": {
+          "label": "Solde de Congés",
+          "unit": "jours",
+          "totalUsed": "Total Utilisé",
+          "totalAllocated": "Total Alloué",
+          "remaining": "Restant",
+          "breakdown": "Répartition des Politiques"
+        },
+        "officeVisits": {
+          "label": "Visites au Bureau",
+          "unit": "visites"
+        },
+        "wfhDays": {
+          "label": "Jours de Télétravail",
+          "unit": "jours"
+        },
+        "attendanceRate": {
+          "label": "Taux de Présence",
+          "unit": "%"
+        },
+        "totalHolidays": {
+          "label": "Total Jours Fériés",
+          "unit": "jours fériés"
+        },
+        "officeVisitAttendanceRate": {
+          "label": "Taux de Présence au Bureau",
+          "unit": "%"
+        }
+      },
+      "charts": {
+        "officeAttendance": {
+          "title": "Présence au Bureau",
+          "description": "Suivez vos visites au bureau et habitudes de travail"
+        },
+        "taskCompletion": {
+          "title": "Achèvement des Tâches",
+          "description": "Votre productivité et gestion des tâches"
+        },
+        "leaveApplications": {
+          "title": "Demandes de Congé",
+          "description": "Vos demandes de congé et approbations"
+        }
+      },
+      "calendar": {
+        "title": "Calendrier",
+        "subtitle": "Vos événements à venir et jours fériés",
+        "todayEvents": "Événements d'Aujourd'hui",
+        "upcomingEvents": "Événements à Venir",
+        "noEvents": "Aucun événement programmé",
+        "viewMore": "Voir Plus"
+      },
       "cards": {
         "tasks": {
           "title": "Tâches",
@@ -471,6 +566,14 @@
         "profile": {
           "title": "Mon Profil",
           "subtitle": "Mettre à jour les informations personnelles"
+        },
+        "settings": {
+          "title": "Paramètres",
+          "subtitle": "Gérer les préférences de compte"
+        },
+        "pfManagement": {
+          "title": "Gestion FP",
+          "subtitle": "Accès au Portail EPF et Services FP"
         }
       }
     },

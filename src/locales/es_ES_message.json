@@ -463,6 +463,101 @@
     "userDashboard": {
       "title": "Panel de Usuario",
       "subtitle": "¡Bienvenido de vuelta! Esto es lo que está pasando",
+      "loading": "Cargando datos del panel...",
+      "errorMessage": "No se pueden cargar los datos del panel. Por favor, actualiza la página.",
+      "quickAccess": {
+        "title": "Acceso Rápido",
+        "searchPlaceholder": "Buscar acceso rápido...",
+        "noItemsFound": "No se encontraron elementos",
+        "pfManagement": "Gestión de FP",
+        "pfManagementDesc": "Acceso al Portal EPF y Servicios de FP"
+      },
+      "sidebar": {
+        "userRole": "Empleado"
+      },
+      "filters": {
+        "month": "Mes",
+        "year": "Año",
+        "status": "Estado",
+        "allMonths": "Todos los Meses",
+        "allStatus": "Todos los Estados",
+        "apply": "Aplicar",
+        "reset": "Restablecer",
+        "months": {
+          "january": "Enero",
+          "february": "Febrero",
+          "march": "Marzo", 
+          "april": "Abril",
+          "may": "Mayo",
+          "june": "Junio",
+          "july": "Julio",
+          "august": "Agosto",
+          "september": "Septiembre",
+          "october": "Octubre",
+          "november": "Noviembre",
+          "december": "Diciembre"
+        },
+        "statusOptions": {
+          "wfo": "Trabajo en Oficina",
+          "wfh": "Trabajo desde Casa",
+          "holiday": "Día Festivo",
+          "leave": "De Permiso"
+        }
+      },
+      "analytics": {
+        "title": "Análisis Rápido",
+        "subtitle": "Información en tiempo real sobre tus patrones de trabajo y rendimiento",
+        "leaveBalance": {
+          "label": "Balance de Licencias",
+          "unit": "días",
+          "totalUsed": "Total Usado",
+          "totalAllocated": "Total Asignado",
+          "remaining": "Restante",
+          "breakdown": "Desglose de Políticas"
+        },
+        "officeVisits": {
+          "label": "Visitas a la Oficina",
+          "unit": "visitas"
+        },
+        "wfhDays": {
+          "label": "Días TDC",
+          "unit": "días"
+        },
+        "attendanceRate": {
+          "label": "Tasa de Asistencia",
+          "unit": "%"
+        },
+        "totalHolidays": {
+          "label": "Total de Días Festivos",
+          "unit": "días festivos"
+        },
+        "officeVisitAttendanceRate": {
+          "label": "Tasa de Asistencia a Oficina",
+          "unit": "%"
+        }
+      },
+      "charts": {
+        "officeAttendance": {
+          "title": "Asistencia a la Oficina",
+          "description": "Rastrea tus visitas a la oficina y patrones de trabajo"
+        },
+        "taskCompletion": {
+          "title": "Finalización de Tareas",
+          "description": "Tu productividad y gestión de tareas"
+        },
+        "leaveApplications": {
+          "title": "Solicitudes de Permiso",
+          "description": "Tus solicitudes de permiso y aprobaciones"
+        }
+      },
+      "calendar": {
+        "title": "Calendario",
+        "subtitle": "Tus próximos eventos y días festivos",
+        "todayEvents": "Eventos de Hoy",
+        "upcomingEvents": "Próximos Eventos",
+        "noEvents": "No hay eventos programados",
+        "viewMore": "Ver Más"
+      },
       "cards": {
         "tasks": {
           "title": "Tareas",
@@ -495,6 +590,14 @@
         "profile": {
           "title": "Mi Perfil",
           "subtitle": "Actualizar información personal"
+        },
+        "settings": {
+          "title": "Configuración",
+          "subtitle": "Gestionar preferencias de cuenta"
+        },
+        "pfManagement": {
+          "title": "Gestión de FP",
+          "subtitle": "Acceso al Portal EPF y Servicios FP"
         }
       }
     },
