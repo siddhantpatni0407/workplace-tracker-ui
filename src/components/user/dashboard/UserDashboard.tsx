@@ -8,6 +8,7 @@ import { Calendar, CalendarEvent } from "./calendar";
 import { ROUTES } from "../../../constants";
 import { YEAR_FILTER, MONTH_FILTER, STATUS_FILTER } from "../../../constants/ui/filters";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
+import { UserProfileData } from "../../../models/User";
 import { 
   DashboardCard, 
   DashboardData, 
@@ -26,6 +27,9 @@ const UserDashboard: React.FC = memo(() => {
     const navigate = useNavigate();
     const [currentDate] = useState(new Date());
     const userId = ((user as any)?.userId ?? (user as any)?.id) as number | undefined;
+
+    // User profile state to get employee ID
+    const [userProfile, setUserProfile] = useState<UserProfileData | null>(null);
 
     // Real data state using same pattern as existing components
     const [dashboardData, setDashboardData] = useState<DashboardData>({
@@ -48,6 +52,20 @@ const UserDashboard: React.FC = memo(() => {
 
     // Quick Access search state
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Load user profile to get employee ID
+    const loadUserProfile = async () => {
+        if (!userId) return null;
+        try {
+            const res = await fetch(`${API_ENDPOINTS.USER.PROFILE}?userId=${userId}`);
+            if (!res.ok) throw new Error('Failed to fetch user profile');
+            const body = await res.json();
+            return body?.data ?? null;
+        } catch (err) {
+            console.error('loadUserProfile', err);
+            return null;
+        }
+    };
 
     // Real API data loading functions using same pattern as existing components
     const loadHolidays = async () => {
@@ -203,6 +221,12 @@ const UserDashboard: React.FC = memo(() => {
     useEffect(() => {
         if (userId) {
             loadDashboardData();
+            // Also load user profile to get employee ID
+            loadUserProfile().then(profile => {
+                if (profile) {
+                    setUserProfile(profile);
+                }
+            });
         }
     }, [userId]);
 
@@ -959,6 +983,20 @@ const UserDashboard: React.FC = memo(() => {
 
                     {/* Main Content Area */}
                     <div className="main-content">
+                        {/* Welcome Section */}
+                        <div className="welcome-section mb-4">
+                            <div className="welcome-card">
+                                <div className="welcome-content">
+                                    <h4 className="welcome-title">
+                                        Welcome, {user?.name || 'User'}
+                                        {userProfile?.employeeId && (
+                                            <span className="employee-id">({userProfile.employeeId})</span>
+                                        )}
+                                    </h4>
+                                </div>
+                            </div>
+                        </div>
+                        
                         {/* Enhanced Filters Section */}
                         <div className="filters-section">
                             <div className="row g-4 align-items-end">
