@@ -100,6 +100,58 @@ const transformApiDataToSpecialDays = (records: SpecialDayRecord[]): SpecialDay[
   return specialDays;
 };
 
+// Pagination Component
+interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  className?: string;
+}
+
+const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange, className = '' }) => {
+  if (totalPages <= 1) return null;
+
+  const getPageNumbers = () => {
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i);
+    }
+    return pages;
+  };
+
+  return (
+    <div className={`pagination ${className}`}>
+      <button
+        className={`pagination-btn prev ${currentPage === 1 ? 'disabled' : ''}`}
+        onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        <i className="fas fa-chevron-left"></i>
+      </button>
+      
+      <div className="pagination-numbers">
+        {getPageNumbers().map(page => (
+          <button
+            key={page}
+            className={`pagination-number ${currentPage === page ? 'active' : ''}`}
+            onClick={() => onPageChange(page)}
+          >
+            {page}
+          </button>
+        ))}
+      </div>
+      
+      <button
+        className={`pagination-btn next ${currentPage === totalPages ? 'disabled' : ''}`}
+        onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        <i className="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  );
+};
+
 const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
   const { t } = useTranslation();
   
@@ -114,6 +166,11 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth() + 1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedYear] = useState<number>(new Date().getFullYear());
+  
+  // Pagination state
+  const [currentBirthdayPage, setCurrentBirthdayPage] = useState<number>(1);
+  const [currentAnniversaryPage, setCurrentAnniversaryPage] = useState<number>(1);
+  const itemsPerPage = 3; // Number of items to show per page
 
   // Fetch special days data from API
   useEffect(() => {
@@ -236,7 +293,7 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
       
       return true;
     });
-        
+
     return filtered;
   }, [specialDaysData, currentMonth, currentYear, selectedDepartment, selectedLocation]);
 
@@ -254,12 +311,45 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
     return currentMonthDays.filter(day => day.type === selectedType);
   }, [currentMonthDays, selectedType]);
 
-  // Group by type
+  // Group by type with pagination
   const groupedDays = useMemo(() => {
     const birthdays = filteredDays.filter(day => day.type === 'birthday');
     const anniversaries = filteredDays.filter(day => day.type === 'work-anniversary');
     return { birthdays, anniversaries };
   }, [filteredDays]);
+
+  // Pagination logic for birthdays
+  const paginatedBirthdays = useMemo(() => {
+    const startIndex = (currentBirthdayPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return groupedDays.birthdays.slice(startIndex, endIndex);
+  }, [groupedDays.birthdays, currentBirthdayPage, itemsPerPage]);
+
+  // Pagination logic for anniversaries
+  const paginatedAnniversaries = useMemo(() => {
+    const startIndex = (currentAnniversaryPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return groupedDays.anniversaries.slice(startIndex, endIndex);
+  }, [groupedDays.anniversaries, currentAnniversaryPage, itemsPerPage]);
+
+  // Calculate total pages
+  const birthdayTotalPages = Math.ceil(groupedDays.birthdays.length / itemsPerPage);
+  const anniversaryTotalPages = Math.ceil(groupedDays.anniversaries.length / itemsPerPage);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentBirthdayPage(1);
+    setCurrentAnniversaryPage(1);
+  }, [selectedType, selectedDepartment, selectedLocation, selectedMonth]);
+
+  // Pagination handlers
+  const handleBirthdayPageChange = (page: number) => {
+    setCurrentBirthdayPage(page);
+  };
+
+  const handleAnniversaryPageChange = (page: number) => {
+    setCurrentAnniversaryPage(page);
+  };
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -412,11 +502,16 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
           {/* Birthday Section */}
           <div className="special-days-section">
             <div className="section-header birthday-section">
-              <h5 className="section-subtitle">Birthday</h5>
+              <h5 className="section-subtitle">
+                Birthday 
+                {groupedDays.birthdays.length > 0 && (
+                  <span className="count-badge">({groupedDays.birthdays.length})</span>
+                )}
+              </h5>
             </div>
             <div className="special-days-list">
-              {groupedDays.birthdays.length > 0 ? (
-                groupedDays.birthdays.slice(0, 2).map((day: SpecialDay) => (
+              {paginatedBirthdays.length > 0 ? (
+                paginatedBirthdays.map((day: SpecialDay) => (
                   <div key={day.id} className="special-day-item">
                     <div className="person-avatar">
                       <span className="initials">
@@ -435,16 +530,28 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
                 <div className="no-events">No birthdays this month</div>
               )}
             </div>
+            {/* Birthday Pagination */}
+            <Pagination
+              currentPage={currentBirthdayPage}
+              totalPages={birthdayTotalPages}
+              onPageChange={handleBirthdayPageChange}
+              className="birthday-pagination"
+            />
           </div>
 
           {/* Work Anniversary Section */}
           <div className="special-days-section">
             <div className="section-header anniversary-section">
-              <h5 className="section-subtitle">Work Anniversary</h5>
+              <h5 className="section-subtitle">
+                Work Anniversary
+                {groupedDays.anniversaries.length > 0 && (
+                  <span className="count-badge">({groupedDays.anniversaries.length})</span>
+                )}
+              </h5>
             </div>
             <div className="special-days-list">
-              {groupedDays.anniversaries.length > 0 ? (
-                groupedDays.anniversaries.slice(0, 2).map((day: SpecialDay) => (
+              {paginatedAnniversaries.length > 0 ? (
+                paginatedAnniversaries.map((day: SpecialDay) => (
                   <div key={day.id} className="special-day-item">
                     <div className="person-avatar">
                       <span className="initials">
@@ -467,6 +574,13 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
                 <div className="no-events">No anniversaries this month</div>
               )}
             </div>
+            {/* Anniversary Pagination */}
+            <Pagination
+              currentPage={currentAnniversaryPage}
+              totalPages={anniversaryTotalPages}
+              onPageChange={handleAnniversaryPageChange}
+              className="anniversary-pagination"
+            />
           </div>
         </div>
       </div>
