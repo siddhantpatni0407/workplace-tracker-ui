@@ -5,6 +5,7 @@ import { useTranslation } from "../../../hooks/useTranslation";
 import { UserRole } from "../../../enums";
 import { ErrorBoundary } from "../../ui";
 import { Calendar, CalendarEvent } from "./calendar";
+import { SpecialDays } from "./special-days";
 import { ROUTES } from "../../../constants";
 import { YEAR_FILTER, MONTH_FILTER, STATUS_FILTER } from "../../../constants/ui/filters";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
@@ -1211,6 +1212,11 @@ const UserDashboard: React.FC = memo(() => {
                                             className="dashboard-calendar"
                                         />
                                     </div>
+                                </div>
+
+                                {/* Special Days Section */}
+                                <div className="dashboard-section mt-4">
+                                    <SpecialDays />
                                 </div>
 
                                 {/* Analytics Section */}

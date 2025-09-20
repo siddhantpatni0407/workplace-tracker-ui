@@ -1,0 +1,1914 @@
+/* Special Days Component Styling - Enhanced with animations and effects */
+.special-days-component {
+  background: var(--card, #ffffff);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border, #e5e7eb);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  color: var(--text, #1e293b);
+}
+
+.special-days-component::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-600, #9333ea), var(--primary-700, #7c3aed), #f59e0b, #10b981);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.special-days-component:hover::before {
+  opacity: 1;
+}
+
+.special-days-component:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Enhanced Header */
+.special-days-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.special-days-title {
+  color: var(--text, #1f2937);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.special-days-title i {
+  color: var(--primary-600, #9333ea);
+  font-size: 1.1rem;
+  animation: gentle-pulse 3s ease-in-out infinite;
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.month-indicator {
+  color: var(--muted, #6b7280);
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: var(--primary-50, #f3e8ff);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--primary-200, #e9d5ff);
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.filter-toggle-btn {
+  background: var(--secondary-100, #f1f5f9);
+  border: 1px solid var(--secondary-300, #cbd5e1);
+  color: var(--secondary-700, #374151);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-toggle-btn:hover {
+  background: var(--secondary-200, #e2e8f0);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.see-all-btn {
+  background: linear-gradient(135deg, var(--primary-600, #9333ea), var(--primary-700, #7c3aed));
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.see-all-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.see-all-btn:hover::before {
+  left: 100%;
+}
+
+.see-all-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.3);
+}
+
+.see-all-btn:active {
+  transform: translateY(0);
+}
+
+/* Enhanced Filters */
+.special-days-filters {
+  background: var(--background, #f8fafc);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary, #4b5563);
+}
+
+.filter-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 8px;
+  background: white;
+  color: var(--text, #1f2937);
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--primary-500, #a855f7);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+  transform: translateY(-1px);
+}
+
+.filter-select:hover {
+  border-color: var(--primary-400, #c084fc);
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reset-filters-btn {
+  background: var(--danger-50, #fef2f2);
+  border: 1px solid var(--danger-300, #fca5a5);
+  color: var(--danger-700, #b91c1c);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reset-filters-btn:hover {
+  background: var(--danger-100, #fee2e2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Enhanced Content Grid */
+.special-days-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.special-days-section {
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid;
+  position: relative;
+  overflow: hidden;
+}
+
+.section-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+.section-header:hover::after {
+  width: 100%;
+}
+
+.section-header.birthday-section {
+  border-bottom-color: #fbbf24;
+}
+
+.section-header.birthday-section::after {
+  background: #fbbf24;
+}
+
+.section-header.anniversary-section {
+  border-bottom-color: var(--primary-600, #9333ea);
+}
+
+.section-header.anniversary-section::after {
+  background: var(--primary-600, #9333ea);
+}
+
+.section-subtitle {
+  color: var(--text, #1e293b);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-subtitle::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.birthday-section .section-subtitle::before {
+  background: #fbbf24;
+}
+
+.anniversary-section .section-subtitle::before {
+  background: var(--primary-600, #9333ea);
+}
+
+.special-days-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.special-day-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  background: var(--background, #f8fafc);
+  border: 1px solid transparent;
+}
+
+.special-day-item:hover {
+  transform: translateX(8px);
+  background: white;
+  border-color: var(--primary-200, #e9d5ff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.special-day-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: transparent;
+  transition: background 0.3s ease;
+  border-radius: 0 3px 3px 0;
+}
+
+.special-day-item:hover::before {
+  background: var(--primary-600, #9333ea);
+}
+
+.person-avatar {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.avatar-placeholder {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-500, #a855f7), var(--primary-600, #9333ea));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: white;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.avatar-placeholder::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: transform 0.6s ease;
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+}
+
+.special-day-item:hover .avatar-placeholder::before {
+  transform: translateX(100%) translateY(100%) rotate(45deg);
+}
+
+.special-day-item:hover .avatar-placeholder {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(147, 51, 234, 0.3);
+}
+
+.person-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.person-name {
+  color: var(--text, #1e293b);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  transition: color 0.3s ease;
+}
+
+.special-day-item:hover .person-name {
+  color: var(--primary-700, #7c3aed);
+}
+
+.person-details {
+  display: none; /* Hide details for compact view */
+}
+
+.person-date {
+  color: var(--muted, #64748b);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.person-date i {
+  color: var(--primary-500, #a855f7);
+  font-size: 0.75rem;
+  transition: transform 0.3s ease;
+}
+
+.special-day-item:hover .person-date i {
+  transform: scale(1.2);
+}
+
+.years-badge {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.years-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.special-day-item:hover .years-badge::before {
+  left: 100%;
+}
+
+.special-day-item:hover .years-badge {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+}
+
+.years-number {
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.years-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.no-data {
+  text-align: center;
+  color: var(--muted, #64748b);
+  padding: 2rem 1rem;
+  font-style: italic;
+  background: #f9fafb;
+  border-radius: 6px;
+  border: 1px dashed #d1d5db;
+}
+
+/* Filter buttons - hide by default for compact view */
+.controls-section {
+  display: none;
+}
+
+.filter-buttons {
+  display: none;
+}
+
+.special-days-grid {
+  display: contents;
+}
+
+.special-days-summary {
+  display: none;
+}
+
+/* Responsive Design */
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+  .special-days-component {
+    padding: 1rem;
+    border-radius: 12px;
+  }
+  
+  .special-days-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  
+  .header-left {
+    text-align: center;
+  }
+  
+  .header-actions {
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .filter-toggle-btn,
+  .see-all-btn {
+    min-height: 44px; /* Better touch target */
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .special-days-filters {
+    padding: 1rem;
+  }
+  
+  .filter-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .filter-select {
+    min-height: 44px; /* Better touch target */
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+  
+  .special-days-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .special-day-item {
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 16px;
+  }
+  
+  .avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    font-size: 0.8rem;
+  }
+  
+  .years-badge {
+    width: 40px;
+    height: 40px;
+    font-size: 0.65rem;
+  }
+  
+  .years-number {
+    font-size: 0.9rem;
+  }
+  
+  .person-name {
+    font-size: 1rem;
+  }
+  
+  .person-date {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .special-days-component {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .special-days-header {
+    margin-bottom: 1rem;
+  }
+  
+  .special-days-title {
+    font-size: 1.1rem;
+  }
+  
+  .filter-toggle-btn,
+  .see-all-btn {
+    min-height: 48px; /* Even better touch target for small screens */
+    padding: 1rem;
+  }
+  
+  .month-indicator {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .special-day-item {
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+  
+  .special-day-item:hover {
+    transform: none; /* Disable transform on mobile for better performance */
+  }
+  
+  .avatar-placeholder {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .years-badge {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .no-data {
+    padding: 2.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Enhanced Modal Styling */
+.special-days-modal .modal-content {
+  border-radius: 20px;
+  border: none;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  max-height: 95vh;
+  background: #ffffff;
+}
+
+/* Enhanced Modal Header */
+.special-days-modal .enhanced-header {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #d946ef 100%);
+  color: white;
+  border-bottom: none;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.special-days-modal .enhanced-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+  opacity: 0.3;
+}
+
+.special-days-modal .header-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.special-days-modal .title-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.special-days-modal .title-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  backdrop-filter: blur(10px);
+}
+
+.special-days-modal .title-text .modal-title {
+  font-weight: 700;
+  font-size: 1.75rem;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.2;
+}
+
+.special-days-modal .modal-subtitle {
+  font-size: 0.9rem;
+  margin: 0;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.special-days-modal .header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.special-days-modal .quick-stats {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.special-days-modal .stat-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.special-days-modal .enhanced-close {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.special-days-modal .enhanced-close:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+  color: white;
+}
+
+.special-days-modal .modal-body {
+  padding: 2rem;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  max-height: calc(95vh - 200px);
+  overflow-y: auto;
+}
+
+/* Enhanced Summary Cards */
+.special-days-modal .summary-section {
+  margin-bottom: 2rem;
+}
+
+.special-days-modal .enhanced-summary-card {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.special-days-modal .enhanced-summary-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.special-days-modal .card-gradient-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  transition: height 0.3s ease;
+}
+
+.special-days-modal .enhanced-summary-card:hover .card-gradient-bg {
+  height: 100%;
+  opacity: 0.05;
+}
+
+.special-days-modal .birthdays-card .card-gradient-bg {
+  background: linear-gradient(135deg, #ec4899, #f97316);
+}
+
+.special-days-modal .anniversaries-card .card-gradient-bg {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+}
+
+.special-days-modal .total-card .card-gradient-bg {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.special-days-modal .card-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  text-align: center;
+}
+
+.special-days-modal .card-icon-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.special-days-modal .card-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  margin: 0 auto;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.special-days-modal .card-icon.birthdays {
+  background: linear-gradient(135deg, #ec4899, #f97316);
+  color: white;
+}
+
+.special-days-modal .card-icon.anniversaries {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  color: white;
+}
+
+.special-days-modal .card-icon.total {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.special-days-modal .enhanced-summary-card:hover .card-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.special-days-modal .card-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  line-height: 1;
+}
+
+.special-days-modal .card-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #475569;
+  margin-bottom: 0.25rem;
+}
+
+.special-days-modal .card-description {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Enhanced Filter Tabs */
+.special-days-modal .enhanced-filter-section {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  margin-bottom: 2rem;
+}
+
+.special-days-modal .filter-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.special-days-modal .filter-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.special-days-modal .filter-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.special-days-modal .filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 12px;
+  background: white;
+  color: #64748b;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.special-days-modal .filter-tab:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  transform: translateY(-2px);
+}
+
+.special-days-modal .filter-tab.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-color: #6366f1;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+}
+
+.special-days-modal .filter-tab i {
+  font-size: 1rem;
+}
+
+.special-days-modal .filter-tab span {
+  font-size: 0.9rem;
+}
+
+.special-days-modal .tab-badge {
+  background: rgba(255, 255, 255, 0.2);
+  color: currentColor;
+  border-radius: 12px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+}
+
+.special-days-modal .filter-tab:not(.active) .tab-badge {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+/* Enhanced Person Cards */
+.special-days-modal .enhanced-person-card {
+  background: white;
+  border-radius: 16px;
+  padding: 0;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  position: relative;
+}
+
+.special-days-modal .enhanced-person-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  border-color: #e2e8f0;
+}
+
+.special-days-modal .card-header-section {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  padding: 1.5rem;
+  text-align: center;
+  position: relative;
+}
+
+.special-days-modal .birthday-card .card-header-section {
+  background: linear-gradient(135deg, #fef7f7 0%, #fef2f2 100%);
+}
+
+.special-days-modal .anniversary-card .card-header-section {
+  background: linear-gradient(135deg, #f7f4ff 0%, #f3f0ff 100%);
+}
+
+.special-days-modal .person-avatar-enhanced {
+  margin-bottom: 1rem;
+  position: relative;
+  display: inline-block;
+}
+
+.special-days-modal .avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.special-days-modal .avatar-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.special-days-modal .birthday-card .avatar-circle {
+  background: linear-gradient(135deg, #ec4899, #f97316);
+  color: white;
+}
+
+.special-days-modal .anniversary-card .avatar-circle {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  color: white;
+}
+
+.special-days-modal .avatar-initials {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.special-days-modal .avatar-icon {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  border: 2px solid white;
+  z-index: 3;
+}
+
+.special-days-modal .birthday-card .avatar-icon {
+  background: #f97316;
+  color: white;
+}
+
+.special-days-modal .anniversary-card .avatar-icon {
+  background: #3b82f6;
+  color: white;
+}
+
+.special-days-modal .card-date-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.special-days-modal .card-body-section {
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.special-days-modal .person-name-enhanced {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.special-days-modal .person-designation {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #6366f1;
+  margin-bottom: 1rem;
+}
+
+.special-days-modal .person-details-enhanced {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.special-days-modal .detail-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  justify-content: center;
+}
+
+.special-days-modal .detail-row i {
+  width: 16px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+.special-days-modal .card-footer-section {
+  padding: 1rem 1.5rem;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.special-days-modal .celebration-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex: 1;
+}
+
+.special-days-modal .celebration-badge.birthday {
+  background: linear-gradient(135deg, #fef7f7, #fecaca);
+  color: #dc2626;
+}
+
+.special-days-modal .celebration-badge.anniversary {
+  background: linear-gradient(135deg, #f7f4ff, #e0e7ff);
+  color: #4338ca;
+}
+
+.special-days-modal .years-milestone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 0.75rem;
+  border-radius: 12px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.special-days-modal .milestone-number {
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.special-days-modal .milestone-text {
+  font-size: 0.7rem;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* Enhanced Responsive Design */
+@media (max-width: 768px) {
+  .special-days-modal .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .special-days-modal .header-actions {
+    align-items: center;
+  }
+
+  .special-days-modal .quick-stats {
+    justify-content: center;
+  }
+
+  .special-days-modal .filter-tabs {
+    justify-content: center;
+  }
+
+  .special-days-modal .filter-tab {
+    min-width: auto;
+    flex: 1;
+  }
+
+  .special-days-modal .modal-body {
+    padding: 1.5rem;
+  }
+
+  .special-days-modal .enhanced-summary-card {
+    margin-bottom: 1rem;
+  }
+
+  .special-days-modal .card-footer-section {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .special-days-modal .celebration-badge {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .special-days-modal .modal-dialog {
+    margin: 0.5rem;
+  }
+
+  .special-days-modal .header-content {
+    padding: 1.5rem;
+  }
+
+  .special-days-modal .modal-body {
+    padding: 1rem;
+  }
+
+  .special-days-modal .title-text .modal-title {
+    font-size: 1.5rem;
+  }
+
+  .special-days-modal .card-content {
+    padding: 1.5rem;
+  }
+
+  .special-days-modal .card-number {
+    font-size: 2rem;
+  }
+}
+
+/* Modal Summary Cards */
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card.birthdays {
+  border-top: 4px solid #fbbf24;
+}
+
+.summary-card.anniversaries {
+  border-top: 4px solid var(--primary-600, #9333ea);
+}
+
+.summary-card.total {
+  border-top: 4px solid #10b981;
+}
+
+.summary-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.summary-card.birthdays .summary-icon {
+  color: #fbbf24;
+}
+
+.summary-card.anniversaries .summary-icon {
+  color: var(--primary-600, #9333ea);
+}
+
+.summary-card.total .summary-icon {
+  color: #10b981;
+}
+
+.summary-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.summary-label {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Modal Filter Tabs */
+.filter-tabs {
+  border-bottom: 2px solid #e9ecef;
+  margin-bottom: 2rem;
+}
+
+.filter-tabs .nav-pills .nav-link {
+  background: transparent;
+  border: 2px solid transparent;
+  color: #666;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  margin-right: 0.5rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.filter-tabs .nav-pills .nav-link:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.filter-tabs .nav-pills .nav-link.active {
+  background: linear-gradient(135deg, var(--primary-600, #9333ea), var(--primary-700, #7c3aed));
+  border-color: transparent;
+  color: white;
+}
+
+/* Modal Content Sections */
+.content-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #333;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  font-size: 1.25rem;
+}
+
+.special-day-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  height: 100%;
+  margin-bottom: 1rem;
+}
+
+.special-day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.special-day-card.birthday {
+  border-left: 4px solid #fbbf24;
+}
+
+.special-day-card.anniversary {
+  border-left: 4px solid var(--primary-600, #9333ea);
+}
+
+.special-day-card .card-body {
+  padding: 1.5rem;
+}
+
+.special-day-card .person-name {
+  color: #333;
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+.special-day-card .detail-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.special-day-card .detail-item {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.special-day-card .detail-icon {
+  width: 16px;
+  margin-right: 8px;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.special-day-card .avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.years-badge-large {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  min-width: 80px;
+  color: white;
+  margin-top: 1rem;
+}
+
+.years-badge-large .years-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: block;
+  line-height: 1;
+}
+
+.years-badge-large .years-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* Modal Pagination */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.pagination-info {
+  flex-grow: 1;
+  color: #666;
+}
+
+.pagination-nav .pagination {
+  margin: 0;
+}
+
+.pagination-nav .page-link {
+  color: var(--primary-600, #9333ea);
+  border-color: #e9ecef;
+  padding: 0.5rem 0.75rem;
+}
+
+.pagination-nav .page-link:hover {
+  color: var(--primary-700, #7c3aed);
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+}
+
+.pagination-nav .page-item.active .page-link {
+  background: linear-gradient(135deg, var(--primary-600, #9333ea), var(--primary-700, #7c3aed));
+  border-color: var(--primary-600, #9333ea);
+  color: white;
+}
+
+.pagination-nav .page-item.disabled .page-link {
+  color: #999;
+  background-color: white;
+  border-color: #e9ecef;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #999;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 2px dashed #ddd;
+}
+
+/* Modal Footer */
+.special-days-modal .modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem 2rem;
+}
+
+/* Modal Styling */
+.special-days-modal .modal-content {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.special-days-modal .modal-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-bottom: none;
+  padding: 1.5rem 2rem;
+}
+
+.special-days-modal .modal-title {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.special-days-modal .btn-close {
+  filter: invert(1);
+  opacity: 0.8;
+}
+
+.special-days-modal .btn-close:hover {
+  opacity: 1;
+}
+
+.special-days-modal .modal-body {
+  padding: 2rem;
+  background: #f8f9fa;
+}
+
+/* Summary Cards */
+.summary-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.summary-card.birthdays {
+  border-top: 4px solid #ff6b9d;
+}
+
+.summary-card.anniversaries {
+  border-top: 4px solid #4ecdc4;
+}
+
+.summary-card.total {
+  border-top: 4px solid #667eea;
+}
+
+.summary-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.summary-card.birthdays .summary-icon {
+  color: #ff6b9d;
+}
+
+.summary-card.anniversaries .summary-icon {
+  color: #4ecdc4;
+}
+
+.summary-card.total .summary-icon {
+  color: #667eea;
+}
+
+.summary-number {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.summary-label {
+  font-size: 1rem;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+  border-bottom: 2px solid #e9ecef;
+}
+
+.filter-tabs .nav-pills .nav-link {
+  background: transparent;
+  border: 2px solid transparent;
+  color: #666;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  margin-right: 0.5rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.filter-tabs .nav-pills .nav-link:hover {
+  background: #f8f9fa;
+  color: #333;
+}
+
+.filter-tabs .nav-pills .nav-link.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+  color: white;
+}
+
+/* Content Sections */
+.content-section {
+  margin-bottom: 2rem;
+}
+
+.section-title {
+  color: #333;
+  font-weight: 600;
+  margin: 0;
+}
+
+.special-day-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e9ecef;
+  height: 100%;
+}
+
+.special-day-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.special-day-card.birthday {
+  border-left: 4px solid #ff6b9d;
+}
+
+.special-day-card.anniversary {
+  border-left: 4px solid #4ecdc4;
+}
+
+.special-day-card .card-body {
+  padding: 1.5rem;
+}
+
+.special-day-card .person-name {
+  color: #333;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.special-day-card .detail-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.special-day-card .detail-item {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.special-day-card .detail-icon {
+  width: 16px;
+  margin-right: 8px;
+  color: #999;
+  flex-shrink: 0;
+}
+
+.special-day-card .avatar-placeholder {
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+}
+
+.years-badge-large {
+  background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  min-width: 80px;
+  margin-left: 1rem;
+}
+
+.years-badge-large .years-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  display: block;
+  line-height: 1;
+}
+
+.years-badge-large .years-label {
+  font-size: 0.8rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.pagination-info {
+  flex-grow: 1;
+}
+
+.pagination-nav .pagination {
+  margin: 0;
+}
+
+.pagination-nav .page-link {
+  color: #667eea;
+  border-color: #e9ecef;
+  padding: 0.5rem 0.75rem;
+}
+
+.pagination-nav .page-link:hover {
+  color: #764ba2;
+  background-color: #f8f9fa;
+  border-color: #e9ecef;
+}
+
+.pagination-nav .page-item.active .page-link {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+}
+
+.pagination-nav .page-item.disabled .page-link {
+  color: #999;
+  background-color: white;
+  border-color: #e9ecef;
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #999;
+  font-style: italic;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border: 2px dashed #ddd;
+}
+
+/* Modal Footer */
+.special-days-modal .modal-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem 2rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .special-days-component {
+    padding: 1rem;
+  }
+  
+  .controls-section {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  
+  .filter-buttons {
+    justify-content: center;
+  }
+  
+  .special-day-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .person-avatar {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .years-badge {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+  
+  .summary-card {
+    margin-bottom: 1rem;
+  }
+  
+  .pagination-container {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .years-badge-large {
+    margin-left: 0;
+    margin-top: 1rem;
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 576px) {
+  .special-days-modal .modal-dialog {
+    margin: 0.5rem;
+  }
+  
+  .special-days-modal .modal-body {
+    padding: 1rem;
+  }
+  
+  .filter-tabs .nav-pills .nav-link {
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .special-day-card .card-body {
+    padding: 1rem;
+  }
+  
+  .summary-card {
+    padding: 1rem;
+  }
+  
+  .summary-number {
+    font-size: 2rem;
+  }
+}
+
+/* Loading and Error States */
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  min-height: 200px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border, #e5e7eb);
+  border-top: 3px solid var(--primary-600, #9333ea);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: var(--muted, #6b7280);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.error-state {
+  color: var(--danger-600, #dc2626);
+}
+
+.error-icon {
+  font-size: 2.5rem;
+  color: var(--danger-500, #ef4444);
+  margin-bottom: 1rem;
+}
+
+.error-state p {
+  color: var(--danger-700, #b91c1c);
+  font-size: 0.9rem;
+  margin: 0 0 1rem 0;
+}
+
+.retry-btn {
+  background: var(--danger-600, #dc2626);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.retry-btn:hover {
+  background: var(--danger-700, #b91c1c);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
