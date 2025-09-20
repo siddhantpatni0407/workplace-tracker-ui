@@ -3,11 +3,11 @@
   margin-top: 56px; /* offset for fixed navbar */
   position: relative;
   overflow: hidden;
-  padding: 4.25rem 1rem; /* top/bottom spacing */
+  padding: 1.5rem 1rem; /* reduced from 2.5rem */
   display: flex;
   align-items: center;
-  min-height: 220px;
-  background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+  min-height: 100px; /* reduced from 140px */
+  background: linear-gradient(135deg, var(--nav-gradient-start, #6d28d9) 0%, var(--nav-gradient-end, #7c3aed) 100%);
   background-size: cover;
   background-position: center;
   color: #fff;
@@ -147,13 +147,13 @@
 
 /* responsive */
 @media (max-width: 992px) {
-  .header-section { padding: 3.25rem 1rem; min-height: 200px; }
+  .header-section { padding: 1.25rem 1rem; min-height: 80px; } /* reduced from 2rem and 120px */
   .header-title { font-size: 2.2rem; }
   .header-subtitle { font-size: 1rem; padding: 0 8px; }
 }
 
 @media (max-width: 576px) {
-  .header-section { padding: 2.25rem 1rem; min-height: 160px; }
+  .header-section { padding: 1rem 1rem; min-height: 70px; } /* reduced from 1.5rem and 100px */
   .header-title { font-size: 1.6rem; }
   .header-subtitle { font-size: 0.92rem; max-width: 100%; }
   .header-eyebrow { font-size: 0.72rem; padding: 4px 8px; }
