@@ -211,40 +211,40 @@ const UserDashboard: React.FC = memo(() => {
         if (dashboardData.loading) {
             return [
                 {
-                    label: "Leave Balance",
-                    value: "Loading...",
+                    label: t('dashboard.userDashboard.analytics.leaveBalance.label'),
+                    value: t('common.loading'),
                     icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient",
                     hasBreakdown: true,
                     breakdown: [
-                        { type: "Loading...", remaining: "...", used: "...", allocated: "..." }
+                        { type: t('common.loading'), remaining: "...", used: "...", allocated: "..." }
                     ]
                 },
                 {
-                    label: "Office Visits",
-                    value: "Loading...", 
+                    label: t('dashboard.userDashboard.analytics.officeVisits.label'),
+                    value: t('common.loading'), 
                     icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient"
                 },
                 {
-                    label: "WFH Days",
-                    value: "Loading...",
+                    label: t('dashboard.userDashboard.analytics.wfhDays.label'),
+                    value: t('common.loading'),
                     icon: "bi-hourglass-split", 
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient"
                 },
                 {
-                    label: "Attendance Rate",
-                    value: "Loading...",
+                    label: t('dashboard.userDashboard.analytics.attendanceRate.label'),
+                    value: t('common.loading'),
                     icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient"
                 },
                 {
-                    label: "Total Holidays",
-                    value: "Loading...",
+                    label: t('dashboard.userDashboard.analytics.totalHolidays.label'),
+                    value: t('common.loading'),
                     icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient"
@@ -301,18 +301,18 @@ const UserDashboard: React.FC = memo(() => {
 
         return [
             {
-                label: "Total Holidays",
+                label: t('dashboard.userDashboard.analytics.totalHolidays.label'),
                 value: totalHolidays.toString(),
-                unit: "holidays",
+                unit: t('dashboard.userDashboard.analytics.totalHolidays.unit'),
                 icon: "bi-calendar-heart",
                 colorClass: StatColorClass.HOLIDAYS,
                 bgGradient: BgGradientClass.HOLIDAYS,
                 valueColor: "#fd7e14"
             },
             {
-                label: "Leave", 
+                label: t('dashboard.userDashboard.analytics.leaveBalance.label'), 
                 value: `${totalLeaveBalance}`,
-                unit: "days",
+                unit: t('dashboard.userDashboard.analytics.leaveBalance.unit'),
                 icon: "bi-calendar-check",
                 colorClass: StatColorClass.LEAVE,
                 bgGradient: BgGradientClass.LEAVE,
@@ -324,27 +324,27 @@ const UserDashboard: React.FC = memo(() => {
                 }
             },
             {
-                label: "WFH Days",
+                label: t('dashboard.userDashboard.analytics.wfhDays.label'),
                 value: wfhDays.toString(),
-                unit: "days",
+                unit: t('dashboard.userDashboard.analytics.wfhDays.unit'),
                 icon: "bi-house",
                 colorClass: StatColorClass.WFH,
                 bgGradient: BgGradientClass.WFH,
                 valueColor: "#6f42c1"
             },
             {
-                label: "Office Visits",
+                label: t('dashboard.userDashboard.analytics.officeVisits.label'),
                 value: officeVisits.toString(),
-                unit: "visits",
+                unit: t('dashboard.userDashboard.analytics.officeVisits.unit'),
                 icon: "bi-building",
                 colorClass: StatColorClass.OFFICE,
                 bgGradient: BgGradientClass.OFFICE,
                 valueColor: "#007bff"
             },
             {
-                label: "Office Visit Attendance Rate",
+                label: t('dashboard.userDashboard.analytics.officeVisitAttendanceRate.label'),
                 value: `${attendanceRate}`,
-                unit: "%",
+                unit: t('dashboard.userDashboard.analytics.officeVisitAttendanceRate.unit'),
                 icon: "bi-graph-up-arrow",
                 colorClass: StatColorClass.OFFICE,
                 bgGradient: BgGradientClass.OFFICE,
@@ -420,21 +420,21 @@ const UserDashboard: React.FC = memo(() => {
         if (dashboardData.loading) {
             return [
                 {
-                    title: "Office Attendance",
-                    description: "Track your office visits and work patterns",
-                    value: "Loading...",
+                    title: t("dashboard.userDashboard.charts.officeAttendance"),
+                    description: t("dashboard.userDashboard.charts.officeAttendanceDesc"),
+                    value: t("dashboard.userDashboard.loading"),
                     icon: "bi-hourglass-split"
                 },
                 {
-                    title: "Task Completion", 
-                    description: "Your productivity and task management",
-                    value: "Loading...",
+                    title: t("dashboard.userDashboard.charts.taskCompletion"), 
+                    description: t("dashboard.userDashboard.charts.taskCompletionDesc"),
+                    value: t("dashboard.userDashboard.loading"),
                     icon: "bi-hourglass-split"
                 },
                 {
-                    title: "Leave Applications",
-                    description: "Your leave requests and approvals", 
-                    value: "Loading...",
+                    title: t("dashboard.userDashboard.charts.leaveApplications"),
+                    description: t("dashboard.userDashboard.charts.leaveApplicationsDesc"), 
+                    value: t("dashboard.userDashboard.loading"),
                     icon: "bi-hourglass-split"
                 }
             ];
@@ -461,21 +461,21 @@ const UserDashboard: React.FC = memo(() => {
 
         return [
             {
-                title: "Office Attendance",
-                description: "Track your office visits and work patterns",
-                value: `${attendancePercentage}% this month`,
+                title: t("dashboard.userDashboard.charts.officeAttendance"),
+                description: t("dashboard.userDashboard.charts.officeAttendanceDesc"),
+                value: `${attendancePercentage}% ${t("dashboard.userDashboard.thisMonth")}`,
                 icon: "bi-graph-up-arrow"
             },
             {
-                title: "Task Completion",
-                description: "Your productivity and task management", 
-                value: "Tasks API needed", // Placeholder until tasks API is implemented
+                title: t("dashboard.userDashboard.charts.taskCompletion"),
+                description: t("dashboard.userDashboard.charts.taskCompletionDesc"), 
+                value: t("dashboard.userDashboard.charts.tasksApiNeeded"), // Placeholder until tasks API is implemented
                 icon: "bi-check-circle-fill"
             },
             {
-                title: "Leave Applications",
-                description: "Your leave requests and approvals",
-                value: `${leaveApplications} applications`,
+                title: t("dashboard.userDashboard.charts.leaveApplications"),
+                description: t("dashboard.userDashboard.charts.leaveApplicationsDesc"),
+                value: `${leaveApplications} ${t("dashboard.userDashboard.charts.applications")}`,
                 icon: "bi-calendar-check"
             }
         ];
@@ -806,8 +806,8 @@ const UserDashboard: React.FC = memo(() => {
         },
         {
             id: "pf-management",
-            title: "PF Management",
-            subtitle: "EPF Portal Access & PF Services",
+            title: t("dashboard.userDashboard.quickAccess.pfManagement"),
+            subtitle: t("dashboard.userDashboard.quickAccess.pfManagementDesc"),
             icon: "bi-piggy-bank-fill",
             colorClass: "card-success",
             route: ROUTES.USER.PF_MANAGEMENT
@@ -850,7 +850,7 @@ const UserDashboard: React.FC = memo(() => {
             <div className="user-dashboard container-fluid py-4">
                 <div className="d-flex justify-content-center align-items-center" style={{minHeight: '50vh'}}>
                     <div className="spinner-border text-danger" role="status">
-                        <span className="visually-hidden">Loading dashboard data...</span>
+                        <span className="visually-hidden">{t('dashboard.userDashboard.loading')}</span>
                     </div>
                 </div>
             </div>
@@ -862,7 +862,7 @@ const UserDashboard: React.FC = memo(() => {
             <div className="user-dashboard container-fluid py-4">
                 <div className="alert alert-warning text-center">
                     <i className="bi bi-exclamation-triangle me-2"></i>
-                    Unable to load dashboard data. Please refresh the page.
+                    {t('dashboard.userDashboard.errorMessage')}
                 </div>
             </div>
         );
@@ -877,7 +877,7 @@ const UserDashboard: React.FC = memo(() => {
                         <div className="sidebar-header">
                             <h6 className="sidebar-title">
                                 <i className="bi bi-grid-3x3-gap-fill me-2"></i>
-                                Quick Access
+                                {t('dashboard.userDashboard.quickAccess.title')}
                             </h6>
                         </div>
 
@@ -891,7 +891,7 @@ const UserDashboard: React.FC = memo(() => {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        placeholder="Search quick access..."
+                                        placeholder={t('dashboard.userDashboard.quickAccess.searchPlaceholder')}
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
@@ -912,7 +912,7 @@ const UserDashboard: React.FC = memo(() => {
                             {visibleCards.length === 0 ? (
                                 <div className="text-center text-muted py-3">
                                     <i className="bi bi-search me-2"></i>
-                                    No items found
+                                    {t('dashboard.userDashboard.quickAccess.noItemsFound')}
                                 </div>
                             ) : (
                                 visibleCards.map((card, index) => (
@@ -951,7 +951,7 @@ const UserDashboard: React.FC = memo(() => {
                                 </div>
                                 <div className="user-details">
                                     <span className="user-name">{user?.name || 'User'}</span>
-                                    <span className="user-role">{user?.role || 'Employee'}</span>
+                                    <span className="user-role">{user?.role || t('dashboard.userDashboard.sidebar.userRole')}</span>
                                 </div>
                             </div>
                         </div>
@@ -965,7 +965,7 @@ const UserDashboard: React.FC = memo(() => {
                                 <div className="col-lg-2 col-md-3">
                                     <label htmlFor="monthFilter" className="form-label">
                                         <i className="bi bi-calendar-month filter-icon"></i>
-                                        Month
+                                        {t('dashboard.userDashboard.filters.month')}
                                     </label>
                                     <select 
                                         className="form-select" 
@@ -973,25 +973,25 @@ const UserDashboard: React.FC = memo(() => {
                                         value={filters.month || ''}
                                         onChange={(e) => handleFilterChange('month', e.target.value)}
                                     >
-                                        <option value="">All Months</option>
-                                        <option value="1">January</option>
-                                        <option value="2">February</option>
-                                        <option value="3">March</option>
-                                        <option value="4">April</option>
-                                        <option value="5">May</option>
-                                        <option value="6">June</option>
-                                        <option value="7">July</option>
-                                        <option value="8">August</option>
-                                        <option value="9">September</option>
-                                        <option value="10">October</option>
-                                        <option value="11">November</option>
-                                        <option value="12">December</option>
+                                        <option value="">{t('dashboard.userDashboard.filters.allMonths')}</option>
+                                        <option value="1">{t('dashboard.userDashboard.filters.months.january')}</option>
+                                        <option value="2">{t('dashboard.userDashboard.filters.months.february')}</option>
+                                        <option value="3">{t('dashboard.userDashboard.filters.months.march')}</option>
+                                        <option value="4">{t('dashboard.userDashboard.filters.months.april')}</option>
+                                        <option value="5">{t('dashboard.userDashboard.filters.months.may')}</option>
+                                        <option value="6">{t('dashboard.userDashboard.filters.months.june')}</option>
+                                        <option value="7">{t('dashboard.userDashboard.filters.months.july')}</option>
+                                        <option value="8">{t('dashboard.userDashboard.filters.months.august')}</option>
+                                        <option value="9">{t('dashboard.userDashboard.filters.months.september')}</option>
+                                        <option value="10">{t('dashboard.userDashboard.filters.months.october')}</option>
+                                        <option value="11">{t('dashboard.userDashboard.filters.months.november')}</option>
+                                        <option value="12">{t('dashboard.userDashboard.filters.months.december')}</option>
                                     </select>
                                 </div>
                                 <div className="col-lg-2 col-md-3">
                                     <label htmlFor="yearFilter" className="form-label">
                                         <i className="bi bi-calendar-year filter-icon"></i>
-                                        Year
+                                        {t('dashboard.userDashboard.filters.year')}
                                     </label>
                                     <select 
                                         className="form-select" 
@@ -1007,7 +1007,7 @@ const UserDashboard: React.FC = memo(() => {
                                 <div className="col-lg-3 col-md-3">
                                     <label htmlFor="statusFilter" className="form-label">
                                         <i className="bi bi-check-circle filter-icon"></i>
-                                        Status
+                                        {t('dashboard.userDashboard.filters.status')}
                                     </label>
                                     <select 
                                         className="form-select" 
@@ -1015,21 +1015,21 @@ const UserDashboard: React.FC = memo(() => {
                                         value={filters.status}
                                         onChange={(e) => handleFilterChange('status', e.target.value)}
                                     >
-                                        <option value="">All Status</option>
-                                        <option value="WFO">🏢 Work From Office</option>
-                                        <option value="WFH">🏠 Work From Home</option>
-                                        <option value="HOLIDAY">🎉 Holiday</option>
-                                        <option value="LEAVE">📅 On Leave</option>
+                                        <option value="">{t('dashboard.userDashboard.filters.allStatus')}</option>
+                                        <option value="WFO">🏢 {t('dashboard.userDashboard.filters.statusOptions.wfo')}</option>
+                                        <option value="WFH">🏠 {t('dashboard.userDashboard.filters.statusOptions.wfh')}</option>
+                                        <option value="HOLIDAY">🎉 {t('dashboard.userDashboard.filters.statusOptions.holiday')}</option>
+                                        <option value="LEAVE">📅 {t('dashboard.userDashboard.filters.statusOptions.leave')}</option>
                                     </select>
                                 </div>
                                 <div className="col-lg-2 col-md-3">
                                     <button className="btn btn-primary w-100" onClick={applyFilters}>
-                                        <i className="bi bi-funnel me-2"></i>Apply
+                                        <i className="bi bi-funnel me-2"></i>{t('dashboard.userDashboard.filters.apply')}
                                     </button>
                                 </div>
                                 <div className="col-lg-2 col-md-3">
                                     <button className="btn btn-outline-secondary w-100" onClick={resetFilters}>
-                                        <i className="bi bi-arrow-clockwise me-2"></i>Reset
+                                        <i className="bi bi-arrow-clockwise me-2"></i>{t('dashboard.userDashboard.filters.reset')}
                                     </button>
                                 </div>
                             </div>
@@ -1041,9 +1041,9 @@ const UserDashboard: React.FC = memo(() => {
                                 <div className="stats-title-container">
                                     <h4 className="stats-title">
                                         <i className="bi bi-speedometer2 me-2"></i>
-                                        Quick Analytics
+                                        {t('dashboard.userDashboard.analytics.title')}
                                     </h4>
-                                    <p className="stats-subtitle">Real-time insights into your work patterns and performance</p>
+                                    <p className="stats-subtitle">{t('dashboard.userDashboard.analytics.subtitle')}</p>
                                 </div>
                                 <div className="stats-header-decoration">
                                     <div className="decoration-line"></div>
@@ -1161,7 +1161,7 @@ const UserDashboard: React.FC = memo(() => {
                                     <div className="section-header">
                                         <h5 className="section-title">
                                             <i className="bi bi-calendar3 me-2"></i>
-                                            Calendar Overview
+                                            {t("dashboard.userDashboard.calendar.overview")}
                                         </h5>
                                         <span className="section-subtitle">View your schedule, holidays, leaves, and office visits</span>
                                     </div>

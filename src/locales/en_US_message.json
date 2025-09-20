@@ -590,6 +590,99 @@
     "userDashboard": {
       "title": "User Dashboard",
       "subtitle": "Welcome back! Here's what's happening",
+      "loading": "Loading dashboard data...",
+      "errorMessage": "Unable to load dashboard data. Please refresh the page.",
+      "quickAccess": {
+        "title": "Quick Access",
+        "searchPlaceholder": "Search quick access...",
+        "noItemsFound": "No items found",
+        "pfManagement": "PF Management",
+        "pfManagementDesc": "EPF Portal Access & PF Services"
+      },
+      "sidebar": {
+        "userRole": "Employee"
+      },
+      "filters": {
+        "month": "Month",
+        "year": "Year", 
+        "status": "Status",
+        "allMonths": "All Months",
+        "allStatus": "All Status",
+        "apply": "Apply",
+        "reset": "Reset",
+        "months": {
+          "january": "January",
+          "february": "February", 
+          "march": "March",
+          "april": "April",
+          "may": "May",
+          "june": "June",
+          "july": "July",
+          "august": "August",
+          "september": "September",
+          "october": "October",
+          "november": "November",
+          "december": "December"
+        },
+        "statusOptions": {
+          "wfo": "Work From Office",
+          "wfh": "Work From Home", 
+          "holiday": "Holiday",
+          "leave": "On Leave"
+        }
+      },
+      "analytics": {
+        "title": "Quick Analytics",
+        "subtitle": "Real-time insights into your work patterns and performance",
+        "leaveBalance": {
+          "label": "Leave Balance",
+          "unit": "days",
+          "totalUsed": "Total Used",
+          "totalAllocated": "Total Allocated", 
+          "remaining": "Remaining",
+          "breakdown": "Policy Breakdown"
+        },
+        "officeVisits": {
+          "label": "Office Visits",
+          "unit": "visits"
+        },
+        "wfhDays": {
+          "label": "WFH Days", 
+          "unit": "days"
+        },
+        "attendanceRate": {
+          "label": "Attendance Rate",
+          "unit": "%"
+        },
+        "totalHolidays": {
+          "label": "Total Holidays",
+          "unit": "holidays"
+        },
+        "officeVisitAttendanceRate": {
+          "label": "Office Visit Attendance Rate",
+          "unit": "%"
+        }
+      },
+      "thisMonth": "this month",
+      "charts": {
+        "officeAttendance": "Office Attendance",
+        "officeAttendanceDesc": "Track your office visits and work patterns",
+        "taskCompletion": "Task Completion", 
+        "taskCompletionDesc": "Your productivity and task management",
+        "leaveApplications": "Leave Applications",
+        "leaveApplicationsDesc": "Your leave requests and approvals",
+        "tasksApiNeeded": "Tasks API needed",
+        "applications": "applications"
+      },
+      "calendar": {
+        "title": "Calendar",
+        "subtitle": "Your upcoming events and holidays",
+        "overview": "Calendar Overview",
+        "todayEvents": "Today's Events",
+        "upcomingEvents": "Upcoming Events",
+        "noEvents": "No events scheduled",
+        "viewMore": "View More"
+      },
       "cards": {
         "tasks": {
           "title": "Tasks",
@@ -626,6 +719,10 @@
         "settings": {
           "title": "Settings",
           "subtitle": "Manage account preferences"
+        },
+        "pfManagement": {
+          "title": "PF Management",
+          "subtitle": "EPF Portal Access & PF Services"
         }
       }
     },
