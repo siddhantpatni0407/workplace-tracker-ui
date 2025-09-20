@@ -157,12 +157,14 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
       // Use the notes/reason field for the display name to match the UI
       let displayName: string;
       
-      // Based on your screenshot, the "notes" column appears to be "reason" in our data model
-      if (leave.reason && leave.reason.trim() !== '') {
+      // Check both notes and reason fields since different endpoints might use different field names
+      if ((leave as any).notes && (leave as any).notes.trim() !== '') {
+        displayName = (leave as any).notes;
+      } else if (leave.reason && leave.reason.trim() !== '') {
         displayName = leave.reason;
       } else {
-        // If no reason is available, use a generic name
-        displayName = "Personal Leave";
+        // If no reason or notes are available, use a generic name
+        displayName = "Leave Request";
       }
 
       // We'll keep the display name simple as shown in your screenshot
