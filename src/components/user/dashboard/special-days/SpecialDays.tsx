@@ -4,6 +4,7 @@ import { useTranslation } from '../../../../hooks/useTranslation';
 import SpecialDaysService from '../../../../services/specialDaysService';
 import { SpecialDayRecord } from '../../../../types/api';
 import SpecialDaysModal from './SpecialDaysModal';
+import "./special-days.css";
 
 export interface SpecialDay {
   id: string;
