@@ -138,6 +138,8 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
         if (monthResponse.status === 'SUCCESS' && monthResponse.data) {
           const allRecords: SpecialDayRecord[] = [];
           
+          // Combine both birthdays and anniversaries without deduplication by user
+          // since a user can have both birthday and anniversary in the same month
           if (monthResponse.data.birthdays) {
             allRecords.push(...monthResponse.data.birthdays);
           }
@@ -146,12 +148,24 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
           }
           
           const transformedMonthData = transformApiDataToSpecialDays(allRecords);
-          setSpecialDaysData(transformedMonthData);
+          
+          // Remove duplicate special day entries (same user, same type, same date)
+          const deduplicatedData = transformedMonthData.filter((day, index, array) => {
+            return array.findIndex(d => d.id === day.id) === index;
+          });
+                   
+          setSpecialDaysData(deduplicatedData);
         }
         
         if (yearResponse.status === 'SUCCESS' && yearResponse.data && yearResponse.data.records) {
           const transformedYearData = transformApiDataToSpecialDays(yearResponse.data.records);
-          setFullYearData(transformedYearData);
+          
+          // Remove duplicate special day entries for year data as well
+          const deduplicatedYearData = transformedYearData.filter((day, index, array) => {
+            return array.findIndex(d => d.id === day.id) === index;
+          });
+          
+          setFullYearData(deduplicatedYearData);
         }
         
         if (monthResponse.status !== 'SUCCESS') {
@@ -181,7 +195,10 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
   const locations = useMemo(() => {
     const locs = new Set<string>();
     specialDaysData.forEach(day => {
-      locs.add(day.city);
+      // Only add non-empty city values
+      if (day.city && day.city.trim()) {
+        locs.add(day.city);
+      }
     });
     return ['all', ...Array.from(locs)];
   }, [specialDaysData]);
@@ -192,14 +209,15 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
 
   // Filter data for selected month with enhanced filtering
   const currentMonthDays = useMemo(() => {
-    return specialDaysData.filter(day => {
+    const filtered = specialDaysData.filter(day => {
       const dayDate = new Date(day.date + 'T00:00:00');
       const dayMonth = dayDate.getMonth() + 1;
       const dayYear = dayDate.getFullYear();
       
       let monthMatch = false;
       if (day.type === 'birthday') {
-        monthMatch = dayMonth === currentMonth && dayYear === currentYear;
+        // For birthdays, only check month since we already transformed dates to current year
+        monthMatch = dayMonth === currentMonth;
       } else if (day.type === 'work-anniversary') {
         monthMatch = dayMonth === currentMonth;
       }
@@ -212,11 +230,14 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
       }
       
       if (selectedLocation !== 'all') {
-        if (day.city !== selectedLocation) return false;
+        // Only filter by location if the day has a valid city and it doesn't match the selected location
+        if (!day.city || day.city.trim() !== selectedLocation) return false;
       }
       
       return true;
     });
+        
+    return filtered;
   }, [specialDaysData, currentMonth, currentYear, selectedDepartment, selectedLocation]);
 
   // Get all year data for modal
@@ -395,7 +416,7 @@ const SpecialDays: React.FC<SpecialDaysProps> = ({ className }) => {
             </div>
             <div className="special-days-list">
               {groupedDays.birthdays.length > 0 ? (
-                groupedDays.birthdays.slice(0, 1).map((day: SpecialDay) => (
+                groupedDays.birthdays.slice(0, 2).map((day: SpecialDay) => (
                   <div key={day.id} className="special-day-item">
                     <div className="person-avatar">
                       <span className="initials">
