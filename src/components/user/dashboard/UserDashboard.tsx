@@ -4,7 +4,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { UserRole } from "../../../enums";
 import { ErrorBoundary } from "../../ui";
-import { Calendar, CalendarEvent } from "../../common/calendar";
+import { Calendar, CalendarEvent } from "./calendar";
 import { ROUTES } from "../../../constants";
 import { YEAR_FILTER, MONTH_FILTER, STATUS_FILTER } from "../../../constants/ui/filters";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";

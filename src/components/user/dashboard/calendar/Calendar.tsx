@@ -1,31 +1,31 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import { DateUtils } from '../../../utils/date';
+import { useAuth } from '../../../../context/AuthContext';
+import { DateUtils } from '../../../../utils/date';
 import {
   ActivityType,
   FilterStatus,
   QuickStatIcon,
   DashboardCardCategory
-} from '../../../enums/DashboardEnums';
+} from '../../../../enums/DashboardEnums';
 import {
   VisitType,
   VisitTypeLabels,
   DayOfWeek
-} from '../../../enums/OfficeVisitEnums';
+} from '../../../../enums/OfficeVisitEnums';
 import {
   UserRole,
   DateFormat,
   WeekStartDay
-} from '../../../enums/UserEnums';
+} from '../../../../enums/UserEnums';
 import {
   COLORS,
   ANIMATION,
   Z_INDEX
-} from '../../../constants';
-import { OfficeVisit, DailyView } from '../../../models/OfficeVisit';
-import { Holiday } from '../../../models/Holiday';
-import { Leave } from '../../../models/Leave';
-import { Task } from '../../../models/Task';
+} from '../../../../constants';
+import { OfficeVisit, DailyView } from '../../../../models/OfficeVisit';
+import { Holiday } from '../../../../models/Holiday';
+import { Leave } from '../../../../models/Leave';
+import { Task } from '../../../../models/Task';
 import {
   CalendarEvent,
   CalendarEventType,
@@ -33,7 +33,7 @@ import {
   CalendarProps,
   CalendarDayData,
   CalendarViewType
-} from '../../../models/Calendar';
+} from '../../../../models/Calendar';
 import './calendar.css';
 
 // Re-export Calendar types for convenience
@@ -44,7 +44,7 @@ export type {
   CalendarProps,
   CalendarDayData,
   CalendarViewType
-} from '../../../models/Calendar';
+} from '../../../../models/Calendar';
 
 export const Calendar: React.FC<CalendarProps> = ({
   events = [],
@@ -125,7 +125,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
     // Apply type filter
     if (viewFilter !== 'all') {
-      filtered = filtered.filter(event => {
+      filtered = filtered.filter((event: CalendarEvent) => {
         if (viewFilter === 'wfh') {
           return isWFHEvent(event);
         } else if (viewFilter === 'wfo') {
@@ -161,7 +161,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
     // Apply status filter
     if (statusFilter && statusFilter !== 'all') {
-      filtered = filtered.filter(event => {
+      filtered = filtered.filter((event: CalendarEvent) => {
         const eventStatus = event.status?.toLowerCase() || '';
         return eventStatus === statusFilter.toLowerCase();
       });
@@ -182,7 +182,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       // Generate 7 days for the week
       for (let i = 0; i < 7; i++) {
-        const dayEvents = filteredEvents.filter(event => {
+        const dayEvents = filteredEvents.filter((event: CalendarEvent) => {
           const eventDate = new Date(event.date);
           return eventDate.toDateString() === current.toDateString();
         });
@@ -217,7 +217,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
       // Generate 42 days (6 weeks)
       for (let i = 0; i < 42; i++) {
-        const dayEvents = filteredEvents.filter(event => {
+        const dayEvents = filteredEvents.filter((event: CalendarEvent) => {
           const eventDate = new Date(event.date);
           return eventDate.toDateString() === current.toDateString();
         });
@@ -336,7 +336,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
   // Handle calendar export
   const handleExportCalendar = () => {
-    const exportData = events.map(event => ({
+    const exportData = events.map((event: CalendarEvent) => ({
       title: event.title,
       date: event.date,
       type: event.type,
@@ -346,7 +346,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
     // Create CSV content
     const csvHeaders = ['Title', 'Date', 'Type', 'Description', 'Status'];
-    const csvRows = exportData.map(event => [
+    const csvRows = exportData.map((event: any) => [
       event.title,
       event.date,
       event.type,
@@ -356,7 +356,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
     const csvContent = [
       csvHeaders.join(','),
-      ...csvRows.map(row => row.map(field => `"${field}"`).join(','))
+      ...csvRows.map((row: any[]) => row.map((field: any) => `"${field}"`).join(','))
     ].join('\n');
 
     // Download CSV file
@@ -992,7 +992,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
                               {day.events.length > 0 && (
                                 <div className="day-events-popup">
-                                  {day.events.map((event, eventIndex) => (
+                                  {day.events.map((event, eventIndex: number) => (
                                     <div
                                       key={eventIndex}
                                       className="calendar-event-popup"
