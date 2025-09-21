@@ -631,5 +631,210 @@
         }
       }
     }
+  },
+  "admin": {
+    "common": {
+      "create": "Crear",
+      "update": "Actualizar",
+      "saving": "Guardando...",
+      "actions": "Acciones",
+      "refresh": "Actualizar"
+    },
+    "dashboard": {
+      "title": "Panel de Administración",
+      "sidebar": {
+        "quickAccess": "Acceso Rápido"
+      },
+      "search": {
+        "placeholder": "Buscar herramientas de administración...",
+        "noResults": "No se encontraron herramientas"
+      },
+      "welcome": {
+        "title": "Bienvenido",
+        "subtitle": "Gestiona tu lugar de trabajo de manera eficiente con herramientas administrativas integrales"
+      },
+      "stats": {
+        "title": "Estadísticas Rápidas",
+        "subtitle": "Información del sistema en tiempo real y estadísticas",
+        "totalUsers": "Total de Usuarios",
+        "activeUsers": "Usuarios Activos",
+        "inactiveUsers": "Usuarios Inactivos",
+        "totalHolidays": "Total de Días Festivos",
+        "leavePolicies": "Políticas de Permisos"
+      },
+      "categories": {
+        "all": "Todos",
+        "management": "Gestión",
+        "analytics": "Análisis",
+        "system": "Sistema"
+      },
+      "tools": {
+        "title": "Herramientas Administrativas",
+        "subtitle": "Accede a herramientas integrales para gestionar tu lugar de trabajo de manera efectiva",
+        "openButton": "Abrir"
+      },
+      "cards": {
+        "userManagement": {
+          "title": "Gestión de Usuarios",
+          "description": "Gestionar usuarios, roles y permisos"
+        },
+        "holidayManagement": {
+          "title": "Gestión de Días Festivos",
+          "description": "Configurar días festivos y eventos del calendario"
+        },
+        "leavePolicyManagement": {
+          "title": "Gestión de Políticas de Permisos",
+          "description": "Configurar políticas y reglas de permisos"
+        },
+        "reports": {
+          "title": "Análisis y Reportes",
+          "description": "Ver reportes e informes integrales"
+        },
+        "databaseBackup": {
+          "title": "Respaldo de Base de Datos",
+          "description": "Gestionar respaldos y restauración de la base de datos"
+        },
+        "userProfile": {
+          "title": "Perfil de Usuario",
+          "description": "Ver y editar información de tu perfil"
+        },
+        "userSettings": {
+          "title": "Configuraciones",
+          "description": "Gestionar tus preferencias personales"
+        }
+      },
+      "sections": {
+        "userManagement": {
+          "title": "Resumen de Gestión de Usuarios",
+          "manageButton": "Gestionar Usuarios",
+          "activeUsers": "Usuarios Activos",
+          "inactiveUsers": "Usuarios Inactivos",
+          "totalUsers": "Total de Usuarios",
+          "needsAttention": "Necesita atención",
+          "systemCapacity": "Total de usuarios registrados",
+          "active": "Activo",
+          "inactive": "Inactivo",
+          "configured": "Configurado",
+          "userStatistics": "Estadísticas de Actividad de Usuarios",
+          "totalRegistered": "Total Registrados",
+          "currentlyActive": "Actualmente Activos",
+          "needsReactivation": "Necesita Atención",
+          "allTime": "Todo el tiempo",
+          "activeRate": "tasa de actividad",
+          "inactiveRate": "tasa de inactividad",
+          "userDistribution": "Distribución de Estado de Usuario"
+        },
+        "holidayManagement": {
+          "title": "Gestión de Días Festivos",
+          "manageButton": "Gestionar Días Festivos",
+          "totalHolidays": "Total de Días Festivos",
+          "upcomingHolidays": "Análisis de Días Festivos",
+          "currentYear": "Este año",
+          "nextQuarter": "Próximo trimestre",
+          "estimatedUpcoming": "Próximos estimados",
+          "regionalHolidays": "Días Festivos Regionales",
+          "multipleRegions": "Múltiples regiones",
+          "utilization": "Tasa de Utilización",
+          "employeeEngagement": "Compromiso de empleados",
+          "monthlyDistribution": "Distribución Mensual de Días Festivos",
+          "jan": "Ene",
+          "feb": "Feb",
+          "mar": "Mar",
+          "apr": "Abr",
+          "may": "May",
+          "jun": "Jun",
+          "jul": "Jul",
+          "aug": "Ago",
+          "sep": "Sep",
+          "oct": "Oct",
+          "nov": "Nov",
+          "dec": "Dic",
+          "upcomingList": "Próximos Días Festivos",
+          "christmas": "Día de Navidad",
+          "newYear": "Día de Año Nuevo",
+          "republic": "Día de la República",
+          "holi": "Festival Holi",
+          "national": "Día Festivo Nacional",
+          "regional": "Día Festivo Regional",
+          "holidayOverview": "Resumen del Sistema de Días Festivos",
+          "totalConfigured": "Total Configurados",
+          "systemWide": "Días festivos de todo el sistema",
+          "publicHolidays": "Días Festivos Públicos",
+          "ofTotal": "del total",
+          "companyHolidays": "Días Festivos de la Empresa",
+          "holidayCoverage": "Cobertura de Días Festivos",
+          "quickSummary": "Resumen Rápido",
+          "configuredInSystem": "Configurados en el sistema",
+          "nextHoliday": "Próximo Día Festivo",
+          "available": "Disponible",
+          "none": "Ninguno",
+          "checkCalendar": "Consultar calendario para detalles",
+          "systemStatus": "Estado del Sistema",
+          "operational": "Operacional",
+          "allSystemsActive": "Todos los sistemas activos"
+        },
+        "leavePolicyManagement": {
+          "title": "Gestión de Políticas de Permisos",
+          "manageButton": "Gestionar Políticas",
+          "totalPolicies": "Total de Políticas",
+          "coverage": "Cobertura de Políticas",
+          "active": "Políticas activas",
+          "allUsers": "Todos los usuarios cubiertos",
+          "configured": "Configurado",
+          "utilizationRate": "Tasa de Utilización",
+          "thisYear": "Este año",
+          "compliance": "Puntuación de Cumplimiento",
+          "excellent": "Excelente",
+          "efficiency": "Eficiencia del Sistema",
+          "optimal": "Rendimiento óptimo",
+          "policyAnalytics": "Análisis de Políticas de Permisos",
+          "totalConfigured": "Total Configurados",
+          "fullyOperational": "Totalmente operacional",
+          "activePolicies": "Políticas Activas",
+          "coveredUsers": "Usuarios Cubiertos",
+          "allCovered": "Todos cubiertos",
+          "noCoverage": "Sin cobertura",
+          "policyEffectiveness": "Efectividad de las Políticas",
+          "userCompliance": "Cumplimiento de Usuarios",
+          "systemIntegration": "Integración del Sistema",
+          "policyUtilization": "Utilización de Políticas",
+          "policyTypes": "Tipos de Políticas y Uso",
+          "annual": "Permiso Anual",
+          "sick": "Permiso por Enfermedad",
+          "maternity": "Permiso de Maternidad/Paternidad",
+          "personal": "Permiso Personal",
+          "emergency": "Permiso de Emergencia",
+          "departmentBreakdown": "Uso por Departamento",
+          "engineering": "Ingeniería",
+          "sales": "Ventas y Marketing",
+          "hr": "Recursos Humanos",
+          "finance": "Finanzas",
+          "support": "Soporte al Cliente",
+          "avgDays": "días promedio",
+          "policyInsights": "Perspectivas de Políticas",
+          "wellConfigured": "Bien Configurado",
+          "policiesActive": "políticas están activas y funcionales",
+          "fullCoverage": "Cobertura Completa",
+          "allUsersHaveAccess": "Todos los usuarios tienen acceso a políticas de permisos",
+          "systemHealth": "Estado del Sistema",
+          "optimalPerformance": "Sistema de gestión de permisos funcionando de manera óptima",
+          "noPolicies": "Sin Políticas",
+          "considerAdding": "Considere agregar políticas de permisos para su organización"
+        },
+        "systemHealth": {
+          "title": "Estado del Sistema",
+          "good": "Todos los Sistemas Operacionales",
+          "warning": "Problemas Menores Detectados",
+          "error": "Problemas Críticos"
+        },
+        "quickActions": {
+          "title": "Acciones Rápidas",
+          "addUser": "Agregar Nuevo Usuario",
+          "addHoliday": "Agregar Día Festivo",
+          "addPolicy": "Crear Política",
+          "viewReports": "Ver Reportes"
+        }
+      }
+    }
   }
 }

@@ -606,6 +606,409 @@
           "subtitle": "सिस्टम डेटा का बैकअप और पुनर्स्थापना करें"
         }
       }
+    },
+    "admin": {
+      "dashboard": {
+        "title": "एडमिन डैशबोर्ड",
+        "sidebar": {
+          "quickAccess": "त्वरित पहुंच"
+        },
+        "search": {
+          "placeholder": "प्रशासनिक उपकरण खोजें...",
+          "noResults": "कोई उपकरण नहीं मिला"
+        },
+        "welcome": {
+          "title": "स्वागत",
+          "subtitle": "व्यापक प्रशासनिक उपकरणों के साथ अपने कार्यस्थल का कुशलतापूर्वक प्रबंधन करें"
+        },
+        "stats": {
+          "title": "त्वरित आंकड़े",
+          "subtitle": "रीयल-टाइम सिस्टम अंतर्दृष्टि और आंकड़े",
+          "totalUsers": "कुल उपयोगकर्ता",
+          "activeUsers": "सक्रिय उपयोगकर्ता",
+          "inactiveUsers": "निष्क्रिय उपयोगकर्ता",
+          "totalHolidays": "कुल छुट्टियां",
+          "leavePolicies": "छुट्टी नीतियां"
+        },
+        "categories": {
+          "all": "सभी",
+          "management": "प्रबंधन",
+          "analytics": "विश्लेषण",
+          "system": "सिस्टम"
+        },
+        "tools": {
+          "title": "प्रशासनिक उपकरण",
+          "subtitle": "अपने कार्यस्थल का प्रभावी रूप से प्रबंधन करने के लिए व्यापक उपकरणों तक पहुंचें",
+          "openButton": "खोलें"
+        },
+        "cards": {
+          "userManagement": {
+            "title": "उपयोगकर्ता प्रबंधन",
+            "description": "उपयोगकर्ताओं, भूमिकाओं और अनुमतियों का प्रबंधन करें"
+          },
+          "holidayManagement": {
+            "title": "छुट्टी प्रबंधन",
+            "description": "छुट्टियों और कैलेंडर घटनाओं को कॉन्फ़िगर करें"
+          },
+          "leavePolicyManagement": {
+            "title": "छुट्टी नीति प्रबंधन",
+            "description": "छुट्टी नीतियों और नियमों को कॉन्फ़िगर करें"
+          },
+          "reports": {
+            "title": "विश्लेषण और रिपोर्ट",
+            "description": "व्यापक रिपोर्ट और अंतर्दृष्टि देखें"
+          },
+          "databaseBackup": {
+            "title": "डेटाबेस बैकअप",
+            "description": "डेटाबेस बैकअप और पुनर्स्थापना प्रबंधित करें"
+          },
+          "userProfile": {
+            "title": "उपयोगकर्ता प्रोफ़ाइल",
+            "description": "अपनी प्रोफ़ाइल जानकारी देखें और संपादित करें"
+          },
+          "userSettings": {
+            "title": "सेटिंग्स",
+            "description": "अपनी व्यक्तिगत प्राथमिकताएं प्रबंधित करें"
+          }
+        },
+        "sections": {
+          "userManagement": {
+            "title": "उपयोगकर्ता प्रबंधन अवलोकन",
+            "manageButton": "उपयोगकर्ता प्रबंधित करें",
+            "activeUsers": "सक्रिय उपयोगकर्ता",
+            "inactiveUsers": "निष्क्रिय उपयोगकर्ता",
+            "totalUsers": "कुल उपयोगकर्ता",
+            "needsAttention": "ध्यान की आवश्यकता",
+            "systemCapacity": "कुल पंजीकृत उपयोगकर्ता",
+            "active": "सक्रिय",
+            "inactive": "निष्क्रिय",
+            "configured": "कॉन्फ़िगर किया गया",
+            "userStatistics": "उपयोगकर्ता गतिविधि आंकड़े",
+            "totalRegistered": "कुल पंजीकृत",
+            "currentlyActive": "वर्तमान में सक्रिय",
+            "needsReactivation": "ध्यान की आवश्यकता",
+            "allTime": "सभी समय",
+            "activeRate": "सक्रियता दर",
+            "inactiveRate": "निष्क्रियता दर",
+            "userDistribution": "उपयोगकर्ता स्थिति वितरण"
+          },
+          "holidayManagement": {
+            "title": "छुट्टी प्रबंधन",
+            "manageButton": "छुट्टियां प्रबंधित करें",
+            "totalHolidays": "कुल छुट्टियां",
+            "upcomingHolidays": "छुट्टी विश्लेषण",
+            "currentYear": "इस वर्ष",
+            "nextQuarter": "अगली तिमाही",
+            "estimatedUpcoming": "अनुमानित आगामी",
+            "regionalHolidays": "क्षेत्रीय छुट्टियां",
+            "multipleRegions": "कई क्षेत्र",
+            "utilization": "उपयोग दर",
+            "employeeEngagement": "कर्मचारी जुड़ाव",
+            "monthlyDistribution": "मासिक छुट्टी वितरण",
+            "jan": "जन",
+            "feb": "फर",
+            "mar": "मार्च",
+            "apr": "अप्र",
+            "may": "मई",
+            "jun": "जून",
+            "jul": "जुल",
+            "aug": "अग",
+            "sep": "सित",
+            "oct": "अक्ट",
+            "nov": "नव",
+            "dec": "दिस",
+            "upcomingList": "आगामी छुट्टियां",
+            "christmas": "क्रिसमस दिवस",
+            "newYear": "नव वर्ष दिवस",
+            "republic": "गणतंत्र दिवस",
+            "holi": "होली त्यौहार",
+            "national": "राष्ट्रीय छुट्टी",
+            "regional": "क्षेत्रीय छुट्टी",
+            "holidayOverview": "छुट्टी सिस्टम अवलोकन",
+            "totalConfigured": "कुल कॉन्फ़िगर किए गए",
+            "systemWide": "सिस्टम-व्यापी छुट्टियां",
+            "publicHolidays": "सार्वजनिक छुट्टियां",
+            "ofTotal": "कुल का",
+            "companyHolidays": "कंपनी छुट्टियां",
+            "holidayCoverage": "छुट्टी कवरेज",
+            "quickSummary": "त्वरित सारांश",
+            "configuredInSystem": "सिस्टम में कॉन्फ़िगर किए गए",
+            "nextHoliday": "अगली छुट्टी",
+            "available": "उपलब्ध",
+            "none": "कोई नहीं",
+            "checkCalendar": "विवरण के लिए कैलेंडर जांचें",
+            "systemStatus": "सिस्टम स्थिति",
+            "operational": "परिचालन",
+            "allSystemsActive": "सभी सिस्टम सक्रिय"
+          },
+          "leavePolicyManagement": {
+            "title": "छुट्टी नीति प्रबंधन",
+            "manageButton": "नीतियां प्रबंधित करें",
+            "totalPolicies": "कुल नीतियां",
+            "coverage": "नीति कवरेज",
+            "active": "सक्रिय नीतियां",
+            "allUsers": "सभी उपयोगकर्ता कवर किए गए",
+            "configured": "कॉन्फ़िगर किया गया",
+            "utilizationRate": "उपयोग दर",
+            "thisYear": "इस वर्ष",
+            "compliance": "अनुपालन स्कोर",
+            "excellent": "उत्कृष्ट",
+            "efficiency": "सिस्टम दक्षता",
+            "optimal": "इष्टतम प्रदर्शन",
+            "policyAnalytics": "छुट्टी नीति विश्लेषण",
+            "totalConfigured": "कुल कॉन्फ़िगर किए गए",
+            "fullyOperational": "पूर्णतः परिचालन",
+            "activePolicies": "सक्रिय नीतियां",
+            "coveredUsers": "कवर किए गए उपयोगकर्ता",
+            "allCovered": "सभी कवर किए गए",
+            "noCoverage": "कोई कवरेज नहीं",
+            "policyEffectiveness": "नीति प्रभावशीलता",
+            "userCompliance": "उपयोगकर्ता अनुपालन",
+            "systemIntegration": "सिस्टम एकीकरण",
+            "policyUtilization": "नीति उपयोग",
+            "policyTypes": "नीति प्रकार और उपयोग",
+            "annual": "वार्षिक छुट्टी",
+            "sick": "बीमारी की छुट्टी",
+            "maternity": "मातृत्व/पितृत्व छुट्टी",
+            "personal": "व्यक्तिगत छुट्टी",
+            "emergency": "आपातकालीन छुट्टी",
+            "departmentBreakdown": "विभाग-वार उपयोग",
+            "engineering": "इंजीनियरिंग",
+            "sales": "बिक्री और मार्केटिंग",
+            "hr": "मानव संसाधन",
+            "finance": "वित्त",
+            "support": "ग्राहक सहायता",
+            "avgDays": "औसत दिन",
+            "policyInsights": "नीति अंतर्दृष्टि",
+            "wellConfigured": "अच्छी तरह कॉन्फ़िगर किया गया",
+            "policiesActive": "नीतियां सक्रिय और कार्यशील हैं",
+            "fullCoverage": "पूर्ण कवरेज",
+            "allUsersHaveAccess": "सभी उपयोगकर्ताओं के पास छुट्टी नीतियों तक पहुंच है",
+            "systemHealth": "सिस्टम स्वास्थ्य",
+            "optimalPerformance": "छुट्टी प्रबंधन सिस्टम इष्टतम रूप से कार्य कर रहा है",
+            "noPolicies": "कोई नीति नहीं",
+            "considerAdding": "अपने संगठन के लिए छुट्टी नीतियां जोड़ने पर विचार करें"
+          },
+          "systemHealth": {
+            "title": "सिस्टम स्वास्थ्य",
+            "good": "सभी सिस्टम संचालन में",
+            "warning": "मामूली समस्याएं पाई गईं",
+            "error": "गंभीर समस्याएं"
+          },
+          "quickActions": {
+            "title": "त्वरित क्रियाएं",
+            "addUser": "नया उपयोगकर्ता जोड़ें",
+            "addHoliday": "छुट्टी जोड़ें",
+            "addPolicy": "नीति बनाएं",
+            "viewReports": "रिपोर्ट देखें"
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "common": {
+      "create": "बनाएं",
+      "update": "अद्यतन करें",
+      "saving": "सहेजा जा रहा है...",
+      "actions": "क्रियाएं",
+      "refresh": "रीफ्रेश"
+    },
+    "dashboard": {
+      "title": "एडमिन डैशबोर्ड",
+      "sidebar": {
+        "quickAccess": "त्वरित पहुंच"
+      },
+      "search": {
+        "placeholder": "प्रशासनिक उपकरण खोजें...",
+        "noResults": "कोई उपकरण नहीं मिला"
+      },
+      "welcome": {
+        "title": "स्वागत है",
+        "subtitle": "व्यापक प्रशासनिक उपकरणों के साथ अपने कार्यक्षेत्र को कुशलता से प्रबंधित करें"
+      },
+      "stats": {
+        "title": "त्वरित आंकड़े",
+        "subtitle": "रीयल-टाइम सिस्टम जानकारी और आंकड़े",
+        "totalUsers": "कुल उपयोगकर्ता",
+        "activeUsers": "सक्रिय उपयोगकर्ता",
+        "inactiveUsers": "निष्क्रिय उपयोगकर्ता",
+        "totalHolidays": "कुल छुट्टियां",
+        "leavePolicies": "छुट्टी नीतियां"
+      },
+      "categories": {
+        "all": "सभी",
+        "management": "प्रबंधन",
+        "analytics": "विश्लेषण",
+        "system": "सिस्टम"
+      },
+      "tools": {
+        "title": "प्रशासनिक उपकरण",
+        "subtitle": "अपने कार्यक्षेत्र को प्रभावी रूप से प्रबंधित करने के लिए व्यापक उपकरणों तक पहुंचें",
+        "openButton": "खोलें"
+      },
+      "cards": {
+        "userManagement": {
+          "title": "उपयोगकर्ता प्रबंधन",
+          "description": "उपयोगकर्ताओं, भूमिकाओं और अनुमतियों का प्रबंधन करें"
+        },
+        "holidayManagement": {
+          "title": "छुट्टी प्रबंधन",
+          "description": "छुट्टियों और कैलेंडर इवेंट्स को कॉन्फ़िगर करें"
+        },
+        "leavePolicyManagement": {
+          "title": "छुट्टी नीति प्रबंधन",
+          "description": "छुट्टी नीतियों और नियमों को कॉन्फ़िगर करें"
+        },
+        "reports": {
+          "title": "विश्लेषण और रिपोर्ट",
+          "description": "व्यापक रिपोर्ट और विश्लेषण देखें"
+        },
+        "databaseBackup": {
+          "title": "डेटाबेस बैकअप",
+          "description": "डेटाबेस बैकअप और पुनर्स्थापना का प्रबंधन करें"
+        },
+        "userProfile": {
+          "title": "उपयोगकर्ता प्रोफ़ाइल",
+          "description": "अपनी प्रोफ़ाइल जानकारी देखें और संपादित करें"
+        },
+        "userSettings": {
+          "title": "सेटिंग्स",
+          "description": "अपनी व्यक्तिगत प्राथमिकताओं का प्रबंधन करें"
+        }
+      },
+      "sections": {
+        "userManagement": {
+          "title": "उपयोगकर्ता प्रबंधन अवलोकन",
+          "manageButton": "उपयोगकर्ता प्रबंधित करें",
+          "activeUsers": "सक्रिय उपयोगकर्ता",
+          "inactiveUsers": "निष्क्रिय उपयोगकर्ता",
+          "totalUsers": "कुल उपयोगकर्ता",
+          "needsAttention": "ध्यान की आवश्यकता",
+          "systemCapacity": "कुल पंजीकृत उपयोगकर्ता",
+          "active": "सक्रिय",
+          "inactive": "निष्क्रिय",
+          "configured": "कॉन्फ़िगर",
+          "userStatistics": "उपयोगकर्ता गतिविधि आंकड़े",
+          "totalRegistered": "कुल पंजीकृत",
+          "currentlyActive": "वर्तमान में सक्रिय",
+          "needsReactivation": "ध्यान की आवश्यकता",
+          "allTime": "सभी समय",
+          "activeRate": "सक्रिय दर",
+          "inactiveRate": "निष्क्रिय दर",
+          "userDistribution": "उपयोगकर्ता स्थिति वितरण"
+        },
+        "holidayManagement": {
+          "title": "छुट्टी प्रबंधन",
+          "manageButton": "छुट्टियां प्रबंधित करें",
+          "totalHolidays": "कुल छुट्टियां",
+          "upcomingHolidays": "छुट्टी विश्लेषण",
+          "currentYear": "इस वर्ष",
+          "nextQuarter": "अगली तिमाही",
+          "estimatedUpcoming": "अनुमानित आगामी",
+          "regionalHolidays": "क्षेत्रीय छुट्टियां",
+          "multipleRegions": "कई क्षेत्र",
+          "utilization": "उपयोग दर",
+          "employeeEngagement": "कर्मचारी सहभागिता",
+          "monthlyDistribution": "छुट्टियों का मासिक वितरण",
+          "jan": "जन",
+          "feb": "फर",
+          "mar": "मार",
+          "apr": "अप्र",
+          "may": "मई",
+          "jun": "जून",
+          "jul": "जुल",
+          "aug": "अग",
+          "sep": "सित",
+          "oct": "अक्ट",
+          "nov": "नव",
+          "dec": "दिस",
+          "upcomingList": "आगामी छुट्टियां",
+          "christmas": "क्रिसमस",
+          "newYear": "नववर्ष",
+          "republic": "गणतंत्र दिवस",
+          "holi": "होली त्योहार",
+          "national": "राष्ट्रीय छुट्टी",
+          "regional": "क्षेत्रीय छुट्टी",
+          "holidayOverview": "छुट्टी सिस्टम अवलोकन",
+          "totalConfigured": "कुल कॉन्फ़िगर",
+          "systemWide": "सिस्टम-व्यापी छुट्टियां",
+          "publicHolidays": "सार्वजनिक छुट्टियां",
+          "ofTotal": "कुल में से",
+          "companyHolidays": "कंपनी की छुट्टियां",
+          "holidayCoverage": "छुट्टी कवरेज",
+          "quickSummary": "त्वरित सारांश",
+          "configuredInSystem": "सिस्टम में कॉन्फ़िगर",
+          "nextHoliday": "अगली छुट्टी",
+          "available": "उपलब्ध",
+          "none": "कोई नहीं",
+          "checkCalendar": "विवरण के लिए कैलेंडर देखें",
+          "systemStatus": "सिस्टम स्थिति",
+          "operational": "चालू",
+          "allSystemsActive": "सभी सिस्टम सक्रिय"
+        },
+        "leavePolicyManagement": {
+          "title": "छुट्टी नीति प्रबंधन",
+          "manageButton": "नीतियां प्रबंधित करें",
+          "totalPolicies": "कुल नीतियां",
+          "coverage": "नीति कवरेज",
+          "active": "सक्रिय नीतियां",
+          "allUsers": "सभी उपयोगकर्ता कवर",
+          "configured": "कॉन्फ़िगर",
+          "utilizationRate": "उपयोग दर",
+          "thisYear": "इस वर्ष",
+          "compliance": "अनुपालन स्कोर",
+          "excellent": "उत्कृष्ट",
+          "efficiency": "सिस्टम दक्षता",
+          "optimal": "इष्टतम प्रदर्शन",
+          "policyAnalytics": "छुट्टी नीति विश्लेषण",
+          "totalConfigured": "कुल कॉन्फ़िगर",
+          "fullyOperational": "पूर्णतः परिचालित",
+          "activePolicies": "सक्रिय नीतियां",
+          "coveredUsers": "कवर उपयोगकर्ता",
+          "allCovered": "सभी कवर",
+          "noCoverage": "कोई कवरेज नहीं",
+          "policyEffectiveness": "नीति प्रभावशीलता",
+          "userCompliance": "उपयोगकर्ता अनुपालन",
+          "systemIntegration": "सिस्टम एकीकरण",
+          "policyUtilization": "नीति उपयोग",
+          "policyTypes": "नीति प्रकार और उपयोग",
+          "annual": "वार्षिक छुट्टी",
+          "sick": "बीमारी की छुट्टी",
+          "maternity": "मातृत्व/पितृत्व छुट्टी",
+          "personal": "व्यक्तिगत छुट्टी",
+          "emergency": "आपातकालीन छुट्टी",
+          "departmentBreakdown": "विभाग द्वारा उपयोग",
+          "engineering": "इंजीनियरिंग",
+          "sales": "बिक्री और मार्केटिंग",
+          "hr": "मानव संसाधन",
+          "finance": "वित्त",
+          "support": "ग्राहक सहायता",
+          "avgDays": "औसत दिन",
+          "policyInsights": "नीति अंतर्दृष्टि",
+          "wellConfigured": "अच्छी तरह कॉन्फ़िगर",
+          "policiesActive": "नीतियां सक्रिय और कार्यात्मक हैं",
+          "fullCoverage": "पूर्ण कवरेज",
+          "allUsersHaveAccess": "सभी उपयोगकर्ताओं की छुट्टी नीतियों तक पहुंच है",
+          "systemHealth": "सिस्टम स्वास्थ्य",
+          "optimalPerformance": "छुट्टी प्रबंधन सिस्टम इष्टतम रूप से कार्य कर रहा है",
+          "noPolicies": "कोई नीतियां नहीं",
+          "considerAdding": "अपने संगठन के लिए छुट्टी नीतियां जोड़ने पर विचार करें"
+        },
+        "systemHealth": {
+          "title": "सिस्टम स्वास्थ्य",
+          "good": "सभी सिस्टम चालू",
+          "warning": "मामूली समस्याएं पाई गईं",
+          "error": "गंभीर समस्याएं"
+        },
+        "quickActions": {
+          "title": "त्वरित क्रियाएं",
+          "addUser": "नया उपयोगकर्ता जोड़ें",
+          "addHoliday": "छुट्टी जोड़ें",
+          "addPolicy": "नीति बनाएं",
+          "viewReports": "रिपोर्ट देखें"
+        }
+      }
     }
   }
 }

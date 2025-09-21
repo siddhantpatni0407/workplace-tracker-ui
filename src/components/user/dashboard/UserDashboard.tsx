@@ -10,21 +10,21 @@ import { ROUTES } from "../../../constants";
 import { YEAR_FILTER, MONTH_FILTER, STATUS_FILTER } from "../../../constants/ui/filters";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { UserProfileData } from "../../../models/User";
-import { 
-  DashboardCard, 
-  DashboardData, 
-  DashboardFilters,
-  QuickStatItem 
+import {
+    DashboardCard,
+    DashboardData,
+    DashboardFilters,
+    QuickStatItem
 } from "../../../models/Dashboard";
-import { 
-  StatColorClass, 
-  BgGradientClass
+import {
+    StatColorClass,
+    BgGradientClass
 } from "../../../enums/DashboardEnums";
 import "./user-dashboard.css";
 
 const UserDashboard: React.FC = memo(() => {
     const { user, isLoading } = useAuth();
-    const { t } = useTranslation();
+    const { t, language } = useTranslation();
     const navigate = useNavigate();
     const [currentDate] = useState(new Date());
     const userId = ((user as any)?.userId ?? (user as any)?.id) as number | undefined;
@@ -118,9 +118,9 @@ const UserDashboard: React.FC = memo(() => {
             if (!policies.ok) throw new Error('Failed to fetch policies');
             const policiesBody = await policies.json();
             const policiesList = policiesBody?.data ?? [];
-            
+
             console.log('Leave Policies Data:', policiesList); // Debug log to check policy data
-            
+
             const currentYear = new Date().getFullYear();
             const balancePromises = policiesList.map(async (policy: any) => {
                 try {
@@ -182,7 +182,7 @@ const UserDashboard: React.FC = memo(() => {
                     };
                 }
             });
-            
+
             const balances = await Promise.all(balancePromises);
             return balances; // Return all policies, don't filter out any
         } catch (err) {
@@ -193,7 +193,7 @@ const UserDashboard: React.FC = memo(() => {
 
     const loadDashboardData = async () => {
         setDashboardData(prev => ({ ...prev, loading: true }));
-        
+
         try {
             const [holidays, visits, leaves, leaveBalance] = await Promise.all([
                 loadHolidays(),
@@ -248,7 +248,7 @@ const UserDashboard: React.FC = memo(() => {
                 },
                 {
                     label: t('dashboard.userDashboard.analytics.officeVisits.label'),
-                    value: t('common.loading'), 
+                    value: t('common.loading'),
                     icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient"
@@ -256,7 +256,7 @@ const UserDashboard: React.FC = memo(() => {
                 {
                     label: t('dashboard.userDashboard.analytics.wfhDays.label'),
                     value: t('common.loading'),
-                    icon: "bi-hourglass-split", 
+                    icon: "bi-hourglass-split",
                     colorClass: "stat-loading",
                     bgGradient: "loading-gradient"
                 },
@@ -304,7 +304,7 @@ const UserDashboard: React.FC = memo(() => {
 
         const officeVisits = filteredVisits.filter((visit: any) => visit.visitType === 'WFO').length;
         const wfhDays = filteredVisits.filter((visit: any) => visit.visitType === 'WFH').length;
-        
+
         // Total holidays count (all holidays like Holiday Tracker, not filtered by year)
         const totalHolidays = dashboardData.holidays.length;
 
@@ -313,15 +313,15 @@ const UserDashboard: React.FC = memo(() => {
         const currentMonth = currentDate.getMonth() + 1;
         const currentYear = currentDate.getFullYear();
         const workingDaysInMonth = 22;
-        
+
         const currentMonthOfficeVisits = dashboardData.visits.filter((visit: any) => {
             const visitDate = new Date(visit.visitDate);
-            const isCurrentMonth = visitDate.getMonth() + 1 === currentMonth && 
-                                   visitDate.getFullYear() === currentYear;
+            const isCurrentMonth = visitDate.getMonth() + 1 === currentMonth &&
+                visitDate.getFullYear() === currentYear;
             const isOfficeVisit = visit.visitType === 'WFO';
             return isCurrentMonth && isOfficeVisit;
         }).length;
-        
+
         const attendanceRate = Math.round((currentMonthOfficeVisits / workingDaysInMonth) * 100);
 
         return [
@@ -335,7 +335,7 @@ const UserDashboard: React.FC = memo(() => {
                 valueColor: "#fd7e14"
             },
             {
-                label: t('dashboard.userDashboard.analytics.leaveBalance.label'), 
+                label: t('dashboard.userDashboard.analytics.leaveBalance.label'),
                 value: `${totalLeaveBalance}`,
                 unit: t('dashboard.userDashboard.analytics.leaveBalance.unit'),
                 icon: "bi-calendar-check",
@@ -376,7 +376,7 @@ const UserDashboard: React.FC = memo(() => {
                 valueColor: "#20c997"
             }
         ];
-    }, [dashboardData, filters]);
+    }, [dashboardData, filters, t, language]);
 
     // Leave Policy Breakdown data
     const leaveBreakdownData = useMemo(() => {
@@ -389,7 +389,7 @@ const UserDashboard: React.FC = memo(() => {
         return dashboardData.leaveBalance.map((balance: any) => {
             // Create user-friendly policy name
             let displayName = balance?.policyName || '';
-            
+
             // If no policy name, create one from policy code
             if (!displayName && balance?.policyCode) {
                 const code = balance.policyCode.toUpperCase();
@@ -423,12 +423,12 @@ const UserDashboard: React.FC = memo(() => {
                         displayName = `${code} Leave`;
                 }
             }
-            
+
             // Final fallback
             if (!displayName) {
                 displayName = 'Leave Policy';
             }
-            
+
             return {
                 type: displayName,
                 code: balance?.policyCode || '',
@@ -451,14 +451,14 @@ const UserDashboard: React.FC = memo(() => {
                     icon: "bi-hourglass-split"
                 },
                 {
-                    title: t("dashboard.userDashboard.charts.taskCompletion"), 
+                    title: t("dashboard.userDashboard.charts.taskCompletion"),
                     description: t("dashboard.userDashboard.charts.taskCompletionDesc"),
                     value: t("dashboard.userDashboard.loading"),
                     icon: "bi-hourglass-split"
                 },
                 {
                     title: t("dashboard.userDashboard.charts.leaveApplications"),
-                    description: t("dashboard.userDashboard.charts.leaveApplicationsDesc"), 
+                    description: t("dashboard.userDashboard.charts.leaveApplicationsDesc"),
                     value: t("dashboard.userDashboard.loading"),
                     icon: "bi-hourglass-split"
                 }
@@ -468,20 +468,20 @@ const UserDashboard: React.FC = memo(() => {
         // Calculate analytics from real API data
         const currentDate = new Date();
         const workingDaysInMonth = 22; // Approximate working days in a month
-        
+
         // Filter visits for current month and only count WFO (Work From Office) for office attendance
         const currentMonth = currentDate.getMonth() + 1;
         const currentYear = currentDate.getFullYear();
         const currentMonthVisits = dashboardData.visits.filter((visit: any) => {
             const visitDate = new Date(visit.visitDate);
-            const isCurrentMonth = visitDate.getMonth() + 1 === currentMonth && 
-                                   visitDate.getFullYear() === currentYear;
+            const isCurrentMonth = visitDate.getMonth() + 1 === currentMonth &&
+                visitDate.getFullYear() === currentYear;
             const isOfficeVisit = visit.visitType === 'WFO'; // Only count Work From Office visits
             return isCurrentMonth && isOfficeVisit;
         }).length;
-        
+
         const attendancePercentage = Math.round((currentMonthVisits / workingDaysInMonth) * 100);
-        
+
         const leaveApplications = dashboardData.leaves.length;
 
         return [
@@ -493,7 +493,7 @@ const UserDashboard: React.FC = memo(() => {
             },
             {
                 title: t("dashboard.userDashboard.charts.taskCompletion"),
-                description: t("dashboard.userDashboard.charts.taskCompletionDesc"), 
+                description: t("dashboard.userDashboard.charts.taskCompletionDesc"),
                 value: t("dashboard.userDashboard.charts.tasksApiNeeded"), // Placeholder until tasks API is implemented
                 icon: "bi-check-circle-fill"
             },
@@ -532,7 +532,7 @@ const UserDashboard: React.FC = memo(() => {
                 const now = new Date();
                 const diffTime = now.getTime() - appliedDate.getTime();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
+
                 let timeText = '';
                 if (diffDays === 0) timeText = 'Today';
                 else if (diffDays === 1) timeText = '1 day ago';
@@ -556,7 +556,7 @@ const UserDashboard: React.FC = memo(() => {
                 const now = new Date();
                 const diffTime = now.getTime() - visitDate.getTime();
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
+
                 let timeText = '';
                 if (diffDays === 0) timeText = 'Today';
                 else if (diffDays === 1) timeText = '1 day ago';
@@ -635,7 +635,7 @@ const UserDashboard: React.FC = memo(() => {
         dashboardData.leaves.forEach((leave: any) => {
             const startDate = new Date(leave.startDate);
             const endDate = new Date(leave.endDate);
-            
+
             // Add event for each day of the leave
             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                 events.push({
@@ -713,26 +713,26 @@ const UserDashboard: React.FC = memo(() => {
     // Calculate notification badges for quick access items
     const getNotificationCount = useCallback((cardId: string): number => {
         if (dashboardData.loading) return 0;
-        
+
         const today = new Date();
         const currentYear = today.getFullYear();
         const currentMonth = today.getMonth() + 1;
-        
+
         switch (cardId) {
             case 'leave-management':
                 // Count pending leave applications
-                return dashboardData.leaves.filter((leave: any) => 
+                return dashboardData.leaves.filter((leave: any) =>
                     leave.status === 'PENDING' || leave.status === 'pending'
                 ).length;
-                
+
             case 'office-visit':
                 // Count this month's office visits
                 return dashboardData.visits.filter((visit: any) => {
                     const visitDate = new Date(visit.visitDate);
-                    return visitDate.getFullYear() === currentYear && 
-                           visitDate.getMonth() + 1 === currentMonth;
+                    return visitDate.getFullYear() === currentYear &&
+                        visitDate.getMonth() + 1 === currentMonth;
                 }).length;
-                
+
             case 'holidays':
                 // Count upcoming holidays in next 30 days
                 const next30Days = new Date();
@@ -741,15 +741,15 @@ const UserDashboard: React.FC = memo(() => {
                     const holidayDate = new Date(holiday.holidayDate);
                     return holidayDate >= today && holidayDate <= next30Days;
                 }).length;
-                
+
             case 'tasks':
                 // This would show pending tasks when tasks API is available
                 return 0; // Placeholder
-                
+
             case 'my-notes':
                 // This would show recent notes count
                 return 0; // Placeholder
-                
+
             default:
                 return 0;
         }
@@ -837,7 +837,7 @@ const UserDashboard: React.FC = memo(() => {
             colorClass: "card-success",
             route: ROUTES.USER.PF_MANAGEMENT
         }
-    ], [t]);
+    ], [t, language]);
 
     // Memoize user display name
     const userDisplayName = useMemo(() => {
@@ -858,22 +858,22 @@ const UserDashboard: React.FC = memo(() => {
     // Filter cards based on user permissions and search
     const visibleCards = useMemo(() => {
         let filteredCards = cards.filter(hasAccess);
-        
+
         // Apply search filter
         if (searchTerm.trim()) {
-            filteredCards = filteredCards.filter(card => 
+            filteredCards = filteredCards.filter(card =>
                 card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 card.subtitle.toLowerCase().includes(searchTerm.toLowerCase())
             );
         }
-        
+
         return filteredCards;
     }, [cards, hasAccess, searchTerm]);
 
     if (isLoading || dashboardData.loading) {
         return (
             <div className="user-dashboard container-fluid py-4">
-                <div className="d-flex justify-content-center align-items-center" style={{minHeight: '50vh'}}>
+                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
                     <div className="spinner-border text-danger" role="status">
                         <span className="visually-hidden">{t('dashboard.userDashboard.loading')}</span>
                     </div>
@@ -898,7 +898,7 @@ const UserDashboard: React.FC = memo(() => {
             <div className="user-dashboard">
                 <div className="dashboard-layout">
                     {/* Left Sidebar */}
-                    <div className="left-sidebar">
+                    <div key={language} className="left-sidebar">
                         <div className="sidebar-header">
                             <h6 className="sidebar-title">
                                 <i className="bi bi-grid-3x3-gap-fill me-2"></i>
@@ -932,7 +932,7 @@ const UserDashboard: React.FC = memo(() => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div className="sidebar-menu">
                             {visibleCards.length === 0 ? (
                                 <div className="text-center text-muted py-3">
@@ -941,8 +941,8 @@ const UserDashboard: React.FC = memo(() => {
                                 </div>
                             ) : (
                                 visibleCards.map((card, index) => (
-                                    <div 
-                                        key={card.id} 
+                                    <div
+                                        key={`${card.id}-${language}`}
                                         className={`sidebar-menu-item ${card.colorClass}`}
                                         onClick={() => handleCardClick(card.route)}
                                         data-bs-toggle="tooltip"
@@ -997,7 +997,7 @@ const UserDashboard: React.FC = memo(() => {
                                 </div>
                             </div>
                         </div>
-                        
+
                         {/* Enhanced Filters Section */}
                         <div className="filters-section">
                             <div className="row g-4 align-items-end">
@@ -1006,8 +1006,8 @@ const UserDashboard: React.FC = memo(() => {
                                         <i className="bi bi-calendar-month filter-icon"></i>
                                         {t('dashboard.userDashboard.filters.month')}
                                     </label>
-                                    <select 
-                                        className="form-select" 
+                                    <select
+                                        className="form-select"
                                         id="monthFilter"
                                         value={filters.month || ''}
                                         onChange={(e) => handleFilterChange('month', e.target.value)}
@@ -1032,8 +1032,8 @@ const UserDashboard: React.FC = memo(() => {
                                         <i className="bi bi-calendar-year filter-icon"></i>
                                         {t('dashboard.userDashboard.filters.year')}
                                     </label>
-                                    <select 
-                                        className="form-select" 
+                                    <select
+                                        className="form-select"
                                         id="yearFilter"
                                         value={filters.year}
                                         onChange={(e) => handleFilterChange('year', e.target.value)}
@@ -1048,8 +1048,8 @@ const UserDashboard: React.FC = memo(() => {
                                         <i className="bi bi-check-circle filter-icon"></i>
                                         {t('dashboard.userDashboard.filters.status')}
                                     </label>
-                                    <select 
-                                        className="form-select" 
+                                    <select
+                                        className="form-select"
                                         id="statusFilter"
                                         value={filters.status}
                                         onChange={(e) => handleFilterChange('status', e.target.value)}
@@ -1089,7 +1089,7 @@ const UserDashboard: React.FC = memo(() => {
                                     <div className="decoration-dot"></div>
                                 </div>
                             </div>
-                            
+
                             <div className="row g-1">
                                 {quickStats.map((stat, index) => (
                                     <div key={index} className="col-xl-2 col-lg-3 col-md-4 col-sm-6">
@@ -1170,8 +1170,8 @@ const UserDashboard: React.FC = memo(() => {
                                                             </div>
                                                             <div className="stat-progress">
                                                                 <div className="progress-bar">
-                                                                    <div 
-                                                                        className="progress-fill" 
+                                                                    <div
+                                                                        className="progress-fill"
                                                                         style={{
                                                                             width: `${item.allocated > 0 ? ((item.used / item.allocated) * 100) : 0}%`
                                                                         }}
@@ -1299,10 +1299,10 @@ const UserDashboard: React.FC = memo(() => {
                                             </div>
                                             <div className="balance-progress">
                                                 <div className="progress">
-                                                    <div 
-                                                        className="progress-bar bg-success" 
+                                                    <div
+                                                        className="progress-bar bg-success"
                                                         style={{
-                                                            width: `${!dashboardData.loading && dashboardData.leaveBalance.length > 0 ? 
+                                                            width: `${!dashboardData.loading && dashboardData.leaveBalance.length > 0 ?
                                                                 (() => {
                                                                     const totalAllocated = dashboardData.leaveBalance.reduce((sum: number, balance: any) => sum + (balance?.allocatedDays || 0), 0);
                                                                     const totalUsed = dashboardData.leaveBalance.reduce((sum: number, balance: any) => sum + (balance?.usedDays || 0), 0);
@@ -1314,7 +1314,7 @@ const UserDashboard: React.FC = memo(() => {
                                             </div>
                                             <div className="balance-details">
                                                 <small>
-                                                    Used: {dashboardData.loading ? '...' : dashboardData.leaveBalance.reduce((sum: number, balance: any) => sum + (balance?.usedDays || 0), 0)} days | 
+                                                    Used: {dashboardData.loading ? '...' : dashboardData.leaveBalance.reduce((sum: number, balance: any) => sum + (balance?.usedDays || 0), 0)} days |
                                                     Total: {dashboardData.loading ? '...' : dashboardData.leaveBalance.reduce((sum: number, balance: any) => sum + (balance?.allocatedDays || 0), 0)} days
                                                 </small>
                                             </div>
@@ -1428,10 +1428,10 @@ const UserDashboard: React.FC = memo(() => {
                                                     <div className="event-details">
                                                         <span className="event-title">{holiday.title}</span>
                                                         <span className="event-type">
-                                                            {new Date(holiday.date).toLocaleDateString('en-US', { 
-                                                                day: 'numeric', 
-                                                                month: 'short', 
-                                                                year: 'numeric' 
+                                                            {new Date(holiday.date).toLocaleDateString('en-US', {
+                                                                day: 'numeric',
+                                                                month: 'short',
+                                                                year: 'numeric'
                                                             })}
                                                         </span>
                                                     </div>

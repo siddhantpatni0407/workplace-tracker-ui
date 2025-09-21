@@ -606,6 +606,409 @@
           "subtitle": "Sauvegarder et restaurer les données du système"
         }
       }
+    },
+    "admin": {
+      "dashboard": {
+        "title": "Tableau de Bord Admin",
+        "sidebar": {
+          "quickAccess": "Accès Rapide"
+        },
+        "search": {
+          "placeholder": "Rechercher les outils d'administration...",
+          "noResults": "Aucun outil trouvé"
+        },
+        "welcome": {
+          "title": "Bienvenue",
+          "subtitle": "Gérez votre lieu de travail efficacement avec des outils administratifs complets"
+        },
+        "stats": {
+          "title": "Statistiques Rapides",
+          "subtitle": "Aperçus système en temps réel et statistiques",
+          "totalUsers": "Total des Utilisateurs",
+          "activeUsers": "Utilisateurs Actifs",
+          "inactiveUsers": "Utilisateurs Inactifs",
+          "totalHolidays": "Total des Jours Fériés",
+          "leavePolicies": "Politiques de Congés"
+        },
+        "categories": {
+          "all": "Tous",
+          "management": "Gestion",
+          "analytics": "Analyses",
+          "system": "Système"
+        },
+        "tools": {
+          "title": "Outils Administratifs",
+          "subtitle": "Accédez à des outils complets pour gérer votre lieu de travail efficacement",
+          "openButton": "Ouvrir"
+        },
+        "cards": {
+          "userManagement": {
+            "title": "Gestion des Utilisateurs",
+            "description": "Gérer les utilisateurs, rôles et permissions"
+          },
+          "holidayManagement": {
+            "title": "Gestion des Jours Fériés",
+            "description": "Configurer les jours fériés et événements du calendrier"
+          },
+          "leavePolicyManagement": {
+            "title": "Gestion des Politiques de Congés",
+            "description": "Configurer les politiques et règles de congés"
+          },
+          "reports": {
+            "title": "Analyses et Rapports",
+            "description": "Voir les rapports et analyses complets"
+          },
+          "databaseBackup": {
+            "title": "Sauvegarde de Base de Données",
+            "description": "Gérer les sauvegardes et la restauration de la base de données"
+          },
+          "userProfile": {
+            "title": "Profil Utilisateur",
+            "description": "Voir et modifier les informations de votre profil"
+          },
+          "userSettings": {
+            "title": "Paramètres",
+            "description": "Gérer vos préférences personnelles"
+          }
+        },
+        "sections": {
+          "userManagement": {
+            "title": "Aperçu de la Gestion des Utilisateurs",
+            "manageButton": "Gérer les Utilisateurs",
+            "activeUsers": "Utilisateurs Actifs",
+            "inactiveUsers": "Utilisateurs Inactifs",
+            "totalUsers": "Total des Utilisateurs",
+            "needsAttention": "Nécessite une attention",
+            "systemCapacity": "Total des utilisateurs enregistrés",
+            "active": "Actif",
+            "inactive": "Inactif",
+            "configured": "Configuré",
+            "userStatistics": "Statistiques d'Activité des Utilisateurs",
+            "totalRegistered": "Total Enregistrés",
+            "currentlyActive": "Actuellement Actifs",
+            "needsReactivation": "Nécessite une Attention",
+            "allTime": "Tout le temps",
+            "activeRate": "taux d'activité",
+            "inactiveRate": "taux d'inactivité",
+            "userDistribution": "Distribution du Statut Utilisateur"
+          },
+          "holidayManagement": {
+            "title": "Gestion des Jours Fériés",
+            "manageButton": "Gérer les Jours Fériés",
+            "totalHolidays": "Total des Jours Fériés",
+            "upcomingHolidays": "Analyse des Jours Fériés",
+            "currentYear": "Cette année",
+            "nextQuarter": "Prochain trimestre",
+            "estimatedUpcoming": "Prochains estimés",
+            "regionalHolidays": "Jours Fériés Régionaux",
+            "multipleRegions": "Plusieurs régions",
+            "utilization": "Taux d'Utilisation",
+            "employeeEngagement": "Engagement des employés",
+            "monthlyDistribution": "Distribution Mensuelle des Jours Fériés",
+            "jan": "Jan",
+            "feb": "Fév",
+            "mar": "Mar",
+            "apr": "Avr",
+            "may": "Mai",
+            "jun": "Juin",
+            "jul": "Juil",
+            "aug": "Août",
+            "sep": "Sep",
+            "oct": "Oct",
+            "nov": "Nov",
+            "dec": "Déc",
+            "upcomingList": "Prochains Jours Fériés",
+            "christmas": "Jour de Noël",
+            "newYear": "Jour de l'An",
+            "republic": "Jour de la République",
+            "holi": "Festival Holi",
+            "national": "Jour Férié National",
+            "regional": "Jour Férié Régional",
+            "holidayOverview": "Aperçu du Système de Jours Fériés",
+            "totalConfigured": "Total Configurés",
+            "systemWide": "Jours fériés à l'échelle du système",
+            "publicHolidays": "Jours Fériés Publics",
+            "ofTotal": "du total",
+            "companyHolidays": "Jours Fériés de l'Entreprise",
+            "holidayCoverage": "Couverture des Jours Fériés",
+            "quickSummary": "Résumé Rapide",
+            "configuredInSystem": "Configurés dans le système",
+            "nextHoliday": "Prochain Jour Férié",
+            "available": "Disponible",
+            "none": "Aucun",
+            "checkCalendar": "Vérifier le calendrier pour les détails",
+            "systemStatus": "État du Système",
+            "operational": "Opérationnel",
+            "allSystemsActive": "Tous les systèmes actifs"
+          },
+          "leavePolicyManagement": {
+            "title": "Gestion des Politiques de Congés",
+            "manageButton": "Gérer les Politiques",
+            "totalPolicies": "Total des Politiques",
+            "coverage": "Couverture des Politiques",
+            "active": "Politiques actives",
+            "allUsers": "Tous les utilisateurs couverts",
+            "configured": "Configuré",
+            "utilizationRate": "Taux d'Utilisation",
+            "thisYear": "Cette année",
+            "compliance": "Score de Conformité",
+            "excellent": "Excellent",
+            "efficiency": "Efficacité du Système",
+            "optimal": "Performance optimale",
+            "policyAnalytics": "Analyse des Politiques de Congés",
+            "totalConfigured": "Total Configurés",
+            "fullyOperational": "Entièrement opérationnel",
+            "activePolicies": "Politiques Actives",
+            "coveredUsers": "Utilisateurs Couverts",
+            "allCovered": "Tous couverts",
+            "noCoverage": "Aucune couverture",
+            "policyEffectiveness": "Efficacité des Politiques",
+            "userCompliance": "Conformité des Utilisateurs",
+            "systemIntegration": "Intégration du Système",
+            "policyUtilization": "Utilisation des Politiques",
+            "policyTypes": "Types de Politiques et Utilisation",
+            "annual": "Congé Annuel",
+            "sick": "Congé Maladie",
+            "maternity": "Congé Maternité/Paternité",
+            "personal": "Congé Personnel",
+            "emergency": "Congé d'Urgence",
+            "departmentBreakdown": "Utilisation par Département",
+            "engineering": "Ingénierie",
+            "sales": "Ventes et Marketing",
+            "hr": "Ressources Humaines",
+            "finance": "Finance",
+            "support": "Support Client",
+            "avgDays": "jours moyens",
+            "policyInsights": "Aperçus des Politiques",
+            "wellConfigured": "Bien Configuré",
+            "policiesActive": "politiques sont actives et fonctionnelles",
+            "fullCoverage": "Couverture Complète",
+            "allUsersHaveAccess": "Tous les utilisateurs ont accès aux politiques de congés",
+            "systemHealth": "État du Système",
+            "optimalPerformance": "Système de gestion des congés fonctionnant de manière optimale",
+            "noPolicies": "Aucune Politique",
+            "considerAdding": "Envisagez d'ajouter des politiques de congés pour votre organisation"
+          },
+          "systemHealth": {
+            "title": "État du Système",
+            "good": "Tous les Systèmes Opérationnels",
+            "warning": "Problèmes Mineurs Détectés",
+            "error": "Problèmes Critiques"
+          },
+          "quickActions": {
+            "title": "Actions Rapides",
+            "addUser": "Ajouter un Nouvel Utilisateur",
+            "addHoliday": "Ajouter un Jour Férié",
+            "addPolicy": "Créer une Politique",
+            "viewReports": "Voir les Rapports"
+          }
+        }
+      }
+    }
+  },
+  "admin": {
+    "common": {
+      "create": "Créer",
+      "update": "Mettre à jour",
+      "saving": "Enregistrement...",
+      "actions": "Actions",
+      "refresh": "Actualiser"
+    },
+    "dashboard": {
+      "title": "Tableau de Bord Admin",
+      "sidebar": {
+        "quickAccess": "Accès Rapide"
+      },
+      "search": {
+        "placeholder": "Rechercher les outils d'administration...",
+        "noResults": "Aucun outil trouvé"
+      },
+      "welcome": {
+        "title": "Bienvenue",
+        "subtitle": "Gérez votre lieu de travail efficacement avec des outils administratifs complets"
+      },
+      "stats": {
+        "title": "Statistiques Rapides",
+        "subtitle": "Aperçus système en temps réel et statistiques",
+        "totalUsers": "Total des Utilisateurs",
+        "activeUsers": "Utilisateurs Actifs",
+        "inactiveUsers": "Utilisateurs Inactifs",
+        "totalHolidays": "Total des Jours Fériés",
+        "leavePolicies": "Politiques de Congés"
+      },
+      "categories": {
+        "all": "Tous",
+        "management": "Gestion",
+        "analytics": "Analyses",
+        "system": "Système"
+      },
+      "tools": {
+        "title": "Outils Administratifs",
+        "subtitle": "Accédez à des outils complets pour gérer votre lieu de travail efficacement",
+        "openButton": "Ouvrir"
+      },
+      "cards": {
+        "userManagement": {
+          "title": "Gestion des Utilisateurs",
+          "description": "Gérer les utilisateurs, rôles et permissions"
+        },
+        "holidayManagement": {
+          "title": "Gestion des Jours Fériés",
+          "description": "Configurer les jours fériés et événements du calendrier"
+        },
+        "leavePolicyManagement": {
+          "title": "Gestion des Politiques de Congés",
+          "description": "Configurer les politiques et règles de congés"
+        },
+        "reports": {
+          "title": "Analyses et Rapports",
+          "description": "Voir les rapports et analyses complets"
+        },
+        "databaseBackup": {
+          "title": "Sauvegarde de Base de Données",
+          "description": "Gérer les sauvegardes et la restauration de la base de données"
+        },
+        "userProfile": {
+          "title": "Profil Utilisateur",
+          "description": "Voir et modifier les informations de votre profil"
+        },
+        "userSettings": {
+          "title": "Paramètres",
+          "description": "Gérer vos préférences personnelles"
+        }
+      },
+      "sections": {
+        "userManagement": {
+          "title": "Aperçu de la Gestion des Utilisateurs",
+          "manageButton": "Gérer les Utilisateurs",
+          "activeUsers": "Utilisateurs Actifs",
+          "inactiveUsers": "Utilisateurs Inactifs",
+          "totalUsers": "Total des Utilisateurs",
+          "needsAttention": "Nécessite une attention",
+          "systemCapacity": "Total des utilisateurs enregistrés",
+          "active": "Actif",
+          "inactive": "Inactif",
+          "configured": "Configuré",
+          "userStatistics": "Statistiques d'Activité des Utilisateurs",
+          "totalRegistered": "Total Enregistrés",
+          "currentlyActive": "Actuellement Actifs",
+          "needsReactivation": "Nécessite une Attention",
+          "allTime": "Tout le temps",
+          "activeRate": "taux d'activité",
+          "inactiveRate": "taux d'inactivité",
+          "userDistribution": "Distribution du Statut Utilisateur"
+        },
+        "holidayManagement": {
+          "title": "Gestion des Jours Fériés",
+          "manageButton": "Gérer les Jours Fériés",
+          "totalHolidays": "Total des Jours Fériés",
+          "upcomingHolidays": "Analyse des Jours Fériés",
+          "currentYear": "Cette année",
+          "nextQuarter": "Prochain trimestre",
+          "estimatedUpcoming": "Prochains estimés",
+          "regionalHolidays": "Jours Fériés Régionaux",
+          "multipleRegions": "Plusieurs régions",
+          "utilization": "Taux d'Utilisation",
+          "employeeEngagement": "Engagement des employés",
+          "monthlyDistribution": "Distribution Mensuelle des Jours Fériés",
+          "jan": "Jan",
+          "feb": "Fév",
+          "mar": "Mar",
+          "apr": "Avr",
+          "may": "Mai",
+          "jun": "Juin",
+          "jul": "Juil",
+          "aug": "Aoû",
+          "sep": "Sep",
+          "oct": "Oct",
+          "nov": "Nov",
+          "dec": "Déc",
+          "upcomingList": "Prochains Jours Fériés",
+          "christmas": "Jour de Noël",
+          "newYear": "Jour de l'An",
+          "republic": "Jour de la République",
+          "holi": "Festival Holi",
+          "national": "Jour Férié National",
+          "regional": "Jour Férié Régional",
+          "holidayOverview": "Aperçu du Système de Jours Fériés",
+          "totalConfigured": "Total Configurés",
+          "systemWide": "Jours fériés à l'échelle du système",
+          "publicHolidays": "Jours Fériés Publics",
+          "ofTotal": "du total",
+          "companyHolidays": "Jours Fériés de l'Entreprise",
+          "holidayCoverage": "Couverture des Jours Fériés",
+          "quickSummary": "Résumé Rapide",
+          "configuredInSystem": "Configurés dans le système",
+          "nextHoliday": "Prochain Jour Férié",
+          "available": "Disponible",
+          "none": "Aucun",
+          "checkCalendar": "Consulter le calendrier pour les détails",
+          "systemStatus": "État du Système",
+          "operational": "Opérationnel",
+          "allSystemsActive": "Tous les systèmes actifs"
+        },
+        "leavePolicyManagement": {
+          "title": "Gestion des Politiques de Congés",
+          "manageButton": "Gérer les Politiques",
+          "totalPolicies": "Total des Politiques",
+          "coverage": "Couverture des Politiques",
+          "active": "Politiques actives",
+          "allUsers": "Tous les utilisateurs couverts",
+          "configured": "Configuré",
+          "utilizationRate": "Taux d'Utilisation",
+          "thisYear": "Cette année",
+          "compliance": "Score de Conformité",
+          "excellent": "Excellent",
+          "efficiency": "Efficacité du Système",
+          "optimal": "Performance optimale",
+          "policyAnalytics": "Analyses des Politiques de Congés",
+          "totalConfigured": "Total Configurés",
+          "fullyOperational": "Totalement opérationnel",
+          "activePolicies": "Politiques Actives",
+          "coveredUsers": "Utilisateurs Couverts",
+          "allCovered": "Tous couverts",
+          "noCoverage": "Aucune couverture",
+          "policyEffectiveness": "Efficacité des Politiques",
+          "userCompliance": "Conformité des Utilisateurs",
+          "systemIntegration": "Intégration du Système",
+          "policyUtilization": "Utilisation des Politiques",
+          "policyTypes": "Types de Politiques et Utilisation",
+          "annual": "Congé Annuel",
+          "sick": "Congé Maladie",
+          "maternity": "Congé Maternité/Paternité",
+          "personal": "Congé Personnel",
+          "emergency": "Congé d'Urgence",
+          "departmentBreakdown": "Utilisation par Département",
+          "engineering": "Ingénierie",
+          "sales": "Ventes et Marketing",
+          "hr": "Ressources Humaines",
+          "finance": "Finance",
+          "support": "Support Client",
+          "avgDays": "jours en moyenne",
+          "policyInsights": "Insights des Politiques",
+          "wellConfigured": "Bien Configuré",
+          "policiesActive": "politiques sont actives et fonctionnelles",
+          "fullCoverage": "Couverture Complète",
+          "allUsersHaveAccess": "Tous les utilisateurs ont accès aux politiques de congés",
+          "systemHealth": "État du Système",
+          "optimalPerformance": "Système de gestion des congés fonctionnant de manière optimale",
+          "noPolicies": "Aucune Politique",
+          "considerAdding": "Envisagez d'ajouter des politiques de congés pour votre organisation"
+        },
+        "systemHealth": {
+          "title": "État du Système",
+          "good": "Tous les Systèmes Opérationnels",
+          "warning": "Problèmes Mineurs Détectés",
+          "error": "Problèmes Critiques"
+        },
+        "quickActions": {
+          "title": "Actions Rapides",
+          "addUser": "Ajouter un Nouvel Utilisateur",
+          "addHoliday": "Ajouter un Jour Férié",
+          "addPolicy": "Créer une Politique",
+          "viewReports": "Voir les Rapports"
+        }
+      }
     }
   }
 }
