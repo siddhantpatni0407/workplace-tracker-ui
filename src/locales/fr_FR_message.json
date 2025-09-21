@@ -606,6 +606,63 @@
           "subtitle": "Sauvegarder et restaurer les données du système"
         }
       }
+    },
+    "admin": {
+      "dashboard": {
+        "title": "Tableau de Bord Admin",
+        "sidebar": {
+          "quickAccess": "Accès Rapide"
+        },
+        "search": {
+          "placeholder": "Rechercher les outils d'administration...",
+          "noResults": "Aucun outil trouvé"
+        },
+        "welcome": {
+          "title": "Bienvenue",
+          "subtitle": "Gérez votre lieu de travail efficacement avec des outils administratifs complets"
+        },
+        "stats": {
+          "title": "Statistiques Rapides",
+          "totalUsers": "Total des Utilisateurs",
+          "activeUsers": "Utilisateurs Actifs",
+          "inactiveUsers": "Utilisateurs Inactifs",
+          "totalHolidays": "Total des Jours Fériés",
+          "leavePolicies": "Politiques de Congés"
+        },
+        "categories": {
+          "all": "Tous",
+          "management": "Gestion",
+          "analytics": "Analyses",
+          "system": "Système"
+        },
+        "tools": {
+          "title": "Outils Administratifs",
+          "subtitle": "Accédez à des outils complets pour gérer votre lieu de travail efficacement",
+          "openButton": "Ouvrir"
+        },
+        "cards": {
+          "userManagement": {
+            "title": "Gestion des Utilisateurs",
+            "description": "Gérer les utilisateurs, rôles et permissions"
+          },
+          "holidayManagement": {
+            "title": "Gestion des Jours Fériés",
+            "description": "Configurer les jours fériés et événements du calendrier"
+          },
+          "leavePolicyManagement": {
+            "title": "Gestion des Politiques de Congés",
+            "description": "Configurer les politiques et règles de congés"
+          },
+          "reports": {
+            "title": "Analyses et Rapports",
+            "description": "Voir les rapports et analyses complets"
+          },
+          "databaseBackup": {
+            "title": "Sauvegarde de Base de Données",
+            "description": "Gérer les sauvegardes et la restauration de la base de données"
+          }
+        }
+      }
     }
   }
 }

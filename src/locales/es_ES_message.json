@@ -630,6 +630,63 @@
           "subtitle": "Respaldar y restaurar datos del sistema"
         }
       }
+    },
+    "admin": {
+      "dashboard": {
+        "title": "Panel de Administración",
+        "sidebar": {
+          "quickAccess": "Acceso Rápido"
+        },
+        "search": {
+          "placeholder": "Buscar herramientas de administración...",
+          "noResults": "No se encontraron herramientas"
+        },
+        "welcome": {
+          "title": "Bienvenido",
+          "subtitle": "Gestiona tu lugar de trabajo de manera eficiente con herramientas administrativas integrales"
+        },
+        "stats": {
+          "title": "Estadísticas Rápidas",
+          "totalUsers": "Total de Usuarios",
+          "activeUsers": "Usuarios Activos",
+          "inactiveUsers": "Usuarios Inactivos",
+          "totalHolidays": "Total de Días Festivos",
+          "leavePolicies": "Políticas de Permisos"
+        },
+        "categories": {
+          "all": "Todos",
+          "management": "Gestión",
+          "analytics": "Análisis",
+          "system": "Sistema"
+        },
+        "tools": {
+          "title": "Herramientas Administrativas",
+          "subtitle": "Accede a herramientas integrales para gestionar tu lugar de trabajo de manera efectiva",
+          "openButton": "Abrir"
+        },
+        "cards": {
+          "userManagement": {
+            "title": "Gestión de Usuarios",
+            "description": "Gestionar usuarios, roles y permisos"
+          },
+          "holidayManagement": {
+            "title": "Gestión de Días Festivos",
+            "description": "Configurar días festivos y eventos del calendario"
+          },
+          "leavePolicyManagement": {
+            "title": "Gestión de Políticas de Permisos",
+            "description": "Configurar políticas y reglas de permisos"
+          },
+          "reports": {
+            "title": "Análisis y Reportes",
+            "description": "Ver reportes e informes integrales"
+          },
+          "databaseBackup": {
+            "title": "Respaldo de Base de Datos",
+            "description": "Gestionar respaldos y restauración de la base de datos"
+          }
+        }
+      }
     }
   }
 }

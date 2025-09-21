@@ -946,6 +946,61 @@
       "actions": "Actions",
       "refresh": "Refresh"
     },
+    "dashboard": {
+      "title": "Admin Dashboard",
+      "sidebar": {
+        "quickAccess": "Quick Access"
+      },
+      "search": {
+        "placeholder": "Search admin tools...",
+        "noResults": "No tools found"
+      },
+      "welcome": {
+        "title": "Welcome",
+        "subtitle": "Manage your workplace efficiently with comprehensive administrative tools"
+      },
+      "stats": {
+        "title": "Quick Statistics",
+        "totalUsers": "Total Users",
+        "activeUsers": "Active Users",
+        "inactiveUsers": "Inactive Users",
+        "totalHolidays": "Total Holidays",
+        "leavePolicies": "Leave Policies"
+      },
+      "categories": {
+        "all": "All",
+        "management": "Management",
+        "analytics": "Analytics",
+        "system": "System"
+      },
+      "tools": {
+        "title": "Administrative Tools",
+        "subtitle": "Access comprehensive tools to manage your workplace effectively",
+        "openButton": "Open"
+      },
+      "cards": {
+        "userManagement": {
+          "title": "User Management",
+          "description": "Manage users, roles, and permissions"
+        },
+        "holidayManagement": {
+          "title": "Holiday Management",
+          "description": "Configure holidays and calendar events"
+        },
+        "leavePolicyManagement": {
+          "title": "Leave Policy Management",
+          "description": "Configure leave policies and rules"
+        },
+        "reports": {
+          "title": "Analytics & Reports",
+          "description": "View comprehensive reports and insights"
+        },
+        "databaseBackup": {
+          "title": "Database Backup",
+          "description": "Manage database backups and restore"
+        }
+      }
+    },
     "leavePolicy": {
       "title": "Leave Policy Management",
       "subtitle": "Configure and manage company leave policies",
