@@ -359,8 +359,6 @@ const AdminDashboard: React.FC = () => {
               </div>
             </div>
 
-
-
             {/* Quick Stats Section */}
             <div className="quick-stats-section">
               <div className="stats-header">
