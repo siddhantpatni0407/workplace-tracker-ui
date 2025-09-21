@@ -210,89 +210,92 @@
 }
 
 /* Welcome Section */
-.welcome-section {
+.admin-dashboard .welcome-section {
   margin-bottom: 24px;
 }
 
-.welcome-card {
-  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%);
-  border: 1px solid var(--primary-200);
-  border-radius: 12px;
-  padding: 20px 24px;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1);
-  transition: all 0.3s ease;
+.admin-dashboard .welcome-card {
+  background: linear-gradient(135deg, var(--primary-50) 0%, var(--primary-100) 100%) !important;
+  border: 1px solid var(--primary-200) !important;
+  border-radius: 12px !important;
+  padding: 20px 24px !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.1) !important;
+  transition: all 0.3s ease !important;
 }
 
-.welcome-card:hover {
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
-  transform: translateY(-1px);
+.admin-dashboard .welcome-card:hover {
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15) !important;
+  transform: translateY(-1px) !important;
 }
 
-.welcome-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 8px;
+.admin-dashboard .welcome-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  gap: 8px !important;
+  width: 100% !important;
 }
 
-.welcome-title {
-  font-size: 24px;
-  font-weight: 700;
-  font-style: italic;
-  color: var(--primary-700);
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+.admin-dashboard .welcome-title {
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  font-style: italic !important;
+  color: var(--primary-700) !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  text-align: center !important;
 }
 
-.welcome-title i {
-  color: var(--primary-600);
-  font-size: 26px;
+.admin-dashboard .welcome-title i {
+  color: var(--primary-600) !important;
+  font-size: 26px !important;
 }
 
-.employee-id {
-  font-size: 18px;
-  font-weight: 500;
-  color: var(--primary-600);
-  margin-left: 8px;
-  opacity: 0.8;
+.admin-dashboard .employee-id {
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  color: var(--primary-600) !important;
+  margin-left: 8px !important;
+  opacity: 0.8 !important;
 }
 
-.welcome-subtitle {
-  font-size: 16px;
-  color: var(--primary-600);
-  margin: 0;
-  opacity: 0.9;
+.admin-dashboard .welcome-subtitle {
+  font-size: 16px !important;
+  color: var(--primary-600) !important;
+  margin: 0 !important;
+  opacity: 0.9 !important;
 }
 
 /* Dark theme support for welcome section */
-[data-theme="dark"] .welcome-card {
-  background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-800) 100%);
-  border-color: var(--primary-700);
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
+[data-theme="dark"] .admin-dashboard .welcome-card {
+  background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-800) 100%) !important;
+  border-color: var(--primary-700) !important;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2) !important;
 }
 
-[data-theme="dark"] .welcome-card:hover {
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+[data-theme="dark"] .admin-dashboard .welcome-card:hover {
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3) !important;
 }
 
-[data-theme="dark"] .welcome-title {
-  color: var(--primary-200);
+[data-theme="dark"] .admin-dashboard .welcome-title {
+  color: var(--primary-200) !important;
 }
 
-[data-theme="dark"] .welcome-title i {
-  color: var(--primary-300);
+[data-theme="dark"] .admin-dashboard .welcome-title i {
+  color: var(--primary-300) !important;
 }
 
-[data-theme="dark"] .employee-id {
-  color: var(--primary-300);
+[data-theme="dark"] .admin-dashboard .employee-id {
+  color: var(--primary-300) !important;
 }
 
-[data-theme="dark"] .welcome-subtitle {
-  color: var(--primary-300);
+[data-theme="dark"] .admin-dashboard .welcome-subtitle {
+  color: var(--primary-300) !important;
 }
 
 /* Quick Stats Cards */
