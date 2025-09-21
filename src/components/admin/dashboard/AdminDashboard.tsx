@@ -46,7 +46,7 @@ interface AdminDashboardData {
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [dashboardData, setDashboardData] = useState<AdminDashboardData>({
     totalUsers: 0,
     activeUsers: 0,
@@ -128,7 +128,7 @@ const AdminDashboard: React.FC = () => {
       route: ROUTES.USER.SETTINGS,
       category: 'system'
     }
-  ], [t]);
+  ], [t, language]);
 
   const quickStats: AdminQuickStat[] = useMemo(() => [
     {
@@ -171,7 +171,7 @@ const AdminDashboard: React.FC = () => {
       colorClass: "stat-policies",
       bgGradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
     }
-  ], [t, dashboardData]);
+  ], [t, language, dashboardData]);
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -262,7 +262,7 @@ const AdminDashboard: React.FC = () => {
         
         <div className="dashboard-layout">
           {/* Left Sidebar */}
-          <div className="left-sidebar">
+          <div key={language} className="left-sidebar">
             <div className="sidebar-header">
               <h6 className="sidebar-title">
                 <i className="bi bi-grid-3x3-gap-fill me-2"></i>
@@ -306,7 +306,7 @@ const AdminDashboard: React.FC = () => {
               ) : (
                 filteredCards.map((card, index) => (
                   <div
-                    key={card.id}
+                    key={`${card.id}-${language}`}
                     className={`sidebar-menu-item ${card.colorClass}`}
                     onClick={() => handleCardClick(card.route)}
                     data-bs-toggle="tooltip"

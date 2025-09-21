@@ -31,32 +31,61 @@ class SimpleI18n implements I18nInstance {
     fr: frTranslations,
     hi: hiTranslations,
   };
+  private initialized: boolean = false;
 
   constructor() {
+    this.initialize();
+  }
+
+  private initialize = (): void => {
+    if (this.initialized) return;
+    
     // Initialize with default language
     const savedLang = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
+    
     if (savedLang && this.translations[savedLang]) {
       this.currentLanguage = savedLang;
+      console.log('🌐 Language initialized from localStorage:', savedLang);
+    } else {
+      this.currentLanguage = 'en';
+      localStorage.setItem(STORAGE_KEYS.LANGUAGE, 'en');
+      console.log('🌐 Language initialized to default: en');
     }
-  }
+    
+    this.initialized = true;
+    
+    // Dispatch initial language event after a brief delay to ensure components are ready
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('languageChanged', { detail: this.currentLanguage }));
+    }, 100);
+  };
 
   // Method to check authentication and reset language if needed
   initializeForAuthState = (isAuthenticated: boolean): void => {
     if (!isAuthenticated) {
       // For non-authenticated users, always use English
-      this.currentLanguage = 'en';
-      localStorage.setItem(STORAGE_KEYS.LANGUAGE, 'en');
-      window.dispatchEvent(new CustomEvent('languageChanged', { detail: 'en' }));
-    } else {
-      // For authenticated users, use saved language or default to English
-      const savedLang = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
-      if (savedLang && this.translations[savedLang]) {
-        this.currentLanguage = savedLang;
-      } else {
+      if (this.currentLanguage !== 'en') {
         this.currentLanguage = 'en';
         localStorage.setItem(STORAGE_KEYS.LANGUAGE, 'en');
+        window.dispatchEvent(new CustomEvent('languageChanged', { detail: 'en' }));
       }
-      window.dispatchEvent(new CustomEvent('languageChanged', { detail: this.currentLanguage }));
+    } else {
+      // For authenticated users, only change language if it's not already set correctly
+      const savedLang = localStorage.getItem(STORAGE_KEYS.LANGUAGE);
+      
+      if (savedLang && this.translations[savedLang]) {
+        if (this.currentLanguage !== savedLang) {
+          this.currentLanguage = savedLang;
+          window.dispatchEvent(new CustomEvent('languageChanged', { detail: this.currentLanguage }));
+        }
+      } else {
+        // Only set to English if no valid saved language and current language is not already English
+        if (this.currentLanguage !== 'en') {
+          this.currentLanguage = 'en';
+          localStorage.setItem(STORAGE_KEYS.LANGUAGE, 'en');
+          window.dispatchEvent(new CustomEvent('languageChanged', { detail: 'en' }));
+        }
+      }
     }
   };
 
@@ -105,8 +134,12 @@ class SimpleI18n implements I18nInstance {
     if (this.translations[lng]) {
       this.currentLanguage = lng;
       localStorage.setItem(STORAGE_KEYS.LANGUAGE, lng);
+      console.log('🌐 Language changed to:', lng);
+      
       // Trigger re-render by dispatching a custom event
       window.dispatchEvent(new CustomEvent('languageChanged', { detail: lng }));
+    } else {
+      console.warn('🌐 Language not found:', lng);
     }
   };
 }
