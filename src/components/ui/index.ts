@@ -14,3 +14,5 @@ export type { CaptchaRef } from './Captcha';
 export { default as FormProgress } from './FormProgress';
 export { default as PasswordRequirements } from './PasswordRequirements';
 export { default as VersionNotification } from './VersionNotification';
+export { default as SearchableSelect } from './SearchableSelect';
+export type { Option } from './SearchableSelect';

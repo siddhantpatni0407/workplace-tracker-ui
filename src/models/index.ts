@@ -18,6 +18,9 @@ export * from './Task';
 // Note related exports
 export * from './Note';
 
+// Location related exports
+export * from './Location';
+
 // Dashboard related exports
 export * from './Dashboard';
 

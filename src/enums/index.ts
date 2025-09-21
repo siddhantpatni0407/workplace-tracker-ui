@@ -18,6 +18,9 @@ export * from './TaskEnums';
 // Note related enums
 export * from './NoteEnums';
 
+// Location related enums
+export * from './LocationEnums';
+
 // Dashboard related enums
 export * from './DashboardEnums';
 

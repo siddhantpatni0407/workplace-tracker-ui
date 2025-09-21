@@ -8,6 +8,9 @@ import { UserProfileData } from "../../../models/User";
 import { ErrorBoundary, ErrorMessage, LoadingSpinner } from "../../ui";
 import Header from "../header/Header";
 import { useTranslation } from "../../../hooks/useTranslation";
+import SearchableSelect, { Option } from "../../ui/SearchableSelect";
+import { locationService } from "../../../services/locationService";
+import { CountryOption, StateOption, CityOption, PostalCodeOption } from "../../../models";
 import "./user-profile.css";
 
 const AUTO_DISMISS_MS = 3500;
@@ -52,6 +55,25 @@ const UserProfile: React.FC = memo(() => {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+
+  // Location-specific state
+  const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
+  const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
+  const [cityOptions, setCityOptions] = useState<CityOption[]>([]);
+  const [postalCodeOptions, setPostalCodeOptions] = useState<PostalCodeOption[]>([]);
+  
+  const [selectedCountry, setSelectedCountry] = useState<CountryOption | null>(null);
+  const [selectedState, setSelectedState] = useState<StateOption | null>(null);
+  const [selectedCity, setSelectedCity] = useState<CityOption | null>(null);
+  const [selectedPostalCode, setSelectedPostalCode] = useState<PostalCodeOption | null>(null);
+  
+  const [isManualCity, setIsManualCity] = useState(false);
+  const [manualCityName, setManualCityName] = useState('');
+  const [manualPostalCode, setManualPostalCode] = useState('');
+  
+  const [loadingStates, setLoadingStates] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
+  const [loadingPostalCodes, setLoadingPostalCodes] = useState(false);
 
   // Auto-dismiss messages
   useEffect(() => {
@@ -291,6 +313,181 @@ const UserProfile: React.FC = memo(() => {
       return copy;
     });
   }, []);
+
+  // Location handlers
+  const handleCountryChange = useCallback(async (country: CountryOption | null) => {
+    setSelectedCountry(country);
+    setSelectedState(null);
+    setSelectedCity(null);
+    setSelectedPostalCode(null);
+    setStateOptions([]);
+    setCityOptions([]);
+    setPostalCodeOptions([]);
+    setIsManualCity(false);
+    setManualCityName('');
+    setManualPostalCode('');
+
+    if (country) {
+      handleInputChange('country', country.value);
+      handleInputChange('state', '');
+      handleInputChange('city', '');
+      handleInputChange('postalCode', '');
+      
+      setLoadingStates(true);
+      try {
+        const states = locationService.getStates(country.isoCode);
+        setStateOptions(states);
+      } catch (error) {
+        console.error('Error loading states:', error);
+      } finally {
+        setLoadingStates(false);
+      }
+    } else {
+      handleInputChange('country', '');
+      handleInputChange('state', '');
+      handleInputChange('city', '');
+      handleInputChange('postalCode', '');
+    }
+  }, [handleInputChange]);
+
+  const handleStateChange = useCallback(async (state: StateOption | null) => {
+    setSelectedState(state);
+    setSelectedCity(null);
+    setSelectedPostalCode(null);
+    setCityOptions([]);
+    setPostalCodeOptions([]);
+    setIsManualCity(false);
+    setManualCityName('');
+    setManualPostalCode('');
+
+    if (state && selectedCountry) {
+      handleInputChange('state', state.value);
+      handleInputChange('city', '');
+      handleInputChange('postalCode', '');
+
+      setLoadingCities(true);
+      try {
+        const cities = locationService.getCities(selectedCountry.isoCode, state.isoCode);
+        setCityOptions(cities);
+      } catch (error) {
+        console.error('Error loading cities:', error);
+      } finally {
+        setLoadingCities(false);
+      }
+    } else {
+      handleInputChange('state', '');
+      handleInputChange('city', '');
+      handleInputChange('postalCode', '');
+    }
+  }, [selectedCountry, handleInputChange]);
+
+  const handleCityChange = useCallback(async (city: CityOption | null) => {
+    setSelectedCity(city);
+    setSelectedPostalCode(null);
+    setPostalCodeOptions([]);
+    setManualPostalCode('');
+
+    if (city) {
+      if (city.value === 'other') {
+        setIsManualCity(true);
+        handleInputChange('city', manualCityName);
+        handleInputChange('postalCode', '');
+      } else {
+        setIsManualCity(false);
+        setManualCityName('');
+        handleInputChange('city', city.value);
+        handleInputChange('postalCode', '');
+
+        // Load postal codes for the selected city
+        if (selectedCountry) {
+          setLoadingPostalCodes(true);
+          try {
+            const postalCodes = await locationService.getPostalCodes(
+              selectedCountry.isoCode,
+              city.value
+            );
+            setPostalCodeOptions(postalCodes);
+          } catch (error) {
+            console.error('Error loading postal codes:', error);
+          } finally {
+            setLoadingPostalCodes(false);
+          }
+        }
+      }
+    } else {
+      setIsManualCity(false);
+      setManualCityName('');
+      handleInputChange('city', '');
+      handleInputChange('postalCode', '');
+    }
+  }, [selectedCountry, manualCityName, handleInputChange]);
+
+  const handlePostalCodeChange = useCallback((postalCode: PostalCodeOption | null) => {
+    setSelectedPostalCode(postalCode);
+    if (postalCode) {
+      handleInputChange('postalCode', postalCode.value);
+    } else {
+      handleInputChange('postalCode', '');
+    }
+  }, [handleInputChange]);
+
+  const handleManualCityChange = useCallback((value: string) => {
+    setManualCityName(value);
+    handleInputChange('city', value);
+  }, [handleInputChange]);
+
+  const handleManualPostalCodeChange = useCallback((value: string) => {
+    setManualPostalCode(value);
+    handleInputChange('postalCode', value);
+  }, [handleInputChange]);
+
+  // Initialize countries on component mount
+  useEffect(() => {
+    const countries = locationService.getCountries();
+    setCountryOptions(countries);
+  }, []);
+
+  // Sync location dropdowns with profile data when profile changes
+  useEffect(() => {
+    if (profile.country && countryOptions.length > 0) {
+      const country = countryOptions.find(c => c.value === profile.country);
+      if (country && country !== selectedCountry) {
+        setSelectedCountry(country);
+        
+        if (profile.state) {
+          const states = locationService.getStates(country.isoCode);
+          setStateOptions(states);
+          const state = states.find(s => s.value === profile.state);
+          if (state) {
+            setSelectedState(state);
+            
+            if (profile.city) {
+              const cities = locationService.getCities(country.isoCode, state.isoCode);
+              setCityOptions(cities);
+              const city = cities.find(c => c.value === profile.city);
+              if (city) {
+                setSelectedCity(city);
+              } else {
+                // City not found in list, probably manual entry
+                setIsManualCity(true);
+                setManualCityName(profile.city);
+              }
+            }
+          }
+        }
+      }
+    } else {
+      setSelectedCountry(null);
+      setSelectedState(null);
+      setSelectedCity(null);
+      setStateOptions([]);
+      setCityOptions([]);
+    }
+
+    if (profile.postalCode) {
+      setManualPostalCode(profile.postalCode);
+    }
+  }, [profile.country, profile.state, profile.city, profile.postalCode, countryOptions, selectedCountry]);
 
   // Load profile on mount
   useEffect(() => {
@@ -628,66 +825,104 @@ const UserProfile: React.FC = memo(() => {
                       </div>
 
                       <div className="col-md-6 mb-3">
-                        <label htmlFor="city" className="form-label">
-                          {t("userProfile.fields.city")}
+                        <label htmlFor="country" className="form-label">
+                          {t("userProfile.fields.country")}
                         </label>
-                        <input
-                          type="text"
-                          id="city"
-                          className={`form-control ${getFieldError("city") ? "is-invalid" : ""}`}
-                          value={profile.city || ""}
-                          onChange={(e) => handleInputChange("city", e.target.value)}
-                          disabled={!isEditing}
-                          placeholder={t("userProfile.placeholders.city")}
+                        <SearchableSelect<CountryOption>
+                          options={countryOptions}
+                          value={selectedCountry}
+                          onChange={handleCountryChange}
+                          placeholder={t("userProfile.placeholders.country")}
+                          isDisabled={!isEditing}
+                          className={getFieldError("country") ? "is-invalid" : ""}
                         />
-                        {getFieldError("city") && <div className="invalid-feedback">{getFieldError("city")}</div>}
+                        {getFieldError("country") && <div className="invalid-feedback">{getFieldError("country")}</div>}
                       </div>
 
                       <div className="col-md-6 mb-3">
                         <label htmlFor="state" className="form-label">
                           {t("userProfile.fields.state")}
                         </label>
-                        <input
-                          type="text"
-                          id="state"
-                          className={`form-control ${getFieldError("state") ? "is-invalid" : ""}`}
-                          value={profile.state || ""}
-                          onChange={(e) => handleInputChange("state", e.target.value)}
-                          disabled={!isEditing}
-                          placeholder={t("userProfile.placeholders.state")}
+                        <SearchableSelect<StateOption>
+                          options={stateOptions}
+                          value={selectedState}
+                          onChange={handleStateChange}
+                          placeholder={selectedCountry ? t("userProfile.placeholders.state") : "Select country first"}
+                          isDisabled={!isEditing || !selectedCountry}
+                          isLoading={loadingStates}
+                          className={getFieldError("state") ? "is-invalid" : ""}
                         />
                         {getFieldError("state") && <div className="invalid-feedback">{getFieldError("state")}</div>}
                       </div>
 
                       <div className="col-md-6 mb-3">
-                        <label htmlFor="country" className="form-label">
-                          {t("userProfile.fields.country")}
+                        <label htmlFor="city" className="form-label">
+                          {t("userProfile.fields.city")}
                         </label>
-                        <input
-                          type="text"
-                          id="country"
-                          className={`form-control ${getFieldError("country") ? "is-invalid" : ""}`}
-                          value={profile.country || ""}
-                          onChange={(e) => handleInputChange("country", e.target.value)}
-                          disabled={!isEditing}
-                          placeholder={t("userProfile.placeholders.country")}
-                        />
-                        {getFieldError("country") && <div className="invalid-feedback">{getFieldError("country")}</div>}
+                        {isManualCity ? (
+                          <div>
+                            <input
+                              type="text"
+                              className={`form-control ${getFieldError("city") ? "is-invalid" : ""}`}
+                              value={manualCityName}
+                              onChange={(e) => handleManualCityChange(e.target.value)}
+                              disabled={!isEditing}
+                              placeholder="Enter city name"
+                            />
+                            {isEditing && (
+                              <small className="form-text text-muted">
+                                <button
+                                  type="button"
+                                  className="btn btn-link btn-sm p-0"
+                                  onClick={() => {
+                                    setIsManualCity(false);
+                                    setManualCityName('');
+                                    handleInputChange('city', '');
+                                  }}
+                                >
+                                  Choose from dropdown instead
+                                </button>
+                              </small>
+                            )}
+                          </div>
+                        ) : (
+                          <SearchableSelect<CityOption>
+                            options={cityOptions}
+                            value={selectedCity}
+                            onChange={handleCityChange}
+                            placeholder={selectedState ? t("userProfile.placeholders.city") : "Select state first"}
+                            isDisabled={!isEditing || !selectedState}
+                            isLoading={loadingCities}
+                            className={getFieldError("city") ? "is-invalid" : ""}
+                          />
+                        )}
+                        {getFieldError("city") && <div className="invalid-feedback">{getFieldError("city")}</div>}
                       </div>
 
                       <div className="col-md-6 mb-3">
                         <label htmlFor="postalCode" className="form-label">
                           {t("userProfile.fields.postalCode")}
                         </label>
-                        <input
-                          type="text"
-                          id="postalCode"
-                          className={`form-control ${getFieldError("postalCode") ? "is-invalid" : ""}`}
-                          value={profile.postalCode || ""}
-                          onChange={(e) => handleInputChange("postalCode", e.target.value)}
-                          disabled={!isEditing}
-                          placeholder={t("userProfile.placeholders.postalCode")}
-                        />
+                        {postalCodeOptions.length > 0 && !isManualCity ? (
+                          <SearchableSelect<PostalCodeOption>
+                            options={postalCodeOptions}
+                            value={selectedPostalCode}
+                            onChange={handlePostalCodeChange}
+                            placeholder="Select postal code"
+                            isDisabled={!isEditing}
+                            isLoading={loadingPostalCodes}
+                            className={getFieldError("postalCode") ? "is-invalid" : ""}
+                          />
+                        ) : (
+                          <input
+                            type="text"
+                            className={`form-control ${getFieldError("postalCode") ? "is-invalid" : ""}`}
+                            value={manualPostalCode}
+                            onChange={(e) => handleManualPostalCodeChange(e.target.value)}
+                            disabled={!isEditing}
+                            placeholder={t("userProfile.placeholders.postalCode")}
+                          />
+                        )}
                         {getFieldError("postalCode") && <div className="invalid-feedback">{getFieldError("postalCode")}</div>}
                       </div>
                     </div>

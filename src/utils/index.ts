@@ -6,3 +6,4 @@ export * from './format';
 export * from './storage';
 export * from './languageMapping';
 export { createVersionChecker } from './versionCheck';
+export { default as LocationUtils } from './locationUtils';

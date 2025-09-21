@@ -85,3 +85,10 @@ export {
   SPACING as Spacing,
   THEME_MODES as ThemeModes
 } from './theme';
+
+export {
+  LOCATION_CONSTANTS as LocationConstants,
+  POSTAL_CODE_PATTERNS as PostalCodePatterns
+} from './locationConstants';
+
+export type { CountryCode } from './locationConstants';
