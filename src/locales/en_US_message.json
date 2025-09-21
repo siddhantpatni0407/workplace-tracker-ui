@@ -961,6 +961,7 @@
       },
       "stats": {
         "title": "Quick Statistics",
+        "subtitle": "Real-time system insights and statistics",
         "totalUsers": "Total Users",
         "activeUsers": "Active Users",
         "inactiveUsers": "Inactive Users",
@@ -998,6 +999,54 @@
         "databaseBackup": {
           "title": "Database Backup",
           "description": "Manage database backups and restore"
+        },
+        "userProfile": {
+          "title": "User Profile",
+          "description": "View and edit your profile information"
+        },
+        "userSettings": {
+          "title": "Settings",
+          "description": "Manage your personal preferences"
+        }
+      },
+      "sections": {
+        "userManagement": {
+          "title": "User Management Overview",
+          "manageButton": "Manage Users",
+          "activeUsers": "Active Users",
+          "inactiveUsers": "Inactive Users",
+          "totalUsers": "Total Users",
+          "needsAttention": "Needs attention",
+          "systemCapacity": "System capacity"
+        },
+        "holidayManagement": {
+          "title": "Holiday Management",
+          "manageButton": "Manage Holidays",
+          "totalHolidays": "Total Holidays",
+          "upcomingHolidays": "Upcoming Holidays",
+          "currentYear": "This year",
+          "nextQuarter": "Next quarter"
+        },
+        "leavePolicyManagement": {
+          "title": "Leave Policy Management",
+          "manageButton": "Manage Policies",
+          "totalPolicies": "Total Policies",
+          "coverage": "Policy Coverage",
+          "active": "Active policies",
+          "allUsers": "All users covered"
+        },
+        "systemHealth": {
+          "title": "System Health",
+          "good": "All Systems Operational",
+          "warning": "Minor Issues Detected",
+          "error": "Critical Issues"
+        },
+        "quickActions": {
+          "title": "Quick Actions",
+          "addUser": "Add New User",
+          "addHoliday": "Add Holiday",
+          "addPolicy": "Create Policy",
+          "viewReports": "View Reports"
         }
       }
     },

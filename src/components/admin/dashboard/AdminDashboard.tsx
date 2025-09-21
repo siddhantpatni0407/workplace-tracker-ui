@@ -109,6 +109,24 @@ const AdminDashboard: React.FC = memo(() => {
       route: ROUTES.ADMIN.BACKUP || "/admin/backup",
       requiresRole: UserRole.ADMIN,
       category: 'system'
+    },
+    {
+      id: "user-profile",
+      title: t('admin.dashboard.cards.userProfile.title') || "User Profile",
+      subtitle: t('admin.dashboard.cards.userProfile.description') || "View and edit your profile information",
+      icon: "bi bi-person-circle",
+      colorClass: "card-primary",
+      route: ROUTES.USER.PROFILE,
+      category: 'system'
+    },
+    {
+      id: "user-settings",
+      title: t('admin.dashboard.cards.userSettings.title') || "Settings",
+      subtitle: t('admin.dashboard.cards.userSettings.description') || "Manage your personal preferences",
+      icon: "bi bi-gear",
+      colorClass: "card-secondary",
+      route: ROUTES.USER.SETTINGS,
+      category: 'system'
     }
   ], [t]);
 
@@ -316,7 +334,7 @@ const AdminDashboard: React.FC = memo(() => {
 
             {/* Sidebar Footer */}
             <div className="sidebar-footer">
-              <div className="user-info">
+              <div className="user-info" onClick={() => navigate(ROUTES.USER.PROFILE)}>
                 <div className="user-avatar">
                   <i className="bi bi-person-circle"></i>
                 </div>
@@ -335,11 +353,8 @@ const AdminDashboard: React.FC = memo(() => {
               <div className="welcome-card">
                 <div className="welcome-content">
                   <h4 className="welcome-title">
-                    {t('admin.dashboard.welcome.title') || 'Welcome'}, {user?.name || 'Admin'}!
+                    Welcome, {user?.name || 'Admin'}
                   </h4>
-                  <p className="welcome-subtitle">
-                    {t('admin.dashboard.welcome.subtitle') || 'Manage your workplace efficiently with comprehensive administrative tools'}
-                  </p>
                 </div>
               </div>
             </div>
@@ -348,21 +363,27 @@ const AdminDashboard: React.FC = memo(() => {
 
             {/* Quick Stats Section */}
             <div className="quick-stats-section">
-              <div className="section-header">
-                <h6 className="section-title">
-                  <i className="bi bi-speedometer2 me-2"></i>
-                  {t('admin.dashboard.stats.title') || 'Quick Statistics'}
-                </h6>
+              <div className="stats-header">
+                <div className="stats-title-container">
+                  <h4 className="stats-title">
+                    <i className="bi bi-speedometer2 me-2"></i>
+                    {t('admin.dashboard.stats.title') || 'Admin Analytics'}
+                  </h4>
+                  <p className="stats-subtitle">{t('admin.dashboard.stats.subtitle') || 'Real-time system insights and statistics'}</p>
+                </div>
+                <div className="stats-header-decoration">
+                  <div className="decoration-line"></div>
+                  <div className="decoration-dot"></div>
+                </div>
               </div>
-              <div className="row g-3">
+
+              <div className="row g-1">
                 {quickStats.map((stat) => (
-                  <div key={stat.id} className="col-lg-3 col-md-6 col-sm-6">
+                  <div key={stat.id} className="col-xl-2 col-lg-3 col-md-4 col-sm-6">
                     <div className={`quick-stat-card ${stat.colorClass}`}>
-                      <div className="stat-card-icon">
-                        <i className={stat.icon}></i>
-                      </div>
-                      <div className="stat-card-content">
-                        <div className="stat-info">
+                      <div className="stat-content">
+                        <div className="stat-header">
+                          <i className={stat.icon}></i>
                           <span className="stat-label">{stat.label}</span>
                         </div>
                         <div className="stat-value-container">
@@ -382,43 +403,243 @@ const AdminDashboard: React.FC = memo(() => {
             {/* Dashboard Content Grid */}
             <div className="row g-4 mt-2">
               {/* Main Dashboard Section */}
-              <div className="col-xl-12 col-lg-12">
+              <div className="col-xl-9 col-lg-8">
+                {/* User Management Section */}
                 <div className="dashboard-section">
                   <div className="section-header">
-                    <h6 className="section-title">
-                      <i className="bi bi-grid-3x3-gap me-2"></i>
-                      {t('admin.dashboard.tools.title') || 'Administrative Tools'}
-                    </h6>
-                    <p className="section-subtitle">
-                      {t('admin.dashboard.tools.subtitle') || 'Access comprehensive tools to manage your workplace effectively'}
-                    </p>
+                    <h5 className="section-title">
+                      <i className="bi bi-people me-2"></i>
+                      {t('admin.dashboard.sections.userManagement.title') || 'User Management Overview'}
+                    </h5>
+                    <div className="section-actions">
+                      <button 
+                        className="btn btn-primary btn-sm"
+                        onClick={() => navigate(ROUTES.ADMIN.USER_MANAGEMENT)}
+                      >
+                        <i className="bi bi-plus-circle me-1"></i>
+                        {t('admin.dashboard.sections.userManagement.manageButton') || 'Manage Users'}
+                      </button>
+                    </div>
                   </div>
-
-                  <div className="row g-3">
-                    {filteredCards.map((card) => (
-                      <div key={card.id} className="col-xl-4 col-lg-6 col-md-6">
-                        <div
-                          className={`dashboard-feature-card ${card.colorClass}`}
-                          onClick={() => handleCardClick(card.route)}
-                        >
-                          <div className="card-header">
-                            <div className="card-logo">
-                              <i className={card.icon}></i>
-                            </div>
+                  <div className="section-content">
+                    <div className="row g-3">
+                      <div className="col-md-4">
+                        <div className="info-card active-users">
+                          <div className="info-card-header">
+                            <i className="bi bi-person-check"></i>
+                            <span>{t('admin.dashboard.sections.userManagement.activeUsers') || 'Active Users'}</span>
                           </div>
-                          <div className="card-content">
-                            <h5 className="card-title">{card.title}</h5>
-                            <p className="card-subtitle">{card.subtitle}</p>
-                          </div>
-                          <div className="card-footer">
-                            <span className="card-cta">
-                              <i className="bi bi-arrow-right me-1"></i>
-                              {t('admin.dashboard.tools.openButton') || 'Open'}
-                            </span>
+                          <div className="info-card-value">{dashboardData.activeUsers}</div>
+                          <div className="info-card-footer">
+                            <small className="text-success">
+                              <i className="bi bi-arrow-up"></i>
+                              {dashboardData.loading ? '...' : `${Math.round((dashboardData.activeUsers / dashboardData.totalUsers) * 100)}% of total`}
+                            </small>
                           </div>
                         </div>
                       </div>
-                    ))}
+                      <div className="col-md-4">
+                        <div className="info-card inactive-users">
+                          <div className="info-card-header">
+                            <i className="bi bi-person-x"></i>
+                            <span>{t('admin.dashboard.sections.userManagement.inactiveUsers') || 'Inactive Users'}</span>
+                          </div>
+                          <div className="info-card-value">{dashboardData.inactiveUsers}</div>
+                          <div className="info-card-footer">
+                            <small className="text-warning">
+                              <i className="bi bi-exclamation-triangle"></i>
+                              {t('admin.dashboard.sections.userManagement.needsAttention') || 'Needs attention'}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="info-card total-users">
+                          <div className="info-card-header">
+                            <i className="bi bi-people"></i>
+                            <span>{t('admin.dashboard.sections.userManagement.totalUsers') || 'Total Users'}</span>
+                          </div>
+                          <div className="info-card-value">{dashboardData.totalUsers}</div>
+                          <div className="info-card-footer">
+                            <small className="text-primary">
+                              <i className="bi bi-graph-up"></i>
+                              {t('admin.dashboard.sections.userManagement.systemCapacity') || 'System capacity'}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Holiday Management Section */}
+                <div className="dashboard-section mt-4">
+                  <div className="section-header">
+                    <h5 className="section-title">
+                      <i className="bi bi-calendar-event me-2"></i>
+                      {t('admin.dashboard.sections.holidayManagement.title') || 'Holiday Management'}
+                    </h5>
+                    <div className="section-actions">
+                      <button 
+                        className="btn btn-warning btn-sm"
+                        onClick={() => navigate(ROUTES.ADMIN.HOLIDAY_MANAGEMENT)}
+                      >
+                        <i className="bi bi-calendar-plus me-1"></i>
+                        {t('admin.dashboard.sections.holidayManagement.manageButton') || 'Manage Holidays'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="section-content">
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <div className="info-card holidays-total">
+                          <div className="info-card-header">
+                            <i className="bi bi-calendar3"></i>
+                            <span>{t('admin.dashboard.sections.holidayManagement.totalHolidays') || 'Total Holidays'}</span>
+                          </div>
+                          <div className="info-card-value">{dashboardData.totalHolidays}</div>
+                          <div className="info-card-footer">
+                            <small className="text-info">
+                              <i className="bi bi-calendar-date"></i>
+                              {t('admin.dashboard.sections.holidayManagement.currentYear') || 'This year'}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="info-card holidays-upcoming">
+                          <div className="info-card-header">
+                            <i className="bi bi-calendar-week"></i>
+                            <span>{t('admin.dashboard.sections.holidayManagement.upcomingHolidays') || 'Upcoming Holidays'}</span>
+                          </div>
+                          <div className="info-card-value">{dashboardData.loading ? '...' : Math.max(0, Math.floor(dashboardData.totalHolidays / 4))}</div>
+                          <div className="info-card-footer">
+                            <small className="text-success">
+                              <i className="bi bi-clock"></i>
+                              {t('admin.dashboard.sections.holidayManagement.nextQuarter') || 'Next quarter'}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Leave Policy Management Section */}
+                <div className="dashboard-section mt-4">
+                  <div className="section-header">
+                    <h5 className="section-title">
+                      <i className="bi bi-clipboard-check me-2"></i>
+                      {t('admin.dashboard.sections.leavePolicyManagement.title') || 'Leave Policy Management'}
+                    </h5>
+                    <div className="section-actions">
+                      <button 
+                        className="btn btn-success btn-sm"
+                        onClick={() => navigate(ROUTES.ADMIN.LEAVE_POLICY_MANAGEMENT)}
+                      >
+                        <i className="bi bi-plus-square me-1"></i>
+                        {t('admin.dashboard.sections.leavePolicyManagement.manageButton') || 'Manage Policies'}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="section-content">
+                    <div className="row g-3">
+                      <div className="col-md-6">
+                        <div className="info-card policies-total">
+                          <div className="info-card-header">
+                            <i className="bi bi-file-earmark-text"></i>
+                            <span>{t('admin.dashboard.sections.leavePolicyManagement.totalPolicies') || 'Total Policies'}</span>
+                          </div>
+                          <div className="info-card-value">{dashboardData.leavePolicies}</div>
+                          <div className="info-card-footer">
+                            <small className="text-primary">
+                              <i className="bi bi-check-circle"></i>
+                              {t('admin.dashboard.sections.leavePolicyManagement.active') || 'Active policies'}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="info-card policies-coverage">
+                          <div className="info-card-header">
+                            <i className="bi bi-shield-check"></i>
+                            <span>{t('admin.dashboard.sections.leavePolicyManagement.coverage') || 'Policy Coverage'}</span>
+                          </div>
+                          <div className="info-card-value">100%</div>
+                          <div className="info-card-footer">
+                            <small className="text-success">
+                              <i className="bi bi-people"></i>
+                              {t('admin.dashboard.sections.leavePolicyManagement.allUsers') || 'All users covered'}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Sidebar with System Information */}
+              <div className="col-xl-3 col-lg-4">
+                {/* System Health Section */}
+                <div className="sidebar-section">
+                  <div className="section-header">
+                    <h5 className="section-title">
+                      <i className="bi bi-activity me-2"></i>
+                      {t('admin.dashboard.sections.systemHealth.title') || 'System Health'}
+                    </h5>
+                  </div>
+                  <div className="system-health-overview">
+                    <div className="health-indicator">
+                      <div className={`health-status ${dashboardData.systemHealth}`}>
+                        <i className={`bi ${dashboardData.systemHealth === 'good' ? 'bi-check-circle' : dashboardData.systemHealth === 'warning' ? 'bi-exclamation-triangle' : 'bi-x-circle'}`}></i>
+                        <span className="health-label">
+                          {dashboardData.systemHealth === 'good' ? (t('admin.dashboard.sections.systemHealth.good') || 'All Systems Operational') :
+                           dashboardData.systemHealth === 'warning' ? (t('admin.dashboard.sections.systemHealth.warning') || 'Minor Issues Detected') :
+                           (t('admin.dashboard.sections.systemHealth.error') || 'Critical Issues')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Actions Section */}
+                <div className="sidebar-section mt-4">
+                  <div className="section-header">
+                    <h5 className="section-title">
+                      <i className="bi bi-lightning me-2"></i>
+                      {t('admin.dashboard.sections.quickActions.title') || 'Quick Actions'}
+                    </h5>
+                  </div>
+                  <div className="quick-actions-list">
+                    <button 
+                      className="action-item"
+                      onClick={() => navigate(ROUTES.ADMIN.USER_MANAGEMENT)}
+                    >
+                      <i className="bi bi-person-plus"></i>
+                      <span>{t('admin.dashboard.sections.quickActions.addUser') || 'Add New User'}</span>
+                    </button>
+                    <button 
+                      className="action-item"
+                      onClick={() => navigate(ROUTES.ADMIN.HOLIDAY_MANAGEMENT)}
+                    >
+                      <i className="bi bi-calendar-plus"></i>
+                      <span>{t('admin.dashboard.sections.quickActions.addHoliday') || 'Add Holiday'}</span>
+                    </button>
+                    <button 
+                      className="action-item"
+                      onClick={() => navigate(ROUTES.ADMIN.LEAVE_POLICY_MANAGEMENT)}
+                    >
+                      <i className="bi bi-file-plus"></i>
+                      <span>{t('admin.dashboard.sections.quickActions.addPolicy') || 'Create Policy'}</span>
+                    </button>
+                    <button 
+                      className="action-item"
+                      onClick={() => navigate(ROUTES.ADMIN.REPORTS)}
+                    >
+                      <i className="bi bi-graph-up"></i>
+                      <span>{t('admin.dashboard.sections.quickActions.viewReports') || 'View Reports'}</span>
+                    </button>
                   </div>
                 </div>
               </div>

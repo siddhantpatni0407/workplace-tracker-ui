@@ -623,6 +623,7 @@
         },
         "stats": {
           "title": "Statistiques Rapides",
+          "subtitle": "Aperçus système en temps réel et statistiques",
           "totalUsers": "Total des Utilisateurs",
           "activeUsers": "Utilisateurs Actifs",
           "inactiveUsers": "Utilisateurs Inactifs",
@@ -660,6 +661,54 @@
           "databaseBackup": {
             "title": "Sauvegarde de Base de Données",
             "description": "Gérer les sauvegardes et la restauration de la base de données"
+          },
+          "userProfile": {
+            "title": "Profil Utilisateur",
+            "description": "Voir et modifier les informations de votre profil"
+          },
+          "userSettings": {
+            "title": "Paramètres",
+            "description": "Gérer vos préférences personnelles"
+          }
+        },
+        "sections": {
+          "userManagement": {
+            "title": "Aperçu de la Gestion des Utilisateurs",
+            "manageButton": "Gérer les Utilisateurs",
+            "activeUsers": "Utilisateurs Actifs",
+            "inactiveUsers": "Utilisateurs Inactifs",
+            "totalUsers": "Total des Utilisateurs",
+            "needsAttention": "Nécessite une attention",
+            "systemCapacity": "Capacité du système"
+          },
+          "holidayManagement": {
+            "title": "Gestion des Jours Fériés",
+            "manageButton": "Gérer les Jours Fériés",
+            "totalHolidays": "Total des Jours Fériés",
+            "upcomingHolidays": "Prochains Jours Fériés",
+            "currentYear": "Cette année",
+            "nextQuarter": "Prochain trimestre"
+          },
+          "leavePolicyManagement": {
+            "title": "Gestion des Politiques de Congés",
+            "manageButton": "Gérer les Politiques",
+            "totalPolicies": "Total des Politiques",
+            "coverage": "Couverture des Politiques",
+            "active": "Politiques actives",
+            "allUsers": "Tous les utilisateurs couverts"
+          },
+          "systemHealth": {
+            "title": "État du Système",
+            "good": "Tous les Systèmes Opérationnels",
+            "warning": "Problèmes Mineurs Détectés",
+            "error": "Problèmes Critiques"
+          },
+          "quickActions": {
+            "title": "Actions Rapides",
+            "addUser": "Ajouter un Nouvel Utilisateur",
+            "addHoliday": "Ajouter un Jour Férié",
+            "addPolicy": "Créer une Politique",
+            "viewReports": "Voir les Rapports"
           }
         }
       }

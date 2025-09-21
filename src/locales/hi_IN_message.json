@@ -623,6 +623,7 @@
         },
         "stats": {
           "title": "त्वरित आंकड़े",
+          "subtitle": "रीयल-टाइम सिस्टम अंतर्दृष्टि और आंकड़े",
           "totalUsers": "कुल उपयोगकर्ता",
           "activeUsers": "सक्रिय उपयोगकर्ता",
           "inactiveUsers": "निष्क्रिय उपयोगकर्ता",
@@ -660,6 +661,54 @@
           "databaseBackup": {
             "title": "डेटाबेस बैकअप",
             "description": "डेटाबेस बैकअप और पुनर्स्थापना प्रबंधित करें"
+          },
+          "userProfile": {
+            "title": "उपयोगकर्ता प्रोफ़ाइल",
+            "description": "अपनी प्रोफ़ाइल जानकारी देखें और संपादित करें"
+          },
+          "userSettings": {
+            "title": "सेटिंग्स",
+            "description": "अपनी व्यक्तिगत प्राथमिकताएं प्रबंधित करें"
+          }
+        },
+        "sections": {
+          "userManagement": {
+            "title": "उपयोगकर्ता प्रबंधन अवलोकन",
+            "manageButton": "उपयोगकर्ता प्रबंधित करें",
+            "activeUsers": "सक्रिय उपयोगकर्ता",
+            "inactiveUsers": "निष्क्रिय उपयोगकर्ता",
+            "totalUsers": "कुल उपयोगकर्ता",
+            "needsAttention": "ध्यान की आवश्यकता",
+            "systemCapacity": "सिस्टम क्षमता"
+          },
+          "holidayManagement": {
+            "title": "छुट्टी प्रबंधन",
+            "manageButton": "छुट्टियां प्रबंधित करें",
+            "totalHolidays": "कुल छुट्टियां",
+            "upcomingHolidays": "आगामी छुट्टियां",
+            "currentYear": "इस वर्ष",
+            "nextQuarter": "अगली तिमाही"
+          },
+          "leavePolicyManagement": {
+            "title": "छुट्टी नीति प्रबंधन",
+            "manageButton": "नीतियां प्रबंधित करें",
+            "totalPolicies": "कुल नीतियां",
+            "coverage": "नीति कवरेज",
+            "active": "सक्रिय नीतियां",
+            "allUsers": "सभी उपयोगकर्ता कवर किए गए"
+          },
+          "systemHealth": {
+            "title": "सिस्टम स्वास्थ्य",
+            "good": "सभी सिस्टम संचालन में",
+            "warning": "मामूली समस्याएं पाई गईं",
+            "error": "गंभीर समस्याएं"
+          },
+          "quickActions": {
+            "title": "त्वरित क्रियाएं",
+            "addUser": "नया उपयोगकर्ता जोड़ें",
+            "addHoliday": "छुट्टी जोड़ें",
+            "addPolicy": "नीति बनाएं",
+            "viewReports": "रिपोर्ट देखें"
           }
         }
       }
