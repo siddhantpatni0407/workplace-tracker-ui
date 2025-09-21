@@ -2205,6 +2205,421 @@
   color: var(--primary-700);
 }
 
+/* Enhanced Dashboard Cards */
+.detailed-card {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.detailed-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.detailed-card .card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 20px;
+}
+
+.detailed-card .card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+}
+
+.detailed-card .card-body {
+  padding: 20px;
+}
+
+/* User Status Breakdown */
+.user-status-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Statistics Grid */
+.statistics-grid, .holiday-stats-grid, .policy-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.stat-item, .holiday-stat-item, .policy-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover, .holiday-stat-item:hover, .policy-stat-item:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+}
+
+.stat-details {
+  flex: 1;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.stat-trend {
+  font-size: 11px;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Distribution Chart */
+.distribution-chart {
+  text-align: center;
+}
+
+.chart-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 16px;
+}
+
+.pie-segment {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 50%;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.total-count {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.total-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.legend-color {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+
+.legend-text {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Holiday Summary */
+.holiday-summary, .insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-item, .insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.summary-item:hover, .insight-item:hover {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.summary-icon, .insight-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.summary-content, .insight-content {
+  flex: 1;
+}
+
+.summary-title, .insight-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.summary-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary-600);
+  margin-bottom: 2px;
+}
+
+.summary-description, .insight-description {
+  font-size: 11px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Holiday Breakdown */
+.holiday-breakdown, .policy-status {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breakdown-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Holiday Coverage */
+.holiday-coverage-info {
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+}
+
+.coverage-header {
+  margin-bottom: 12px;
+}
+
+.coverage-bar .progress {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.coverage-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Policy Effectiveness */
+.policy-effectiveness {
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+}
+
+.effectiveness-header {
+  margin-bottom: 16px;
+}
+
+.effectiveness-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metric-item:first-child {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.metric-bar .progress {
+  border-radius: 3px;
+}
+
+/* Enhanced Info Cards */
+.info-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary-500) 0%, var(--secondary-500) 100%);
+}
+
+.info-card-footer .progress {
+  border-radius: 2px;
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.info-card-footer .progress-bar {
+  border-radius: 2px;
+}
+
+/* Efficiency Indicator */
+.efficiency-indicator {
+  width: 100%;
+  height: 6px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.indicator-bar {
+  height: 100%;
+  border-radius: 3px;
+  position: relative;
+}
+
+.indicator-bar .bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+/* Dark Theme Adjustments */
+[data-theme="dark"] .detailed-card {
+  background: var(--card-bg-dark);
+  border-color: var(--border-dark);
+}
+
+[data-theme="dark"] .detailed-card .card-header {
+  background: linear-gradient(135deg, var(--surface-dark) 0%, var(--card-bg-dark) 100%);
+  border-color: var(--border-dark);
+}
+
+[data-theme="dark"] .stat-item,
+[data-theme="dark"] .holiday-stat-item,
+[data-theme="dark"] .policy-stat-item,
+[data-theme="dark"] .summary-item,
+[data-theme="dark"] .insight-item {
+  background: linear-gradient(135deg, var(--surface-dark) 0%, var(--card-bg-dark) 100%);
+  border-color: var(--border-dark);
+}
+
+[data-theme="dark"] .chart-center {
+  background: var(--card-bg-dark);
+  border-color: var(--border-dark);
+}
+
+[data-theme="dark"] .holiday-coverage-info,
+[data-theme="dark"] .policy-effectiveness {
+  background: linear-gradient(135deg, var(--surface-dark) 0%, var(--card-bg-dark) 100%);
+  border-color: var(--border-dark);
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
   .section-header {
@@ -2228,5 +2643,37 @@
   
   .action-item {
     padding: 10px 14px;
+  }
+
+  .statistics-grid,
+  .holiday-stats-grid,
+  .policy-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-item,
+  .holiday-stat-item,
+  .policy-stat-item {
+    padding: 12px;
+  }
+
+  .chart-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .chart-center {
+    width: 60px;
+    height: 60px;
+  }
+
+  .total-count {
+    font-size: 16px;
+  }
+
+  .coverage-labels {
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
   }
 }
