@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useCallback, useState, useEffect } from "react";
+import React, { useMemo, useCallback, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -43,7 +43,7 @@ interface AdminDashboardData {
   error?: string;
 }
 
-const AdminDashboard: React.FC = memo(() => {
+const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -1085,7 +1085,7 @@ const AdminDashboard: React.FC = memo(() => {
       </div>
     </ErrorBoundary>
   );
-});
+};
 
 AdminDashboard.displayName = 'AdminDashboard';
 
