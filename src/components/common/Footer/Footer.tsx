@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { DateUtils } from "../../../utils";
 import { useTranslation } from "../../../hooks/useTranslation";
@@ -36,7 +36,7 @@ interface SocialLink {
   label: string;
 }
 
-const Footer: React.FC<FooterProps> = memo(({
+const Footer: React.FC<FooterProps> = ({
   className = "",
   companyName = "Workplace Tracker",
   developerName = "Siddhant Patni",
@@ -46,7 +46,7 @@ const Footer: React.FC<FooterProps> = memo(({
   copyrightYear,
   children
 }) => {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   
   // Memoize current year
   const currentYear = useMemo(() => {
@@ -59,7 +59,7 @@ const Footer: React.FC<FooterProps> = memo(({
     { to: "/contact", label: t("navigation.contact") },
     { to: "/privacy", label: t("footer.privacyPolicy") },
     { to: "/terms", label: t("footer.termsOfService") }
-  ], [t]);
+  ], [t, language]);
 
   // Memoize social links
   const socialLinks = useMemo<SocialLink[]>(() => [
@@ -151,7 +151,7 @@ const Footer: React.FC<FooterProps> = memo(({
         Developed by <span className="dev-name">{developerName}</span>
       </small>
     );
-  }, [developerName, developerUrl, t]);
+  }, [developerName, developerUrl, t, language]);
 
   return (
     <footer className={footerClasses} role="contentinfo">
@@ -175,7 +175,7 @@ const Footer: React.FC<FooterProps> = memo(({
                 className="footer-nav"
                 aria-label="Footer navigation"
               >
-                <ul className="footer-links list-unstyled d-flex justify-content-center gap-3 mb-0">
+                <ul key={language} className="footer-links list-unstyled d-flex justify-content-center gap-3 mb-0">
                   {footerLinks.map(renderFooterLink)}
                 </ul>
               </nav>
@@ -185,7 +185,9 @@ const Footer: React.FC<FooterProps> = memo(({
           {/* Developer & Social Section */}
           <div className="col-lg-4 col-12">
             <div className="d-flex flex-column align-items-center gap-2">
-              {developerSection}
+              <div key={language}>
+                {developerSection}
+              </div>
               
               {/* Social Links */}
               {showSocialLinks && (
@@ -206,7 +208,7 @@ const Footer: React.FC<FooterProps> = memo(({
       </div>
     </footer>
   );
-});
+};
 
 Footer.displayName = 'Footer';
 
