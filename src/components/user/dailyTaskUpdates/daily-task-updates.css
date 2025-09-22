@@ -50,23 +50,27 @@
 .table thead th.sortable {
   cursor: pointer;
   user-select: none;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
 }
 
 .table thead th.sortable:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
 }
 
 /* Ensure sort icons are properly aligned */
 .table thead th.sortable i {
-  opacity: 0.7;
-  transition: opacity 0.2s ease;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .table thead th.sortable:hover i {
   opacity: 1;
+  transform: scale(1.1);
 }
 
 /* Enhanced table row styling */
@@ -85,10 +89,13 @@
   border-left: 3px solid #0d6efd;
 }
 
-/* Sticky table header */
+/* Sticky table header with enhanced gradient */
 .table thead.sticky-top th {
   z-index: 10 !important;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid #5a67d8;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
 /* Badge enhancements */
@@ -591,32 +598,94 @@
 }
 
 .table thead th {
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
-  color: #495057;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: 2px solid #5a67d8;
+  color: #ffffff;
   font-weight: 600;
   padding: 1rem 0.75rem;
   text-align: left;
   white-space: nowrap;
   position: relative;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  font-size: 0.85rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* Add shimmer animation effect */
+.table thead th::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.6s ease;
+}
+
+.table thead th:hover::before {
+  left: 100%;
+}
+
+/* Enhanced hover effect for table headers */
+.table thead th:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
 }
 
 .table thead th:first-child {
-  border-top-left-radius: 8px;
+  border-top-left-radius: 12px;
+  position: relative;
+}
+
+.table thead th:first-child::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #ffffff40, transparent);
 }
 
 .table thead th:last-child {
-  border-top-right-radius: 8px;
+  border-top-right-radius: 12px;
+  position: relative;
+}
+
+.table thead th:last-child::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #ffffff40, transparent);
 }
 
 .table tbody tr {
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .table tbody tr:hover {
-  background-color: #f8f9fa;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
   transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+  border-bottom: 1px solid #667eea;
+}
+
+/* Add subtle gradient for odd rows */
+.table tbody tr:nth-child(odd) {
+  background: linear-gradient(135deg, #fafbff 0%, #f8f9ff 100%);
+}
+
+.table tbody tr:nth-child(odd):hover {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8f0ff 100%);
 }
 
 .table tbody td {
