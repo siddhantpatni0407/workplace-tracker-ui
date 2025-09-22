@@ -91,4 +91,7 @@ export {
   POSTAL_CODE_PATTERNS as PostalCodePatterns
 } from './locationConstants';
 
+// Daily Task constants
+export * from './dailyTaskConstants';
+
 export type { CountryCode } from './locationConstants';

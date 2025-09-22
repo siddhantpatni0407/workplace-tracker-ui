@@ -51,6 +51,7 @@ const Navbar: React.FC = memo(() => {
   const userNavItems = useMemo<DropdownItem[]>(
     () => [
       { to: ROUTES.USER.USER_TASKS, label: t("navigation.userTasks"), icon: "bi-check2-square" },
+      { to: ROUTES.USER.DAILY_TASK_UPDATES, label: "Daily Task Updates", icon: "bi-clipboard-check" },
       { to: ROUTES.USER.USER_NOTES, label: t("navigation.userNotes"), icon: "bi-journal-text" },
       { to: ROUTES.USER.OFFICE_VISIT, label: t("navigation.officeVisit"), icon: "bi-building" },
       { to: ROUTES.USER.OFFICE_VISIT_ANALYTICS, label: t("navigation.officeVisitAnalytics"), icon: "bi-bar-chart-line-fill" },
@@ -91,7 +92,7 @@ const Navbar: React.FC = memo(() => {
 
   const isUserToolsActive = useCallback(() => {
     const userToolsPaths = [
-      ROUTES.USER.USER_TASKS, ROUTES.USER.USER_NOTES, ROUTES.USER.OFFICE_VISIT, 
+      ROUTES.USER.USER_TASKS, ROUTES.USER.DAILY_TASK_UPDATES, ROUTES.USER.USER_NOTES, ROUTES.USER.OFFICE_VISIT, 
       ROUTES.USER.OFFICE_VISIT_ANALYTICS, ROUTES.USER.LEAVE_MANAGEMENT, 
       ROUTES.USER.LEAVE_POLICY, ROUTES.USER.HOLIDAY_TRACKER
     ];

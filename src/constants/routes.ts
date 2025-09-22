@@ -37,6 +37,7 @@ export const ROUTES = {
     SETTINGS: '/user/settings',
     TASKS: '/user/tasks',
     NOTES: '/user/notes',
+    DAILY_TASK_UPDATES: '/user/daily-task-updates',
     LEAVE_MANAGEMENT: '/user/leave-management',
     LEAVE_POLICY: '/user/leave-policy',
     OFFICE_VISIT: '/user/office-visit',

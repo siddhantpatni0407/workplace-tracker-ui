@@ -15,6 +15,21 @@ export * from './LeaveEnums';
 // Task related enums
 export * from './TaskEnums';
 
+// Daily Task related enums - specific exports to avoid conflicts
+export { 
+  DailyTaskStatus, 
+  DailyTaskPriority, 
+  DailyTaskType, 
+  DailyTaskSortDirection,
+  DailyTaskMonth,
+  ViewMode, 
+  ExportFormat,
+  DAILY_TASK_STATUS_CONFIG,
+  DAILY_TASK_PRIORITY_CONFIG,
+  DAILY_TASK_TYPE_CONFIG,
+  DAILY_TASK_MONTH_CONFIG
+} from './DailyTaskEnums';
+
 // Note related enums
 export * from './NoteEnums';
 

@@ -15,6 +15,40 @@ export * from './Leave';
 // Task related exports
 export * from './Task';
 
+// Daily Task related exports - specific exports to avoid conflicts
+export {
+  type BaseDailyTask,
+  type DailyTask,
+  type DailyTaskFormData,
+  type DailyTaskFilters,
+  type DailyTaskSort,
+  type DailyTaskPagination,
+  type DailyTaskViewPreferences,
+  type GroupedDailyTasks,
+  type DailyTaskStatistics,
+  type DailyTaskExportOptions,
+  type DailyTaskBulkUpdate,
+  type DailyTaskSearchResult,
+  type DailyTaskApiResponse,
+  type DailyTaskListApiResponse,
+  type DailyTaskBulkApiResponse,
+  type DailyTaskValidationResult,
+  type DailyTaskTemplate,
+  type DailyTaskComment,
+  type DailyTaskHistory,
+  type DailyTaskNotification,
+  type DateSelection,
+  type TableColumn,
+  type DailyTaskFormField,
+  type ModalState,
+  type DailyTaskComponentState,
+  type DailyTaskField,
+  type DailyTaskFormFieldKey,
+  type DailyTaskFilterField,
+  isDailyTask,
+  isDailyTaskFormData
+} from './DailyTask';
+
 // Note related exports
 export * from './Note';
 

@@ -36,6 +36,7 @@ const OfficeVisit = lazy(() => import("./components/user/officeVisit/OfficeVisit
 const OfficeVisitAnalytics = lazy(() => import("./components/user/officeVisitAnalytics/OfficeVisitAnalytics"));
 const UserTasks = lazy(() => import("./components/user/tasks/UserTasks"));
 const UserNotes = lazy(() => import("./components/user/notes/UserNotes"));
+const DailyTaskUpdates = lazy(() => import("./components/user/dailyTaskUpdates/DailyTaskUpdates"));
 const PFManagement = lazy(() => import("./components/user/pfManagement/PFManagement"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
@@ -323,6 +324,16 @@ const App: React.FC = () => {
                 element={
                   <PrivateRoute userRole="USER">
                     <Layout><UserNotes /></Layout>
+                  </PrivateRoute>
+                }
+              />
+
+              {/* Daily Task Updates - USER only (new) */}
+              <Route
+                path={ROUTES.USER.DAILY_TASK_UPDATES}
+                element={
+                  <PrivateRoute userRole="USER">
+                    <Layout><DailyTaskUpdates /></Layout>
                   </PrivateRoute>
                 }
               />

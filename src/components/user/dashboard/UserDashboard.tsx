@@ -782,6 +782,14 @@ const UserDashboard: React.FC = memo(() => {
             route: ROUTES.USER.USER_TASKS
         },
         {
+            id: "daily-task-updates",
+            title: "Daily Task Updates",
+            subtitle: "Manage your daily task status and progress updates",
+            icon: "bi-clipboard-check",
+            colorClass: "card-info",
+            route: ROUTES.USER.DAILY_TASK_UPDATES
+        },
+        {
             id: "office-visit",
             title: t('dashboard.userDashboard.cards.officeVisit.title'),
             subtitle: t('dashboard.userDashboard.cards.officeVisit.subtitle'),
