@@ -135,6 +135,31 @@ const DailyTaskUpdates: React.FC = () => {
     type: DAILY_TASK_DEFAULTS.TYPE
   });
 
+  // Column configuration
+  const [showColumnConfig, setShowColumnConfig] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState(() => {
+    // Load from localStorage or use defaults
+    const savedColumns = localStorage.getItem('dailyTasks-columnConfig');
+    if (savedColumns) {
+      try {
+        return JSON.parse(savedColumns);
+      } catch (error) {
+        console.error('Failed to parse saved column config:', error);
+      }
+    }
+    // Default configuration
+    return {
+      date: true,           // Default visible
+      day: true,            // Default visible
+      taskNumber: true,     // Default visible
+      projectCode: false,   // Hidden by default
+      projectName: false,   // Hidden by default
+      storyTaskBugNumber: true,  // Default visible
+      taskDetails: true,    // Default visible
+      remarks: false        // Hidden by default
+    };
+  });
+
   // Delete confirmation
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<DailyTask | null>(null);
@@ -673,6 +698,35 @@ const DailyTaskUpdates: React.FC = () => {
     setBulkEditMode(false);
   };
 
+  // Column configuration handlers
+  const handleColumnToggle = (columnName: keyof typeof visibleColumns) => {
+    setVisibleColumns((prev: typeof visibleColumns) => {
+      const newConfig = {
+        ...prev,
+        [columnName]: !prev[columnName]
+      };
+      // Save to localStorage
+      localStorage.setItem('dailyTasks-columnConfig', JSON.stringify(newConfig));
+      return newConfig;
+    });
+  };
+
+  const resetColumnsToDefault = () => {
+    const defaultConfig = {
+      date: true,
+      day: true,
+      taskNumber: true,
+      projectCode: false,
+      projectName: false,
+      storyTaskBugNumber: true,
+      taskDetails: true,
+      remarks: false
+    };
+    setVisibleColumns(defaultConfig);
+    // Save to localStorage
+    localStorage.setItem('dailyTasks-columnConfig', JSON.stringify(defaultConfig));
+  };
+
   // Open delete confirmation
   const openDeleteConfirm = (task: DailyTask) => {
     setDeleteTarget(task);
@@ -812,6 +866,15 @@ const DailyTaskUpdates: React.FC = () => {
                   </ul>
                 </div>
                 <button
+                  className="btn btn-outline-secondary"
+                  onClick={() => setShowColumnConfig(true)}
+                  disabled={isLoading}
+                  title="Configure visible columns"
+                >
+                  <i className="bi bi-columns-gap me-2"></i>
+                  Column Configuration
+                </button>
+                <button
                   className="btn btn-primary"
                   onClick={openAddModal}
                   disabled={isLoading}
@@ -908,42 +971,58 @@ const DailyTaskUpdates: React.FC = () => {
                         title="Select All Tasks"
                       />
                     </th>
-                    <th scope="col" className="sortable text-nowrap" onClick={() => handleSort('date')} style={{cursor: 'pointer'}}>
-                      <i className="bi bi-calendar-event me-2"></i>
-                      Date
-                      <i className={`bi ${sortField === 'date' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
-                    </th>
-                    <th scope="col" className="text-center">
-                      <i className="bi bi-calendar-day me-2"></i>
-                      Day
-                    </th>
-                    <th scope="col" className="sortable text-nowrap" onClick={() => handleSort('taskNumber')} style={{cursor: 'pointer'}}>
-                      <i className="bi bi-hash me-2"></i>
-                      Task Number
-                      <i className={`bi ${sortField === 'taskNumber' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
-                    </th>
-                    <th scope="col" className="sortable text-nowrap" onClick={() => handleSort('projectCode')} style={{cursor: 'pointer'}}>
-                      <i className="bi bi-folder me-2"></i>
-                      Project Code
-                      <i className={`bi ${sortField === 'projectCode' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
-                    </th>
-                    <th scope="col" className="sortable" onClick={() => handleSort('projectName')} style={{cursor: 'pointer'}}>
-                      <i className="bi bi-briefcase me-2"></i>
-                      Project Name
-                      <i className={`bi ${sortField === 'projectName' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
-                    </th>
-                    <th scope="col" className="text-center">
-                      <i className="bi bi-ticket-detailed me-2"></i>
-                      Story/Task/Bug #
-                    </th>
-                    <th scope="col">
-                      <i className="bi bi-list-task me-2"></i>
-                      Task Details
-                    </th>
-                    <th scope="col">
-                      <i className="bi bi-chat-square-text me-2"></i>
-                      Remarks
-                    </th>
+                    {visibleColumns.date && (
+                      <th scope="col" className="sortable text-nowrap" onClick={() => handleSort('date')} style={{cursor: 'pointer'}}>
+                        <i className="bi bi-calendar-event me-2"></i>
+                        Date
+                        <i className={`bi ${sortField === 'date' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
+                      </th>
+                    )}
+                    {visibleColumns.day && (
+                      <th scope="col" className="text-center">
+                        <i className="bi bi-calendar-day me-2"></i>
+                        Day
+                      </th>
+                    )}
+                    {visibleColumns.taskNumber && (
+                      <th scope="col" className="sortable text-nowrap" onClick={() => handleSort('taskNumber')} style={{cursor: 'pointer'}}>
+                        <i className="bi bi-hash me-2"></i>
+                        Task Number
+                        <i className={`bi ${sortField === 'taskNumber' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
+                      </th>
+                    )}
+                    {visibleColumns.projectCode && (
+                      <th scope="col" className="sortable text-nowrap" onClick={() => handleSort('projectCode')} style={{cursor: 'pointer'}}>
+                        <i className="bi bi-folder me-2"></i>
+                        Project Code
+                        <i className={`bi ${sortField === 'projectCode' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
+                      </th>
+                    )}
+                    {visibleColumns.projectName && (
+                      <th scope="col" className="sortable" onClick={() => handleSort('projectName')} style={{cursor: 'pointer'}}>
+                        <i className="bi bi-briefcase me-2"></i>
+                        Project Name
+                        <i className={`bi ${sortField === 'projectName' ? (sortDirection === DailyTaskSortDirection.ASC ? 'bi-sort-up' : 'bi-sort-down') : 'bi-arrow-down-up'} ms-1`}></i>
+                      </th>
+                    )}
+                    {visibleColumns.storyTaskBugNumber && (
+                      <th scope="col" className="text-center">
+                        <i className="bi bi-ticket-detailed me-2"></i>
+                        Story/Task/Bug #
+                      </th>
+                    )}
+                    {visibleColumns.taskDetails && (
+                      <th scope="col">
+                        <i className="bi bi-list-task me-2"></i>
+                        Task Details
+                      </th>
+                    )}
+                    {visibleColumns.remarks && (
+                      <th scope="col">
+                        <i className="bi bi-chat-square-text me-2"></i>
+                        Remarks
+                      </th>
+                    )}
                     <th scope="col" className="text-center" style={{width: '120px'}}>
                       <i className="bi bi-gear me-2"></i>
                       Actions
@@ -962,51 +1041,67 @@ const DailyTaskUpdates: React.FC = () => {
                             onChange={() => handleSelectTask(task.id)}
                           />
                         </td>
-                        <td className="text-nowrap">
-                          {taskIndex === 0 ? (
-                            <div className="d-flex align-items-center">
-                              <span className="fw-bold text-primary">{formatDateToDDMMYYYY(task.date)}</span>
-                              {group.tasks.length > 1 && (
-                                <span className="badge bg-info ms-2">
-                                  {group.tasks.length} tasks
-                                </span>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="text-center">
+                        {visibleColumns.date && (
+                          <td className="text-nowrap">
+                            {taskIndex === 0 ? (
+                              <div className="d-flex align-items-center">
+                                <span className="fw-bold text-primary">{formatDateToDDMMYYYY(task.date)}</span>
+                                {group.tasks.length > 1 && (
+                                  <span className="badge bg-info ms-2">
+                                    {group.tasks.length} tasks
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="text-center">
+                                <span className="text-muted fs-4">″</span>
+                              </div>
+                            )}
+                          </td>
+                        )}
+                        {visibleColumns.day && (
+                          <td className="text-center">
+                            {taskIndex === 0 ? (
+                              <span className="badge bg-secondary">{task.day}</span>
+                            ) : (
                               <span className="text-muted fs-4">″</span>
+                            )}
+                          </td>
+                        )}
+                        {visibleColumns.taskNumber && (
+                          <td className="text-center">
+                            <span className="badge bg-primary fs-6">{task.taskNumber}</span>
+                          </td>
+                        )}
+                        {visibleColumns.projectCode && (
+                          <td className="text-center">
+                            <span className="fw-bold text-primary">{task.projectCode}</span>
+                          </td>
+                        )}
+                        {visibleColumns.projectName && (
+                          <td>
+                            <span className="text-dark">{task.projectName}</span>
+                          </td>
+                        )}
+                        {visibleColumns.storyTaskBugNumber && (
+                          <td className="text-center">
+                            <span className="badge bg-info text-dark">{task.storyTaskBugNumber}</span>
+                          </td>
+                        )}
+                        {visibleColumns.taskDetails && (
+                          <td>
+                            <div className="text-truncate" style={{maxWidth: '300px'}} title={task.taskDetails}>
+                              {task.taskDetails}
                             </div>
-                          )}
-                        </td>
-                        <td className="text-center">
-                          {taskIndex === 0 ? (
-                            <span className="badge bg-secondary">{task.day}</span>
-                          ) : (
-                            <span className="text-muted fs-4">″</span>
-                          )}
-                        </td>
-                        <td className="text-center">
-                          <span className="badge bg-primary fs-6">{task.taskNumber}</span>
-                        </td>
-                        <td className="text-center">
-                          <span className="fw-bold text-primary">{task.projectCode}</span>
-                        </td>
-                        <td>
-                          <span className="text-dark">{task.projectName}</span>
-                        </td>
-                        <td className="text-center">
-                          <span className="badge bg-info text-dark">{task.storyTaskBugNumber}</span>
-                        </td>
-                        <td>
-                          <div className="text-truncate" style={{maxWidth: '300px'}} title={task.taskDetails}>
-                            {task.taskDetails}
-                          </div>
-                        </td>
-                        <td>
-                          <div className="text-truncate" style={{maxWidth: '200px'}} title={task.remarks || 'No remarks'}>
-                            {task.remarks || <span className="text-muted fst-italic">No remarks</span>}
-                          </div>
-                        </td>
+                          </td>
+                        )}
+                        {visibleColumns.remarks && (
+                          <td>
+                            <div className="text-truncate" style={{maxWidth: '200px'}} title={task.remarks || 'No remarks'}>
+                              {task.remarks || <span className="text-muted fst-italic">No remarks</span>}
+                            </div>
+                          </td>
+                        )}
                         <td className="text-center">
                           <div className="btn-group btn-group-sm" role="group" aria-label="Task actions">
                             <button
@@ -1290,6 +1385,122 @@ const DailyTaskUpdates: React.FC = () => {
                 <i className="bi bi-trash me-2"></i>
                 Delete {selectedTasks.size} Task(s)
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Column Configuration Modal */}
+      {showColumnConfig && (
+        <div className="modal fade show d-block column-config-modal" tabIndex={-1} role="dialog" style={{backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050}}>
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">
+                  <i className="bi bi-columns-gap me-2"></i>
+                  Column Configuration
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowColumnConfig(false)}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p className="text-muted mb-3">
+                  Select which columns to display in the Daily Tasks table. Some columns are always visible.
+                </p>
+                
+                <div className="row">
+                  <div className="col-md-6">
+                    <h6 className="fw-bold mb-3">
+                      <i className="bi bi-eye-fill me-2 text-success"></i>
+                      Always Visible
+                    </h6>
+                    <div className="list-group">
+                      <div className="list-group-item d-flex align-items-center">
+                        <i className="bi bi-check2-square me-2 text-success"></i>
+                        <i className="bi bi-check-square me-2"></i>
+                        Selection
+                      </div>
+                      <div className="list-group-item d-flex align-items-center">
+                        <i className="bi bi-check2-square me-2 text-success"></i>
+                        <i className="bi bi-gear me-2"></i>
+                        Actions
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="col-md-6">
+                    <h6 className="fw-bold mb-3">
+                      <i className="bi bi-toggles me-2 text-primary"></i>
+                      Configurable
+                    </h6>
+                    <div className="list-group">
+                      {Object.entries(visibleColumns).map(([columnKey, isVisible]) => (
+                        <div key={columnKey} className="list-group-item d-flex align-items-center justify-content-between">
+                          <div className="d-flex align-items-center">
+                            <i className={`bi ${
+                              columnKey === 'date' ? 'bi-calendar-event' :
+                              columnKey === 'day' ? 'bi-calendar-day' :
+                              columnKey === 'taskNumber' ? 'bi-hash' :
+                              columnKey === 'projectCode' ? 'bi-folder' :
+                              columnKey === 'projectName' ? 'bi-briefcase' :
+                              columnKey === 'storyTaskBugNumber' ? 'bi-ticket-detailed' :
+                              columnKey === 'taskDetails' ? 'bi-list-task' :
+                              columnKey === 'remarks' ? 'bi-chat-square-text' : 'bi-circle'
+                            } me-2`}></i>
+                            <span className="text-capitalize">
+                              {columnKey === 'storyTaskBugNumber' ? 'Story/Task/Bug #' : 
+                               columnKey === 'taskNumber' ? 'Task Number' :
+                               columnKey === 'projectCode' ? 'Project Code' :
+                               columnKey === 'projectName' ? 'Project Name' :
+                               columnKey === 'taskDetails' ? 'Task Details' :
+                               columnKey.charAt(0).toUpperCase() + columnKey.slice(1)}
+                            </span>
+                          </div>
+                          <div className="form-check form-switch">
+                            <input
+                              className="form-check-input"
+                              type="checkbox"
+                              id={`column-${columnKey}`}
+                              checked={Boolean(isVisible)}
+                              onChange={() => handleColumnToggle(columnKey as keyof typeof visibleColumns)}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-outline-secondary"
+                  onClick={resetColumnsToDefault}
+                >
+                  <i className="bi bi-arrow-counterclockwise me-2"></i>
+                  Reset to Default
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowColumnConfig(false)}
+                >
+                  <i className="bi bi-x-circle me-2"></i>
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => setShowColumnConfig(false)}
+                >
+                  <i className="bi bi-check-circle me-2"></i>
+                  Apply Changes
+                </button>
+              </div>
             </div>
           </div>
         </div>
