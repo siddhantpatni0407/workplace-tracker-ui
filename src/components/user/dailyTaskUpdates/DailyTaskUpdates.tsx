@@ -3,6 +3,7 @@ import { useTranslation } from '../../../hooks/useTranslation';
 import Header from '../../common/header/Header';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
+import { dailyTaskService, dateUtils, DailyTaskApiResponse } from '../../../services/dailyTaskService';
 import './daily-task-updates.css';
 import { 
   DailyTask, 
@@ -38,6 +39,63 @@ const formatDateToDDMMYYYY = (dateString: string): string => {
   return `${day}-${month}-${year}`;
 };
 
+// Utility function to transform API response to component DailyTask interface
+const transformApiToTask = (apiTask: DailyTaskApiResponse): DailyTask => {
+  return {
+    id: apiTask.dailyTaskId.toString(),
+    date: apiTask.dailyTaskDate,
+    day: dateUtils.getDayName(apiTask.dailyTaskDate),
+    taskNumber: apiTask.taskNumber,
+    projectCode: apiTask.projectCode || '',
+    projectName: apiTask.projectName || '',
+    storyTaskBugNumber: apiTask.storyTaskBugNumber || '',
+    taskDetails: apiTask.taskDetails || '',
+    remarks: apiTask.remarks || '',
+    status: DAILY_TASK_DEFAULTS.STATUS, // API doesn't provide status, use default
+    priority: DAILY_TASK_DEFAULTS.PRIORITY, // API doesn't provide priority, use default
+    type: DAILY_TASK_DEFAULTS.TYPE, // API doesn't provide type, use default
+    userId: apiTask.userId,
+    createdAt: new Date(apiTask.createdDate),
+    updatedAt: new Date(apiTask.modifiedDate)
+  };
+};
+
+// Form validation function
+const validateFormData = (data: DailyTaskFormData, isEditing = false): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  // Required fields according to API documentation
+  if (!data.date) {
+    errors.push('Date is required');
+  }
+  
+  // Optional field validations with backend constraints
+  if (data.projectCode && data.projectCode.length > 50) {
+    errors.push('Project code cannot exceed 50 characters');
+  }
+  
+  if (data.projectName && data.projectName.length > 100) {
+    errors.push('Project name cannot exceed 100 characters');
+  }
+  
+  if (data.storyTaskBugNumber && data.storyTaskBugNumber.length > 50) {
+    errors.push('Story/Task/Bug number cannot exceed 50 characters');
+  }
+  
+  if (data.taskDetails && data.taskDetails.length > 1000) {
+    errors.push('Task details cannot exceed 1000 characters');
+  }
+  
+  if (data.remarks && data.remarks.length > 500) {
+    errors.push('Remarks cannot exceed 500 characters');
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
 const DailyTaskUpdates: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -66,8 +124,8 @@ const DailyTaskUpdates: React.FC = () => {
   const [editingTask, setEditingTask] = useState<DailyTask | null>(null);
   const [formData, setFormData] = useState<DailyTaskFormData>({
     date: new Date().toISOString().split('T')[0],
-    taskNumber: '',
-    projectCode: DAILY_TASK_DEFAULTS.PROJECT_CODE_PREFIX,
+    taskNumber: '', // Keep for display, but won't be sent to API for create
+    projectCode: '',
     projectName: '',
     storyTaskBugNumber: '',
     taskDetails: '',
@@ -95,11 +153,7 @@ const DailyTaskUpdates: React.FC = () => {
   // Generate months for dropdown using constants
   const months = useMemo(() => DAILY_TASK_MONTH_CONFIG, []);
 
-  // Utility function to get day from date
-  const getDayFromDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { weekday: 'long' });
-  };
+
 
   // Load tasks for selected month/year
   const loadTasks = useCallback(async (selectedYear = year, selectedMonth = month) => {
@@ -107,79 +161,20 @@ const DailyTaskUpdates: React.FC = () => {
     
     setIsLoading(true);
     try {
-      // Mock API call - replace with actual API endpoint
-      const mockTasks: DailyTask[] = [
-        {
-          id: '1',
-          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-01`,
-          day: getDayFromDate(`${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-01`),
-          taskNumber: 'TSK-001',
-          projectCode: 'WPT',
-          projectName: 'Workplace Tracker',
-          storyTaskBugNumber: 'WPT-123',
-          taskDetails: 'Implement daily task updates feature with table view',
-          remarks: 'Completed initial development',
-          status: DailyTaskStatus.APPROVED,
-          priority: DailyTaskPriority.HIGH,
-          type: DailyTaskType.DEVELOPMENT,
-          userId: userId,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: '2',
-          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-01`,
-          day: getDayFromDate(`${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-01`),
-          taskNumber: 'TSK-002',
-          projectCode: 'WPT',
-          projectName: 'Workplace Tracker',
-          storyTaskBugNumber: 'WPT-124',
-          taskDetails: 'Add responsive design for mobile devices',
-          remarks: 'Testing in progress',
-          status: DailyTaskStatus.SUBMITTED,
-          priority: DailyTaskPriority.MEDIUM,
-          type: DailyTaskType.TESTING,
-          userId: userId,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: '3',
-          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-02`,
-          day: getDayFromDate(`${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-02`),
-          taskNumber: 'TSK-003',
-          projectCode: 'CRM',
-          projectName: 'Customer Management',
-          storyTaskBugNumber: 'CRM-456',
-          taskDetails: 'Implement customer dashboard',
-          remarks: 'Requirements gathering completed',
-          status: DailyTaskStatus.PENDING_REVIEW,
-          priority: DailyTaskPriority.HIGH,
-          type: DailyTaskType.DEVELOPMENT,
-          userId: userId,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        },
-        {
-          id: '4',
-          date: `${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-02`,
-          day: getDayFromDate(`${selectedYear}-${selectedMonth.toString().padStart(2, '0')}-02`),
-          taskNumber: 'TSK-004',
-          projectCode: 'CRM',
-          projectName: 'Customer Management',
-          storyTaskBugNumber: 'CRM-457',
-          taskDetails: 'Design customer profile page',
-          remarks: 'UI mockups ready',
-          status: DailyTaskStatus.DRAFT,
-          priority: DailyTaskPriority.LOW,
-          type: DailyTaskType.DOCUMENTATION,
-          userId: userId,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      ];
+      // Get date range for the selected month/year
+      const { startDate, endDate } = dateUtils.getMonthDateRange(selectedYear, selectedMonth);
       
-      setTasks(mockTasks);
+      // Call API to get tasks by date range
+      const response = await dailyTaskService.getTasksByDateRange(userId, startDate, endDate);
+      
+      if (response.status === 'SUCCESS' && response.data) {
+        // Transform API response to component DailyTask format
+        const transformedTasks = response.data.map(transformApiToTask);
+        setTasks(transformedTasks);
+      } else {
+        console.warn('No tasks found for the selected period');
+        setTasks([]);
+      }
     } catch (error) {
       console.error('Error loading tasks:', error);
       toast.error(ERROR_MESSAGES.API.UNKNOWN);
@@ -314,13 +309,45 @@ const DailyTaskUpdates: React.FC = () => {
 
   const confirmBulkDelete = async () => {
     try {
-      setTasks(prev => prev.filter(task => !selectedTasks.has(task.id)));
-      toast.success(SUCCESS_MESSAGES.BULK_DELETE);
+      // Get selected task IDs and convert to numbers for API call
+      const taskIds = Array.from(selectedTasks).map(id => parseInt(id));
+      
+      // Delete tasks individually since there's no bulk delete API
+      const deletePromises = taskIds.map(async (taskId) => {
+        try {
+          await dailyTaskService.deleteTask(taskId);
+          return { success: true, taskId };
+        } catch (error) {
+          console.error(`Failed to delete task ${taskId}:`, error);
+          return { success: false, taskId, error };
+        }
+      });
+
+      const results = await Promise.all(deletePromises);
+      const successful = results.filter(r => r.success);
+      const failed = results.filter(r => !r.success);
+
+      if (successful.length > 0) {
+        // Remove successfully deleted tasks from local state
+        const successfulIds = successful.map(r => r.taskId.toString());
+        setTasks(prev => prev.filter(task => !successfulIds.includes(task.id)));
+        
+        if (failed.length === 0) {
+          toast.success(`Successfully deleted ${successful.length} task(s)`);
+        } else {
+          toast.success(`Deleted ${successful.length} task(s), ${failed.length} failed`);
+          toast.error(`Failed to delete ${failed.length} task(s)`);
+        }
+      } else {
+        toast.error('Failed to delete all selected tasks');
+      }
+
       clearSelection();
       setConfirmBulkDeleteOpen(false);
     } catch (error) {
-      console.error('Error deleting tasks:', error);
-      toast.error('Failed to delete tasks');
+      console.error('Error during bulk delete:', error);
+      toast.error('An error occurred while deleting tasks');
+      setConfirmBulkDeleteOpen(false);
     }
   };
 
@@ -330,28 +357,75 @@ const DailyTaskUpdates: React.FC = () => {
   };
 
   const handleBulkUpdate = async (updates: Partial<DailyTaskFormData>) => {
-    if (selectedTasks.size === 0) return;
+    if (selectedTasks.size === 0 || !userId) return;
 
     try {
-      setTasks(prev => prev.map(task => {
-        if (selectedTasks.has(task.id)) {
-          return {
-            ...task,
-            ...updates,
-            day: updates.date ? getDayFromDate(updates.date) : task.day,
-            updatedAt: new Date()
+      // Update tasks individually since there's no bulk update API
+      const updatePromises = Array.from(selectedTasks).map(async (taskId) => {
+        const task = tasks.find(t => t.id === taskId);
+        if (!task) return { success: false, taskId, error: 'Task not found' };
+
+        try {
+          const updateData = {
+            userId,
+            dailyTaskDate: updates.date || task.date,
+            projectCode: updates.projectCode || task.projectCode || undefined,
+            projectName: updates.projectName || task.projectName || undefined,
+            storyTaskBugNumber: updates.storyTaskBugNumber || task.storyTaskBugNumber || undefined,
+            taskDetails: updates.taskDetails || task.taskDetails || undefined,
+            remarks: updates.remarks || task.remarks || undefined
+          };
+
+          const response = await dailyTaskService.updateTask(parseInt(taskId), updateData);
+          
+          if (response.status === 'SUCCESS' && response.data) {
+            return { 
+              success: true, 
+              taskId, 
+              updatedTask: transformApiToTask(response.data) 
+            };
+          } else {
+            return { success: false, taskId, error: response.message || 'Update failed' };
+          }
+        } catch (error) {
+          console.error(`Failed to update task ${taskId}:`, error);
+          return { 
+            success: false, 
+            taskId, 
+            error: error instanceof Error ? error.message : 'Unknown error' 
           };
         }
-        return task;
-      }));
+      });
+
+      const results = await Promise.all(updatePromises);
+      const successful = results.filter(r => r.success);
+      const failed = results.filter(r => !r.success);
+
+      if (successful.length > 0) {
+        // Update local state with successfully updated tasks
+        setTasks(prev => prev.map(task => {
+          const successResult = successful.find(r => r.taskId === task.id);
+          return (successResult && 'updatedTask' in successResult && successResult.updatedTask) ? successResult.updatedTask : task;
+        }));
+
+        if (failed.length === 0) {
+          toast.success(`Successfully updated ${successful.length} task(s)`);
+        } else {
+          toast.success(`Updated ${successful.length} task(s), ${failed.length} failed`);
+          toast.error(`Failed to update ${failed.length} task(s)`);
+        }
+      } else {
+        toast.error('Failed to update all selected tasks');
+      }
       
-      toast.success(`Successfully updated ${selectedTasks.size} task(s)`);
       clearSelection();
       setBulkEditMode(false);
       setShowModal(false);
     } catch (error) {
-      console.error('Error updating tasks:', error);
-      toast.error('Failed to update tasks');
+      console.error('Error during bulk update:', error);
+      toast.error('An error occurred while updating tasks');
+      setBulkEditMode(false);
+      setShowModal(false);
     }
   };
 
@@ -462,6 +536,18 @@ const DailyTaskUpdates: React.FC = () => {
   // Handle add/edit task
   const handleSaveTask = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userId) {
+      toast.error('User ID is required');
+      return;
+    }
+
+    // Validate form data
+    const validation = validateFormData(formData, !!editingTask);
+    if (!validation.isValid) {
+      validation.errors.forEach(error => toast.error(error));
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -475,52 +561,54 @@ const DailyTaskUpdates: React.FC = () => {
         });
         await handleBulkUpdate(updates);
       } else if (editingTask) {
-        // Update existing task
-        const updatedTask: DailyTask = {
-          ...editingTask,
-          date: formData.date,
-          day: getDayFromDate(formData.date),
-          taskNumber: formData.taskNumber,
-          projectCode: formData.projectCode,
-          projectName: formData.projectName,
-          storyTaskBugNumber: formData.storyTaskBugNumber,
-          taskDetails: formData.taskDetails,
-          remarks: formData.remarks,
-          updatedAt: new Date()
+        // Update existing task via API
+        const updateData = {
+          userId,
+          dailyTaskDate: formData.date,
+          projectCode: formData.projectCode || undefined,
+          projectName: formData.projectName || undefined,
+          storyTaskBugNumber: formData.storyTaskBugNumber || undefined,
+          taskDetails: formData.taskDetails || undefined,
+          remarks: formData.remarks || undefined
         };
 
-        setTasks(prev => prev.map(task => 
-          task.id === editingTask.id ? updatedTask : task
-        ));
-        toast.success(SUCCESS_MESSAGES.TASK_UPDATED);
-        closeModal();
+        const response = await dailyTaskService.updateTask(parseInt(editingTask.id), updateData);
+        
+        if (response.status === 'SUCCESS' && response.data) {
+          // Update local state with the response data
+          const updatedTask = transformApiToTask(response.data);
+          setTasks(prev => prev.map(task => 
+            task.id === editingTask.id ? updatedTask : task
+          ));
+          toast.success(SUCCESS_MESSAGES.TASK_UPDATED);
+          closeModal();
+        }
       } else {
-        // Add new task
-        const newTask: DailyTask = {
-          id: Date.now().toString(),
-          date: formData.date,
-          day: getDayFromDate(formData.date),
-          taskNumber: formData.taskNumber,
-          projectCode: formData.projectCode,
-          projectName: formData.projectName,
-          storyTaskBugNumber: formData.storyTaskBugNumber,
-          taskDetails: formData.taskDetails,
-          remarks: formData.remarks,
-          status: formData.status || DAILY_TASK_DEFAULTS.STATUS,
-          priority: formData.priority || DAILY_TASK_DEFAULTS.PRIORITY,
-          type: formData.type || DAILY_TASK_DEFAULTS.TYPE,
-          userId: userId || 0,
-          createdAt: new Date(),
-          updatedAt: new Date()
+        // Create new task via API
+        const createData = {
+          userId,
+          dailyTaskDate: formData.date,
+          projectCode: formData.projectCode || undefined,
+          projectName: formData.projectName || undefined,
+          storyTaskBugNumber: formData.storyTaskBugNumber || undefined,
+          taskDetails: formData.taskDetails || undefined,
+          remarks: formData.remarks || undefined
         };
 
-        setTasks(prev => [...prev, newTask]);
-        toast.success(SUCCESS_MESSAGES.TASK_CREATED);
-        closeModal();
+        const response = await dailyTaskService.createTask(createData);
+        
+        if (response.status === 'SUCCESS' && response.data) {
+          // Add new task to local state
+          const newTask = transformApiToTask(response.data);
+          setTasks(prev => [...prev, newTask]);
+          toast.success(SUCCESS_MESSAGES.TASK_CREATED);
+          closeModal();
+        }
       }
     } catch (error) {
       console.error('Error saving task:', error);
-      toast.error(ERROR_MESSAGES.API.UNKNOWN);
+      const errorMessage = error instanceof Error ? error.message : ERROR_MESSAGES.API.UNKNOWN;
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -531,13 +619,18 @@ const DailyTaskUpdates: React.FC = () => {
     if (!deleteTarget) return;
 
     try {
+      // Call API to delete the task
+      await dailyTaskService.deleteTask(parseInt(deleteTarget.id));
+      
+      // Remove from local state
       setTasks(prev => prev.filter(task => task.id !== deleteTarget.id));
       toast.success(SUCCESS_MESSAGES.TASK_DELETED);
       setConfirmDeleteOpen(false);
       setDeleteTarget(null);
     } catch (error) {
       console.error('Error deleting task:', error);
-      toast.error('Failed to delete task');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete task';
+      toast.error(errorMessage);
     }
   };
 
@@ -988,17 +1081,18 @@ const DailyTaskUpdates: React.FC = () => {
                     <div className="form-group">
                       <label htmlFor="taskNumber" className="form-label">
                         <i className="bi bi-hash me-2"></i>
-                        Task Number {!bulkEditMode && '*'}
+                        Task Number {editingTask ? '' : '(Generated automatically)'}
                       </label>
                       <input
                         type="text"
                         id="taskNumber"
                         name="taskNumber"
                         className="form-control"
-                        value={formData.taskNumber}
+                        value={formData.taskNumber || (editingTask ? '' : 'Auto-generated on save')}
                         onChange={handleInputChange}
-                        placeholder="e.g., TSK-001"
-                        required={!bulkEditMode}
+                        placeholder={editingTask ? "e.g., TSK-001" : "Auto-generated on save"}
+                        readOnly={!editingTask}
+                        disabled={!editingTask && !bulkEditMode}
                       />
                     </div>
                   </div>

@@ -125,7 +125,7 @@ export const API_ENDPOINTS = {
     },
   },
 
-  // Tasks
+  // Tasks (General task management system)
   TASKS: {
     GET_BY_USER: `${API_BASE_URL}/tasks/user`,
     GET_BY_ID: `${API_BASE_URL}/tasks`,
@@ -146,6 +146,22 @@ export const API_ENDPOINTS = {
     ADD_COMMENT: `${API_BASE_URL}/tasks/comments`,
     GET_SUBTASKS: `${API_BASE_URL}/tasks/subtasks`,
     CREATE_SUBTASK: `${API_BASE_URL}/tasks/subtasks`,
+  },
+
+  // Daily Tasks (Daily work tracking system)
+  DAILY_TASKS: {
+    // Core CRUD operations
+    CREATE: `${API_BASE_URL}/daily-tasks`,
+    UPDATE: (taskId: number | string) => `${API_BASE_URL}/daily-tasks?taskId=${taskId}`,
+    GET_BY_ID: (taskId: number | string) => `${API_BASE_URL}/daily-tasks?taskId=${taskId}`,
+    DELETE: (taskId: number | string) => `${API_BASE_URL}/daily-tasks?taskId=${taskId}`,
+    
+    // User-specific operations
+    GET_BY_USER: (userId: number | string) => `${API_BASE_URL}/daily-tasks/user?userId=${userId}`,
+    GET_BY_DATE_RANGE: (userId: number | string, startDate: string, endDate: string) => 
+      `${API_BASE_URL}/daily-tasks/user/date-range?userId=${userId}&startDate=${startDate}&endDate=${endDate}`,
+    GET_BY_DATE: (userId: number | string, date: string) => 
+      `${API_BASE_URL}/daily-tasks/user/date?userId=${userId}&date=${date}`,
   },
 
   // Notes
