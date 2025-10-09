@@ -2,8 +2,17 @@
 import axios from "axios";
 import axiosInstance from "./axiosInstance";
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
-import { STORAGE_KEYS } from "../constants/app";
 import { Role } from "../types/auth";
+import { TokenService, TokenInfo } from "./tokenService";
+
+// Use consistent storage keys
+const STORAGE_KEYS = {
+  TOKEN: 'workplace_tracker_token',
+  REFRESH_TOKEN: 'workplace_tracker_refresh_token',
+  USER: 'workplace_tracker_user',
+  LAST_LOGIN_TIME: 'workplace_tracker_last_login_time',
+  LAST_LOGIN_SHOWN: 'workplace_tracker_last_login_shown'
+} as const;
 
 /**
  * AuthResponse:
@@ -13,6 +22,10 @@ import { Role } from "../types/auth";
 export interface AuthResponse {
   accessToken?: string | null;
   token?: string | null;
+  refreshToken?: string | null;
+  tokenType?: string | null;
+  expiresIn?: number | null;
+  scope?: string | null;
   role?: Role | null;
   userId?: number | null;
   name?: string | null;
@@ -77,10 +90,48 @@ export const authService = {
       const resp = await axiosInstance.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, payload);
       const authData = normalizeAuthResponse(resp.data);
       
-      // If successful, store the token
+      // If successful, store tokens using enhanced TokenService
       if (authData.status === "SUCCESS") {
         const token = authData.accessToken || authData.token;
-        if (token) localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+        if (token) {
+          console.log('💾 Saving login tokens...', {
+            hasToken: !!token,
+            tokenLength: token.length,
+            userId: authData.userId,
+            tokenType: resp.data.tokenType || 'Bearer'
+          });
+          
+          const tokenInfo: TokenInfo = {
+            accessToken: token,
+            tokenType: resp.data.tokenType || 'Bearer',
+            expiresIn: resp.data.expiresIn || undefined,
+            refreshToken: resp.data.refreshToken || undefined,
+            scope: resp.data.scope || undefined,
+            userId: authData.userId || undefined
+          };
+          
+          TokenService.saveTokens(tokenInfo);
+          
+          // Also save to legacy storage for backward compatibility
+          localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+          
+          // Verify token was saved correctly
+          const savedToken = TokenService.getAccessToken();
+          const authHeader = TokenService.getAuthorizationHeader();
+          
+          console.log('✅ Login tokens saved successfully:', {
+            tokenSaved: !!savedToken,
+            tokensMatch: savedToken === token,
+            authHeaderGenerated: !!authHeader,
+            userId: TokenService.getUserIdFromToken()
+          });
+          
+          if (!savedToken || savedToken !== token) {
+            console.error('❌ Token save verification failed!');
+          }
+        } else {
+          console.error('❌ No token received from login response');
+        }
       }
       
       return authData;
@@ -139,43 +190,77 @@ export const authService = {
   },
 
   logout: () => {
-    // clear frontend stored tokens and user
-    localStorage.removeItem(STORAGE_KEYS.TOKEN);
+    console.log('🚪 Logging out user...');
+    
+    // Since there's no backend logout API, perform client-side logout only
+    
+    // Clear all tokens using TokenService
+    TokenService.clearTokens();
+    
+    // Clear all user-related data from localStorage
     localStorage.removeItem(STORAGE_KEYS.USER);
     localStorage.removeItem(STORAGE_KEYS.LAST_LOGIN_TIME);
     localStorage.removeItem(STORAGE_KEYS.LAST_LOGIN_SHOWN);
-
-    // Optionally call server logout to clear refresh cookie server-side (best-effort)
-    try {
-      axiosInstance.post(API_ENDPOINTS.AUTH.LOGOUT).catch(() => {});
-    } catch {}
+    
+    // Clear any cached user settings or preferences
+    Object.keys(localStorage).forEach(key => {
+      if (key.startsWith('workplace_tracker_') || key.startsWith('user_settings_')) {
+        localStorage.removeItem(key);
+      }
+    });
+    
+    console.log('✅ Client logout completed - no server logout required');
+    
+    // Emit logout event for other components
+    window.dispatchEvent(new CustomEvent('auth:logout'));
   },
 
   saveSession: (resp: AuthResponse) => {
+    console.log('💾 Saving user session...');
+    
     // prefer canonical accessToken then fallback to token
     const access = resp.accessToken ?? resp.token ?? null;
     if (resp.status === "SUCCESS" && access) {
+      // Save tokens using enhanced TokenService
+      const tokenInfo: TokenInfo = {
+        accessToken: access,
+        tokenType: resp.tokenType || 'Bearer',
+        expiresIn: resp.expiresIn || undefined,
+        refreshToken: resp.refreshToken || undefined,
+        scope: resp.scope || undefined,
+        userId: resp.userId || undefined
+      };
+      
+      TokenService.saveTokens(tokenInfo);
+      
+      // Also save to legacy storage for backward compatibility
       localStorage.setItem(STORAGE_KEYS.TOKEN, access);
 
       // Save user object (minimal fields)
-      localStorage.setItem(
-        STORAGE_KEYS.USER,
-        JSON.stringify({
-          userId: resp.userId ?? null,
-          name: resp.name ?? null,
-          email: resp.email ?? null,
-          role: resp.role ?? null,
-          isActive: resp.isActive ?? null,
-          lastLoginTime: resp.lastLoginTime ?? null,
-          loginAttempts: resp.loginAttempts ?? null,
-          accountLocked: resp.accountLocked ?? null,
-        })
-      );
+      const userInfo = {
+        userId: resp.userId ?? null,
+        name: resp.name ?? null,
+        email: resp.email ?? null,
+        role: resp.role ?? null,
+        isActive: resp.isActive ?? null,
+        lastLoginTime: resp.lastLoginTime ?? null,
+        loginAttempts: resp.loginAttempts ?? null,
+        accountLocked: resp.accountLocked ?? null,
+      };
+      
+      localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(userInfo));
 
       if (resp.lastLoginTime) {
         localStorage.setItem(STORAGE_KEYS.LAST_LOGIN_TIME, resp.lastLoginTime);
         localStorage.setItem(STORAGE_KEYS.LAST_LOGIN_SHOWN, "false");
       }
+      
+      console.log('✅ Session saved successfully', {
+        userId: resp.userId,
+        email: resp.email,
+        role: resp.role,
+        tokenExpiry: tokenInfo.expiresAt ? new Date(tokenInfo.expiresAt) : 'Unknown'
+      });
     }
   },
 

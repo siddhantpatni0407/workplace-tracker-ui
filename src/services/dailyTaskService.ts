@@ -1,6 +1,7 @@
 import axiosInstance from './axiosInstance';
 import { ApiResponse } from '../models/Api';
 import { API_ENDPOINTS } from '../constants/apiEndpoints';
+import { ApiService } from './apiService';
 
 // API Response Types
 export interface DailyTaskApiResponse {
@@ -41,11 +42,18 @@ export const dailyTaskService = {
   // Create a new daily task
   createTask: async (taskData: CreateDailyTaskRequest): Promise<ApiResponse<DailyTaskApiResponse>> => {
     try {
-      const response = await axiosInstance.post<ApiResponse<DailyTaskApiResponse>>(API_ENDPOINTS.DAILY_TASKS.CREATE, taskData);
+      const response = await ApiService.post<ApiResponse<DailyTaskApiResponse>>(
+        API_ENDPOINTS.DAILY_TASKS.CREATE,
+        taskData,
+        {
+          requireAuth: true,
+          showErrorToast: true
+        }
+      );
       return response.data;
     } catch (error: any) {
       console.error('Error creating daily task:', error);
-      throw new Error(error.response?.data?.message || 'Failed to create task');
+      throw error; // ApiService already handles error processing
     }
   },
 

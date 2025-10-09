@@ -1,7 +1,7 @@
 // src/services/leavePolicyService.ts
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
 import { LeavePolicyDTO } from "../types/leavePolicy";
-import { HTTP } from "../constants/app";
+import axiosInstance from "./axiosInstance";
 
 type ApiResponse<T> = {
   status?: string;
@@ -9,43 +9,27 @@ type ApiResponse<T> = {
   data?: T;
 };
 
-async function handleFetch<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
-  const res = await fetch(input, init);
-  if (!res.ok) {
-    // try parse body for message
-    const body = await res.json().catch(() => ({}));
-    const msg = body?.message || res.statusText || "Request failed";
-    throw new Error(msg);
-  }
-  const body = (await res.json()) as ApiResponse<T>;
-  return body.data as T;
-}
-
 const getAll = async (): Promise<LeavePolicyDTO[]> => {
-  return handleFetch<LeavePolicyDTO[]>(API_ENDPOINTS.LEAVE_POLICIES.GET_ALL);
+  const response = await axiosInstance.get(API_ENDPOINTS.LEAVE_POLICIES.GET_ALL);
+  return response.data?.data ?? [];
 };
 
 const getById = async (policyId: number | string): Promise<LeavePolicyDTO> => {
-  return handleFetch<LeavePolicyDTO>(API_ENDPOINTS.LEAVE_POLICIES.GET_EXACT(policyId));
+  const response = await axiosInstance.get(API_ENDPOINTS.LEAVE_POLICIES.GET_EXACT(policyId));
+  return response.data?.data;
 };
 
 const createPolicy = async (payload: Partial<LeavePolicyDTO>): Promise<LeavePolicyDTO> => {
-  return handleFetch<LeavePolicyDTO>(API_ENDPOINTS.LEAVE_POLICIES.CREATE, {
-    method: "POST",
-    headers: HTTP.HEADERS.JSON,
-    body: JSON.stringify(payload),
-  });
+  const response = await axiosInstance.post(API_ENDPOINTS.LEAVE_POLICIES.CREATE, payload);
+  return response.data?.data;
 };
 
 const updatePolicy = async (
   policyId: number | string,
   payload: Partial<LeavePolicyDTO>
 ): Promise<LeavePolicyDTO> => {
-  return handleFetch<LeavePolicyDTO>(API_ENDPOINTS.LEAVE_POLICIES.UPDATE(policyId), {
-    method: "PUT",
-    headers: HTTP.HEADERS.JSON,
-    body: JSON.stringify(payload),
-  });
+  const response = await axiosInstance.put(API_ENDPOINTS.LEAVE_POLICIES.UPDATE(policyId), payload);
+  return response.data?.data;
 };
 
 // ✅ assign to a named variable before exporting

@@ -1,48 +1,13 @@
 // src/services/holidayService.ts
-import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import axiosInstance from "./axiosInstance";
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
-import { STORAGE_KEYS } from "../constants/app";
 import { HolidayDTO } from "../types/holiday";
 import { ResponseDTO } from "../types/api";
 
 /**
  * Holiday service wrapper for API calls.
- * - Uses a local axios instance
- * - Adds Authorization header if token present
- * - Normalizes responses (ResponseDTO vs raw body)
+ * Uses the shared axiosInstance which already handles authentication
  */
-
-const client: AxiosInstance = axios.create({
-  baseURL: "", // endpoints in API_ENDPOINTS contain full URL
-  timeout: 15000,
-});
-
-/**
- * Helper to safely set Authorization header regardless of header implementation.
- * Axios config.headers may be either plain object or AxiosHeaders instance.
- */
-function setAuthHeader(config: AxiosRequestConfig, token: string) {
-  if (!config.headers) {
-    config.headers = { Authorization: `Bearer ${token}` } as any;
-    return;
-  }
-
-  const h: any = config.headers;
-  if (typeof h.set === "function") {
-    h.set("Authorization", `Bearer ${token}`);
-  } else {
-    (config.headers as Record<string, string | number | boolean>)["Authorization"] = `Bearer ${token}`;
-  }
-}
-
-// attach token automatically (if present)
-client.interceptors.request.use((config) => {
-  const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-  if (token) {
-    setAuthHeader(config, token);
-  }
-  return config;
-});
 
 const holidayService = {
   /**
@@ -52,7 +17,7 @@ const holidayService = {
     const params: Record<string, string> = {};
     if (from) params.from = from;
     if (to) params.to = to;
-    const res = await client.get<any>(API_ENDPOINTS.HOLIDAYS.GET_ALL, { params });
+    const res = await axiosInstance.get<any>(API_ENDPOINTS.HOLIDAYS.GET_ALL, { params });
     if (res.data && typeof res.data === "object" && "data" in res.data && res.data.data !== undefined) {
       return res.data.data as HolidayDTO[];
     }
@@ -60,19 +25,19 @@ const holidayService = {
   },
 
   async createHoliday(payload: Partial<HolidayDTO>): Promise<HolidayDTO> {
-    const res = await client.post<ResponseDTO<HolidayDTO>>(API_ENDPOINTS.HOLIDAYS.CREATE, payload);
+    const res = await axiosInstance.post<ResponseDTO<HolidayDTO>>(API_ENDPOINTS.HOLIDAYS.CREATE, payload);
     return res.data?.data ?? (res.data as any);
   },
 
   async updateHoliday(holidayId: number, payload: Partial<HolidayDTO>): Promise<HolidayDTO> {
-    const res = await client.put<ResponseDTO<HolidayDTO>>(API_ENDPOINTS.HOLIDAYS.GET_ALL, payload, {
+    const res = await axiosInstance.put<ResponseDTO<HolidayDTO>>(API_ENDPOINTS.HOLIDAYS.GET_ALL, payload, {
       params: { holidayId },
     });
     return res.data?.data ?? (res.data as any);
   },
 
   async deleteHoliday(holidayId: number): Promise<ResponseDTO<void>> {
-    const res = await client.delete<ResponseDTO<void>>(API_ENDPOINTS.HOLIDAYS.GET_ALL, {
+    const res = await axiosInstance.delete<ResponseDTO<void>>(API_ENDPOINTS.HOLIDAYS.GET_ALL, {
       params: { holidayId },
     });
     return res.data ?? { status: "SUCCESS", message: "Deleted" };

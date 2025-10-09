@@ -4,6 +4,8 @@ import { authService, SignupData, AuthResponse } from "../services/authService";
 import { UserRole } from "../enums";
 import i18n from "../i18n";
 import UserSettingsService from "../services/userSettingsService";
+import { TokenService } from "../services/tokenService";
+import { showErrorToast, showSuccessToast } from "../components/common/errorNotification/ErrorNotification";
 
 // Legacy compatibility - keep the old interface temporarily
 export interface User {
@@ -27,6 +29,13 @@ interface AuthContextType {
   tryRefresh: () => Promise<boolean>;
   updateUser: (updates: Partial<User>) => void;
   isLoading: boolean;
+  // Enhanced methods
+  checkTokenExpiry: () => Promise<boolean>;
+  hasRole: (role: string) => boolean;
+  hasAnyRole: (roles: string[]) => boolean;
+  getAuthHeader: () => string | null;
+  tokenExpiry: number | null;
+  tokenService: typeof TokenService;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -134,6 +143,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const resp = await authService.login(email, password, options);
 
       if (resp.status === "SUCCESS" && (resp.accessToken || resp.token)) {
+        console.log('🔐 Processing successful login response...');
+        
         authService.saveSession(resp);
         const saved = normalizeStoredUser(authService.getUser());
 
@@ -149,6 +160,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
 
         setUser(newUser);
+
+        // Verify authentication state after login
+        console.log('🔍 Verifying authentication state after login:', {
+          hasToken: TokenService.hasAccessToken(),
+          authHeader: TokenService.getAuthorizationHeader(),
+          userId: TokenService.getUserIdFromToken(),
+          userSet: !!newUser,
+          userIdMatch: newUser.userId === TokenService.getUserIdFromToken()
+        });
 
         // Load user settings and apply language preference after successful login
         if (newUser.userId) {
@@ -235,6 +255,43 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     i18n.initializeForAuthState(isAuthenticated);
   }, [isAuthenticated]);
 
+  // Enhanced authentication methods
+  const checkTokenExpiry = useCallback(async (): Promise<boolean> => {
+    if (!TokenService.hasAccessToken()) {
+      return false;
+    }
+
+    if (TokenService.needsRefresh()) {
+      try {
+        console.log('🔄 Token needs refresh, attempting refresh...');
+        const refreshed = await tryRefresh();
+        return refreshed;
+      } catch (error) {
+        console.error('❌ Token refresh error:', error);
+        logout();
+        return false;
+      }
+    }
+
+    return true;
+  }, [tryRefresh, logout]);
+
+  const hasRole = useCallback((role: string): boolean => {
+    return user?.role === role;
+  }, [user]);
+
+  const hasAnyRole = useCallback((roles: string[]): boolean => {
+    return roles.includes(user?.role || '');
+  }, [user]);
+
+  const getAuthHeader = useCallback((): string | null => {
+    return TokenService.getAuthorizationHeader();
+  }, []);
+
+  const tokenExpiry = useMemo((): number | null => {
+    return TokenService.getTokenExpiryTime();
+  }, [isAuthenticated]);
+
   const contextValue = useMemo(() => ({
     user,
     isAuthenticated,
@@ -243,8 +300,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     logout,
     tryRefresh,
     updateUser,
-    isLoading
-  }), [user, isAuthenticated, login, signup, logout, tryRefresh, updateUser, isLoading]);
+    isLoading,
+    // Enhanced methods
+    checkTokenExpiry,
+    hasRole,
+    hasAnyRole,
+    getAuthHeader,
+    tokenExpiry,
+    tokenService: TokenService
+  }), [
+    user, 
+    isAuthenticated, 
+    login, 
+    signup, 
+    logout, 
+    tryRefresh, 
+    updateUser, 
+    isLoading,
+    checkTokenExpiry,
+    hasRole,
+    hasAnyRole,
+    getAuthHeader,
+    tokenExpiry
+  ]);
 
   return (
     <AuthContext.Provider value={contextValue}>

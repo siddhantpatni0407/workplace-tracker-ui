@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
+import axiosInstance from "../../../services/axiosInstance";
 import { format, startOfMonth, endOfMonth, subMonths } from "date-fns";
 import {
     ResponsiveContainer,
@@ -79,13 +80,8 @@ const OfficeVisitAnalytics: React.FC = () => {
             });
 
             // server side grouping - we just call the same endpoint; client-side visitType filtering performed below
-            const res = await fetch(url, { headers: HTTP.HEADERS.JSON });
-            if (!res.ok) {
-                const b = await res.json().catch(() => ({}));
-                throw new Error(b?.message || res.statusText || "Request failed");
-            }
-            const body = await res.json();
-            const raw = (body?.data ?? []) as AggRow[];
+            const res = await axiosInstance.get(url);
+            const raw = (res.data?.data ?? []) as AggRow[];
             setRows(raw);
         } catch (err: any) {
             console.error("load analytics", err);

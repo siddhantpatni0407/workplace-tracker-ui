@@ -3,6 +3,7 @@ import { format, parseISO } from "date-fns";
 import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
+import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import { useTranslation } from "../../../hooks/useTranslation";
 import {
@@ -79,14 +80,13 @@ const OfficeVisit: React.FC = () => {
         if (!userId) return;
         setIsLoading(true);
         try {
-            const url = `${API_ENDPOINTS.VISITS.LIST}?userId=${userId}&year=${y}&month=${m}`;
-            const res = await fetch(url);
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body?.message || res.statusText || "Failed to fetch visits");
-            }
-            const body = await res.json();
-            setVisits(body?.data ?? []);
+            const params = new URLSearchParams({
+                userId: userId.toString(),
+                year: y.toString(),
+                month: m.toString()
+            });
+            const res = await axiosInstance.get(`${API_ENDPOINTS.VISITS.LIST}?${params}`);
+            setVisits(res.data?.data ?? []);
         } catch (err: any) {
             console.error("loadVisits", err);
             toast.error(err?.message ?? "Failed to load visits");
@@ -103,13 +103,8 @@ const OfficeVisit: React.FC = () => {
             const params = new URLSearchParams({ userId: String(userId), year: String(y), month: String(m) });
             if (showAll) params.set("showAll", "true");
             const url = `${API_ENDPOINTS.DAILY_VIEW.FETCH}?${params.toString()}`;
-            const res = await fetch(url);
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body?.message || res.statusText || "Failed to fetch daily view");
-            }
-            const body = await res.json();
-            setDailyView(body?.data ?? []);
+            const res = await axiosInstance.get(url);
+            setDailyView(res.data?.data ?? []);
         } catch (err: any) {
             console.error("loadDailyView", err);
             toast.error(err?.message ?? "Failed to load daily view");
@@ -180,17 +175,13 @@ const OfficeVisit: React.FC = () => {
 
             const method = existingVisit?.officeVisitId ? "PUT" : "POST";
             const url = API_ENDPOINTS.VISITS.UPSERT;
-            const res = await fetch(url, {
+            const res = await axiosInstance({
                 method,
-                headers: HTTP.HEADERS.JSON,
-                body: JSON.stringify(payload),
+                url,
+                data: payload,
             });
-
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body?.message || res.statusText || "Failed to save visit");
-            }
-            const responseBody = await res.json();
+            
+            const responseBody = res.data;
             toast.success(responseBody?.message ?? t("officeVisit.messages.savedForToday", { type: visitType }));
             // reload lists
             await loadVisits(year, month);
@@ -250,17 +241,13 @@ const OfficeVisit: React.FC = () => {
 
             const method = editing?.officeVisitId ? "PUT" : "POST";
             const url = API_ENDPOINTS.VISITS.UPSERT;
-            const res = await fetch(url, {
+            const res = await axiosInstance({
                 method,
-                headers: HTTP.HEADERS.JSON,
-                body: JSON.stringify(payload),
+                url,
+                data: payload,
             });
-
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body?.message || res.statusText || "Failed to save visit");
-            }
-            const body = await res.json();
+            
+            const body = res.data;
             toast.success(body?.message ?? "Visit saved");
             setShowModal(false);
             // reload lists
@@ -286,12 +273,8 @@ const OfficeVisit: React.FC = () => {
         }
         try {
             const url = API_ENDPOINTS.VISITS.DELETE(deleteTarget.officeVisitId);
-            const res = await fetch(url, { method: "DELETE" });
-            if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                throw new Error(body?.message || res.statusText || "Failed to delete visit");
-            }
-            const body = await res.json();
+            const res = await axiosInstance.delete(url);
+            const body = res.data;
             toast.success(body?.message ?? "Visit deleted");
             await loadVisits(year, month);
             await loadDailyView(year, month, showAllDaily);

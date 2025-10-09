@@ -1,7 +1,6 @@
 // src/services/notificationService.ts
-import axios, { AxiosInstance } from "axios";
+import axiosInstance from "./axiosInstance";
 import { API_ENDPOINTS } from "../constants/apiEndpoints";
-import { STORAGE_KEYS } from "../constants/app";
 import { HolidayDTO } from "../types/holiday";
 import { Leave } from "../models/Leave";
 import { DateUtils } from "../utils/date";
@@ -9,29 +8,8 @@ import { LeaveStatus, LeaveType, LeaveTypeLabels } from "../enums/LeaveEnums";
 
 /**
  * Notification service for fetching upcoming events like holidays and approved leaves
+ * Uses the shared axiosInstance which already handles authentication
  */
-const client: AxiosInstance = axios.create({
-  baseURL: "", // endpoints in API_ENDPOINTS contain full URL
-  timeout: 15000,
-});
-
-// Attach token automatically (if present)
-client.interceptors.request.use((config) => {
-  const token = localStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-  if (token) {
-    if (!config.headers) {
-      config.headers = { Authorization: `Bearer ${token}` } as any;
-    } else {
-      const h: any = config.headers;
-      if (typeof h.set === "function") {
-        h.set("Authorization", `Bearer ${token}`);
-      } else {
-        (config.headers as Record<string, string | number | boolean>)["Authorization"] = `Bearer ${token}`;
-      }
-    }
-  }
-  return config;
-});
 
 export interface UpcomingEvent {
   id: number;
@@ -63,12 +41,12 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
     console.log(`Looking ahead ${days} days`);
     
     // Fetch holidays
-    const holidaysPromise = client.get<any>(API_ENDPOINTS.HOLIDAYS.GET_ALL, {
+    const holidaysPromise = axiosInstance.get<any>(API_ENDPOINTS.HOLIDAYS.GET_ALL, {
       params: { from: fromDate, to: toDate }
     });
     
     // Fetch all leaves for the user (not filtering by approval status)
-    const leavesPromise = client.get<any>(API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId));
+    const leavesPromise = axiosInstance.get<any>(API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId));
     
     // Wait for both promises to resolve
     const [holidaysRes, leavesRes] = await Promise.all([holidaysPromise, leavesPromise]);

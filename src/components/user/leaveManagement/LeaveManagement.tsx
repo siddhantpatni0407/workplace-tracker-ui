@@ -6,6 +6,7 @@ import Header from "../../common/header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { HTTP } from "../../../constants/app";
+import axiosInstance from "../../../services/axiosInstance";
 import { DayPart } from "../../../enums/LeaveEnums";
 import { LeavePolicyDTO, UserLeaveBalanceDTO, UserLeaveDTO } from "../../../models/Leave";
 import "./leave-management.css";
@@ -66,13 +67,8 @@ const LeaveManagement: React.FC = () => {
     // -- data loads --
     async function loadPolicies() {
         try {
-            const res = await fetch(API_ENDPOINTS.LEAVE_POLICIES.GET_ALL);
-            if (!res.ok) {
-                const b = await res.json().catch(() => ({}));
-                throw new Error(b?.message || res.statusText);
-            }
-            const body = await res.json();
-            setPolicies(body?.data ?? []);
+            const res = await axiosInstance.get(API_ENDPOINTS.LEAVE_POLICIES.GET_ALL);
+            setPolicies(res.data?.data ?? []);
         } catch (err: any) {
             console.error("loadPolicies", err);
             toast.error(err?.message ?? "Failed to load leave policies");
@@ -84,13 +80,8 @@ const LeaveManagement: React.FC = () => {
         setLoading(true);
         try {
             const url = API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId);
-            const res = await fetch(url);
-            if (!res.ok) {
-                const b = await res.json().catch(() => ({}));
-                throw new Error(b?.message || res.statusText);
-            }
-            const body = await res.json();
-            setLeaves(body?.data ?? []);
+            const res = await axiosInstance.get(url);
+            setLeaves(res.data?.data ?? []);
         } catch (err: any) {
             console.error("loadUserLeaves", err);
             toast.error(err?.message ?? "Failed to load your leaves");
@@ -103,10 +94,8 @@ const LeaveManagement: React.FC = () => {
         if (!userId) return null;
         try {
             const url = API_ENDPOINTS.USER_LEAVE_BALANCE.GET(userId, policyIdArg, balanceYear);
-            const res = await fetch(url);
-            if (!res.ok) return null;
-            const body = await res.json();
-            return (body?.data ?? null) as UserLeaveBalanceDTO | null;
+            const res = await axiosInstance.get(url);
+            return (res.data?.data ?? null) as UserLeaveBalanceDTO | null;
         } catch (err) {
             return null;
         }
@@ -272,30 +261,14 @@ const LeaveManagement: React.FC = () => {
             // so call it with userId instead of appending ?userId=...
             if (editing?.userLeaveId) {
                 const url = API_ENDPOINTS.USER_LEAVES.UPDATE(editing.userLeaveId);
-                const res = await fetch(url, {
-                    method: "PUT",
-                    headers: HTTP.HEADERS.JSON,
-                    body: JSON.stringify(payload),
-                });
-                if (!res.ok) {
-                    const b = await res.json().catch(() => ({}));
-                    throw new Error(b?.message || res.statusText);
-                }
-                const body = await res.json();
+                const res = await axiosInstance.put(url, payload);
+                const body = res.data;
                 toast.success(body?.message ?? "Leave updated");
             } else {
                 // create — use CREATE(userId) since API_ENDPOINTS now defines CREATE as a function
                 const url = API_ENDPOINTS.USER_LEAVES.CREATE(userId!);
-                const res = await fetch(url, {
-                    method: "POST",
-                    headers: HTTP.HEADERS.JSON,
-                    body: JSON.stringify(payload),
-                });
-                if (!res.ok) {
-                    const b = await res.json().catch(() => ({}));
-                    throw new Error(b?.message || res.statusText);
-                }
-                const body = await res.json();
+                const res = await axiosInstance.post(url, payload);
+                const body = res.data;
                 toast.success(body?.message ?? "Leave created");
             }
 
@@ -316,12 +289,8 @@ const LeaveManagement: React.FC = () => {
         if (!deleteTarget?.userLeaveId) return;
         try {
             const url = API_ENDPOINTS.USER_LEAVES.DELETE(deleteTarget.userLeaveId);
-            const res = await fetch(url, { method: "DELETE" });
-            if (!res.ok) {
-                const b = await res.json().catch(() => ({}));
-                throw new Error(b?.message || res.statusText);
-            }
-            const body = await res.json();
+            const res = await axiosInstance.delete(url);
+            const body = res.data;
             toast.success(body?.message ?? "Leave deleted");
             await loadUserLeaves();
             await loadAllBalances(balanceYear);

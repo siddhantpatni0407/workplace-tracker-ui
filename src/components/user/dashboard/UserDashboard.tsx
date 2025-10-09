@@ -10,6 +10,7 @@ import { ROUTES } from "../../../constants";
 import { YEAR_FILTER, MONTH_FILTER, STATUS_FILTER } from "../../../constants/ui/filters";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { UserProfileData } from "../../../models/User";
+import axiosInstance from "../../../services/axiosInstance";
 import {
     DashboardCard,
     DashboardData,
@@ -58,10 +59,8 @@ const UserDashboard: React.FC = memo(() => {
     const loadUserProfile = async () => {
         if (!userId) return null;
         try {
-            const res = await fetch(`${API_ENDPOINTS.USER.PROFILE}?userId=${userId}`);
-            if (!res.ok) throw new Error('Failed to fetch user profile');
-            const body = await res.json();
-            return body?.data ?? null;
+            const res = await axiosInstance.get(`${API_ENDPOINTS.USER.PROFILE}?userId=${userId}`);
+            return res.data?.data ?? null;
         } catch (err) {
             console.error('loadUserProfile', err);
             return null;
@@ -71,10 +70,8 @@ const UserDashboard: React.FC = memo(() => {
     // Real API data loading functions using same pattern as existing components
     const loadHolidays = async () => {
         try {
-            const res = await fetch(API_ENDPOINTS.HOLIDAYS.GET_ALL);
-            if (!res.ok) throw new Error('Failed to fetch holidays');
-            const body = await res.json();
-            return body?.data ?? [];
+            const res = await axiosInstance.get(API_ENDPOINTS.HOLIDAYS.GET_ALL);
+            return res.data?.data ?? [];
         } catch (err) {
             console.error('loadHolidays', err);
             return [];
@@ -84,10 +81,8 @@ const UserDashboard: React.FC = memo(() => {
     const loadUserLeaves = async () => {
         if (!userId) return [];
         try {
-            const res = await fetch(API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId));
-            if (!res.ok) throw new Error('Failed to fetch leaves');
-            const body = await res.json();
-            return body?.data ?? [];
+            const res = await axiosInstance.get(API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId));
+            return res.data?.data ?? [];
         } catch (err) {
             console.error('loadUserLeaves', err);
             return [];
@@ -100,11 +95,13 @@ const UserDashboard: React.FC = memo(() => {
             const today = new Date();
             const year = today.getFullYear();
             const month = today.getMonth() + 1;
-            const url = `${API_ENDPOINTS.VISITS.LIST}?userId=${userId}&year=${year}&month=${month}`;
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('Failed to fetch visits');
-            const body = await res.json();
-            return body?.data ?? [];
+            const params = new URLSearchParams({
+                userId: userId.toString(),
+                year: year.toString(),
+                month: month.toString()
+            });
+            const res = await axiosInstance.get(`${API_ENDPOINTS.VISITS.LIST}?${params}`);
+            return res.data?.data ?? [];
         } catch (err) {
             console.error('loadOfficeVisits', err);
             return [];
@@ -114,34 +111,16 @@ const UserDashboard: React.FC = memo(() => {
     const loadLeaveBalance = async () => {
         if (!userId) return [];
         try {
-            const policies = await fetch(API_ENDPOINTS.LEAVE_POLICIES.GET_ALL);
-            if (!policies.ok) throw new Error('Failed to fetch policies');
-            const policiesBody = await policies.json();
-            const policiesList = policiesBody?.data ?? [];
+            const policies = await axiosInstance.get(API_ENDPOINTS.LEAVE_POLICIES.GET_ALL);
+            const policiesList = policies.data?.data ?? [];
 
             console.log('Leave Policies Data:', policiesList); // Debug log to check policy data
 
             const currentYear = new Date().getFullYear();
             const balancePromises = policiesList.map(async (policy: any) => {
                 try {
-                    const res = await fetch(API_ENDPOINTS.USER_LEAVE_BALANCE.GET(userId, policy.policyId, currentYear));
-                    if (!res.ok) {
-                        // If no balance data, create default entry with policy info
-                        const defaultAllocation = policy.defaultAnnualDays || policy.defaultDays || policy.default_days || policy.defaultAllocation || 1;
-                        return {
-                            policyId: policy.policyId,
-                            policyCode: policy.policyCode,
-                            policyName: policy.policyName,
-                            policyDescription: policy.description,
-                            defaultDays: defaultAllocation,
-                            allocatedDays: defaultAllocation,
-                            usedDays: 0,
-                            remainingDays: defaultAllocation,
-                            year: currentYear
-                        };
-                    }
-                    const body = await res.json();
-                    const balanceData = body?.data;
+                    const res = await axiosInstance.get(API_ENDPOINTS.USER_LEAVE_BALANCE.GET(userId, policy.policyId, currentYear));
+                    const balanceData = res.data?.data;
                     if (balanceData) {
                         // Combine policy info with balance data
                         return {
