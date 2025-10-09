@@ -75,12 +75,47 @@ export const authService = {
       }
 
       const resp = await axiosInstance.post<AuthResponse>(API_ENDPOINTS.AUTH.LOGIN, payload);
-      return normalizeAuthResponse(resp.data);
+      const authData = normalizeAuthResponse(resp.data);
+      
+      // If successful, store the token
+      if (authData.status === "SUCCESS") {
+        const token = authData.accessToken || authData.token;
+        if (token) localStorage.setItem(STORAGE_KEYS.TOKEN, token);
+      }
+      
+      return authData;
     } catch (err: any) {
-      if (err?.response?.data) return normalizeAuthResponse(err.response.data);
+      // Enhanced error handling for login
+      if (err?.response?.data) {
+        return normalizeAuthResponse(err.response.data);
+      }
+      
+      // Handle network errors with better messages
+      if (err?.isNetworkError || err?.code === 'NETWORK_ERROR' || err?.code === 'SERVICE_UNAVAILABLE') {
+        return {
+          status: "FAILED",
+          message: err.message || "Unable to connect to the authentication service. Please check your internet connection and try again.",
+          accessToken: null,
+          token: null,
+        };
+      }
+      
+      // Handle timeout errors
+      if (err?.code === 'TIMEOUT_ERROR') {
+        return {
+          status: "FAILED",
+          message: "Login request timed out. Please try again.",
+          accessToken: null,
+          token: null,
+        };
+      }
+      
+      // Generic error fallback
       return {
         status: "FAILED",
-        message: err?.message || "Login failed",
+        message: err?.message || "An unexpected error occurred during login. Please try again.",
+        accessToken: null,
+        token: null,
       };
     }
   },

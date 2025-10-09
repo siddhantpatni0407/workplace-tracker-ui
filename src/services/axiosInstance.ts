@@ -63,8 +63,31 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig | undefined;
 
+    // Enhanced error handling - transform network errors to more descriptive errors
     if (!originalRequest || !error.response) {
-      return Promise.reject(error);
+      // Network error (server down, no internet, etc.)
+      if (error.code === 'ECONNREFUSED') {
+        const enhancedError = new Error('Service temporarily unavailable. Please try again later.');
+        (enhancedError as any).code = 'SERVICE_UNAVAILABLE';
+        (enhancedError as any).isNetworkError = true;
+        (enhancedError as any).originalError = error;
+        return Promise.reject(enhancedError);
+      }
+      
+      if (error.code === 'ETIMEDOUT') {
+        const enhancedError = new Error('Request timed out. Please check your connection and try again.');
+        (enhancedError as any).code = 'TIMEOUT_ERROR';
+        (enhancedError as any).isNetworkError = true;
+        (enhancedError as any).originalError = error;
+        return Promise.reject(enhancedError);
+      }
+      
+      // Generic network error
+      const enhancedError = new Error('Unable to connect to the server. Please check your internet connection.');
+      (enhancedError as any).code = 'NETWORK_ERROR';
+      (enhancedError as any).isNetworkError = true;
+      (enhancedError as any).originalError = error;
+      return Promise.reject(enhancedError);
     }
 
     // ignore refresh attempts for the refresh endpoint itself

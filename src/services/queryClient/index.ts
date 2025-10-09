@@ -1,6 +1,7 @@
 // src/services/queryClient/index.ts
 import { QueryClient } from '@tanstack/react-query';
-import { ApiError } from '../../models';
+import { ErrorHandler } from '../../utils/errorHandling/errorHandler';
+import { ErrorType } from '../../utils/errorHandling/errorTypes';
 
 /**
  * Global QueryClient configuration for React Query
@@ -10,53 +11,63 @@ export const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: false, // Disable automatic refetch when window regains focus
       retry: (failureCount, error) => {
-        // Don't retry on 401, 403, or 404 errors
-        const err = error as unknown;
+        // Use improved error handling to determine retry logic
+        const shouldRetry = ErrorHandler.shouldRetry(error);
         
-        // Define a proper type for error objects with a code property
-        type ErrorWithCode = {
-          code: string;
-        };
-        
-        if (err && typeof err === 'object' && 'code' in err) {
-          const code = (err as ErrorWithCode).code;
-          if (
-            code === 'UNAUTHORIZED' || 
-            code === 'FORBIDDEN' ||
-            code === 'NOT_FOUND'
-          ) {
-            return false;
-          }
+        // Don't retry on authentication/authorization errors or client errors
+        const errorType = ErrorHandler.getErrorType(error);
+        if ([
+          ErrorType.AUTHENTICATION_ERROR,
+          ErrorType.AUTHORIZATION_ERROR,
+          ErrorType.NOT_FOUND_ERROR,
+          ErrorType.VALIDATION_ERROR
+        ].includes(errorType)) {
+          return false;
         }
-        // Retry up to 2 times for other errors
-        return failureCount < 2;
+        
+        // Retry up to 3 times for retryable errors, 1 time for others
+        const maxRetries = shouldRetry ? 3 : 1;
+        return failureCount < maxRetries;
       },
       staleTime: 5 * 60 * 1000, // Data is fresh for 5 minutes
+      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
     },
     mutations: {
       // Empty onError handler - errors will be handled by the component using the mutation
       // This prevents default console errors
-            onError: () => {},
+      // eslint-disable-next-line no-empty-function
+      onError: () => {
+        // Intentionally empty - errors handled by components
+      },
+      retry: (failureCount, error) => {
+        // Similar retry logic for mutations
+        const shouldRetry = ErrorHandler.shouldRetry(error);
+        const errorType = ErrorHandler.getErrorType(error);
+        
+        if ([
+          ErrorType.AUTHENTICATION_ERROR,
+          ErrorType.AUTHORIZATION_ERROR,
+          ErrorType.VALIDATION_ERROR
+        ].includes(errorType)) {
+          return false;
+        }
+        
+        return shouldRetry && failureCount < 1; // Retry once for mutations
+      },
     },
   },
 });
 
 /**
- * Helper function to extract error message from various error formats
+ * Helper function to extract user-friendly error message
  */
 export const getErrorMessage = (error: unknown): string => {
-  if (typeof error === 'string') {
-    return error;
-  }
-  
-  if (error instanceof Error) {
-    return error.message;
-  }
-  
-  // ApiError type
-  if (error && typeof error === 'object' && 'message' in error) {
-    return (error as ApiError).message || 'An error occurred';
-  }
-  
-  return 'An unexpected error occurred';
+  return ErrorHandler.getUserMessage(error);
+};
+
+/**
+ * Helper function to get detailed error information
+ */
+export const getErrorInfo = (error: unknown) => {
+  return ErrorHandler.processError(error);
 };
