@@ -1,11 +1,14 @@
 // src/components/common/sessionTimer/SessionTimer.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TokenService } from '../../../services/tokenService';
+import { authService } from '../../../services/authService';
 
 export const SessionTimer: React.FC = () => {
   const [timeRemaining, setTimeRemaining] = useState<string>('--:--');
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [sessionInfo, setSessionInfo] = useState<{ loginTime: Date | null; expiryTime: Date | null } | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const refreshTriggeredRef = useRef<boolean>(false);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -63,7 +66,7 @@ export const SessionTimer: React.FC = () => {
         border: '1px solid rgba(255, 255, 255, 0.3)'
       }}
     >
-      Session Time {timeRemaining}
+      Session Time:{timeRemaining}
     </div>
   );
 };
