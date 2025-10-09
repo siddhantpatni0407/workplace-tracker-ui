@@ -119,14 +119,68 @@ export class TokenService {
   }
 
   /**
-   * Get token expiry time in seconds
+   * Decode JWT payload without verification
+   */
+  static decodeJWTPayload(token: string): any {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+      
+      const payload = parts[1];
+      const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decoded);
+    } catch (error) {
+      console.error('Failed to decode JWT payload:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Get token expiry time in seconds from JWT payload
    */
   static getTokenExpiryTime(): number | null {
-    const tokenInfo = this.getTokenInfo();
-    if (!tokenInfo || !tokenInfo.expiresAt) return null;
+    const token = this.getAccessToken();
+    if (!token) return null;
     
-    const remainingMs = tokenInfo.expiresAt - Date.now();
-    return Math.max(0, Math.floor(remainingMs / 1000));
+    const payload = this.decodeJWTPayload(token);
+    if (!payload || !payload.exp) return null;
+    
+    // Convert exp (Unix timestamp in seconds) to remaining seconds
+    const currentTime = Math.floor(Date.now() / 1000);
+    const remainingSeconds = payload.exp - currentTime;
+    
+    return Math.max(0, remainingSeconds);
+  }
+
+  /**
+   * Get login time from JWT payload
+   */
+  static getLoginTime(): Date | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+    
+    const payload = this.decodeJWTPayload(token);
+    if (!payload || !payload.iat) return null;
+    
+    // Convert iat (Unix timestamp in seconds) to Date
+    return new Date(payload.iat * 1000);
+  }
+
+  /**
+   * Get session info from JWT payload
+   */
+  static getSessionInfo(): { loginTime: Date | null; expiryTime: Date | null; timeRemaining: number | null } {
+    const token = this.getAccessToken();
+    if (!token) return { loginTime: null, expiryTime: null, timeRemaining: null };
+    
+    const payload = this.decodeJWTPayload(token);
+    if (!payload) return { loginTime: null, expiryTime: null, timeRemaining: null };
+    
+    const loginTime = payload.iat ? new Date(payload.iat * 1000) : null;
+    const expiryTime = payload.exp ? new Date(payload.exp * 1000) : null;
+    const timeRemaining = this.getTokenExpiryTime();
+    
+    return { loginTime, expiryTime, timeRemaining };
   }
 
   /**

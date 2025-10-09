@@ -8,6 +8,7 @@ import LanguageSelector from "../language-selector/LanguageSelector";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES } from "../../../constants";
 import UserNotifications, { NotificationBadge } from "../notifications/UserNotifications";
+import { SessionTimer } from "../sessionTimer/SessionTimer";
 import "./navbar.css";
 
 interface NavLinkItem {
@@ -338,6 +339,13 @@ const Navbar: React.FC = memo(() => {
                     onClose={() => setNotificationsOpen(false)} 
                   />
                 )}
+              </li>
+            )}
+
+            {/* Session Timer - show for logged in users */}
+            {user && (
+              <li className="nav-item d-flex align-items-center me-3">
+                <SessionTimer />
               </li>
             )}
 
