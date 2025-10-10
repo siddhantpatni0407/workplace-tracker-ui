@@ -9,7 +9,6 @@ class OfficeVisitService {
   async getVisitsByUser(userId: number, year?: number, month?: number): Promise<ApiResponse<OfficeVisit[]>> {
     try {
       const params = new URLSearchParams();
-      params.append('userId', userId.toString());
       if (year) params.append('year', year.toString());
       if (month) params.append('month', month.toString());
 
@@ -94,7 +93,6 @@ class OfficeVisitService {
   ): Promise<ApiResponse<DailyViewDTO[]>> {
     try {
       const params = new URLSearchParams();
-      params.append('userId', userId.toString());
       if (year) params.append('year', year.toString());
       if (month) params.append('month', month.toString());
 

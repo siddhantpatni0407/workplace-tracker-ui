@@ -50,7 +50,7 @@ class DashboardService {
         taskService.getTasksByUser(userId, {
           limit: 100,
         }),
-        leaveService.getLeaveBalanceSummary(userId),
+        leaveService.getLeaveBalanceSummary(),
         officeVisitService.getVisitsSummary(userId),
         noteService.getNotesByUser(userId, { limit: 10 }),
         holidayService.getHolidays(),

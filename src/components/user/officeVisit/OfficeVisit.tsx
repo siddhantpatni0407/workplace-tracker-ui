@@ -81,7 +81,6 @@ const OfficeVisit: React.FC = () => {
         setIsLoading(true);
         try {
             const params = new URLSearchParams({
-                userId: userId.toString(),
                 year: y.toString(),
                 month: m.toString()
             });
@@ -100,7 +99,7 @@ const OfficeVisit: React.FC = () => {
         if (!userId) return;
         setIsLoading(true);
         try {
-            const params = new URLSearchParams({ userId: String(userId), year: String(y), month: String(m) });
+            const params = new URLSearchParams({ year: String(y), month: String(m) });
             if (showAll) params.set("showAll", "true");
             const url = `${API_ENDPOINTS.DAILY_VIEW.FETCH}?${params.toString()}`;
             const res = await axiosInstance.get(url);

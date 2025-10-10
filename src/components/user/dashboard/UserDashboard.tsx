@@ -59,7 +59,7 @@ const UserDashboard: React.FC = memo(() => {
     const loadUserProfile = async () => {
         if (!userId) return null;
         try {
-            const res = await axiosInstance.get(`${API_ENDPOINTS.USER.PROFILE}?userId=${userId}`);
+            const res = await axiosInstance.get(API_ENDPOINTS.USER.PROFILE);
             return res.data?.data ?? null;
         } catch (err) {
             console.error('loadUserProfile', err);
@@ -81,7 +81,7 @@ const UserDashboard: React.FC = memo(() => {
     const loadUserLeaves = async () => {
         if (!userId) return [];
         try {
-            const res = await axiosInstance.get(API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId));
+            const res = await axiosInstance.get(API_ENDPOINTS.USER_LEAVES.GET_BY_USER);
             return res.data?.data ?? [];
         } catch (err) {
             console.error('loadUserLeaves', err);
@@ -96,7 +96,6 @@ const UserDashboard: React.FC = memo(() => {
             const year = today.getFullYear();
             const month = today.getMonth() + 1;
             const params = new URLSearchParams({
-                userId: userId.toString(),
                 year: year.toString(),
                 month: month.toString()
             });
@@ -119,7 +118,7 @@ const UserDashboard: React.FC = memo(() => {
             const currentYear = new Date().getFullYear();
             const balancePromises = policiesList.map(async (policy: any) => {
                 try {
-                    const res = await axiosInstance.get(API_ENDPOINTS.USER_LEAVE_BALANCE.GET(userId, policy.policyId, currentYear));
+                    const res = await axiosInstance.get(API_ENDPOINTS.USER_LEAVE_BALANCE.GET(policy.policyId, currentYear));
                     const balanceData = res.data?.data;
                     if (balanceData) {
                         // Combine policy info with balance data

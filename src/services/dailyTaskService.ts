@@ -6,7 +6,7 @@ import { ApiService } from './apiService';
 // API Response Types
 export interface DailyTaskApiResponse {
   dailyTaskId: number;
-  userId: number;
+  userId?: number; // Optional since backend extracts from JWT token
   dailyTaskDate: string; // YYYY-MM-DD format
   taskNumber: string;
   projectCode?: string;
@@ -19,7 +19,6 @@ export interface DailyTaskApiResponse {
 }
 
 export interface CreateDailyTaskRequest {
-  userId: number;
   dailyTaskDate: string; // YYYY-MM-DD format
   projectCode?: string;
   projectName?: string;
@@ -29,7 +28,6 @@ export interface CreateDailyTaskRequest {
 }
 
 export interface UpdateDailyTaskRequest {
-  userId: number;
   dailyTaskDate: string;
   projectCode?: string;
   projectName?: string;
@@ -84,11 +82,11 @@ export const dailyTaskService = {
     }
   },
 
-  // Get all daily tasks for a user
-  getTasksByUserId: async (userId: number): Promise<ApiResponse<DailyTaskApiResponse[]>> => {
+  // Get all daily tasks for user (userId now extracted from token)
+  getTasksByUserId: async (): Promise<ApiResponse<DailyTaskApiResponse[]>> => {
     try {
       const response = await axiosInstance.get<ApiResponse<DailyTaskApiResponse[]>>(
-        API_ENDPOINTS.DAILY_TASKS.GET_BY_USER(userId)
+        API_ENDPOINTS.DAILY_TASKS.GET_BY_USER
       );
       return response.data;
     } catch (error: any) {
@@ -97,15 +95,14 @@ export const dailyTaskService = {
     }
   },
 
-  // Get daily tasks by date range
+  // Get daily tasks by date range (userId now extracted from token)
   getTasksByDateRange: async (
-    userId: number, 
     startDate: string, 
     endDate: string
   ): Promise<ApiResponse<DailyTaskApiResponse[]>> => {
     try {
       const response = await axiosInstance.get<ApiResponse<DailyTaskApiResponse[]>>(
-        API_ENDPOINTS.DAILY_TASKS.GET_BY_DATE_RANGE(userId, startDate, endDate)
+        API_ENDPOINTS.DAILY_TASKS.GET_BY_DATE_RANGE(startDate, endDate)
       );
       return response.data;
     } catch (error: any) {
@@ -114,11 +111,11 @@ export const dailyTaskService = {
     }
   },
 
-  // Get daily tasks for a specific date
-  getTasksByDate: async (userId: number, date: string): Promise<ApiResponse<DailyTaskApiResponse[]>> => {
+  // Get daily tasks for a specific date (userId now extracted from token)
+  getTasksByDate: async (date: string): Promise<ApiResponse<DailyTaskApiResponse[]>> => {
     try {
       const response = await axiosInstance.get<ApiResponse<DailyTaskApiResponse[]>>(
-        API_ENDPOINTS.DAILY_TASKS.GET_BY_DATE(userId, date)
+        API_ENDPOINTS.DAILY_TASKS.GET_BY_DATE(date)
       );
       return response.data;
     } catch (error: any) {

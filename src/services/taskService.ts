@@ -38,7 +38,7 @@ class TaskService {
       }
 
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.TASKS.GET_BY_USER}/${userId}?${params}`
+        `${API_ENDPOINTS.TASKS.GET_BY_USER}?${params}`
       );
       return response.data;
     } catch (error) {
@@ -70,8 +70,7 @@ class TaskService {
   async createTask(userId: number, taskData: TaskFormData): Promise<TaskCreateResponse> {
     try {
       const response = await axiosInstance.post(API_ENDPOINTS.TASKS.CREATE, {
-        ...taskData,
-        userId
+        ...taskData
       });
       return response.data;
     } catch (error) {
@@ -170,7 +169,7 @@ class TaskService {
       }
 
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.TASKS.GET_STATS}/${userId}?${params}`
+        `${API_ENDPOINTS.TASKS.GET_STATS}?${params}`
       );
       return response.data;
     } catch (error) {
@@ -202,7 +201,7 @@ class TaskService {
       }
 
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.TASKS.SEARCH}/${userId}?${params}`
+        `${API_ENDPOINTS.TASKS.SEARCH}?${params}`
       );
       return response.data;
     } catch (error) {
@@ -215,10 +214,10 @@ class TaskService {
     }
   }
 
-  // Get overdue tasks
-  async getOverdueTasks(userId: number): Promise<TaskListResponse> {
+  // Get overdue tasks (userId now extracted from token)
+  async getOverdueTasks(): Promise<TaskListResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_OVERDUE}/${userId}`);
+      const response = await axiosInstance.get(API_ENDPOINTS.TASKS.GET_OVERDUE);
       return response.data;
     } catch (error) {
       console.error('Error fetching overdue tasks:', error);
@@ -234,7 +233,7 @@ class TaskService {
   async getTasksByStatus(userId: number, status: TaskStatus): Promise<TaskListResponse> {
     try {
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.TASKS.GET_BY_STATUS}/${userId}/${status}`
+        `${API_ENDPOINTS.TASKS.GET_BY_STATUS}/${status}`
       );
       return response.data;
     } catch (error) {
@@ -251,7 +250,7 @@ class TaskService {
   async getTasksByPriority(userId: number, priority: TaskPriority): Promise<TaskListResponse> {
     try {
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.TASKS.GET_BY_PRIORITY}/${userId}/${priority}`
+        `${API_ENDPOINTS.TASKS.GET_BY_PRIORITY}/${priority}`
       );
       return response.data;
     } catch (error) {

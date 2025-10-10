@@ -54,7 +54,7 @@ const transformApiToTask = (apiTask: DailyTaskApiResponse): DailyTask => {
     status: DAILY_TASK_DEFAULTS.STATUS, // API doesn't provide status, use default
     priority: DAILY_TASK_DEFAULTS.PRIORITY, // API doesn't provide priority, use default
     type: DAILY_TASK_DEFAULTS.TYPE, // API doesn't provide type, use default
-    userId: apiTask.userId,
+    userId: apiTask.userId || 0, // Backend extracts from JWT token, may not be in response
     createdAt: new Date(apiTask.createdDate),
     updatedAt: new Date(apiTask.modifiedDate)
   };
@@ -189,8 +189,8 @@ const DailyTaskUpdates: React.FC = () => {
       // Get date range for the selected month/year
       const { startDate, endDate } = dateUtils.getMonthDateRange(selectedYear, selectedMonth);
       
-      // Call API to get tasks by date range
-      const response = await dailyTaskService.getTasksByDateRange(userId, startDate, endDate);
+      // Call API to get tasks by date range (userId now extracted from token)
+      const response = await dailyTaskService.getTasksByDateRange(startDate, endDate);
       
       if (response.status === 'SUCCESS' && response.data) {
         // Transform API response to component DailyTask format

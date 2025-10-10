@@ -71,7 +71,7 @@ export const useLeaveBalanceData = () => {
     queryKey: dashboardKeys.leaveBalance(userId || 0),
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
-      const response = await leaveService.getLeaveBalanceSummary(userId);
+      const response = await leaveService.getLeaveBalanceSummary();
       if (response.status === 'ERROR') {
         throw new Error(response.message);
       }
@@ -155,7 +155,7 @@ export const useRecentLeaveApplications = () => {
     queryKey: [...dashboardKeys.leaveBalance(userId || 0), 'applications'],
     queryFn: async () => {
       if (!userId) throw new Error('User not authenticated');
-      const response = await leaveService.getRecentLeaveApplications(userId, 5);
+      const response = await leaveService.getRecentLeaveApplications(5);
       if (response.status === 'ERROR') {
         throw new Error(response.message);
       }

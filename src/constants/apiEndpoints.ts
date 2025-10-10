@@ -22,12 +22,9 @@ export const API_ENDPOINTS = {
   },
 
   USER_SETTINGS: {
-    GET: (userId: number | string) =>
-      `${API_BASE_URL}/user/settings?userId=${userId}`,
-    UPSERT: (userId: number | string) =>
-      `${API_BASE_URL}/user/settings?userId=${userId}`,
-    DELETE: (userId: number | string) =>
-      `${API_BASE_URL}/user/settings?userId=${userId}`,
+    GET: `${API_BASE_URL}/user/settings`,
+    UPSERT: `${API_BASE_URL}/user/settings`,
+    DELETE: `${API_BASE_URL}/user/settings`,
   },
 
   USER: {
@@ -62,10 +59,8 @@ export const API_ENDPOINTS = {
   },
 
   USER_LEAVES: {
-    GET_BY_USER: (userId: number | string) =>
-      `${API_BASE_URL}/user-leaves?userId=${userId}`,
-    CREATE: (userId: number | string) =>
-      `${API_BASE_URL}/user-leaves?userId=${userId}`,
+    GET_BY_USER: `${API_BASE_URL}/user-leaves`,
+    CREATE: `${API_BASE_URL}/user-leaves`,
     UPDATE: (leaveId: number | string) =>
       `${API_BASE_URL}/user-leaves?userLeaveId=${leaveId}`,
     DELETE: (leaveId: number | string) =>
@@ -74,16 +69,12 @@ export const API_ENDPOINTS = {
 
   // User leave balance
   USER_LEAVE_BALANCE: {
-    GET: (userId: number | string, policyId: number | string, year: number) =>
-      `${API_BASE_URL}/user-leave-balance?userId=${userId}&policyId=${policyId}&year=${year}`,
+    GET: (policyId: number | string, year: number) =>
+      `${API_BASE_URL}/user-leave-balance?policyId=${policyId}&year=${year}`,
     UPSERT: `${API_BASE_URL}/user-leave-balance`,
     ADJUST: `${API_BASE_URL}/user-leave-balance/adjust`,
-    RECALCULATE: (
-      userId: number | string,
-      policyId: number | string,
-      year: number
-    ) =>
-      `${API_BASE_URL}/user-leave-balance/recalculate?userId=${userId}&policyId=${policyId}&year=${year}`,
+    RECALCULATE: (policyId: number | string, year: number) =>
+      `${API_BASE_URL}/user-leave-balance/recalculate?policyId=${policyId}&year=${year}`,
   },
 
   // Holidays
@@ -97,26 +88,24 @@ export const API_ENDPOINTS = {
 
   // Visits (office visits)
   VISITS: {
-    LIST: `${API_BASE_URL}/visits`, // GET with ?userId=...&year=...&month=...
+    LIST: `${API_BASE_URL}/visits`, // GET with ?year=...&month=... (userId from token)
     UPSERT: `${API_BASE_URL}/visits`, // POST body upsert
     DELETE: (officeVisitId: number | string) => `${API_BASE_URL}/visits?officeVisitId=${officeVisitId}`,
   },
 
   // Daily view records (month or custom range)
   DAILY_VIEW: {
-    FETCH: `${API_BASE_URL}/fetch-daily-view-records`, // GET ?userId=...&year=...&month=... or ?userId=...&from=YYYY-MM-DD&to=YYYY-MM-DD
+    FETCH: `${API_BASE_URL}/fetch-daily-view-records`, // GET ?year=...&month=... or ?from=YYYY-MM-DD&to=YYYY-MM-DD (userId from token)
   },
 
   // Analytics
   ANALYTICS: {
     VISITS_LEAVES_AGGREGATE: (params: {
-      userId?: number | string;
       from: string;
       to: string;
       groupBy: "month" | "week" | "year";
     }) => {
       const query = new URLSearchParams({
-        ...(params.userId ? { userId: String(params.userId) } : {}),
         from: params.from,
         to: params.to,
         groupBy: params.groupBy,
@@ -156,12 +145,12 @@ export const API_ENDPOINTS = {
     GET_BY_ID: (taskId: number | string) => `${API_BASE_URL}/daily-tasks?taskId=${taskId}`,
     DELETE: (taskId: number | string) => `${API_BASE_URL}/daily-tasks?taskId=${taskId}`,
     
-    // User-specific operations
-    GET_BY_USER: (userId: number | string) => `${API_BASE_URL}/daily-tasks/user?userId=${userId}`,
-    GET_BY_DATE_RANGE: (userId: number | string, startDate: string, endDate: string) => 
-      `${API_BASE_URL}/daily-tasks/user/date-range?userId=${userId}&startDate=${startDate}&endDate=${endDate}`,
-    GET_BY_DATE: (userId: number | string, date: string) => 
-      `${API_BASE_URL}/daily-tasks/user/date?userId=${userId}&date=${date}`,
+    // User-specific operations (userId now extracted from token)
+    GET_BY_USER: `${API_BASE_URL}/daily-tasks/user`,
+    GET_BY_DATE_RANGE: (startDate: string, endDate: string) => 
+      `${API_BASE_URL}/daily-tasks/user/date-range?startDate=${startDate}&endDate=${endDate}`,
+    GET_BY_DATE: (date: string) => 
+      `${API_BASE_URL}/daily-tasks/user/date?date=${date}`,
   },
 
   // Notes

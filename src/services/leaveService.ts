@@ -5,11 +5,11 @@ import { ApiStatus } from '../enums/ApiEnums';
 import { ApiResponse } from '../models/Api';
 
 class LeaveService {
-  // Get user leave balance
-  async getUserLeaveBalance(userId: number): Promise<ApiResponse<UserLeaveBalanceDTO[]>> {
+  // Get user leave balance (userId now extracted from token)
+  async getUserLeaveBalance(): Promise<ApiResponse<UserLeaveBalanceDTO[]>> {
     try {
       // Use USER_LEAVES endpoint to get user's leave data
-      const response = await axiosInstance.get(API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId));
+      const response = await axiosInstance.get(API_ENDPOINTS.USER_LEAVES.GET_BY_USER);
       return {
         status: ApiStatus.SUCCESS,
         data: response.data,
@@ -25,15 +25,15 @@ class LeaveService {
     }
   }
 
-  // Get leave balance summary for dashboard
-  async getLeaveBalanceSummary(userId: number): Promise<ApiResponse<{
+  // Get leave balance summary for dashboard (userId now extracted from token)
+  async getLeaveBalanceSummary(): Promise<ApiResponse<{
     totalLeave: number;
     usedLeave: number;
     availableLeave: number;
     utilizationPercentage: number;
   }>> {
     try {
-      const balanceResponse = await this.getUserLeaveBalance(userId);
+      const balanceResponse = await this.getUserLeaveBalance();
       
       if (balanceResponse.status === ApiStatus.ERROR) {
         throw new Error(balanceResponse.message);
@@ -78,17 +78,16 @@ class LeaveService {
     }
   }
 
-  // Get recent leave applications
-  async getRecentLeaveApplications(userId: number, limit: number = 5): Promise<ApiResponse<any[]>> {
+  // Get recent leave applications (userId now extracted from token)
+  async getRecentLeaveApplications(limit: number = 5): Promise<ApiResponse<any[]>> {
     try {
       const params = new URLSearchParams();
-      params.append('userId', userId.toString());
       params.append('limit', limit.toString());
       params.append('sortBy', 'createdAt');
       params.append('sortOrder', 'DESC');
 
       // Use USER_LEAVES endpoint to get leave applications data
-      const response = await axiosInstance.get(`${API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId)}?${params}`);
+      const response = await axiosInstance.get(`${API_ENDPOINTS.USER_LEAVES.GET_BY_USER}?${params}`);
       return {
         status: ApiStatus.SUCCESS,
         data: response.data.slice(0, limit),

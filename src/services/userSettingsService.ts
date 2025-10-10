@@ -20,7 +20,7 @@ export class UserSettingsService {
    */
   static async loadAndApplyUserSettings(userId: number): Promise<UserSettingsData | null> {
     try {
-      const url = API_ENDPOINTS.USER_SETTINGS.GET(userId);
+      const url = API_ENDPOINTS.USER_SETTINGS.GET;
       const response = await axiosInstance.get<ApiResponse<UserSettingsData>>(url);
       
       if (response?.data?.status === "SUCCESS" && response.data.data) {
@@ -62,7 +62,7 @@ export class UserSettingsService {
    */
   static async loadUserSettings(userId: number): Promise<UserSettingsData | null> {
     try {
-      const url = API_ENDPOINTS.USER_SETTINGS.GET(userId);
+      const url = API_ENDPOINTS.USER_SETTINGS.GET;
       const response = await axiosInstance.get<ApiResponse<UserSettingsData>>(url);
       
       if (response?.data?.status === "SUCCESS" && response.data.data) {

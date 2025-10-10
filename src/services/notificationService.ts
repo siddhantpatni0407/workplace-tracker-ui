@@ -45,8 +45,8 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
       params: { from: fromDate, to: toDate }
     });
     
-    // Fetch all leaves for the user (not filtering by approval status)
-    const leavesPromise = axiosInstance.get<any>(API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId));
+    // Fetch all leaves for the user (not filtering by approval status) - userId now from token
+    const leavesPromise = axiosInstance.get<any>(API_ENDPOINTS.USER_LEAVES.GET_BY_USER);
     
     // Wait for both promises to resolve
     const [holidaysRes, leavesRes] = await Promise.all([holidaysPromise, leavesPromise]);

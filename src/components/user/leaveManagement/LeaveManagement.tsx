@@ -79,7 +79,7 @@ const LeaveManagement: React.FC = () => {
         if (!userId) return;
         setLoading(true);
         try {
-            const url = API_ENDPOINTS.USER_LEAVES.GET_BY_USER(userId);
+            const url = API_ENDPOINTS.USER_LEAVES.GET_BY_USER;
             const res = await axiosInstance.get(url);
             setLeaves(res.data?.data ?? []);
         } catch (err: any) {
@@ -93,7 +93,7 @@ const LeaveManagement: React.FC = () => {
     async function loadBalance(policyIdArg: number) {
         if (!userId) return null;
         try {
-            const url = API_ENDPOINTS.USER_LEAVE_BALANCE.GET(userId, policyIdArg, balanceYear);
+            const url = API_ENDPOINTS.USER_LEAVE_BALANCE.GET(policyIdArg, balanceYear);
             const res = await axiosInstance.get(url);
             return (res.data?.data ?? null) as UserLeaveBalanceDTO | null;
         } catch (err) {
@@ -265,8 +265,8 @@ const LeaveManagement: React.FC = () => {
                 const body = res.data;
                 toast.success(body?.message ?? "Leave updated");
             } else {
-                // create — use CREATE(userId) since API_ENDPOINTS now defines CREATE as a function
-                const url = API_ENDPOINTS.USER_LEAVES.CREATE(userId!);
+                // create — CREATE no longer needs userId parameter
+                const url = API_ENDPOINTS.USER_LEAVES.CREATE;
                 const res = await axiosInstance.post(url, payload);
                 const body = res.data;
                 toast.success(body?.message ?? "Leave created");

@@ -131,10 +131,9 @@ const UserProfile: React.FC = memo(() => {
     setFieldErrors({});
 
     try {
-      // backend expects request param: ?userId=...
+      // backend now extracts userId from token, no need to pass userId param
       const response = await axiosInstance.get<ApiResponse<UserProfileData>>(
-        `${API_ENDPOINTS.USER.PROFILE}`,
-        { params: { userId: authUserId } }
+        API_ENDPOINTS.USER.PROFILE
       );
 
       console.info("UserProfile.loadProfile response:", response?.status, response?.data);
@@ -253,13 +252,12 @@ const UserProfile: React.FC = memo(() => {
       // DEBUG - show payload in console so we know what's being sent
       console.info("UserProfile.saveProfile sending payload:", payload);
 
-      // Use params option rather than manually building URL query string
+      // Backend now extracts userId from token, no need to pass userId param
       const url = API_ENDPOINTS.USER.PROFILE; // e.g. "/api/user-profile"
       const response = await axiosInstance.put<ApiResponse<UserProfileData>>(
         url,
         payload,
         {
-          params: { userId: authUserId },
           headers: {
             "Content-Type": "application/json",
           },

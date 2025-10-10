@@ -164,7 +164,7 @@ const UserSettings: React.FC = memo(() => {
       resetMessages();
       setLoading(true);
       try {
-        const url = API_ENDPOINTS.USER_SETTINGS.GET(id);
+        const url = API_ENDPOINTS.USER_SETTINGS.GET;
         const resp = await axiosInstance.get<ApiResponse<UserSettingsData>>(url);
 
         if (resp?.data?.status === "SUCCESS" && resp.data.data) {
@@ -236,7 +236,7 @@ const UserSettings: React.FC = memo(() => {
 
     setLoading(true);
     try {
-      const url = API_ENDPOINTS.USER_SETTINGS.UPSERT(authUserId);
+      const url = API_ENDPOINTS.USER_SETTINGS.UPSERT;
       const resp = await axiosInstance.put<ApiResponse<UserSettingsData>>(url, payload);
       if (resp?.data?.status === "SUCCESS" && resp.data.data) {
         setSettings({ ...resp.data.data });
@@ -272,7 +272,7 @@ const UserSettings: React.FC = memo(() => {
     setConfirmLoading(true);
     setLoading(true);
     try {
-      const url = API_ENDPOINTS.USER_SETTINGS.DELETE(authUserId);
+      const url = API_ENDPOINTS.USER_SETTINGS.DELETE;
       const resp = await axiosInstance.delete<ApiResponse<null>>(url);
       if (resp?.data?.status === "SUCCESS") {
         setSettings({

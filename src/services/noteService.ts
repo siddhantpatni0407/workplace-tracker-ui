@@ -37,7 +37,6 @@ class NoteService {
   async getNotesByUser(userId: number, filters?: NoteFilterParams): Promise<NoteListResponse> {
     try {
       const params = new URLSearchParams();
-      params.append('userId', userId.toString());
       
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
@@ -84,7 +83,6 @@ class NoteService {
       const formData = new FormData();
       
       // Add text data
-      formData.append('userId', userId.toString());
       formData.append('noteTitle', noteData.noteTitle);
       formData.append('noteContent', noteData.noteContent);
       formData.append('noteType', noteData.noteType);
@@ -226,7 +224,6 @@ class NoteService {
   async getNoteStats(userId: number, filters?: NoteFilterParams): Promise<NoteStatsApiResponse> {
     try {
       const params = new URLSearchParams();
-      params.append('userId', userId.toString());
       
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
@@ -256,7 +253,6 @@ class NoteService {
   async searchNotes(userId: number, searchParams: NoteSearchParams): Promise<NoteListResponse> {
     try {
       const params = new URLSearchParams();
-      params.append('userId', userId.toString());
       params.append('query', searchParams.query);
       
       if (searchParams.includeContent !== undefined) {
@@ -299,7 +295,7 @@ class NoteService {
   async getNotesByType(userId: number, noteType: NoteType): Promise<NoteListResponse> {
     try {
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.NOTES.GET_BY_TYPE}/${userId}/${noteType}`
+        `${API_ENDPOINTS.NOTES.GET_BY_TYPE}/${noteType}`
       );
       return response.data;
     } catch (error) {
@@ -316,7 +312,7 @@ class NoteService {
   async getNotesByCategory(userId: number, category: NoteCategory): Promise<NoteListResponse> {
     try {
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.NOTES.GET_BY_CATEGORY}/${userId}/${category}`
+        `${API_ENDPOINTS.NOTES.GET_BY_CATEGORY}/${category}`
       );
       return response.data;
     } catch (error) {
@@ -329,10 +325,10 @@ class NoteService {
     }
   }
 
-  // Get pinned notes
-  async getPinnedNotes(userId: number): Promise<NoteListResponse> {
+  // Get pinned notes (userId now extracted from token)
+  async getPinnedNotes(): Promise<NoteListResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.NOTES.GET_PINNED}/${userId}`);
+      const response = await axiosInstance.get(API_ENDPOINTS.NOTES.GET_PINNED);
       return response.data;
     } catch (error) {
       console.error('Error fetching pinned notes:', error);
@@ -344,10 +340,10 @@ class NoteService {
     }
   }
 
-  // Get archived notes
-  async getArchivedNotes(userId: number): Promise<NoteListResponse> {
+  // Get archived notes (userId now extracted from token)
+  async getArchivedNotes(): Promise<NoteListResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.NOTES.GET_ARCHIVED}/${userId}`);
+      const response = await axiosInstance.get(API_ENDPOINTS.NOTES.GET_ARCHIVED);
       return response.data;
     } catch (error) {
       console.error('Error fetching archived notes:', error);
@@ -475,10 +471,10 @@ class NoteService {
     }
   }
 
-  // Get note templates
-  async getNoteTemplates(userId: number): Promise<NoteTemplatesResponse> {
+  // Get note templates (userId now extracted from token)
+  async getNoteTemplates(): Promise<NoteTemplatesResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.NOTES.GET_TEMPLATES}/${userId}`);
+      const response = await axiosInstance.get(API_ENDPOINTS.NOTES.GET_TEMPLATES);
       return response.data;
     } catch (error) {
       console.error('Error fetching note templates:', error);
@@ -515,7 +511,7 @@ class NoteService {
   async exportNotes(userId: number, options: NoteExportOptions): Promise<Blob> {
     try {
       const response = await axiosInstance.post(
-        `${API_ENDPOINTS.NOTES.EXPORT}/${userId}`,
+        API_ENDPOINTS.NOTES.EXPORT,
         options,
         {
           responseType: 'blob'
@@ -532,7 +528,7 @@ class NoteService {
   async importNotes(userId: number, importData: NoteImportData): Promise<NoteImportResponse> {
     try {
       const response = await axiosInstance.post(
-        `${API_ENDPOINTS.NOTES.IMPORT}/${userId}`,
+        API_ENDPOINTS.NOTES.IMPORT,
         importData
       );
       return response.data;
@@ -555,7 +551,7 @@ class NoteService {
   async syncNotes(userId: number, syncData: NoteSyncData): Promise<NoteSyncResponse> {
     try {
       const response = await axiosInstance.post(
-        `${API_ENDPOINTS.NOTES.SYNC}/${userId}`,
+        API_ENDPOINTS.NOTES.SYNC,
         syncData
       );
       return response.data;

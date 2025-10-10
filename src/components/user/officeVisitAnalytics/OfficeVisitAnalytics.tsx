@@ -73,7 +73,6 @@ const OfficeVisitAnalytics: React.FC = () => {
         try {
             // build params with optional visitType & showAll
             const url = API_ENDPOINTS.ANALYTICS.VISITS_LEAVES_AGGREGATE({
-                userId,
                 from,
                 to,
                 groupBy,
