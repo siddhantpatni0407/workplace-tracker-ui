@@ -631,37 +631,29 @@ const UserNotes: React.FC = () => {
         {/* Left Sidebar - Statistics & Analytics */}
         <div className="col-lg-3">
           <div className="statistics-sidebar">
-            {/* Statistics Cards - Vertical Stack */}
+            {/* Statistics Cards - Single Row */}
             <div className="row mb-3">
-              <div className="col-12 mb-2">
-                <div className="card stat-card text-center">
-                  <div className="card-body py-2">
-                    <h6 className="card-title text-primary mb-1">{stats?.totalNotes ?? notes.length}</h6>
-                    <p className="card-text small mb-0">{t('notes.totalNotes')}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-6 mb-2">
-                <div className="card stat-card text-center">
-                  <div className="card-body py-2">
-                    <h6 className="card-title text-warning mb-1">{stats?.pinnedNotes ?? notes.filter(n => n.isPinned).length}</h6>
-                    <p className="card-text small mb-0">Pinned</p>
-                  </div>
-                </div>
-              </div>
-              <div className="col-6 mb-2">
-                <div className="card stat-card text-center">
-                  <div className="card-body py-2">
-                    <h6 className="card-title text-info mb-1">{stats?.activeNotes ?? notes.filter(n => n.status === 'ACTIVE').length}</h6>
-                    <p className="card-text small mb-0">Active</p>
-                  </div>
-                </div>
-              </div>
               <div className="col-12">
-                <div className="card stat-card text-center">
+                <div className="card stat-card">
                   <div className="card-body py-2">
-                    <h6 className="card-title text-success mb-1">{stats?.archivedNotes ?? notes.filter(n => n.status === 'ARCHIVED').length}</h6>
-                    <p className="card-text small mb-0">Archived</p>
+                    <div className="row text-center">
+                      <div className="col-3">
+                        <h6 className="card-title text-primary mb-0">{stats?.totalNotes ?? notes.length}</h6>
+                        <p className="card-text small mb-0">Total</p>
+                      </div>
+                      <div className="col-3">
+                        <h6 className="card-title text-warning mb-0">{stats?.pinnedNotes ?? notes.filter(n => n.isPinned).length}</h6>
+                        <p className="card-text small mb-0">Pinned</p>
+                      </div>
+                      <div className="col-3">
+                        <h6 className="card-title text-info mb-0">{stats?.activeNotes ?? notes.filter(n => n.status === 'ACTIVE').length}</h6>
+                        <p className="card-text small mb-0">Active</p>
+                      </div>
+                      <div className="col-3">
+                        <h6 className="card-title text-success mb-0">{stats?.archivedNotes ?? notes.filter(n => n.status === 'ARCHIVED').length}</h6>
+                        <p className="card-text small mb-0">Archived</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
