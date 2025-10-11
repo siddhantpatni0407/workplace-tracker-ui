@@ -124,16 +124,39 @@ class DashboardService {
         notesResponse.status === 'fulfilled' &&
         notesResponse.value.status === ApiStatus.SUCCESS
       ) {
-        const noteData = notesResponse.value.data;
-        notesCount = noteData.totalCount || noteData.notes?.length || 0;
+        const noteData = notesResponse.value.data as any;
+        // canonical shape: { data: Note[], pagination: { totalItems } }
+        if (noteData?.pagination && typeof noteData.pagination.totalItems === 'number') {
+          notesCount = noteData.pagination.totalItems;
+        } else if (Array.isArray(noteData?.data)) {
+          notesCount = noteData.data.length;
+        } else if (typeof noteData?.totalCount === 'number') {
+          // legacy shape
+          notesCount = noteData.totalCount;
+        } else if (Array.isArray(noteData?.notes)) {
+          notesCount = noteData.notes.length;
+        } else {
+          notesCount = 0;
+        }
       }
 
       if (
         recentNotesResponse.status === 'fulfilled' &&
         recentNotesResponse.value.status === ApiStatus.SUCCESS
       ) {
-        const recentData = recentNotesResponse.value.data;
-        recentNotes = recentData.notes || [];
+        const recentData = recentNotesResponse.value.data as any;
+        // canonical: recentData.data -> array
+        if (Array.isArray(recentData?.data)) {
+          recentNotes = recentData.data;
+        } else if (Array.isArray(recentData?.notes)) {
+          // legacy
+          recentNotes = recentData.notes;
+        } else if (Array.isArray(recentData)) {
+          // some endpoints might return array directly
+          recentNotes = recentData;
+        } else {
+          recentNotes = [];
+        }
       }
 
       // Process holidays data

@@ -29,7 +29,7 @@ import "./user-notes.css";
 const UserNotes: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
-  const userId = ((user as any)?.userId ?? (user as any)?.id) as number | undefined;
+  const userId = user?.userId;
 
   // State for notes and UI
   const [notes, setNotes] = useState<Note[]>([]);
@@ -96,21 +96,79 @@ const UserNotes: React.FC = () => {
       const response = await noteService.getNotesByUser(userId);
       
       if (response.status === ApiStatus.SUCCESS) {
-        const notesData = response.data?.notes || [];
-        
-        // Validate that we have proper note objects
-        const validNotes = notesData.filter(note => 
-          note && 
-          typeof note === 'object' && 
-          note.userNoteId && 
-          note.noteTitle && 
-          note.noteContent !== undefined
-        );
-        
-        setNotes(validNotes);
-        
-        if (validNotes.length !== notesData.length) {
-          console.warn(`Filtered out ${notesData.length - validNotes.length} invalid note objects`);
+        // Normalize different possible API response shapes:
+        // - response.data => { data: Note[], pagination: {...} }
+        // - response.data => { data: { data: Note[], pagination: {...} } } (double-wrapped)
+        // - response.data => { notes: Note[], totalCount: number, ... } (legacy)
+        // - response.data => Note[] (direct array)
+        let notesArray: any[] = [];
+        const respData = response.data;
+
+        if (!respData) {
+          notesArray = [];
+        } else if (Array.isArray(respData)) {
+          // response.data is already an array
+          notesArray = respData as any[];
+        } else if (Array.isArray((respData as any).data)) {
+          // response.data.data -> array of notes
+          notesArray = (respData as any).data;
+        } else if (Array.isArray((respData as any).data?.data)) {
+          // response.data.data.data -> nested array
+          notesArray = (respData as any).data.data;
+        } else if (Array.isArray((respData as any).notes)) {
+          // legacy shape: response.data.notes
+          notesArray = (respData as any).notes;
+        } else {
+          notesArray = [];
+        }
+
+        // Map raw API note objects (which may use different key names) to our Note shape
+        const mappedNotes = notesArray.map((raw: any) => {
+          // extract common possible keys
+          const id = raw?.userNoteId ?? raw?.user_note_id ?? raw?.noteId ?? raw?.note_id ?? raw?.id;
+          const title = raw?.noteTitle ?? raw?.note_title ?? raw?.title ?? raw?.name ?? '';
+          const content = raw?.noteContent ?? raw?.note_content ?? raw?.content ?? raw?.body ?? '';
+          const createdDate = raw?.createdDate ?? raw?.created_date ?? raw?.createdAt ?? raw?.created_at ?? new Date().toISOString();
+          const modifiedDate = raw?.modifiedDate ?? raw?.modified_date ?? raw?.updatedAt ?? raw?.updated_at ?? createdDate;
+
+          const mapped: Note = {
+            userNoteId: Number(id) || 0,
+            userId: Number(raw?.userId ?? raw?.user_id) || (userId as number) || 0,
+            noteTitle: String(title),
+            noteContent: String(content),
+            noteType: (raw?.noteType ?? raw?.type) ?? NoteType.TEXT,
+            color: (raw?.color ?? NoteColor.DEFAULT) as any,
+            category: (raw?.category ?? NoteCategory.PERSONAL) as any,
+            priority: (raw?.priority ?? NotePriority.MEDIUM) as any,
+            status: (raw?.status ?? NoteStatus.ACTIVE) as any,
+            isPinned: !!(raw?.isPinned ?? raw?.pinned ?? raw?.is_pinned),
+            isShared: !!(raw?.isShared ?? raw?.shared),
+            reminderDate: raw?.reminderDate ?? raw?.reminder_date ?? undefined,
+            version: Number(raw?.version) || 1,
+            accessCount: Number(raw?.accessCount ?? raw?.access_count) || 0,
+            lastAccessedDate: raw?.lastAccessedDate ?? raw?.last_accessed_date ?? undefined,
+            createdDate: String(createdDate),
+            modifiedDate: String(modifiedDate),
+          } as Note;
+
+          return mapped;
+        });
+
+        // Keep only notes that have a valid id and at least a title/content
+        const validNotes = mappedNotes.filter(n => n && n.userNoteId && (n.noteTitle || n.noteContent !== undefined));
+
+        // If mapping produced no valid notes but raw array had items, fall back to trying to use raw objects directly
+        if (validNotes.length === 0 && notesArray.length > 0) {
+          console.warn('No mapped notes matched expected shape; attempting to use raw objects as-is');
+          // Try a permissive check to include any objects that look like notes
+          const permissive = notesArray.filter((item: any) => item && typeof item === 'object');
+          setNotes(permissive as Note[]);
+        } else {
+          setNotes(validNotes);
+        }
+
+        if (validNotes.length !== notesArray.length) {
+          console.warn(`Normalized notes: kept ${validNotes.length} of ${notesArray.length} items`);
         }
       } else {
         toast.error(response.message || "Failed to load notes");
@@ -538,6 +596,8 @@ const UserNotes: React.FC = () => {
     <div className="container-fluid py-3">
       <Header title={t('notes.title')} subtitle={t('notes.subtitle')} />
 
+      {/* Debug panel removed */}
+
       {/* Statistics Cards */}
       {stats && (
         <div className="row mb-4">
@@ -724,7 +784,7 @@ const UserNotes: React.FC = () => {
                       onClick={() => handleViewNote(note)}
                     >
                       <div className="d-flex align-items-center">
-                        <i className={`fa ${NOTE_TYPE_CONFIG[note.noteType].icon} me-2 text-primary`}></i>
+                        <i className={`fa ${NOTE_TYPE_CONFIG[note.noteType]?.icon || 'fa-file-text'} me-2 text-primary`}></i>
                         <div className="flex-grow-1">
                           <div className="recent-note-title">{note.noteTitle}</div>
                           <small className="text-muted">{new Date(note.modifiedDate || note.createdDate).toLocaleDateString()}</small>
@@ -765,8 +825,8 @@ const UserNotes: React.FC = () => {
                     <div 
                       className="card sticky-note shadow-sm"
                       style={{ 
-                        backgroundColor: `${NOTE_COLOR_CONFIG[note.color].value}20`,
-                        borderLeft: `4px solid ${NOTE_COLOR_CONFIG[note.color].value}`,
+                        backgroundColor: `${NOTE_COLOR_CONFIG[note.color]?.value || '#ffffff'}20`,
+                        borderLeft: `4px solid ${NOTE_COLOR_CONFIG[note.color]?.value || '#dee2e6'}`,
                         minHeight: '120px'
                       }}
                     >
@@ -1368,7 +1428,7 @@ const UserNotes: React.FC = () => {
                             type="button"
                             className={`btn color-btn ${formData.color === color ? 'active' : ''}`}
                             style={{ 
-                              backgroundColor: NOTE_COLOR_CONFIG[color].value,
+                              backgroundColor: NOTE_COLOR_CONFIG[color]?.value || '#ffffff',
                               width: '30px',
                               height: '30px',
                               border: formData.color === color ? '2px solid #007bff' : '1px solid #dee2e6'
@@ -1472,8 +1532,8 @@ const UserNotes: React.FC = () => {
                     <span 
                       className="badge ms-2"
                       style={{ 
-                        backgroundColor: NOTE_COLOR_CONFIG[viewingNote.color].value,
-                        color: NOTE_COLOR_CONFIG[viewingNote.color].textColor
+                        backgroundColor: NOTE_COLOR_CONFIG[viewingNote.color]?.value || '#ffffff',
+                        color: NOTE_COLOR_CONFIG[viewingNote.color]?.textColor || '#000000'
                       }}
                     >
                       {NOTE_COLOR_CONFIG[viewingNote.color].label}

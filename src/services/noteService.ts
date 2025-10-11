@@ -46,17 +46,21 @@ class NoteService {
       return response.data;
     } catch (error) {
       console.error('Error fetching notes:', error);
-      return {
+      return ({
         status: ApiStatus.ERROR,
         message: 'Failed to fetch notes',
         data: {
-          notes: [],
-          totalCount: 0,
-          page: 0,
-          limit: 10,
-          totalPages: 0
-        }
-      };
+          data: [],
+          pagination: {
+            currentPage: 0,
+            itemsPerPage: 10,
+            totalItems: 0,
+            totalPages: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          },
+        },
+      } as unknown) as NoteListResponse;
     }
   }
 
@@ -236,17 +240,21 @@ class NoteService {
       return response.data;
     } catch (error) {
       console.error('Error searching notes:', error);
-      return {
+      return ({
         status: ApiStatus.ERROR,
         message: 'Failed to search notes',
         data: {
-          notes: [],
-          totalCount: 0,
-          page: 0,
-          limit: 10,
-          totalPages: 0
-        }
-      };
+          data: [],
+          pagination: {
+            currentPage: 0,
+            itemsPerPage: 10,
+            totalItems: 0,
+            totalPages: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          },
+        },
+      } as unknown) as NoteListResponse;
     }
   }
 
@@ -259,17 +267,21 @@ class NoteService {
       return response.data;
     } catch (error) {
       console.error('Error fetching notes by type:', error);
-      return {
+      return ({
         status: ApiStatus.ERROR,
         message: 'Failed to fetch notes by type',
         data: {
-          notes: [],
-          totalCount: 0,
-          page: 0,
-          limit: 10,
-          totalPages: 0
-        }
-      };
+          data: [],
+          pagination: {
+            currentPage: 0,
+            itemsPerPage: 10,
+            totalItems: 0,
+            totalPages: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          },
+        },
+      } as unknown) as NoteListResponse;
     }
   }
 
@@ -282,17 +294,21 @@ class NoteService {
       return response.data;
     } catch (error) {
       console.error('Error fetching notes by category:', error);
-      return {
+      return ({
         status: ApiStatus.ERROR,
         message: 'Failed to fetch notes by category',
         data: {
-          notes: [],
-          totalCount: 0,
-          page: 0,
-          limit: 10,
-          totalPages: 0
-        }
-      };
+          data: [],
+          pagination: {
+            currentPage: 0,
+            itemsPerPage: 10,
+            totalItems: 0,
+            totalPages: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          },
+        },
+      } as unknown) as NoteListResponse;
     }
   }
 
@@ -303,17 +319,21 @@ class NoteService {
       return response.data;
     } catch (error) {
       console.error('Error fetching pinned notes:', error);
-      return {
+      return ({
         status: ApiStatus.ERROR,
         message: 'Failed to fetch pinned notes',
         data: {
-          notes: [],
-          totalCount: 0,
-          page: 0,
-          limit: 10,
-          totalPages: 0
-        }
-      };
+          data: [],
+          pagination: {
+            currentPage: 0,
+            itemsPerPage: 10,
+            totalItems: 0,
+            totalPages: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          },
+        },
+      } as unknown) as NoteListResponse;
     }
   }
 
@@ -324,17 +344,21 @@ class NoteService {
       return response.data;
     } catch (error) {
       console.error('Error fetching archived notes:', error);
-      return {
+      return ({
         status: ApiStatus.ERROR,
         message: 'Failed to fetch archived notes',
         data: {
-          notes: [],
-          totalCount: 0,
-          page: 0,
-          limit: 10,
-          totalPages: 0
-        }
-      };
+          data: [],
+          pagination: {
+            currentPage: 0,
+            itemsPerPage: 10,
+            totalItems: 0,
+            totalPages: 0,
+            hasPreviousPage: false,
+            hasNextPage: false,
+          },
+        },
+      } as unknown) as NoteListResponse;
     }
   }
 
