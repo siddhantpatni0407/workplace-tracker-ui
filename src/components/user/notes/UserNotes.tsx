@@ -188,8 +188,23 @@ const UserNotes: React.FC = () => {
     if (!userId) return;
     try {
       const response = await noteService.getNoteStats(userId);
-      if (response.status === ApiStatus.SUCCESS) {
-        setStats(response.data || null);
+      if (response.status === ApiStatus.SUCCESS && response.data) {
+        // Process the API response to match expected interface
+        const apiData = response.data as any;
+        console.log('Raw API stats data:', apiData);
+        
+        const processedStats: NoteStatsResponse = {
+          totalNotes: apiData.totalNotes || 0,
+          activeNotes: apiData.notesByStatus?.ACTIVE || 0,
+          archivedNotes: apiData.notesByStatus?.ARCHIVED || 0,
+          pinnedNotes: apiData.pinnedNotes || 0,
+          notesByCategory: apiData.notesByCategory || {},
+          notesByPriority: apiData.notesByPriority || {},
+          notesByType: apiData.notesByType || {}
+        };
+        
+        console.log('Processed stats:', processedStats);
+        setStats(processedStats);
       }
     } catch (error) {
       console.error("Error loading note stats:", error);
@@ -599,42 +614,40 @@ const UserNotes: React.FC = () => {
       {/* Debug panel removed */}
 
       {/* Statistics Cards */}
-      {stats && (
-        <div className="row mb-4">
-          <div className="col-md-3">
-            <div className="card stat-card text-center">
-              <div className="card-body">
-                <h5 className="card-title text-primary">{stats.totalNotes}</h5>
-                <p className="card-text">{t('notes.totalNotes')}</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="card stat-card text-center">
-              <div className="card-body">
-                <h5 className="card-title text-warning">{stats.pinnedNotes}</h5>
-                <p className="card-text">{t('notes.pinnedNotes')}</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="card stat-card text-center">
-              <div className="card-body">
-                <h5 className="card-title text-info">{stats.activeNotes}</h5>
-                <p className="card-text">Active Notes</p>
-              </div>
-            </div>
-          </div>
-          <div className="col-md-3">
-            <div className="card stat-card text-center">
-              <div className="card-body">
-                <h5 className="card-title text-success">{stats.archivedNotes}</h5>
-                <p className="card-text">Archived Notes</p>
-              </div>
+      <div className="row mb-4">
+        <div className="col-md-3">
+          <div className="card stat-card text-center">
+            <div className="card-body">
+              <h5 className="card-title text-primary">{stats?.totalNotes ?? notes.length}</h5>
+              <p className="card-text">{t('notes.totalNotes')}</p>
             </div>
           </div>
         </div>
-      )}
+        <div className="col-md-3">
+          <div className="card stat-card text-center">
+            <div className="card-body">
+              <h5 className="card-title text-warning">{stats?.pinnedNotes ?? notes.filter(n => n.isPinned).length}</h5>
+              <p className="card-text">{t('notes.pinnedNotes')}</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stat-card text-center">
+            <div className="card-body">
+              <h5 className="card-title text-info">{stats?.activeNotes ?? notes.filter(n => n.status === 'ACTIVE').length}</h5>
+              <p className="card-text">Active Notes</p>
+            </div>
+          </div>
+        </div>
+        <div className="col-md-3">
+          <div className="card stat-card text-center">
+            <div className="card-body">
+              <h5 className="card-title text-success">{stats?.archivedNotes ?? notes.filter(n => n.status === 'ARCHIVED').length}</h5>
+              <p className="card-text">Archived Notes</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Quick Actions & Templates */}
       <div className="row mb-4">
