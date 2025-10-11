@@ -74,6 +74,7 @@ const UserNotes: React.FC = () => {
   const [showRichEditor, setShowRichEditor] = useState(false);
   const [showVoiceNote, setShowVoiceNote] = useState(false);
   const [showDrawingPad, setShowDrawingPad] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   
   // Smart features
   const [searchSuggestions, setSearchSuggestions] = useState<string[]>([]);
@@ -595,6 +596,23 @@ const UserNotes: React.FC = () => {
     ];
     setNoteTemplates(defaultTemplates);
   }, [userId, loadNotes, loadStats, t]);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (openDropdown !== null) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.dropdown')) {
+          setOpenDropdown(null);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openDropdown]);
 
   if (!userId) {
     return (
@@ -1506,62 +1524,85 @@ const UserNotes: React.FC = () => {
                                 </span>
                               </div>
                             </div>
-                            <div className="dropdown">
+                            <div className="dropdown position-relative">
                               <button 
                                 className="btn btn-sm btn-outline-secondary"
-                                type="button" 
-                                data-bs-toggle="dropdown"
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setOpenDropdown(openDropdown === note.userNoteId ? null : note.userNoteId);
+                                }}
                               >
                                 <i className="fa fa-ellipsis-v"></i>
                               </button>
-                              <ul className="dropdown-menu dropdown-menu-end">
-                                <li>
-                                  <button 
-                                    className="dropdown-item"
-                                    onClick={() => handleViewNote(note)}
-                                  >
-                                    <i className="fa fa-eye me-2"></i>View
-                                  </button>
-                                </li>
-                                <li>
-                                  <button 
-                                    className="dropdown-item"
-                                    onClick={() => openEditNoteModal(note)}
-                                  >
-                                    <i className="fa fa-edit me-2"></i>Edit
-                                  </button>
-                                </li>
-                                <li>
-                                  <button 
-                                    className="dropdown-item"
-                                    onClick={() => handleTogglePin(note.userNoteId)}
-                                  >
-                                    <i className="fa fa-thumbtack me-2"></i>
-                                    {note.isPinned ? "Unpin" : "Pin"}
-                                  </button>
-                                </li>
-                                <li>
-                                  <button 
-                                    className="dropdown-item"
-                                    onClick={() => handleToggleFavorite(note.userNoteId)}
-                                  >
-                                    <i className={`fa ${favoriteNotes.includes(note.userNoteId) ? 'fa-heart text-danger' : 'fa-heart-o'} me-2`}></i>
-                                    {favoriteNotes.includes(note.userNoteId) ? "Remove from Favorites" : "Add to Favorites"}
-                                  </button>
-                                </li>
-                                <li><hr className="dropdown-divider" /></li>
-                                <li>
-                                  <button 
-                                    className="dropdown-item text-danger"
-                                    onClick={() => {
-                                      setDeletingNote(note);
-                                      setShowDeleteModal(true);
-                                    }}
-                                  >
-                                    <i className="fa fa-trash me-2"></i>Delete
-                                  </button>
-                                </li>
-                              </ul>
+                              {openDropdown === note.userNoteId && (
+                                <ul className="dropdown-menu show dropdown-menu-end">
+                                  <li>
+                                    <button 
+                                      className="dropdown-item"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleViewNote(note);
+                                        setOpenDropdown(null);
+                                      }}
+                                    >
+                                      <i className="fa fa-eye me-2"></i>View
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button 
+                                      className="dropdown-item"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openEditNoteModal(note);
+                                        setOpenDropdown(null);
+                                      }}
+                                    >
+                                      <i className="fa fa-edit me-2"></i>Edit
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button 
+                                      className="dropdown-item"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleTogglePin(note.userNoteId);
+                                        setOpenDropdown(null);
+                                      }}
+                                    >
+                                      <i className="fa fa-thumbtack me-2"></i>
+                                      {note.isPinned ? "Unpin" : "Pin"}
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button 
+                                      className="dropdown-item"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleToggleFavorite(note.userNoteId);
+                                        setOpenDropdown(null);
+                                      }}
+                                    >
+                                      <i className={`fa ${favoriteNotes.includes(note.userNoteId) ? 'fa-heart text-danger' : 'fa-heart-o'} me-2`}></i>
+                                      {favoriteNotes.includes(note.userNoteId) ? "Remove from Favorites" : "Add to Favorites"}
+                                    </button>
+                                  </li>
+                                  <li><hr className="dropdown-divider" /></li>
+                                  <li>
+                                    <button 
+                                      className="dropdown-item text-danger"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeletingNote(note);
+                                        setShowDeleteModal(true);
+                                        setOpenDropdown(null);
+                                      }}
+                                    >
+                                      <i className="fa fa-trash me-2"></i>Delete
+                                    </button>
+                                  </li>
+                                </ul>
+                              )}
                             </div>
                           </div>
                         </div>

@@ -52,6 +52,34 @@
   flex-grow: 1;
 }
 
+/* Dropdown Menu Z-Index Fix */
+.note-card .dropdown {
+  position: relative;
+}
+
+.note-card .dropdown-menu {
+  z-index: 1050 !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  left: auto !important;
+  min-width: 160px;
+  background-color: #fff;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+
+.note-card .dropdown.show .dropdown-menu {
+  display: block;
+  z-index: 1050 !important;
+}
+
+/* Ensure note cards don't overlap dropdowns */
+.note-card {
+  overflow: visible !important;
+}
+
 /* List View */
 .list-view .table {
   margin-bottom: 0;
@@ -862,10 +890,40 @@ input[type="text"].form-control {
   overflow-y: auto;
 }
 
+/* Note Card Action Buttons */
+.note-card .btn-group {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.note-card .btn-group .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 0;
+}
+
+.note-card .btn-group .btn:first-child {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.note-card .btn-group .btn:last-child {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.note-card .card-body:hover {
+  background-color: rgba(0,0,0,0.02);
+}
+
 /* Responsive adjustments */
 @media (max-width: 991.98px) {
   .statistics-sidebar, .notes-main-content {
     height: auto;
     max-height: none;
+  }
+  
+  .note-card .btn-group .btn {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.7rem;
   }
 }
