@@ -38,18 +38,6 @@ const UserNotes: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedNotes, setSelectedNotes] = useState<number[]>([]);
 
-  // Debug: Track notes state changes
-  useEffect(() => {
-    console.log("🔄 Notes state changed:", notes.length, "notes");
-    console.log("📋 Notes data:", notes);
-  }, [notes]);
-
-  // Debug: Track filtered notes state changes
-  useEffect(() => {
-    console.log("🔍 Filtered notes changed:", filteredNotes.length, "notes");
-    console.log("📊 Filtered data:", filteredNotes);
-  }, [filteredNotes]);
-
 
 
   // View and filter states
@@ -105,80 +93,31 @@ const UserNotes: React.FC = () => {
     if (!userId) return;
     setIsLoading(true);
     try {
-      console.log("🔄 Loading notes for userId:", userId);
       const response = await noteService.getNotesByUser(userId);
-      console.log("📡 API Response received:", response);
-      console.log("📊 Response status:", response.status);
-      console.log("📊 Expected status:", ApiStatus.SUCCESS);
-      console.log("✅ Status match:", response.status === ApiStatus.SUCCESS);
       
-      // Check multiple possible success indicators
-      const responseStatus = (response as any).status;
-      const isSuccessful = response.status === ApiStatus.SUCCESS || 
-                          responseStatus === "SUCCESS" || 
-                          responseStatus === "success" ||
-                          (response.data && Array.isArray(response.data.notes));
-      
-      console.log("🔍 Success check result:", isSuccessful);
-      
-      if (isSuccessful) {
-        // Extract notes from paginated response
-        console.log("📦 Response data:", response.data);
-        let notesData: Note[] = [];
+      if (response.status === ApiStatus.SUCCESS) {
+        const notesData = response.data?.notes || [];
         
-        // Try multiple extraction methods
-        if (response.data?.notes && Array.isArray(response.data.notes)) {
-          console.log("✅ Using response.data.notes");
-          notesData = response.data.notes;
-        } else if (Array.isArray(response.data)) {
-          console.log("✅ Using response.data as array");
-          notesData = response.data;
-        } else if (Array.isArray(response)) {
-          console.log("✅ Using response as array");
-          notesData = response as Note[];
-        } else {
-          console.log("⚠️ Trying to find notes in response structure...");
-          console.log("🔍 Response keys:", Object.keys(response));
-          if (response.data) {
-            console.log("🔍 Response.data keys:", Object.keys(response.data));
-          }
-          
-          // Last resort: search for notes in any property
-          const searchForNotes = (obj: any): Note[] => {
-            if (Array.isArray(obj)) return obj;
-            if (obj && typeof obj === 'object') {
-              for (const key in obj) {
-                if (key.toLowerCase().includes('note') && Array.isArray(obj[key])) {
-                  console.log(`🎯 Found notes array in property: ${key}`);
-                  return obj[key];
-                }
-              }
-            }
-            return [];
-          };
-          
-          notesData = searchForNotes(response);
-        }
+        // Validate that we have proper note objects
+        const validNotes = notesData.filter(note => 
+          note && 
+          typeof note === 'object' && 
+          note.userNoteId && 
+          note.noteTitle && 
+          note.noteContent !== undefined
+        );
         
-        console.log("📋 Extracted notes:", notesData);
-        console.log("🔢 Notes count:", notesData.length);
+        setNotes(validNotes);
         
-        if (notesData.length > 0) {
-          console.log("🎯 Setting notes state with data:", notesData);
-          setNotes(notesData);
-        } else {
-          console.log("⚠️ No notes data found, setting empty array");
-          setNotes([]);
+        if (validNotes.length !== notesData.length) {
+          console.warn(`Filtered out ${notesData.length - validNotes.length} invalid note objects`);
         }
       } else {
-        console.log("❌ API returned non-success status:", response.status);
-        console.log("💬 Error message:", response.message);
-        console.log("🔍 Full response structure:", response);
         toast.error(response.message || "Failed to load notes");
         setNotes([]);
       }
     } catch (error) {
-      console.error("💥 Error loading notes:", error);
+      console.error("Error loading notes:", error);
       toast.error("Failed to load notes");
       setNotes([]);
     } finally {
@@ -201,55 +140,40 @@ const UserNotes: React.FC = () => {
 
   // Filter and sort notes
   useEffect(() => {
-    console.log("🔍 Starting filter process with", notes.length, "notes");
-    console.log("🎯 Filter values:", { searchQuery, typeFilter, colorFilter, categoryFilter, priorityFilter, statusFilter });
-    
     let filtered = [...notes];
 
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      console.log("🔎 Applying search filter:", query);
       filtered = filtered.filter(note => 
         note.noteTitle.toLowerCase().includes(query) ||
         note.noteContent.toLowerCase().includes(query)
       );
-      console.log("📊 After search filter:", filtered.length, "notes");
     }
 
     // Apply type filter
     if (typeFilter !== "ALL") {
-      console.log("🏷️ Applying type filter:", typeFilter);
       filtered = filtered.filter(note => note.noteType === typeFilter);
-      console.log("📊 After type filter:", filtered.length, "notes");
     }
 
     // Apply color filter
     if (colorFilter !== "ALL") {
-      console.log("🎨 Applying color filter:", colorFilter);
       filtered = filtered.filter(note => note.color === colorFilter);
-      console.log("📊 After color filter:", filtered.length, "notes");
     }
 
     // Apply category filter
     if (categoryFilter !== "ALL") {
-      console.log("📂 Applying category filter:", categoryFilter);
       filtered = filtered.filter(note => note.category === categoryFilter);
-      console.log("📊 After category filter:", filtered.length, "notes");
     }
 
     // Apply priority filter
     if (priorityFilter !== "ALL") {
-      console.log("⚡ Applying priority filter:", priorityFilter);
       filtered = filtered.filter(note => note.priority === priorityFilter);
-      console.log("📊 After priority filter:", filtered.length, "notes");
     }
 
     // Apply status filter
     if (statusFilter !== "ALL") {
-      console.log("📌 Applying status filter:", statusFilter);
       filtered = filtered.filter(note => note.status === statusFilter);
-      console.log("📊 After status filter:", filtered.length, "notes");
     }
 
     // Sort notes
@@ -276,8 +200,6 @@ const UserNotes: React.FC = () => {
       return sortOrder === "desc" ? -comparison : comparison;
     });
 
-    console.log("✅ Final filtered result:", filtered.length, "notes");
-    console.log("📋 Final filtered data:", filtered);
     setFilteredNotes(filtered);
   }, [notes, searchQuery, typeFilter, colorFilter, categoryFilter, priorityFilter, statusFilter, sortBy, sortOrder]);
 
@@ -534,23 +456,17 @@ const UserNotes: React.FC = () => {
   }, [generateSearchSuggestions]);
 
   useEffect(() => {
-    // Wrap in try-catch to prevent component crash
     const initializeComponent = async () => {
       try {
-        console.log("🚀 Initializing component for userId:", userId);
         await loadNotes();
         await loadStats();
-        console.log("✅ Component initialization complete");
       } catch (error) {
-        console.error("💥 Error initializing Notes component:", error);
-        // Component will still render with empty data instead of crashing
+        console.error("Error initializing Notes component:", error);
       }
     };
 
     if (userId) {
       initializeComponent();
-    } else {
-      console.log("⚠️ No userId available, skipping initialization");
     }
     
     // Initialize templates
@@ -895,6 +811,15 @@ const UserNotes: React.FC = () => {
               <button className="btn btn-primary btn-sm" onClick={openNewNoteModal}>
                 <i className="fa fa-plus me-2"></i>New Note
               </button>
+              <button 
+                className="btn btn-outline-primary btn-sm ms-2" 
+                onClick={loadNotes}
+                disabled={isLoading}
+                title="Refresh Notes"
+              >
+                <i className={`fa fa-refresh ${isLoading ? 'fa-spin' : ''} me-1`}></i>
+                {isLoading ? 'Loading...' : 'Refresh'}
+              </button>
             </div>
             
             <div className="col-auto">
@@ -1114,34 +1039,6 @@ const UserNotes: React.FC = () => {
           </h6>
         </div>
         <div className="card-body p-0">
-          {(() => {
-            console.log("🎭 Render check - isLoading:", isLoading);
-            console.log("🎭 Render check - filteredNotes.length:", filteredNotes.length);
-            console.log("🎭 Render check - notes.length:", notes.length);
-            console.log("🎭 Render check - filteredNotes data:", filteredNotes);
-            console.log("🎭 Render check - notes data:", notes);
-            return null;
-          })()}
-          
-          {/* Debug Info - Remove this after fixing */}
-          <div style={{ padding: '10px', backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', margin: '10px' }}>
-            <strong>Debug Info:</strong><br/>
-            Loading: {isLoading ? 'Yes' : 'No'}<br/>
-            Notes in state: {notes.length}<br/>
-            Filtered notes: {filteredNotes.length}<br/>
-            UserId: {userId}<br/>
-            <button 
-              className="btn btn-sm btn-warning mt-2" 
-              onClick={() => {
-                console.log("🔄 Manual reload triggered");
-                console.log("📊 Current notes state:", notes);
-                console.log("📊 Current filtered state:", filteredNotes);
-                loadNotes();
-              }}
-            >
-              Debug Reload Notes
-            </button>
-          </div>
           {isLoading ? (
             <div className="text-center p-4">
               <div className="spinner-border" role="status">
@@ -1151,10 +1048,29 @@ const UserNotes: React.FC = () => {
           ) : filteredNotes.length === 0 ? (
             <div className="text-center p-4 text-muted">
               <i className="fa fa-sticky-note fa-3x mb-3"></i>
-              <p>No notes found</p>
-              <button className="btn btn-primary btn-sm" onClick={openNewNoteModal}>
-                Create Your First Note
-              </button>
+              {notes.length > 0 ? (
+                <div>
+                  <p>No notes match your current filters</p>
+                  <button 
+                    className="btn btn-outline-secondary btn-sm me-2" 
+                    onClick={() => {
+                      setSearchQuery("");
+                      setTypeFilter("ALL");
+                      setCategoryFilter("ALL");
+                      setPriorityFilter("ALL");
+                    }}
+                  >
+                    Clear Filters
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <p>No notes found</p>
+                  <button className="btn btn-primary btn-sm" onClick={openNewNoteModal}>
+                    Create Your First Note
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className={`notes-container ${viewMode.toLowerCase()}-view p-3`}>
@@ -1210,29 +1126,29 @@ const UserNotes: React.FC = () => {
                                 style={{ cursor: "pointer" }}
                               >
                                 {note.isPinned && <i className="fa fa-thumbtack me-1 text-warning"></i>}
-                                {note.noteTitle}
+                                {note.noteTitle || "Untitled Note"}
                               </strong>
                               <small className="text-muted d-block">
-                                {getNotePreview(note.noteContent, 50)}
+                                {getNotePreview(note.noteContent || "", 50)}
                               </small>
                             </div>
                           </td>
                           <td>
                             <span className="badge bg-secondary">
-                              <i className={`fa ${NOTE_TYPE_CONFIG[note.noteType].icon} me-1`}></i>
-                              {NOTE_TYPE_CONFIG[note.noteType].label}
+                              <i className={`fa ${NOTE_TYPE_CONFIG[note.noteType]?.icon || 'fa-file'} me-1`}></i>
+                              {NOTE_TYPE_CONFIG[note.noteType]?.label || note.noteType}
                             </span>
                           </td>
                           <td>
                             <span className="badge bg-info">
-                              <i className={`fa ${NOTE_CATEGORY_CONFIG[note.category].icon} me-1`}></i>
-                              {NOTE_CATEGORY_CONFIG[note.category].label}
+                              <i className={`fa ${NOTE_CATEGORY_CONFIG[note.category]?.icon || 'fa-folder'} me-1`}></i>
+                              {NOTE_CATEGORY_CONFIG[note.category]?.label || note.category}
                             </span>
                           </td>
                           <td>
-                            <span className={`badge ${NOTE_PRIORITY_CONFIG[note.priority].badgeClass}`}>
-                              <i className={`fa ${NOTE_PRIORITY_CONFIG[note.priority].icon} me-1`}></i>
-                              {NOTE_PRIORITY_CONFIG[note.priority].label}
+                            <span className={`badge ${NOTE_PRIORITY_CONFIG[note.priority]?.badgeClass || 'bg-secondary'}`}>
+                              <i className={`fa ${NOTE_PRIORITY_CONFIG[note.priority]?.icon || 'fa-exclamation'} me-1`}></i>
+                              {NOTE_PRIORITY_CONFIG[note.priority]?.label || note.priority}
                             </span>
                           </td>
                           <td>
@@ -1285,9 +1201,9 @@ const UserNotes: React.FC = () => {
                       <div 
                         className={`card note-card h-100`}
                         style={{ 
-                          backgroundColor: NOTE_COLOR_CONFIG[note.color].value,
-                          color: NOTE_COLOR_CONFIG[note.color].textColor,
-                          borderColor: NOTE_COLOR_CONFIG[note.color].value
+                          backgroundColor: NOTE_COLOR_CONFIG[note.color]?.value || '#ffffff',
+                          color: NOTE_COLOR_CONFIG[note.color]?.textColor || '#000000',
+                          borderColor: NOTE_COLOR_CONFIG[note.color]?.value || '#dee2e6'
                         }}
                       >
                         <div className="card-header border-0 p-2">
@@ -1296,14 +1212,14 @@ const UserNotes: React.FC = () => {
                               <h6 className="card-title mb-1">
                                 {note.isPinned && <i className="fa fa-thumbtack me-1 text-warning"></i>}
                                 {favoriteNotes.includes(note.userNoteId) && <i className="fa fa-heart me-1 text-danger"></i>}
-                                {note.noteTitle}
+                                {note.noteTitle || "Untitled Note"}
                               </h6>
                               <div className="d-flex gap-1">
-                                <span className={`badge ${NOTE_PRIORITY_CONFIG[note.priority].badgeClass} badge-sm`}>
-                                  {NOTE_PRIORITY_CONFIG[note.priority].label}
+                                <span className={`badge ${NOTE_PRIORITY_CONFIG[note.priority]?.badgeClass || 'bg-secondary'} badge-sm`}>
+                                  {NOTE_PRIORITY_CONFIG[note.priority]?.label || note.priority}
                                 </span>
                                 <span className="badge bg-secondary badge-sm">
-                                  {NOTE_TYPE_CONFIG[note.noteType].label}
+                                  {NOTE_TYPE_CONFIG[note.noteType]?.label || note.noteType}
                                 </span>
                               </div>
                             </div>
@@ -1368,14 +1284,13 @@ const UserNotes: React.FC = () => {
                         </div>
                         <div className="card-body p-2">
                           <p className="card-text" style={{ fontSize: viewMode === NoteViewMode.COMPACT ? '0.85rem' : '0.9rem' }}>
-                            {getNotePreview(note.noteContent, viewMode === NoteViewMode.MASONRY ? 200 : 100)}
+                            {getNotePreview(note.noteContent || "", viewMode === NoteViewMode.MASONRY ? 200 : 100)}
                           </p>
-
                         </div>
                         <div className="card-footer border-0 p-2">
                           <small className="text-muted">
                             <i className="fa fa-clock me-1"></i>
-                            {formatDate(note.modifiedDate)}
+                            {formatDate(note.modifiedDate || note.createdDate)}
                           </small>
                         </div>
                       </div>
