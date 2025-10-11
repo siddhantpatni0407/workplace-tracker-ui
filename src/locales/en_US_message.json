@@ -409,6 +409,7 @@
     "totalNotes": "Total Notes",
     "pinnedNotes": "Pinned Notes",
     "favoriteNotes": "Favorite Notes",
+    "notesWithReminders": "Notes with Reminders",
     "totalWordCount": "Total Words",
     "pleaseLoginToViewNotes": "Please log in to view your notes.",
     "viewModes": {

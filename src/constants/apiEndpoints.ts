@@ -153,7 +153,7 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/daily-tasks/user/date?date=${date}`,
   },
 
-  // Notes
+  // Notes - Simplified
   NOTES: {
     GET_BY_USER: `${API_BASE_URL}/notes/user`,
     GET_BY_ID: `${API_BASE_URL}/notes`,
@@ -172,14 +172,6 @@ export const API_ENDPOINTS = {
     BULK_UPDATE: `${API_BASE_URL}/notes/bulk-update`,
     BULK_DELETE: `${API_BASE_URL}/notes/bulk-delete`,
     DUPLICATE: `${API_BASE_URL}/notes/duplicate`,
-    GET_COMMENTS: `${API_BASE_URL}/notes/comments`,
-    ADD_COMMENT: `${API_BASE_URL}/notes/comments`,
-    GET_ACTIVITY: `${API_BASE_URL}/notes/activity`,
-    GET_TEMPLATES: `${API_BASE_URL}/notes/templates`,
-    CREATE_FROM_TEMPLATE: `${API_BASE_URL}/notes/template`,
-    EXPORT: `${API_BASE_URL}/notes/export`,
-    IMPORT: `${API_BASE_URL}/notes/import`,
-    SYNC: `${API_BASE_URL}/notes/sync`,
   },
 
   // Special Days

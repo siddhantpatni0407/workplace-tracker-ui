@@ -124,15 +124,16 @@ class DashboardService {
         notesResponse.status === 'fulfilled' &&
         notesResponse.value.status === ApiStatus.SUCCESS
       ) {
-        const allNotes = notesResponse.value.data || [];
-        notesCount = allNotes.length;
+        const noteData = notesResponse.value.data;
+        notesCount = noteData.totalCount || noteData.notes?.length || 0;
       }
 
       if (
         recentNotesResponse.status === 'fulfilled' &&
         recentNotesResponse.value.status === ApiStatus.SUCCESS
       ) {
-        recentNotes = recentNotesResponse.value.data || [];
+        const recentData = recentNotesResponse.value.data;
+        recentNotes = recentData.notes || [];
       }
 
       // Process holidays data

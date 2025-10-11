@@ -38,6 +38,20 @@ const UserNotes: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedNotes, setSelectedNotes] = useState<number[]>([]);
 
+  // Debug: Track notes state changes
+  useEffect(() => {
+    console.log("🔄 Notes state changed:", notes.length, "notes");
+    console.log("📋 Notes data:", notes);
+  }, [notes]);
+
+  // Debug: Track filtered notes state changes
+  useEffect(() => {
+    console.log("🔍 Filtered notes changed:", filteredNotes.length, "notes");
+    console.log("📊 Filtered data:", filteredNotes);
+  }, [filteredNotes]);
+
+
+
   // View and filter states
   const [viewMode, setViewMode] = useState<NoteViewMode>(NoteViewMode.GRID);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -80,11 +94,10 @@ const UserNotes: React.FC = () => {
     noteType: NoteType.TEXT,
     color: NoteColor.DEFAULT,
     category: NoteCategory.PERSONAL,
-    priority: NotePriority.MEDIUM,
-    tags: []
+    priority: NotePriority.MEDIUM
   });
 
-  const [currentTag, setCurrentTag] = useState<string>("");
+
   const formRef = useRef<HTMLInputElement | null>(null);
 
   // Load notes
@@ -92,15 +105,82 @@ const UserNotes: React.FC = () => {
     if (!userId) return;
     setIsLoading(true);
     try {
+      console.log("🔄 Loading notes for userId:", userId);
       const response = await noteService.getNotesByUser(userId);
-      if (response.status === ApiStatus.SUCCESS) {
-        setNotes(response.data);
+      console.log("📡 API Response received:", response);
+      console.log("📊 Response status:", response.status);
+      console.log("📊 Expected status:", ApiStatus.SUCCESS);
+      console.log("✅ Status match:", response.status === ApiStatus.SUCCESS);
+      
+      // Check multiple possible success indicators
+      const responseStatus = (response as any).status;
+      const isSuccessful = response.status === ApiStatus.SUCCESS || 
+                          responseStatus === "SUCCESS" || 
+                          responseStatus === "success" ||
+                          (response.data && Array.isArray(response.data.notes));
+      
+      console.log("🔍 Success check result:", isSuccessful);
+      
+      if (isSuccessful) {
+        // Extract notes from paginated response
+        console.log("📦 Response data:", response.data);
+        let notesData: Note[] = [];
+        
+        // Try multiple extraction methods
+        if (response.data?.notes && Array.isArray(response.data.notes)) {
+          console.log("✅ Using response.data.notes");
+          notesData = response.data.notes;
+        } else if (Array.isArray(response.data)) {
+          console.log("✅ Using response.data as array");
+          notesData = response.data;
+        } else if (Array.isArray(response)) {
+          console.log("✅ Using response as array");
+          notesData = response as Note[];
+        } else {
+          console.log("⚠️ Trying to find notes in response structure...");
+          console.log("🔍 Response keys:", Object.keys(response));
+          if (response.data) {
+            console.log("🔍 Response.data keys:", Object.keys(response.data));
+          }
+          
+          // Last resort: search for notes in any property
+          const searchForNotes = (obj: any): Note[] => {
+            if (Array.isArray(obj)) return obj;
+            if (obj && typeof obj === 'object') {
+              for (const key in obj) {
+                if (key.toLowerCase().includes('note') && Array.isArray(obj[key])) {
+                  console.log(`🎯 Found notes array in property: ${key}`);
+                  return obj[key];
+                }
+              }
+            }
+            return [];
+          };
+          
+          notesData = searchForNotes(response);
+        }
+        
+        console.log("📋 Extracted notes:", notesData);
+        console.log("🔢 Notes count:", notesData.length);
+        
+        if (notesData.length > 0) {
+          console.log("🎯 Setting notes state with data:", notesData);
+          setNotes(notesData);
+        } else {
+          console.log("⚠️ No notes data found, setting empty array");
+          setNotes([]);
+        }
       } else {
+        console.log("❌ API returned non-success status:", response.status);
+        console.log("💬 Error message:", response.message);
+        console.log("🔍 Full response structure:", response);
         toast.error(response.message || "Failed to load notes");
+        setNotes([]);
       }
     } catch (error) {
-      console.error("Error loading notes:", error);
+      console.error("💥 Error loading notes:", error);
       toast.error("Failed to load notes");
+      setNotes([]);
     } finally {
       setIsLoading(false);
     }
@@ -121,41 +201,55 @@ const UserNotes: React.FC = () => {
 
   // Filter and sort notes
   useEffect(() => {
+    console.log("🔍 Starting filter process with", notes.length, "notes");
+    console.log("🎯 Filter values:", { searchQuery, typeFilter, colorFilter, categoryFilter, priorityFilter, statusFilter });
+    
     let filtered = [...notes];
 
     // Apply search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
+      console.log("🔎 Applying search filter:", query);
       filtered = filtered.filter(note => 
         note.noteTitle.toLowerCase().includes(query) ||
-        note.noteContent.toLowerCase().includes(query) ||
-        note.tags.some(tag => tag.toLowerCase().includes(query))
+        note.noteContent.toLowerCase().includes(query)
       );
+      console.log("📊 After search filter:", filtered.length, "notes");
     }
 
     // Apply type filter
     if (typeFilter !== "ALL") {
+      console.log("🏷️ Applying type filter:", typeFilter);
       filtered = filtered.filter(note => note.noteType === typeFilter);
+      console.log("📊 After type filter:", filtered.length, "notes");
     }
 
     // Apply color filter
     if (colorFilter !== "ALL") {
+      console.log("🎨 Applying color filter:", colorFilter);
       filtered = filtered.filter(note => note.color === colorFilter);
+      console.log("📊 After color filter:", filtered.length, "notes");
     }
 
     // Apply category filter
     if (categoryFilter !== "ALL") {
+      console.log("📂 Applying category filter:", categoryFilter);
       filtered = filtered.filter(note => note.category === categoryFilter);
+      console.log("📊 After category filter:", filtered.length, "notes");
     }
 
     // Apply priority filter
     if (priorityFilter !== "ALL") {
+      console.log("⚡ Applying priority filter:", priorityFilter);
       filtered = filtered.filter(note => note.priority === priorityFilter);
+      console.log("📊 After priority filter:", filtered.length, "notes");
     }
 
     // Apply status filter
     if (statusFilter !== "ALL") {
+      console.log("📌 Applying status filter:", statusFilter);
       filtered = filtered.filter(note => note.status === statusFilter);
+      console.log("📊 After status filter:", filtered.length, "notes");
     }
 
     // Sort notes
@@ -182,6 +276,8 @@ const UserNotes: React.FC = () => {
       return sortOrder === "desc" ? -comparison : comparison;
     });
 
+    console.log("✅ Final filtered result:", filtered.length, "notes");
+    console.log("📋 Final filtered data:", filtered);
     setFilteredNotes(filtered);
   }, [notes, searchQuery, typeFilter, colorFilter, categoryFilter, priorityFilter, statusFilter, sortBy, sortOrder]);
 
@@ -193,7 +289,7 @@ const UserNotes: React.FC = () => {
     try {
       if (editing) {
         const updateData: NoteUpdateData = {
-          noteId: editing.noteId,
+          userNoteId: editing.userNoteId,
           ...formData
         };
         const response = await noteService.updateNote(updateData);
@@ -226,7 +322,7 @@ const UserNotes: React.FC = () => {
     if (!deletingNote) return;
     
     try {
-      const response = await noteService.deleteNote(deletingNote.noteId);
+      const response = await noteService.deleteNote(deletingNote.userNoteId);
       if (response.status === ApiStatus.SUCCESS) {
         toast.success("Note deleted successfully");
         setShowDeleteModal(false);
@@ -266,8 +362,7 @@ const UserNotes: React.FC = () => {
       noteType: NoteType.TEXT,
       color: NoteColor.DEFAULT,
       category: NoteCategory.PERSONAL,
-      priority: NotePriority.MEDIUM,
-      tags: []
+      priority: NotePriority.MEDIUM
     });
     setShowModal(true);
     setTimeout(() => formRef.current?.focus(), 100);
@@ -282,8 +377,7 @@ const UserNotes: React.FC = () => {
       noteType: note.noteType,
       color: note.color,
       category: note.category,
-      priority: note.priority,
-      tags: [...note.tags]
+      priority: note.priority
     });
     setShowModal(true);
     setTimeout(() => formRef.current?.focus(), 100);
@@ -307,29 +401,12 @@ const UserNotes: React.FC = () => {
     
     // Update recently viewed (keep last 5, remove duplicates)
     setRecentlyViewed(prev => {
-      const filtered = prev.filter(n => n.noteId !== note.noteId);
+      const filtered = prev.filter(n => n.userNoteId !== note.userNoteId);
       return [note, ...filtered].slice(0, 5);
     });
   };
 
-  // Add tag to form
-  const addTag = () => {
-    if (currentTag.trim() && !formData.tags.includes(currentTag.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...formData.tags, currentTag.trim()]
-      });
-      setCurrentTag("");
-    }
-  };
 
-  // Remove tag from form
-  const removeTag = (tagToRemove: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags.filter(tag => tag !== tagToRemove)
-    });
-  };
 
   // Format date for display
   const formatDate = (dateString: string) => {
@@ -437,7 +514,6 @@ const UserNotes: React.FC = () => {
     }
 
     const suggestions = [
-      ...notes.flatMap(note => note.tags || []),
       ...notes.map(note => note.noteTitle),
       'meeting notes', 'project ideas', 'todo items', 'personal thoughts'
     ]
@@ -449,28 +525,7 @@ const UserNotes: React.FC = () => {
     setShowSearchSuggestions(suggestions.length > 0);
   }, [notes]);
 
-  const autoGenerateTags = useCallback((title: string, content: string): string[] => {
-    const text = `${title} ${content}`.toLowerCase();
-    const autoTags: string[] = [];
 
-    const tagPatterns = {
-      'meeting': /\b(meeting|agenda|discussion|attendees)\b/,
-      'project': /\b(project|deadline|milestone|timeline)\b/,
-      'idea': /\b(idea|concept|brainstorm|innovation)\b/,
-      'todo': /\b(todo|task|action|complete)\b/,
-      'urgent': /\b(urgent|asap|priority|important)\b/,
-      'work': /\b(work|office|business|client)\b/,
-      'personal': /\b(personal|family|home|private)\b/
-    };
-
-    Object.entries(tagPatterns).forEach(([tag, pattern]) => {
-      if (pattern.test(text)) {
-        autoTags.push(tag);
-      }
-    });
-
-    return autoTags;
-  }, []);
 
   // Enhanced search with smart suggestions
   const handleSearchChange = useCallback((query: string) => {
@@ -479,8 +534,24 @@ const UserNotes: React.FC = () => {
   }, [generateSearchSuggestions]);
 
   useEffect(() => {
-    loadNotes();
-    loadStats();
+    // Wrap in try-catch to prevent component crash
+    const initializeComponent = async () => {
+      try {
+        console.log("🚀 Initializing component for userId:", userId);
+        await loadNotes();
+        await loadStats();
+        console.log("✅ Component initialization complete");
+      } catch (error) {
+        console.error("💥 Error initializing Notes component:", error);
+        // Component will still render with empty data instead of crashing
+      }
+    };
+
+    if (userId) {
+      initializeComponent();
+    } else {
+      console.log("⚠️ No userId available, skipping initialization");
+    }
     
     // Initialize templates
     const defaultTemplates = [
@@ -492,8 +563,7 @@ const UserNotes: React.FC = () => {
           noteTitle: t('notes.templatesSection.meeting', { date: '{{date}}' }),
           noteContent: `# ${t('notes.templatesSection.meetingNotes')}\n\n**Date:** {{date}}\n**Attendees:** \n\n## Agenda\n- \n\n## Discussion\n\n## Action Items\n- [ ] \n\n## Next Steps\n`,
           noteType: NoteType.TEXT,
-          category: NoteCategory.WORK,
-          tags: ['meeting']
+          category: NoteCategory.WORK
         }
       },
       {
@@ -504,8 +574,7 @@ const UserNotes: React.FC = () => {
           noteTitle: t('notes.templatesSection.project', { name: '{{name}}' }),
           noteContent: `# Project Overview\n\n**Project Name:** \n**Start Date:** {{date}}\n**Deadline:** \n\n## Objectives\n- \n\n## Milestones\n- [ ] \n\n## Resources\n- \n\n## Notes\n`,
           noteType: NoteType.TEXT,
-          category: NoteCategory.WORK,
-          tags: ['project', 'planning']
+          category: NoteCategory.WORK
         }
       },
       {
@@ -516,8 +585,7 @@ const UserNotes: React.FC = () => {
           noteTitle: t('notes.templatesSection.idea', { title: '{{title}}' }),
           noteContent: `# ${t('notes.templatesSection.ideaCapture')}\n\n**Date:** {{date}}\n\n## Description\n\n## Potential Impact\n\n## Next Steps\n- [ ] Research\n- [ ] Prototype\n- [ ] Validate\n\n## Related Links\n`,
           noteType: NoteType.TEXT,
-          category: NoteCategory.PERSONAL,
-          tags: ['idea', 'brainstorm']
+          category: NoteCategory.PERSONAL
         }
       }
     ];
@@ -529,6 +597,23 @@ const UserNotes: React.FC = () => {
       <div className="container-fluid py-3">
         <Header title={t('notes.title')} subtitle={t('notes.subtitle')} />
         <div className="alert alert-warning">{t('notes.pleaseLoginToViewNotes')}</div>
+      </div>
+    );
+  }
+
+  // Show loading state while component initializes
+  if (isLoading && notes.length === 0) {
+    return (
+      <div className="container-fluid py-3">
+        <Header title={t('notes.title')} subtitle={t('notes.subtitle')} />
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+          <div className="text-center">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-2">Loading notes...</p>
+          </div>
+        </div>
       </div>
     );
   }
@@ -559,16 +644,16 @@ const UserNotes: React.FC = () => {
           <div className="col-md-3">
             <div className="card stat-card text-center">
               <div className="card-body">
-                <h5 className="card-title text-info">{stats.sharedNotes}</h5>
-                <p className="card-text">{t('notes.favoriteNotes')}</p>
+                <h5 className="card-title text-info">{stats.activeNotes}</h5>
+                <p className="card-text">Active Notes</p>
               </div>
             </div>
           </div>
           <div className="col-md-3">
             <div className="card stat-card text-center">
               <div className="card-body">
-                <h5 className="card-title text-success">{stats.totalWordCount}</h5>
-                <p className="card-text">{t('notes.totalWordCount')}</p>
+                <h5 className="card-title text-success">{stats.archivedNotes}</h5>
+                <p className="card-text">Archived Notes</p>
               </div>
             </div>
           </div>
@@ -617,8 +702,7 @@ const UserNotes: React.FC = () => {
                               noteType: NoteType.TEXT,
                               color: NoteColor.DEFAULT,
                               category: NoteCategory.PERSONAL,
-                              priority: NotePriority.MEDIUM,
-                              tags: autoGenerateTags('', target.value.trim())
+                              priority: NotePriority.MEDIUM
                             };
                             setFormData(quickNote);
                             handleSubmit(e as any);
@@ -719,7 +803,7 @@ const UserNotes: React.FC = () => {
                 <div className="recent-notes-list">
                   {recentlyViewed.map(note => (
                     <div 
-                      key={note.noteId} 
+                      key={note.userNoteId} 
                       className="recent-note-item"
                       onClick={() => handleViewNote(note)}
                     >
@@ -729,7 +813,7 @@ const UserNotes: React.FC = () => {
                           <div className="recent-note-title">{note.noteTitle}</div>
                           <small className="text-muted">{new Date(note.modifiedDate || note.createdDate).toLocaleDateString()}</small>
                         </div>
-                        {favoriteNotes.includes(note.noteId) && (
+                        {favoriteNotes.includes(note.userNoteId) && (
                           <i className="fa fa-heart text-danger"></i>
                         )}
                       </div>
@@ -761,7 +845,7 @@ const UserNotes: React.FC = () => {
             <div className="sticky-notes-container">
               <div className="row">
                 {filteredNotes.filter(note => note.isPinned).slice(0, 3).map((note: Note) => (
-                  <div key={note.noteId} className="col-md-4 mb-3">
+                  <div key={note.userNoteId} className="col-md-4 mb-3">
                     <div 
                       className="card sticky-note shadow-sm"
                       style={{ 
@@ -780,12 +864,12 @@ const UserNotes: React.FC = () => {
                           <input
                             type="checkbox"
                             className="form-check-input"
-                            checked={selectedNotes.includes(note.noteId)}
+                            checked={selectedNotes.includes(note.userNoteId)}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedNotes([...selectedNotes, note.noteId]);
+                                setSelectedNotes([...selectedNotes, note.userNoteId]);
                               } else {
-                                setSelectedNotes(selectedNotes.filter(id => id !== note.noteId));
+                                setSelectedNotes(selectedNotes.filter(id => id !== note.userNoteId));
                               }
                             }}
                           />
@@ -1030,6 +1114,34 @@ const UserNotes: React.FC = () => {
           </h6>
         </div>
         <div className="card-body p-0">
+          {(() => {
+            console.log("🎭 Render check - isLoading:", isLoading);
+            console.log("🎭 Render check - filteredNotes.length:", filteredNotes.length);
+            console.log("🎭 Render check - notes.length:", notes.length);
+            console.log("🎭 Render check - filteredNotes data:", filteredNotes);
+            console.log("🎭 Render check - notes data:", notes);
+            return null;
+          })()}
+          
+          {/* Debug Info - Remove this after fixing */}
+          <div style={{ padding: '10px', backgroundColor: '#f8f9fa', border: '1px solid #dee2e6', margin: '10px' }}>
+            <strong>Debug Info:</strong><br/>
+            Loading: {isLoading ? 'Yes' : 'No'}<br/>
+            Notes in state: {notes.length}<br/>
+            Filtered notes: {filteredNotes.length}<br/>
+            UserId: {userId}<br/>
+            <button 
+              className="btn btn-sm btn-warning mt-2" 
+              onClick={() => {
+                console.log("🔄 Manual reload triggered");
+                console.log("📊 Current notes state:", notes);
+                console.log("📊 Current filtered state:", filteredNotes);
+                loadNotes();
+              }}
+            >
+              Debug Reload Notes
+            </button>
+          </div>
           {isLoading ? (
             <div className="text-center p-4">
               <div className="spinner-border" role="status">
@@ -1058,7 +1170,7 @@ const UserNotes: React.FC = () => {
                             checked={selectedNotes.length === filteredNotes.length}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedNotes(filteredNotes.map(n => n.noteId));
+                                setSelectedNotes(filteredNotes.map(n => n.userNoteId));
                               } else {
                                 setSelectedNotes([]);
                               }
@@ -1075,17 +1187,17 @@ const UserNotes: React.FC = () => {
                     </thead>
                     <tbody>
                       {filteredNotes.map((note) => (
-                        <tr key={note.noteId}>
+                        <tr key={note.userNoteId}>
                           <td>
                             <input
                               type="checkbox"
                               className="form-check-input"
-                              checked={selectedNotes.includes(note.noteId)}
+                              checked={selectedNotes.includes(note.userNoteId)}
                               onChange={(e) => {
                                 if (e.target.checked) {
-                                  setSelectedNotes([...selectedNotes, note.noteId]);
+                                  setSelectedNotes([...selectedNotes, note.userNoteId]);
                                 } else {
-                                  setSelectedNotes(selectedNotes.filter(id => id !== note.noteId));
+                                  setSelectedNotes(selectedNotes.filter(id => id !== note.userNoteId));
                                 }
                               }}
                             />
@@ -1137,7 +1249,7 @@ const UserNotes: React.FC = () => {
                               </button>
                               <button
                                 className={`btn btn-outline-${note.isPinned ? 'warning' : 'secondary'} btn-sm`}
-                                onClick={() => handleTogglePin(note.noteId)}
+                                onClick={() => handleTogglePin(note.userNoteId)}
                                 title={note.isPinned ? "Unpin Note" : "Pin Note"}
                               >
                                 <i className="fa fa-thumbtack"></i>
@@ -1163,7 +1275,7 @@ const UserNotes: React.FC = () => {
                 <div className={`row ${viewMode === NoteViewMode.GRID ? 'g-3' : viewMode === NoteViewMode.COMPACT ? 'g-2' : 'g-1'}`}>
                   {filteredNotes.map((note) => (
                     <div 
-                      key={note.noteId} 
+                      key={note.userNoteId} 
                       className={`${
                         viewMode === NoteViewMode.GRID ? 'col-md-4 col-lg-3' :
                         viewMode === NoteViewMode.COMPACT ? 'col-md-6 col-lg-4' :
@@ -1183,7 +1295,7 @@ const UserNotes: React.FC = () => {
                             <div className="flex-grow-1">
                               <h6 className="card-title mb-1">
                                 {note.isPinned && <i className="fa fa-thumbtack me-1 text-warning"></i>}
-                                {favoriteNotes.includes(note.noteId) && <i className="fa fa-heart me-1 text-danger"></i>}
+                                {favoriteNotes.includes(note.userNoteId) && <i className="fa fa-heart me-1 text-danger"></i>}
                                 {note.noteTitle}
                               </h6>
                               <div className="d-flex gap-1">
@@ -1223,7 +1335,7 @@ const UserNotes: React.FC = () => {
                                 <li>
                                   <button 
                                     className="dropdown-item"
-                                    onClick={() => handleTogglePin(note.noteId)}
+                                    onClick={() => handleTogglePin(note.userNoteId)}
                                   >
                                     <i className="fa fa-thumbtack me-2"></i>
                                     {note.isPinned ? "Unpin" : "Pin"}
@@ -1232,10 +1344,10 @@ const UserNotes: React.FC = () => {
                                 <li>
                                   <button 
                                     className="dropdown-item"
-                                    onClick={() => handleToggleFavorite(note.noteId)}
+                                    onClick={() => handleToggleFavorite(note.userNoteId)}
                                   >
-                                    <i className={`fa ${favoriteNotes.includes(note.noteId) ? 'fa-heart text-danger' : 'fa-heart-o'} me-2`}></i>
-                                    {favoriteNotes.includes(note.noteId) ? "Remove from Favorites" : "Add to Favorites"}
+                                    <i className={`fa ${favoriteNotes.includes(note.userNoteId) ? 'fa-heart text-danger' : 'fa-heart-o'} me-2`}></i>
+                                    {favoriteNotes.includes(note.userNoteId) ? "Remove from Favorites" : "Add to Favorites"}
                                   </button>
                                 </li>
                                 <li><hr className="dropdown-divider" /></li>
@@ -1258,20 +1370,7 @@ const UserNotes: React.FC = () => {
                           <p className="card-text" style={{ fontSize: viewMode === NoteViewMode.COMPACT ? '0.85rem' : '0.9rem' }}>
                             {getNotePreview(note.noteContent, viewMode === NoteViewMode.MASONRY ? 200 : 100)}
                           </p>
-                          {note.tags.length > 0 && (
-                            <div className="mb-2">
-                              {note.tags.slice(0, 3).map(tag => (
-                                <span key={tag} className="badge bg-light text-dark me-1 badge-sm">
-                                  #{tag}
-                                </span>
-                              ))}
-                              {note.tags.length > 3 && (
-                                <span className="badge bg-light text-dark badge-sm">
-                                  +{note.tags.length - 3}
-                                </span>
-                              )}
-                            </div>
-                          )}
+
                         </div>
                         <div className="card-footer border-0 p-2">
                           <small className="text-muted">
@@ -1396,44 +1495,7 @@ const UserNotes: React.FC = () => {
                       </select>
                     </div>
 
-                    <div className="col-12">
-                      <label className="form-label">Tags</label>
-                      <div className="input-group mb-2">
-                        <input
-                          type="text"
-                          className="form-control"
-                          placeholder="Add a tag..."
-                          value={currentTag}
-                          onChange={(e) => setCurrentTag(e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              addTag();
-                            }
-                          }}
-                        />
-                        <button
-                          type="button"
-                          className="btn btn-outline-secondary"
-                          onClick={addTag}
-                        >
-                          Add
-                        </button>
-                      </div>
-                      <div className="d-flex gap-1 flex-wrap">
-                        {formData.tags.map(tag => (
-                          <span key={tag} className="badge bg-primary">
-                            #{tag}
-                            <button
-                              type="button"
-                              className="btn-close btn-close-white ms-1"
-                              style={{ fontSize: '0.7rem' }}
-                              onClick={() => removeTag(tag)}
-                            ></button>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -1508,18 +1570,7 @@ const UserNotes: React.FC = () => {
                       {viewingNote.noteContent}
                     </div>
                   </div>
-                  {viewingNote.tags.length > 0 && (
-                    <div className="col-12">
-                      <strong>Tags:</strong>
-                      <div className="mt-2">
-                        {viewingNote.tags.map(tag => (
-                          <span key={tag} className="badge bg-primary me-1">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+
                   <div className="col-md-6">
                     <strong>Created:</strong>
                     <span className="ms-2">{formatDate(viewingNote.createdDate)}</span>
