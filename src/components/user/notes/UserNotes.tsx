@@ -10,6 +10,15 @@ import {
   NoteUpdateData, 
   NoteStatsResponse
 } from "../../../models/Note";
+
+// Extended stats interface for local use
+interface ExtendedNoteStats extends NoteStatsResponse {
+  sharedNotes?: number;
+  notesWithReminders?: number;
+  notesByColor?: Record<string, number>;
+  notesByStatus?: Record<string, number>;
+  recentlyModified?: Note[];
+}
 import { 
   NoteType, 
   NoteColor, 
@@ -34,7 +43,7 @@ const UserNotes: React.FC = () => {
   // State for notes and UI
   const [notes, setNotes] = useState<Note[]>([]);
   const [filteredNotes, setFilteredNotes] = useState<Note[]>([]);
-  const [stats, setStats] = useState<NoteStatsResponse | null>(null);
+  const [stats, setStats] = useState<ExtendedNoteStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedNotes, setSelectedNotes] = useState<number[]>([]);
 
@@ -189,18 +198,24 @@ const UserNotes: React.FC = () => {
     try {
       const response = await noteService.getNoteStats(userId);
       if (response.status === ApiStatus.SUCCESS && response.data) {
-        // Process the API response to match expected interface
+        // Process the API response to match expected interface and capture additional data
         const apiData = response.data as any;
         console.log('Raw API stats data:', apiData);
         
-        const processedStats: NoteStatsResponse = {
+        const processedStats: ExtendedNoteStats = {
           totalNotes: apiData.totalNotes || 0,
           activeNotes: apiData.notesByStatus?.ACTIVE || 0,
           archivedNotes: apiData.notesByStatus?.ARCHIVED || 0,
           pinnedNotes: apiData.pinnedNotes || 0,
           notesByCategory: apiData.notesByCategory || {},
           notesByPriority: apiData.notesByPriority || {},
-          notesByType: apiData.notesByType || {}
+          notesByType: apiData.notesByType || {},
+          // Additional stats from API
+          sharedNotes: apiData.sharedNotes || 0,
+          notesWithReminders: apiData.notesWithReminders || 0,
+          notesByColor: apiData.notesByColor || {},
+          notesByStatus: apiData.notesByStatus || {},
+          recentlyModified: apiData.recentlyModified || []
         };
         
         console.log('Processed stats:', processedStats);
@@ -614,7 +629,7 @@ const UserNotes: React.FC = () => {
       {/* Debug panel removed */}
 
       {/* Statistics Cards */}
-      <div className="row mb-4">
+      <div className="row mb-3">
         <div className="col-md-3">
           <div className="card stat-card text-center">
             <div className="card-body">
@@ -649,8 +664,268 @@ const UserNotes: React.FC = () => {
         </div>
       </div>
 
+      {/* Additional Statistics Dashboard */}
+      <div className="row mb-3">
+        {/* Notes by Category Chart */}
+        <div className="col-md-6">
+          <div className="card">
+            <div className="card-header bg-transparent py-2">
+              <h6 className="mb-0 small">
+                <i className="fa fa-tags text-primary me-2"></i>
+                Notes by Category
+              </h6>
+            </div>
+            <div className="card-body py-2">
+              {stats?.notesByCategory && Object.keys(stats.notesByCategory).length > 0 ? (
+                <div className="category-stats" style={{ maxHeight: '120px', overflowY: 'auto' }}>
+                  {Object.entries(stats.notesByCategory).map(([category, count]) => (
+                    <div key={category} className="d-flex justify-content-between align-items-center mb-1">
+                      <div className="d-flex align-items-center">
+                        <i className="fa fa-folder text-muted me-2"></i>
+                        <span className="text-capitalize small">{category.toLowerCase().replace('_', ' ')}</span>
+                      </div>
+                      <div className="d-flex align-items-center">
+                        <div className="progress me-2" style={{ width: '60px', height: '6px' }}>
+                          <div 
+                            className="progress-bar bg-primary" 
+                            style={{ width: `${Math.max(10, (count as number / (stats.totalNotes || 1)) * 100)}%` }}
+                          ></div>
+                        </div>
+                        <span className="badge bg-light text-dark small">{String(count)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted text-center">No category data available</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Notes by Priority */}
+        <div className="col-md-6">
+          <div className="card">
+            <div className="card-header bg-transparent py-2">
+              <h6 className="mb-0 small">
+                <i className="fa fa-exclamation-triangle text-warning me-2"></i>
+                Notes by Priority
+              </h6>
+            </div>
+            <div className="card-body py-2">
+              {stats?.notesByPriority && Object.keys(stats.notesByPriority).length > 0 ? (
+                <div className="priority-stats" style={{ maxHeight: '120px', overflowY: 'auto' }}>
+                  {Object.entries(stats.notesByPriority).map(([priority, count]) => {
+                    const priorityColors: { [key: string]: string } = {
+                      'URGENT': 'danger',
+                      'HIGH': 'warning', 
+                      'MEDIUM': 'info',
+                      'LOW': 'success'
+                    };
+                    return (
+                      <div key={priority} className="d-flex justify-content-between align-items-center mb-1">
+                        <div className="d-flex align-items-center">
+                          <i className={`fa fa-flag text-${priorityColors[priority] || 'muted'} me-2`}></i>
+                          <span className="text-capitalize small">{priority.toLowerCase()}</span>
+                        </div>
+                        <div className="d-flex align-items-center">
+                          <div className="progress me-2" style={{ width: '60px', height: '6px' }}>
+                            <div 
+                              className={`progress-bar bg-${priorityColors[priority] || 'secondary'}`}
+                              style={{ width: `${Math.max(10, (count as number / (stats.totalNotes || 1)) * 100)}%` }}
+                            ></div>
+                          </div>
+                          <span className={`badge bg-${priorityColors[priority] || 'secondary'} small`}>{String(count)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-muted text-center">No priority data available</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Additional Metrics Row */}
+      <div className="row mb-3">
+        <div className="col-md-8">
+          <div className="card">
+            <div className="card-header bg-transparent py-2">
+              <h6 className="mb-0 small">
+                <i className="fa fa-palette text-info me-2"></i>
+                Notes Distribution
+              </h6>
+            </div>
+            <div className="card-body py-2">
+              <div className="row">
+                {/* Notes by Color */}
+                <div className="col-md-6">
+                  <h6 className="small text-muted mb-3">By Color</h6>
+                  {stats?.notesByColor && Object.keys(stats.notesByColor).length > 0 ? (
+                    <div className="color-stats">
+                      {Object.entries(stats.notesByColor).map(([color, count]) => {
+                        const colorMap: { [key: string]: string } = {
+                          'YELLOW': '#ffd700',
+                          'ORANGE': '#ff8c00',
+                          'RED': '#ff6b6b',
+                          'PINK': '#ff69b4',
+                          'PURPLE': '#9b59b6',
+                          'BLUE': '#3498db',
+                          'TEAL': '#1abc9c',
+                          'GREEN': '#2ecc71',
+                          'BROWN': '#8b4513',
+                          'GREY': '#95a5a6',
+                          'DEFAULT': '#e9ecef'
+                        };
+                        return (
+                          <div key={color} className="d-flex align-items-center mb-2">
+                            <div 
+                              className="color-indicator me-2" 
+                              style={{ 
+                                width: '16px', 
+                                height: '16px', 
+                                backgroundColor: colorMap[color] || '#e9ecef',
+                                borderRadius: '50%',
+                                border: '1px solid #dee2e6'
+                              }}
+                            ></div>
+                            <span className="text-capitalize small me-auto">{color.toLowerCase()}</span>
+                            <span className="badge bg-light text-dark small">{String(count)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-muted small">No color data available</p>
+                  )}
+                </div>
+
+                {/* Notes by Status */}
+                <div className="col-md-6">
+                  <h6 className="small text-muted mb-3">By Status</h6>
+                  {stats?.notesByStatus && Object.keys(stats.notesByStatus).length > 0 ? (
+                    <div className="status-stats">
+                      {Object.entries(stats.notesByStatus).map(([status, count]) => {
+                        const statusColors: { [key: string]: string } = {
+                          'ACTIVE': 'success',
+                          'ARCHIVED': 'info',
+                          'DELETED': 'danger',
+                          'PINNED': 'warning'
+                        };
+                        return (
+                          <div key={status} className="d-flex align-items-center mb-2">
+                            <i className={`fa fa-circle text-${statusColors[status] || 'muted'} me-2`}></i>
+                            <span className="text-capitalize small me-auto">{status.toLowerCase()}</span>
+                            <span className={`badge bg-${statusColors[status] || 'secondary'} small`}>{String(count)}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="text-muted small">No status data available</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Metrics */}
+        <div className="col-md-4">
+          <div className="card">
+            <div className="card-header bg-transparent py-2">
+              <h6 className="mb-0 small">
+                <i className="fa fa-chart-line text-success me-2"></i>
+                Additional Metrics
+              </h6>
+            </div>
+            <div className="card-body py-2">
+              <div className="metric-item mb-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="d-flex align-items-center">
+                    <i className="fa fa-share text-info me-2"></i>
+                    <span className="small">Shared Notes</span>
+                  </div>
+                  <span className="badge bg-info">{stats?.sharedNotes ?? 0}</span>
+                </div>
+              </div>
+              
+              <div className="metric-item mb-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="d-flex align-items-center">
+                    <i className="fa fa-bell text-warning me-2"></i>
+                    <span className="small">With Reminders</span>
+                  </div>
+                  <span className="badge bg-warning">{stats?.notesWithReminders ?? 0}</span>
+                </div>
+              </div>
+
+              <div className="metric-item mb-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="d-flex align-items-center">
+                    <i className="fa fa-file-text text-primary me-2"></i>
+                    <span className="small">Text Notes</span>
+                  </div>
+                  <span className="badge bg-primary">{stats?.notesByType?.TEXT ?? 0}</span>
+                </div>
+              </div>
+
+              <div className="metric-item">
+                <div className="d-flex justify-content-between align-items-center">
+                  <div className="d-flex align-items-center">
+                    <i className="fa fa-trash text-danger me-2"></i>
+                    <span className="small">Deleted Notes</span>
+                  </div>
+                  <span className="badge bg-danger">{stats?.notesByStatus?.DELETED ?? 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recently Modified Notes - Compact Version */}
+      {stats?.recentlyModified && stats.recentlyModified.length > 0 && (
+        <div className="row mb-2">
+          <div className="col-12">
+            <div className="card">
+              <div className="card-header bg-transparent py-1">
+                <div className="d-flex justify-content-between align-items-center">
+                  <h6 className="mb-0 small">
+                    <i className="fa fa-clock text-info me-2"></i>
+                    Recently Modified
+                  </h6>
+                  <small className="text-muted">Last 3 notes</small>
+                </div>
+              </div>
+              <div className="card-body py-1">
+                <div className="d-flex gap-2 flex-wrap">
+                  {stats.recentlyModified.slice(0, 3).map((note: any) => (
+                    <div key={note.userNoteId} className="flex-fill">
+                      <div className="small p-2 bg-light rounded">
+                        <div className="fw-bold text-truncate">{note.noteTitle}</div>
+                        <div className="text-muted small text-truncate">{note.noteContent}</div>
+                        <div className="d-flex gap-1 mt-1">
+                          <span className={`badge bg-${note.priority === 'URGENT' ? 'danger' : note.priority === 'HIGH' ? 'warning' : 'info'} badge-sm`}>
+                            {note.priority}
+                          </span>
+                          <span className="badge bg-secondary badge-sm">{note.category}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Quick Actions & Templates */}
-      <div className="row mb-4">
+      <div className="row mb-3">
         <div className="col-md-8">
           <div className="card quick-actions-card">
             <div className="card-header bg-transparent">
@@ -877,7 +1152,7 @@ const UserNotes: React.FC = () => {
       )}
 
       {/* Controls */}
-      <div className="card mb-3 control-card shadow-sm">
+      <div className="card mb-2 control-card shadow-sm">
         <div className="card-body">
           <div className="row g-3 align-items-center">
             <div className="col-auto">

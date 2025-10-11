@@ -36,7 +36,7 @@
 }
 
 .control-card .card-body {
-  padding: 1.25rem;
+  padding: 1rem;
 }
 
 /* View Mode Buttons */
@@ -48,7 +48,8 @@
 
 /* Notes Container */
 .notes-container {
-  min-height: 400px;
+  min-height: 500px;
+  flex-grow: 1;
 }
 
 /* List View */
@@ -698,6 +699,83 @@ input[type="text"].form-control {
   animation: slideInUp 0.6s ease-out;
 }
 
+/* Enhanced Statistics Dashboard */
+.category-stats, .priority-stats, .color-stats, .status-stats {
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* Compact stat cards */
+.stat-card .card-body {
+  padding: 1rem 0.75rem;
+}
+
+.stat-card .card-title {
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.stat-card .card-text {
+  font-size: 0.8rem;
+  margin-bottom: 0;
+}
+
+.metric-item {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.metric-item:last-child {
+  border-bottom: none;
+}
+
+.color-indicator {
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress {
+  background-color: #f8f9fa;
+  border-radius: 10px;
+}
+
+.progress-bar {
+  border-radius: 10px;
+}
+
+/* Recently Modified Notes */
+.recent-notes .card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.recent-notes .card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Chart-like appearance for stats */
+.category-stats .progress,
+.priority-stats .progress {
+  height: 6px;
+  border-radius: 3px;
+}
+
+.category-stats .badge,
+.priority-stats .badge {
+  min-width: 24px;
+  border-radius: 12px;
+}
+
+/* Enhanced card headers */
+.card-header h6 {
+  font-weight: 600;
+  color: #495057;
+}
+
+.card-header .fa {
+  font-size: 1rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .template-grid {
@@ -711,4 +789,44 @@ input[type="text"].form-control {
   .quick-note-input .form-control {
     font-size: 16px; /* Prevent zoom on iOS */
   }
+  
+  .category-stats, .priority-stats {
+    max-height: 150px;
+  }
+  
+  .color-stats .d-flex,
+  .status-stats .d-flex {
+    font-size: 0.875rem;
+  }
+}
+
+/* Compact Badge Styling */
+.badge-sm {
+  font-size: 0.6rem !important;
+  padding: 0.2rem 0.4rem !important;
+}
+
+/* Statistics Section Space Optimization */
+.statistics-section {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+/* Enhanced Notes Container Priority */
+.notes-container {
+  flex-grow: 2 !important;
+  min-height: 450px !important;
+}
+
+/* Compact Statistics Cards */
+.stat-card {
+  margin-bottom: 0.5rem !important;
+}
+
+.stat-card .card-body {
+  padding: 0.75rem !important;
+}
+
+.stat-card .card-header {
+  padding: 0.5rem 0.75rem !important;
 }
