@@ -1112,7 +1112,7 @@ const UserTasks: React.FC = () => {
                           <button
                             className="btn btn-outline-success btn-sm"
                             onClick={() => handleDuplicateTask(task)}
-                            title={t('tasks.duplicateTask') || 'Duplicate Task'}
+                            title="Duplicate Task"
                           >
                             <i className="fa fa-copy"></i>
                           </button>
@@ -1458,13 +1458,13 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">{t('tasks.taskType') || 'Task Type'}</label>
+                      <label className="form-label">Task Type</label>
                       <select
                         className="form-select"
                         value={formData.taskType || ""}
                         onChange={(e) => setFormData({ ...formData, taskType: e.target.value as TaskType || undefined })}
                       >
-                        <option value="">{t('tasks.selectTaskType') || 'Select Task Type'}</option>
+                        <option value="">Select Task Type</option>
                         {Object.values(TaskType).map(type => (
                           <option key={type} value={type}>
                             {type}
@@ -1474,7 +1474,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">{t('tasks.reminderDate') || 'Reminder Date'}</label>
+                      <label className="form-label">Reminder Date</label>
                       <input
                         type="datetime-local"
                         className="form-control"
@@ -1484,7 +1484,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-md-6">
-                      <label className="form-label">{t('tasks.parentTask') || 'Parent Task ID'}</label>
+                      <label className="form-label">Parent Task ID</label>
                       <input
                         type="number"
                         className="form-control"
@@ -1495,7 +1495,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-12">
-                      <label className="form-label">{t('tasks.tags') || 'Tags'}</label>
+                      <label className="form-label">Tags</label>
                       <input
                         type="text"
                         className="form-control"
@@ -1506,7 +1506,7 @@ const UserTasks: React.FC = () => {
                     </div>
 
                     <div className="col-12">
-                      <label className="form-label">{t('tasks.remarks') || 'Remarks'}</label>
+                      <label className="form-label">Remarks</label>
                       <textarea
                         className="form-control"
                         rows={3}
@@ -1525,20 +1525,20 @@ const UserTasks: React.FC = () => {
                           onChange={(e) => setFormData({ ...formData, isRecurring: e.target.checked })}
                         />
                         <label className="form-check-label">
-                          {t('tasks.isRecurring') || 'Recurring Task'}
+                          Recurring Task
                         </label>
                       </div>
                     </div>
 
                     {formData.isRecurring && (
                       <div className="col-md-6">
-                        <label className="form-label">{t('tasks.recurringPattern') || 'Recurring Pattern'}</label>
+                        <label className="form-label">Recurring Pattern</label>
                         <select
                           className="form-select"
                           value={formData.recurringPattern}
                           onChange={(e) => setFormData({ ...formData, recurringPattern: e.target.value })}
                         >
-                          <option value="">{t('tasks.selectPattern') || 'Select Pattern'}</option>
+                          <option value="">Select Pattern</option>
                           <option value="daily">Daily</option>
                           <option value="weekly">Weekly</option>
                           <option value="monthly">Monthly</option>
@@ -1699,7 +1699,7 @@ const UserTasks: React.FC = () => {
                   }}
                 >
                   <i className="fa fa-copy me-1"></i>
-                  {t('tasks.duplicateTask') || 'Duplicate'}
+                  Duplicate
                 </button>
                 <button
                   type="button"
