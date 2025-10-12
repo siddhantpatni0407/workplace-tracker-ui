@@ -1476,26 +1476,176 @@ const UserDashboard: React.FC = memo(() => {
                                     </div>
                                 </div>
 
-                                {/* Skills / Profile Update - Mock with API structure */}
+                                {/* Enhanced Profile Summary */}
                                 <div className="sidebar-section mt-4">
                                     <div className="section-header">
                                         <h5 className="section-title">
-                                            <i className="bi bi-person-gear me-2"></i>
-                                            Skills / Profile update
+                                            <i className="bi bi-person-badge me-2"></i>
+                                            Profile Summary
                                         </h5>
                                     </div>
-                                    <div className="skills-overview">
-                                        {/* This would be populated with real profile data when API is available */}
-                                        <div className="text-center text-muted py-4">
-                                            <i className="bi bi-person-gear me-2"></i>
-                                            Profile data not available
-                                            <br />
-                                            <small>Connect profile API to view updates</small>
-                                        </div>
-                                        <button className="btn btn-outline-primary btn-sm w-100 mt-3" onClick={() => navigate('/user/profile')}>
-                                            <i className="bi bi-pencil-square me-2"></i>
-                                            Update Profile
-                                        </button>
+                                    <div className="profile-overview">
+                                        {userProfile ? (
+                                            <>
+                                                {/* Profile Header */}
+                                                <div className="profile-header">
+                                                    <div className="profile-avatar">
+                                                        {userProfile.profilePicture ? (
+                                                            <img src={userProfile.profilePicture} alt="Profile" />
+                                                        ) : (
+                                                            <div className="avatar-placeholder">
+                                                                <i className="bi bi-person-circle"></i>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="profile-info">
+                                                        <h6 className="profile-name">
+                                                            {userProfile.firstName && userProfile.lastName 
+                                                                ? `${userProfile.firstName} ${userProfile.lastName}`
+                                                                : userProfile.username || user?.name || 'User'
+                                                            }
+                                                        </h6>
+                                                        <p className="profile-designation">
+                                                            {userProfile.position || 'Position not specified'}
+                                                        </p>
+                                                        {userProfile.employeeId && (
+                                                            <span className="employee-badge">
+                                                                Employee ID: {userProfile.employeeId}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Key Information Cards */}
+                                                <div className="profile-cards">
+                                                    {/* Work Information */}
+                                                    <div className="info-card">
+                                                        <div className="card-icon work">
+                                                            <i className="bi bi-building"></i>
+                                                        </div>
+                                                        <div className="card-content">
+                                                            <span className="card-label">Department</span>
+                                                            <span className="card-value">
+                                                                {userProfile.department || 'Not specified'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Contact Information */}
+                                                    <div className="info-card">
+                                                        <div className="card-icon contact">
+                                                            <i className="bi bi-telephone"></i>
+                                                        </div>
+                                                        <div className="card-content">
+                                                            <span className="card-label">Phone</span>
+                                                            <span className="card-value">
+                                                                {userProfile.phoneNumber || 'Not provided'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Email Information */}
+                                                    <div className="info-card">
+                                                        <div className="card-icon email">
+                                                            <i className="bi bi-envelope"></i>
+                                                        </div>
+                                                        <div className="card-content">
+                                                            <span className="card-label">Email</span>
+                                                            <span className="card-value">
+                                                                {userProfile.email || 'Not provided'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Joining Date */}
+                                                    {userProfile.dateOfJoining && (
+                                                        <div className="info-card">
+                                                            <div className="card-icon joining">
+                                                                <i className="bi bi-calendar-check"></i>
+                                                            </div>
+                                                            <div className="card-content">
+                                                                <span className="card-label">Joined</span>
+                                                                <span className="card-value">
+                                                                    {new Date(userProfile.dateOfJoining).toLocaleDateString()}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Profile Completion */}
+                                                <div className="profile-completion">
+                                                    <div className="completion-header">
+                                                        <span className="completion-label">Profile Completion</span>
+                                                        <span className="completion-percentage">
+                                                            {(() => {
+                                                                const fields = [
+                                                                    userProfile.firstName,
+                                                                    userProfile.lastName,
+                                                                    userProfile.email,
+                                                                    userProfile.phoneNumber,
+                                                                    userProfile.department,
+                                                                    userProfile.position,
+                                                                    userProfile.dateOfBirth,
+                                                                    userProfile.address
+                                                                ];
+                                                                const completed = fields.filter(f => f && f.trim()).length;
+                                                                return Math.round((completed / fields.length) * 100);
+                                                            })()}%
+                                                        </span>
+                                                    </div>
+                                                    <div className="completion-bar">
+                                                        <div 
+                                                            className="completion-progress"
+                                                            style={{
+                                                                width: `${(() => {
+                                                                    const fields = [
+                                                                        userProfile.firstName,
+                                                                        userProfile.lastName,
+                                                                        userProfile.email,
+                                                                        userProfile.phoneNumber,
+                                                                        userProfile.department,
+                                                                        userProfile.position,
+                                                                        userProfile.dateOfBirth,
+                                                                        userProfile.address
+                                                                    ];
+                                                                    const completed = fields.filter(f => f && f.trim()).length;
+                                                                    return Math.round((completed / fields.length) * 100);
+                                                                })()}%`
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Action Buttons */}
+                                                <div className="profile-actions">
+                                                    <button 
+                                                        className="btn btn-outline-primary btn-sm"
+                                                        onClick={() => navigate('/user/profile')}
+                                                    >
+                                                        <i className="bi bi-pencil-square me-2"></i>
+                                                        Edit Profile
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-outline-secondary btn-sm"
+                                                        onClick={() => window.location.href = `mailto:${userProfile.email}`}
+                                                        disabled={!userProfile.email}
+                                                    >
+                                                        <i className="bi bi-envelope me-2"></i>
+                                                        Contact
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="profile-loading">
+                                                <div className="text-center text-muted py-4">
+                                                    <div className="spinner-border spinner-border-sm text-primary mb-2" role="status">
+                                                        <span className="visually-hidden">Loading profile...</span>
+                                                    </div>
+                                                    <div>Loading profile data...</div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
