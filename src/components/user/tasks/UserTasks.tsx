@@ -410,6 +410,24 @@ const UserTasks: React.FC = () => {
     }
   };
 
+  // Handle task duplication
+  const handleDuplicateTask = async (task: Task) => {
+    if (!task) return;
+    
+    try {
+      const response = await taskService.duplicateTask(task.userTaskId);
+      if (response.status === ApiStatus.SUCCESS) {
+        toast.success("Task duplicated successfully");
+        loadTasks(); // Reload tasks to show the duplicated task
+      } else {
+        toast.error(response.message || "Failed to duplicate task");
+      }
+    } catch (error) {
+      console.error("Error duplicating task:", error);
+      toast.error("Failed to duplicate task");
+    }
+  };
+
   // Open modal for new task
   const openNewTaskModal = () => {
     setEditing(null);
@@ -1092,6 +1110,13 @@ const UserTasks: React.FC = () => {
                             <i className="fa fa-edit"></i>
                           </button>
                           <button
+                            className="btn btn-outline-success btn-sm"
+                            onClick={() => handleDuplicateTask(task)}
+                            title={t('tasks.duplicateTask') || 'Duplicate Task'}
+                          >
+                            <i className="fa fa-copy"></i>
+                          </button>
+                          <button
                             className="btn btn-outline-danger btn-sm"
                             onClick={() => {
                               setDeletingTask(task);
@@ -1137,6 +1162,11 @@ const UserTasks: React.FC = () => {
                             <li>
                               <button className="dropdown-item" onClick={() => openEditTaskModal(safeTask)}>
                                 <i className="fa fa-edit me-2"></i>Edit
+                              </button>
+                            </li>
+                            <li>
+                              <button className="dropdown-item text-success" onClick={() => handleDuplicateTask(safeTask)}>
+                                <i className="fa fa-copy me-2"></i>Duplicate
                               </button>
                             </li>
                             <li>
@@ -1659,6 +1689,17 @@ const UserTasks: React.FC = () => {
                   onClick={() => setShowViewModal(false)}
                 >
                   {t('tasks.close')}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => {
+                    setShowViewModal(false);
+                    handleDuplicateTask(viewingTask);
+                  }}
+                >
+                  <i className="fa fa-copy me-1"></i>
+                  {t('tasks.duplicateTask') || 'Duplicate'}
                 </button>
                 <button
                   type="button"
