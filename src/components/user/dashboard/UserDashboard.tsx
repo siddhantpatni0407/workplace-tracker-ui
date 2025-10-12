@@ -21,7 +21,32 @@ import {
     StatColorClass,
     BgGradientClass
 } from "../../../enums/DashboardEnums";
+import { Note } from "../../../models/Note";
+import { noteService } from "../../../services/noteService";
+import { ApiStatus } from "../../../enums/ApiEnums";
+import { NoteSortBy, NoteSortOrder, NotePriority, NOTE_COLOR_CONFIG } from "../../../enums/NoteEnums";
 import "./user-dashboard.css";
+
+// Helper function to get note color class
+const getNoteColorClass = (color?: string): string => {
+    if (!color) return 'yellow';
+    return color.toLowerCase();
+};
+
+// Helper function to format relative time
+const getRelativeTime = (date: string): string => {
+    const now = new Date();
+    const noteDate = new Date(date);
+    const diffInHours = Math.floor((now.getTime() - noteDate.getTime()) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    
+    return noteDate.toLocaleDateString();
+};
 
 const UserDashboard: React.FC = memo(() => {
     const { user, isLoading } = useAuth();
@@ -54,6 +79,10 @@ const UserDashboard: React.FC = memo(() => {
 
     // Quick Access search state
     const [searchTerm, setSearchTerm] = useState('');
+
+    // Notes state for dashboard
+    const [dashboardNotes, setDashboardNotes] = useState<Note[]>([]);
+    const [notesLoading, setNotesLoading] = useState(false);
 
     // Load user profile to get employee ID
     const loadUserProfile = async () => {
@@ -169,6 +198,84 @@ const UserDashboard: React.FC = memo(() => {
         }
     };
 
+    // Load notes for dashboard
+    const loadDashboardNotes = async () => {
+        if (!userId) {
+            console.log('Dashboard Notes: No userId, skipping load');
+            return;
+        }
+        
+        console.log('Dashboard Notes: Starting to load notes for userId:', userId);
+        setNotesLoading(true);
+        try {
+            // Use the same call as UserNotes page (without filters for now)
+            const response = await noteService.getNotesByUser(userId);
+            
+            console.log('Dashboard Notes: API response:', response);
+            
+            if (response.status === ApiStatus.SUCCESS) {
+                // Use the same logic as UserNotes page for handling response
+                let notesArray: any[] = [];
+                const respData = response.data;
+
+                if (!respData) {
+                    notesArray = [];
+                } else if (Array.isArray(respData)) {
+                    // response.data is already an array
+                    notesArray = respData as any[];
+                } else if (Array.isArray((respData as any).data)) {
+                    // response.data.data -> array of notes
+                    notesArray = (respData as any).data;
+                } else if (Array.isArray((respData as any).data?.data)) {
+                    // response.data.data.data -> nested array
+                    notesArray = (respData as any).data.data;
+                } else if (Array.isArray((respData as any).notes)) {
+                    // legacy shape: response.data.notes
+                    notesArray = (respData as any).notes;
+                } else {
+                    notesArray = [];
+                }
+
+                // Map raw API note objects to our Note shape (similar to UserNotes)
+                const mappedNotes = notesArray.map((raw: any) => {
+                    return {
+                        userNoteId: raw.userNoteId || raw.id,
+                        userId: raw.userId,
+                        noteTitle: raw.noteTitle || raw.title,
+                        noteContent: raw.noteContent || raw.content,
+                        noteType: raw.noteType || raw.type,
+                        color: raw.color || raw.noteColor,
+                        category: raw.category || raw.noteCategory,
+                        priority: raw.priority || raw.notePriority,
+                        status: raw.status || raw.noteStatus,
+                        isPinned: raw.isPinned || false,
+                        isShared: raw.isShared || false,
+                        reminderDate: raw.reminderDate,
+                        version: raw.version || 1,
+                        accessCount: raw.accessCount || 0,
+                        lastAccessedDate: raw.lastAccessedDate,
+                        createdDate: raw.createdDate || raw.createdAt,
+                        modifiedDate: raw.modifiedDate || raw.updatedAt || raw.modifiedAt
+                    };
+                });
+
+                // Sort by modified date (most recent first) and limit to 5
+                const sortedNotes = mappedNotes
+                    .sort((a, b) => new Date(b.modifiedDate).getTime() - new Date(a.modifiedDate).getTime())
+                    .slice(0, 5);
+
+                console.log('Dashboard Notes: Setting notes array:', sortedNotes);
+                setDashboardNotes(sortedNotes);
+            } else {
+                console.log('Dashboard Notes: API call failed or no data');
+            }
+        } catch (error) {
+            console.error('Error loading dashboard notes:', error);
+        } finally {
+            setNotesLoading(false);
+        }
+    };
+
     const loadDashboardData = async () => {
         setDashboardData(prev => ({ ...prev, loading: true }));
 
@@ -179,6 +286,9 @@ const UserDashboard: React.FC = memo(() => {
                 loadUserLeaves(),
                 loadLeaveBalance()
             ]);
+            
+            // Load notes separately as it's for UI enhancement
+            loadDashboardNotes();
 
             setDashboardData({
                 holidays,
@@ -1437,29 +1547,105 @@ const UserDashboard: React.FC = memo(() => {
 
                                 {/* Quick Notes Section */}
                                 <div className="sidebar-section mt-4">
-                                    <div className="section-header">
-                                        <h5 className="section-title">
+                                    <div className="section-header d-flex justify-content-between align-items-center">
+                                        <h5 className="section-title mb-0">
                                             <i className="bi bi-sticky me-2"></i>
                                             Sticky Notes / To do List
                                         </h5>
+                                        <button 
+                                            className="btn btn-sm btn-outline-light opacity-75"
+                                            onClick={loadDashboardNotes}
+                                            disabled={notesLoading}
+                                            title="Refresh notes"
+                                        >
+                                            <i className={`bi ${notesLoading ? 'bi-arrow-clockwise spin' : 'bi-arrow-clockwise'}`}></i>
+                                        </button>
                                     </div>
                                     <div className="notes-preview">
-                                        <div className="notes-action" onClick={() => handleCardClick(ROUTES.USER.USER_NOTES)}>
-                                            <div className="notes-icon">
-                                                <i className="bi bi-plus-circle"></i>
+                                        {notesLoading ? (
+                                            <div className="text-center py-3">
+                                                <div className="spinner-border spinner-border-sm text-primary" role="status">
+                                                    <span className="visually-hidden">Loading notes...</span>
+                                                </div>
+                                                <div className="mt-2 text-muted small">Loading notes...</div>
                                             </div>
-                                            <div className="notes-content">
-                                                <span className="notes-title">
-                                                    Create your first note !!!
-                                                </span>
-                                                <span className="notes-subtitle">
-                                                    Start organizing your thoughts
-                                                </span>
+                                        ) : dashboardNotes.length > 0 ? (
+                                            <>
+                                                <div className="notes-list">
+                                                    {dashboardNotes.map((note, index) => (
+                                                        <div 
+                                                            key={note.userNoteId} 
+                                                            className={`note-item compact ${getNoteColorClass(note.color)}`}
+                                                            onClick={() => handleCardClick(ROUTES.USER.USER_NOTES)}
+                                                            data-priority={note.priority}
+                                                            style={{
+                                                                backgroundColor: NOTE_COLOR_CONFIG[note.color]?.value || '#ffffff',
+                                                                color: NOTE_COLOR_CONFIG[note.color]?.textColor || '#000000',
+                                                                borderColor: NOTE_COLOR_CONFIG[note.color]?.value || '#dee2e6'
+                                                            }}
+                                                        >
+                                                            <div className="note-header">
+                                                                <h6 className="note-title">{note.noteTitle}</h6>
+                                                                <span className="note-priority">
+                                                                    {note.priority === NotePriority.HIGH && <i className="bi bi-exclamation-circle text-danger"></i>}
+                                                                    {note.priority === NotePriority.URGENT && <i className="bi bi-exclamation-triangle text-danger"></i>}
+                                                                    {note.priority === NotePriority.MEDIUM && <i className="bi bi-dash-circle text-warning"></i>}
+                                                                    {note.priority === NotePriority.LOW && <i className="bi bi-circle text-success"></i>}
+                                                                </span>
+                                                            </div>
+                                                            <div className="note-content">
+                                                                {note.noteContent.length > 80 
+                                                                    ? `${note.noteContent.substring(0, 80)}...` 
+                                                                    : note.noteContent}
+                                                            </div>
+                                                            <div className="note-meta">
+                                                                <small className="text-muted">
+                                                                    <i className="bi bi-clock me-1"></i>
+                                                                    {getRelativeTime(note.modifiedDate)}
+                                                                </small>
+                                                                {note.reminderDate && (
+                                                                    <small className="text-warning ms-2">
+                                                                        <i className="bi bi-alarm me-1"></i>
+                                                                        Reminder
+                                                                    </small>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="notes-actions mt-3 d-flex gap-2">
+                                                    <button 
+                                                        className="btn btn-outline-primary btn-sm flex-1"
+                                                        onClick={() => handleCardClick(ROUTES.USER.USER_NOTES)}
+                                                    >
+                                                        <i className="bi bi-plus-circle me-1"></i>
+                                                        Add Note
+                                                    </button>
+                                                    <button 
+                                                        className="btn btn-link btn-sm"
+                                                        onClick={() => handleCardClick(ROUTES.USER.USER_NOTES)}
+                                                    >
+                                                        View All <i className="bi bi-arrow-right"></i>
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="notes-empty">
+                                                <div className="notes-action" onClick={() => handleCardClick(ROUTES.USER.USER_NOTES)}>
+                                                    <div className="notes-icon">
+                                                        <i className="bi bi-plus-circle"></i>
+                                                    </div>
+                                                    <div className="notes-content">
+                                                        <span className="notes-title">
+                                                            Create your first note!
+                                                        </span>
+                                                        <span className="notes-subtitle">
+                                                            Start organizing your thoughts
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <button className="btn btn-link btn-sm w-100" onClick={() => handleCardClick(ROUTES.USER.USER_TASKS)}>
-                                            See Tasks <i className="bi bi-arrow-right"></i>
-                                        </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
