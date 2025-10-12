@@ -294,6 +294,48 @@ const UserTasks: React.FC = () => {
     setFilteredTasks(filtered);
   }, [tasks, searchQuery, statusFilter, priorityFilter, categoryFilter, dateFilter, sortBy, sortOrder]);
 
+  // Helper function to format datetime for backend
+  const formatDateTimeForAPI = (dateTimeString: string): string => {
+    if (!dateTimeString) return dateTimeString;
+    
+    // If the datetime string doesn't have seconds, add ":00"
+    if (dateTimeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/)) {
+      return dateTimeString + ":00";
+    }
+    
+    return dateTimeString;
+  };
+
+  // Helper function to format datetime from API to HTML datetime-local format
+  const formatDateTimeForInput = (dateTimeString: string): string => {
+    if (!dateTimeString) return "";
+    
+    // If the datetime string has seconds, remove them for datetime-local input
+    if (dateTimeString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)) {
+      return dateTimeString.substring(0, 16); // Keep only YYYY-MM-DDTHH:mm
+    }
+    
+    return dateTimeString;
+  };
+
+  // Prepare form data for API submission
+  const prepareFormDataForAPI = (data: TaskFormData): TaskFormData => {
+    const formatted = {
+      ...data,
+      reminderDate: data.reminderDate ? formatDateTimeForAPI(data.reminderDate) : data.reminderDate
+    };
+    
+    // Debug log for datetime formatting
+    if (data.reminderDate) {
+      console.log('DateTime formatting:', {
+        original: data.reminderDate,
+        formatted: formatted.reminderDate
+      });
+    }
+    
+    return formatted;
+  };
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,9 +343,10 @@ const UserTasks: React.FC = () => {
 
     try {
       if (editing) {
+        const preparedFormData = prepareFormDataForAPI(formData);
         const updateData: TaskUpdateData = {
           userTaskId: editing.userTaskId,
-          ...formData
+          ...preparedFormData
         };
         const response = await taskService.updateTask(updateData);
         if (response.status === ApiStatus.SUCCESS) {
@@ -315,7 +358,8 @@ const UserTasks: React.FC = () => {
           toast.error(response.message || "Failed to update task");
         }
       } else {
-        const response = await taskService.createTask(userId, formData);
+        const preparedFormData = prepareFormDataForAPI(formData);
+        const response = await taskService.createTask(userId, preparedFormData);
         if (response.status === ApiStatus.SUCCESS) {
           toast.success("Task created successfully");
           setShowModal(false);
@@ -401,7 +445,7 @@ const UserTasks: React.FC = () => {
       taskDescription: task.taskDescription || "",
       taskType: task.taskType || undefined,
       dueDate: task.dueDate || "",
-      reminderDate: task.reminderDate || "",
+      reminderDate: formatDateTimeForInput(task.reminderDate || ""),
       tags: task.tags || [],
       parentTaskId: task.parentTaskId || undefined,
       remarks: task.remarks || "",
