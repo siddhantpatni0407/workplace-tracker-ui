@@ -311,7 +311,8 @@
       "edit": "Modifier le Profil",
       "save": "Sauvegarder les Modifications",
       "cancel": "Annuler",
-      "saving": "Sauvegarde..."
+      "saving": "Sauvegarde...",
+      "changePassword": "Changer le Mot de Passe"
     },
     "messages": {
       "saveSuccess": "Profil mis à jour avec succès !",
@@ -329,6 +330,22 @@
     "noLocation": "Aucun emplacement fourni",
     "noJoinDate": "Aucune date d'embauche fournie",
     "characters": "caractères"
+  },
+  "changePassword": {
+    "title": "Changer le Mot de Passe",
+    "currentPassword": "Mot de Passe Actuel",
+    "newPassword": "Nouveau Mot de Passe",
+    "confirmPassword": "Confirmer le Nouveau Mot de Passe",
+    "submit": "Changer le Mot de Passe",
+    "changing": "Changement en cours...",
+    "messages": {
+      "success": "Mot de passe changé avec succès !"
+    },
+    "errors": {
+      "failed": "Échec du changement de mot de passe",
+      "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+      "samePassword": "Le nouveau mot de passe doit être différent de l'actuel"
+    }
   },
   "notes": {
     "title": "Notes Utilisateur",

@@ -277,6 +277,46 @@ export const authService = {
     const stored = localStorage.getItem(STORAGE_KEYS.USER);
     return stored ? JSON.parse(stored) : null;
   },
+
+  /**
+   * Change user password
+   * Uses JWT token to identify user (no userId required)
+   */
+  changePassword: async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<{ status: "SUCCESS" | "FAILED"; message: string }> => {
+    try {
+      const payload = {
+        currentPassword,
+        newPassword,
+      };
+
+      const resp = await axiosInstance.patch(
+        API_ENDPOINTS.AUTH.CHANGE_PASSWORD,
+        payload
+      );
+
+      return {
+        status: resp.data.status || "SUCCESS",
+        message: resp.data.message || "Password changed successfully.",
+      };
+    } catch (err: any) {
+      console.error("Password change error:", err);
+      
+      if (err?.response?.data) {
+        return {
+          status: "FAILED",
+          message: err.response.data.message || "Failed to change password.",
+        };
+      }
+      
+      return {
+        status: "FAILED",
+        message: err?.message || "Failed to change password.",
+      };
+    }
+  },
 };
 
 /** Helpers */

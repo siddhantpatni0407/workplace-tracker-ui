@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
     SIGNUP: `${API_BASE_URL}/register`,
     LOGIN: `${API_BASE_URL}/login`,
     FORGOT_PASSWORD_RESET: `${API_BASE_URL}/forgot/reset`,
+    CHANGE_PASSWORD: `${API_BASE_URL}/user/change-password`,
     // LOGOUT: `${API_BASE_URL}/logout`, // Removed - no backend logout endpoint needed
     REFRESH_TOKEN: `${API_BASE_URL}/auth/refresh`,
   },

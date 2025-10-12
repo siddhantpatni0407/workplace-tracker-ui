@@ -340,7 +340,8 @@
       "edit": "Edit Profile",
       "save": "Save Changes",
       "cancel": "Cancel",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "changePassword": "Change Password"
     },
     "messages": {
       "saveSuccess": "Profile updated successfully!",
@@ -358,6 +359,22 @@
     "noLocation": "No location provided",
     "noJoinDate": "No join date provided",
     "characters": "characters"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "submit": "Change Password",
+    "changing": "Changing...",
+    "messages": {
+      "success": "Password changed successfully!"
+    },
+    "errors": {
+      "failed": "Failed to change password",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "samePassword": "New password must be different from current password"
+    }
   },
   "notes": {
     "title": "User Notes",

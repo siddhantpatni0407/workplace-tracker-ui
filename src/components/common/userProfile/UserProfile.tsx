@@ -11,6 +11,7 @@ import { useTranslation } from "../../../hooks/useTranslation";
 import SearchableSelect, { Option } from "../../ui/SearchableSelect";
 import { locationService } from "../../../services/locationService";
 import { CountryOption, StateOption, CityOption, PostalCodeOption } from "../../../models";
+import ChangePasswordPopup from "./ChangePasswordPopup";
 import "./user-profile.css";
 
 const AUTO_DISMISS_MS = 3500;
@@ -55,6 +56,7 @@ const UserProfile: React.FC = memo(() => {
   });
 
   const [isEditing, setIsEditing] = useState(false);
+  const [showChangePasswordPopup, setShowChangePasswordPopup] = useState(false);
 
   // Location-specific state
   const [countryOptions, setCountryOptions] = useState<CountryOption[]>([]);
@@ -439,6 +441,19 @@ const UserProfile: React.FC = memo(() => {
     handleInputChange('postalCode', value);
   }, [handleInputChange]);
 
+  // Password change handlers
+  const handleChangePasswordSuccess = useCallback(() => {
+    setSuccess(t('changePassword.messages.success'));
+  }, [t]);
+
+  const handleOpenChangePassword = useCallback(() => {
+    setShowChangePasswordPopup(true);
+  }, []);
+
+  const handleCloseChangePassword = useCallback(() => {
+    setShowChangePasswordPopup(false);
+  }, []);
+
   // Initialize countries on component mount
   useEffect(() => {
     const countries = locationService.getCountries();
@@ -634,14 +649,24 @@ const UserProfile: React.FC = memo(() => {
                   </h5>
                   <div>
                     {!isEditing ? (
-                      <button
-                        type="button"
-                        className="btn btn-outline-primary btn-sm"
-                        onClick={() => setIsEditing(true)}
-                      >
-                        <i className="bi bi-pencil me-1"></i>
-                        {t("userProfile.buttons.edit")}
-                      </button>
+                      <div className="btn-group">
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() => setIsEditing(true)}
+                        >
+                          <i className="bi bi-pencil me-1"></i>
+                          {t("userProfile.buttons.edit")}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={handleOpenChangePassword}
+                        >
+                          <i className="bi bi-shield-lock me-1"></i>
+                          {t("userProfile.buttons.changePassword")}
+                        </button>
+                      </div>
                     ) : (
                       <div className="btn-group">
                         <button
@@ -1088,6 +1113,13 @@ const UserProfile: React.FC = memo(() => {
           </div>
         </div>
       </div>
+
+      {/* Change Password Popup */}
+      <ChangePasswordPopup
+        isOpen={showChangePasswordPopup}
+        onClose={handleCloseChangePassword}
+        onSuccess={handleChangePasswordSuccess}
+      />
     </ErrorBoundary>
   );
 });

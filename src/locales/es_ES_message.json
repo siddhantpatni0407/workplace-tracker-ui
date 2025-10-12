@@ -335,7 +335,8 @@
       "edit": "Editar Perfil",
       "save": "Guardar Cambios",
       "cancel": "Cancelar",
-      "saving": "Guardando..."
+      "saving": "Guardando...",
+      "changePassword": "Cambiar Contraseña"
     },
     "messages": {
       "saveSuccess": "¡Perfil actualizado exitosamente!",
@@ -353,6 +354,22 @@
     "noLocation": "Sin ubicación proporcionada",
     "noJoinDate": "Sin fecha de ingreso proporcionada",
     "characters": "caracteres"
+  },
+  "changePassword": {
+    "title": "Cambiar Contraseña",
+    "currentPassword": "Contraseña Actual",
+    "newPassword": "Nueva Contraseña",
+    "confirmPassword": "Confirmar Nueva Contraseña",
+    "submit": "Cambiar Contraseña",
+    "changing": "Cambiando...",
+    "messages": {
+      "success": "¡Contraseña cambiada exitosamente!"
+    },
+    "errors": {
+      "failed": "Error al cambiar la contraseña",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "samePassword": "La nueva contraseña debe ser diferente a la actual"
+    }
   },
   "notes": {
     "title": "Notas de Usuario",
