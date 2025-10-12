@@ -88,6 +88,14 @@ const UserNotes: React.FC = () => {
   const [favoriteNotes, setFavoriteNotes] = useState<number[]>([]);
   const [noteTemplates, setNoteTemplates] = useState<any[]>([]);
 
+  // Advanced search and filter states
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [dateRange, setDateRange] = useState<string>('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [availableTags, setAvailableTags] = useState<string[]>([]);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [filterCount, setFilterCount] = useState(0);
+
   // Form states
   const [formData, setFormData] = useState<NoteFormData>({
     noteTitle: "",
@@ -230,17 +238,87 @@ const UserNotes: React.FC = () => {
     }
   }, [userId]);
 
-  // Filter and sort notes
+  // Enhanced filter and sort notes with advanced search capabilities
   useEffect(() => {
     let filtered = [...notes];
 
-    // Apply search filter
+    // Apply search filter with enhanced capabilities
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(note => 
-        note.noteTitle.toLowerCase().includes(query) ||
-        note.noteContent.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter(note => {
+        // Basic text search
+        const basicMatch = note.noteTitle.toLowerCase().includes(query) ||
+          note.noteContent.toLowerCase().includes(query);
+        
+        // Tag search (if query starts with #)
+        if (query.startsWith('#')) {
+          const tag = query.substring(1);
+          const tagMatch = note.noteTitle.toLowerCase().includes(`#${tag}`) ||
+            note.noteContent.toLowerCase().includes(`#${tag}`);
+          return tagMatch;
+        }
+        
+        // Advanced keyword matching
+        if (query.includes('important') || query.includes('urgent')) {
+          return basicMatch || note.priority === NotePriority.HIGH || note.priority === NotePriority.URGENT;
+        }
+        
+        if (query.includes('meeting')) {
+          return basicMatch || note.category === NoteCategory.MEETING_NOTES;
+        }
+        
+        if (query.includes('task') || query.includes('todo')) {
+          return basicMatch || note.category === NoteCategory.WORK || note.category === NoteCategory.PROJECTS;
+        }
+        
+        return basicMatch;
+      });
+    }
+
+    // Apply date range filter
+    if (dateRange) {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      
+      filtered = filtered.filter(note => {
+        const noteDate = new Date(note.createdDate);
+        const noteDateOnly = new Date(noteDate.getFullYear(), noteDate.getMonth(), noteDate.getDate());
+        
+        switch (dateRange) {
+          case 'today':
+            return noteDateOnly.getTime() === today.getTime();
+          case 'yesterday':
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            return noteDateOnly.getTime() === yesterday.getTime();
+          case 'week':
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay());
+            return noteDate >= weekStart;
+          case 'month':
+            const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+            return noteDate >= monthStart;
+          case 'quarter':
+            const quarterStart = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1);
+            return noteDate >= quarterStart;
+          case 'year':
+            const yearStart = new Date(today.getFullYear(), 0, 1);
+            return noteDate >= yearStart;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Apply selected tags filter
+    if (selectedTags.length > 0) {
+      filtered = filtered.filter(note => {
+        const noteText = (note.noteTitle + ' ' + note.noteContent).toLowerCase();
+        return selectedTags.some(tag => 
+          noteText.includes(`#${tag.toLowerCase()}`) || 
+          noteText.includes(tag.toLowerCase())
+        );
+      });
     }
 
     // Apply type filter
@@ -293,7 +371,7 @@ const UserNotes: React.FC = () => {
     });
 
     setFilteredNotes(filtered);
-  }, [notes, searchQuery, typeFilter, colorFilter, categoryFilter, priorityFilter, statusFilter, sortBy, sortOrder]);
+  }, [notes, searchQuery, typeFilter, colorFilter, categoryFilter, priorityFilter, statusFilter, sortBy, sortOrder, dateRange, selectedTags]);
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -663,11 +741,60 @@ const UserNotes: React.FC = () => {
 
 
 
-  // Enhanced search with smart suggestions
+  // Enhanced search with smart suggestions and history management
   const handleSearchChange = useCallback((query: string) => {
     setSearchQuery(query);
     generateSearchSuggestions(query);
+    
+    // Add to search history when user types (debounced)
+    if (query.trim() && query.length > 2) {
+      const timeoutId = setTimeout(() => {
+        setSearchHistory(prev => {
+          const newHistory = [query, ...prev.filter(item => item !== query)].slice(0, 10);
+          return newHistory;
+        });
+      }, 1000);
+      
+      return () => clearTimeout(timeoutId);
+    }
   }, [generateSearchSuggestions]);
+
+  // Calculate active filter count
+  useEffect(() => {
+    let count = 0;
+    if (dateRange) count++;
+    if (selectedTags.length > 0) count += selectedTags.length;
+    if (searchQuery.trim()) count++;
+    setFilterCount(count);
+  }, [dateRange, selectedTags, searchQuery]);
+
+  // Enhanced available tags extraction
+  useEffect(() => {
+    const allTags = new Set<string>();
+    notes.forEach(note => {
+      // Extract hashtags from note content
+      const hashtagMatches = note.noteContent.match(/#[\w]+/g);
+      if (hashtagMatches) {
+        hashtagMatches.forEach(tag => allTags.add(tag.substring(1)));
+      }
+      
+      // Extract from title as well
+      const titleMatches = note.noteTitle.match(/#[\w]+/g);
+      if (titleMatches) {
+        titleMatches.forEach(tag => allTags.add(tag.substring(1)));
+      }
+      
+      // Add common keywords as potential tags
+      const keywords = [...note.noteTitle.split(' '), ...note.noteContent.split(' ')];
+      keywords.forEach(keyword => {
+        if (keyword.length > 3 && /^[a-zA-Z]+$/.test(keyword)) {
+          allTags.add(keyword.toLowerCase());
+        }
+      });
+    });
+    
+    setAvailableTags(Array.from(allTags).slice(0, 20));
+  }, [notes]);
 
   useEffect(() => {
     const initializeComponent = async () => {
@@ -1248,38 +1375,229 @@ const UserNotes: React.FC = () => {
               </button>
             </div>
             
+            {/* Enhanced Search Section */}
             <div className="col-auto">
-              <div className="position-relative">
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  placeholder="Search notes..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  onFocus={() => setShowSearchSuggestions(searchSuggestions.length > 0)}
-                  onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
-                  style={{ width: "250px" }}
-                />
-                {showSearchSuggestions && (
-                  <div className="search-suggestions">
-                    {searchSuggestions.map((suggestion, index) => (
-                      <div
-                        key={index}
-                        className="search-suggestion-item"
-                        onClick={() => {
-                          setSearchQuery(suggestion);
-                          setShowSearchSuggestions(false);
-                        }}
-                      >
-                        <i className="fa fa-search me-2"></i>
-                        {suggestion}
-                      </div>
-                    ))}
+              <div className="search-container">
+                <div className="position-relative">
+                  <div className="input-group input-group-sm">
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Search notes, tags, or content..."
+                      value={searchQuery}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      onFocus={() => setShowSearchSuggestions(searchSuggestions.length > 0 || searchHistory.length > 0)}
+                      onBlur={() => setTimeout(() => setShowSearchSuggestions(false), 200)}
+                      style={{ width: "280px" }}
+                    />
+                    <button 
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                      title="Advanced Filters"
+                    >
+                      <i className="bi bi-funnel"></i>
+                      {filterCount > 0 && <span className="filter-badge">{filterCount}</span>}
+                    </button>
                   </div>
-                )}
+                  
+                  {/* Enhanced Search Suggestions */}
+                  {showSearchSuggestions && (
+                    <div className="search-suggestions enhanced">
+                      {searchQuery && searchSuggestions.length > 0 && (
+                        <>
+                          <div className="suggestions-header">Suggestions</div>
+                          {searchSuggestions.slice(0, 5).map((suggestion, index) => (
+                            <div
+                              key={index}
+                              className="search-suggestion-item"
+                              onClick={() => {
+                                setSearchQuery(suggestion);
+                                setShowSearchSuggestions(false);
+                              }}
+                            >
+                              <i className="bi bi-search me-2"></i>
+                              <span dangerouslySetInnerHTML={{
+                                __html: suggestion.replace(
+                                  new RegExp(searchQuery, 'gi'),
+                                  `<mark>$&</mark>`
+                                )
+                              }}></span>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      
+                      {searchHistory.length > 0 && (
+                        <>
+                          <div className="suggestions-header">Recent Searches</div>
+                          {searchHistory.slice(0, 3).map((search, index) => (
+                            <div
+                              key={index}
+                              className="search-suggestion-item recent"
+                              onClick={() => {
+                                setSearchQuery(search);
+                                setShowSearchSuggestions(false);
+                              }}
+                            >
+                              <i className="bi bi-clock-history me-2"></i>
+                              {search}
+                              <button 
+                                className="btn-remove"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSearchHistory(prev => prev.filter((_, i) => i !== index));
+                                }}
+                              >
+                                <i className="bi bi-x"></i>
+                              </button>
+                            </div>
+                          ))}
+                        </>
+                      )}
+                      
+                      {availableTags.length > 0 && (
+                        <>
+                          <div className="suggestions-header">Tags</div>
+                          {availableTags.slice(0, 5).map((tag, index) => (
+                            <div
+                              key={index}
+                              className="search-suggestion-item tag"
+                              onClick={() => {
+                                setSearchQuery(`#${tag}`);
+                                setShowSearchSuggestions(false);
+                              }}
+                            >
+                              <i className="bi bi-hash me-2"></i>
+                              {tag}
+                            </div>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-
+          </div>
+          
+          {/* Advanced Filters Panel */}
+          {showAdvancedFilters && (
+            <div className="row mt-3">
+              <div className="col-12">
+                <div className="advanced-filters-panel">
+                  <div className="row g-3">
+                    {/* Date Range Filter */}
+                    <div className="col-md-3">
+                      <label className="form-label small">Date Range</label>
+                      <select 
+                        className="form-select form-select-sm"
+                        value={dateRange}
+                        onChange={(e) => setDateRange(e.target.value)}
+                      >
+                        <option value="">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="yesterday">Yesterday</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="quarter">This Quarter</option>
+                        <option value="year">This Year</option>
+                        <option value="custom">Custom Range</option>
+                      </select>
+                    </div>
+                    
+                    {/* Tag Filter */}
+                    <div className="col-md-4">
+                      <label className="form-label small">Tags</label>
+                      <div className="tag-filter-container">
+                        {availableTags.slice(0, 10).map(tag => (
+                          <button
+                            key={tag}
+                            className={`tag-filter-btn ${selectedTags.includes(tag) ? 'active' : ''}`}
+                            onClick={() => {
+                              if (selectedTags.includes(tag)) {
+                                setSelectedTags(prev => prev.filter(t => t !== tag));
+                              } else {
+                                setSelectedTags(prev => [...prev, tag]);
+                              }
+                            }}
+                          >
+                            #{tag}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Priority Filter */}
+                    <div className="col-md-2">
+                      <label className="form-label small">Priority</label>
+                      <select className="form-select form-select-sm">
+                        <option value="">All</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                      </select>
+                    </div>
+                    
+                    {/* Category Filter */}
+                    <div className="col-md-2">
+                      <label className="form-label small">Category</label>
+                      <select className="form-select form-select-sm">
+                        <option value="">All</option>
+                        <option value="work">Work</option>
+                        <option value="personal">Personal</option>
+                        <option value="meeting">Meeting</option>
+                        <option value="task">Task</option>
+                      </select>
+                    </div>
+                    
+                    {/* Clear Filters */}
+                    <div className="col-md-1 d-flex align-items-end">
+                      <button 
+                        className="btn btn-outline-secondary btn-sm w-100"
+                        onClick={() => {
+                          setDateRange('');
+                          setSelectedTags([]);
+                          setSearchQuery('');
+                        }}
+                        title="Clear all filters"
+                      >
+                        <i className="bi bi-x-circle"></i>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {/* Quick Actions */}
+                  <div className="row mt-3">
+                    <div className="col-12">
+                      <div className="quick-actions">
+                        <span className="small text-muted me-3">Quick Actions:</span>
+                        <button className="btn btn-link btn-sm p-0 me-3" onClick={() => setSearchQuery('important')}>
+                          <i className="bi bi-star me-1"></i>Important Notes
+                        </button>
+                        <button className="btn btn-link btn-sm p-0 me-3" onClick={() => setSearchQuery('meeting')}>
+                          <i className="bi bi-people me-1"></i>Meeting Notes
+                        </button>
+                        <button className="btn btn-link btn-sm p-0 me-3" onClick={() => setDateRange('week')}>
+                          <i className="bi bi-calendar-week me-1"></i>This Week
+                        </button>
+                        <button className="btn btn-link btn-sm p-0" onClick={() => setSearchQuery('todo')}>
+                          <i className="bi bi-check-square me-1"></i>Tasks
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+      
+      {/* Notes Display */}
+      <div className="card mb-2 control-card shadow-sm">
+        <div className="card-body">
+          <div className="row g-3 align-items-center">
             {/* View Mode Toggle */}
             <div className="col-auto">
               <div className="btn-group" role="group">
