@@ -38,7 +38,7 @@ const UserTasks: React.FC = () => {
   const [priorityFilter, setPriorityFilter] = useState<TaskPriority | "ALL">("ALL");
   const [categoryFilter, setCategoryFilter] = useState<TaskCategory | "ALL">("ALL");
   const [dateFilter, setDateFilter] = useState<"today" | "week" | "month" | "overdue" | "all">("all");
-  const [sortBy] = useState<"dueDate" | "priority" | "status" | "createdAt">("dueDate");
+  const [sortBy] = useState<"dueDate" | "priority" | "status" | "createdDate">("dueDate");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // Modal states
@@ -70,15 +70,112 @@ const UserTasks: React.FC = () => {
 
   const formRef = useRef<HTMLInputElement | null>(null);
 
+  // Utility function to normalize and validate task data
+  const normalizeTask = (task: any): Task | null => {
+    try {
+      // Check if required fields exist
+      if (!task || typeof task !== 'object') return null;
+      if (!task.userTaskId && !task.taskId) return null;
+      if (!task.taskTitle) return null;
+      
+      // Normalize the task object
+      const normalizedTask: Task = {
+        userTaskId: task.userTaskId || task.taskId,
+        userId: task.userId || userId || 0,
+        taskTitle: task.taskTitle || 'Untitled Task',
+        taskDescription: task.taskDescription || task.description || '',
+        taskDate: task.taskDate || task.date || new Date().toISOString().split('T')[0],
+        status: task.status || TaskStatus.NOT_STARTED,
+        priority: task.priority || TaskPriority.MEDIUM,
+        category: task.category || TaskCategory.WORK,
+        taskType: task.taskType || task.type,
+        dueDate: task.dueDate || task.due_date,
+        reminderDate: task.reminderDate || task.reminder_date,
+        tags: Array.isArray(task.tags) ? task.tags : [],
+        parentTaskId: task.parentTaskId || task.parent_task_id,
+        createdBy: task.createdBy || task.created_by || task.userId,
+        remarks: task.remarks || '',
+        isRecurring: Boolean(task.isRecurring || task.is_recurring),
+        recurringPattern: task.recurringPattern || task.recurring_pattern,
+        createdDate: task.createdDate || task.created_date || task.createdAt || new Date().toISOString(),
+        modifiedDate: task.modifiedDate || task.modified_date || task.updatedAt
+      };
+
+      return normalizedTask;
+    } catch (error) {
+      console.error('Error normalizing task:', error, task);
+      return null;
+    }
+  };
+
+  // Safe task rendering helper
+  const safeRenderTask = (task: Task, renderFn: (task: Task) => React.ReactNode) => {
+    try {
+      if (!task || !task.userTaskId) {
+        console.warn('Invalid task data:', task);
+        return null;
+      }
+      return renderFn(task);
+    } catch (error) {
+      console.error('Error rendering task:', error, task);
+      return (
+        <div key={task?.userTaskId || Math.random()} className="alert alert-warning">
+          Error rendering task: {task?.taskTitle || 'Unknown task'}
+        </div>
+      );
+    }
+  };
+
   // Load tasks
   const loadTasks = useCallback(async () => {
     if (!userId) return;
     setIsLoading(true);
     try {
       const response = await taskService.getTasksByUser(userId);
+      console.log("API Response:", response); // Debug log
+      
+      // Handle different response structures
       if (response.status === ApiStatus.SUCCESS) {
-        setTasks(response.data || []);
+        // Normalize different possible API response shapes (similar to User Notes):
+        // - response.data => Task[]
+        // - response.data => { data: Task[] }
+        // - response.data => { data: { data: Task[] } } (double-wrapped)
+        // - response.data => { tasks: Task[] } (legacy)
+        let tasksArray: any[] = [];
+        const respData = response.data;
+        
+        console.log("Raw Response Data:", respData); // Debug log
+        console.log("Response Data Type:", typeof respData, Array.isArray(respData)); // Debug log
+
+        if (!respData) {
+          tasksArray = [];
+        } else if (Array.isArray(respData)) {
+          // response.data is already an array
+          tasksArray = respData as any[];
+        } else if (Array.isArray((respData as any).data)) {
+          // response.data.data -> array of tasks
+          tasksArray = (respData as any).data;
+        } else if (Array.isArray((respData as any).data?.data)) {
+          // response.data.data.data -> nested array
+          tasksArray = (respData as any).data.data;
+        } else if (Array.isArray((respData as any).tasks)) {
+          // legacy shape: response.data.tasks
+          tasksArray = (respData as any).tasks;
+        } else {
+          tasksArray = [];
+        }
+        
+        console.log("Extracted Tasks Array:", tasksArray); // Debug log
+        
+        // Normalize and validate task data
+        const normalizedTasks = tasksArray
+          .map(normalizeTask)
+          .filter((task): task is Task => task !== null);
+        
+        console.log("Normalized Tasks:", normalizedTasks); // Debug log
+        setTasks(normalizedTasks);
       } else {
+        console.error("API Error Response:", response);
         toast.error(response.message || "Failed to load tasks");
       }
     } catch (error) {
@@ -94,8 +191,12 @@ const UserTasks: React.FC = () => {
     if (!userId) return;
     try {
       const response = await taskService.getTaskStats(userId);
+      console.log("Stats API Response:", response); // Debug log
+      
       if (response.status === ApiStatus.SUCCESS) {
-        setStats(response.data || null);
+        const statsData = response.data;
+        console.log("Stats Data:", statsData); // Debug log
+        setStats(statsData || null);
       }
     } catch (error) {
       console.error("Error loading task stats:", error);
@@ -172,8 +273,8 @@ const UserTasks: React.FC = () => {
         case "status":
           comparison = a.status.localeCompare(b.status);
           break;
-        case "createdAt":
-          comparison = a.createdAt.localeCompare(b.createdAt);
+        case "createdDate":
+          comparison = a.createdDate.localeCompare(b.createdDate);
           break;
         default:
           comparison = a.taskTitle.localeCompare(b.taskTitle);
@@ -785,7 +886,7 @@ const UserTasks: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTasks.map((task) => (
+                  {filteredTasks.map((task) => safeRenderTask(task, (task) => (
                     <tr key={task.userTaskId} className={`${isOverdue(task) ? "table-danger" : ""} task-row`}>
                       <td>
                         <input
@@ -822,7 +923,7 @@ const UserTasks: React.FC = () => {
                           )}
                           <div className="task-meta mt-1">
                             <small className="text-muted">
-                              Created {formatDate(task.createdAt)}
+                              Created {formatDate(task.createdDate)}
                             </small>
                           </div>
                         </div>
@@ -906,27 +1007,27 @@ const UserTasks: React.FC = () => {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )))}
                 </tbody>
               </table>
             </div>
           ) : viewMode === 'kanban' ? (
             <div className="p-3">
               <div className="row g-3">
-                {filteredTasks.map((task) => (
-                  <div key={task.userTaskId} className="col-lg-4 col-md-6">
-                    <div className={`card task-card h-100 ${isOverdue(task) ? 'border-danger' : ''} ${selectedTasks.includes(task.userTaskId) ? 'selected' : ''}`}>
+                {filteredTasks.map((task) => safeRenderTask(task, (safeTask) => (
+                  <div key={safeTask.userTaskId} className="col-lg-4 col-md-6">
+                    <div className={`card task-card h-100 ${isOverdue(safeTask) ? 'border-danger' : ''} ${selectedTasks.includes(safeTask.userTaskId) ? 'selected' : ''}`}>
                       <div className="card-header d-flex justify-content-between align-items-center p-2">
                         <div className="form-check">
                           <input
                             type="checkbox"
                             className="form-check-input"
-                            checked={selectedTasks.includes(task.userTaskId)}
+                            checked={selectedTasks.includes(safeTask.userTaskId)}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedTasks([...selectedTasks, task.userTaskId]);
+                                setSelectedTasks([...selectedTasks, safeTask.userTaskId]);
                               } else {
-                                setSelectedTasks(selectedTasks.filter(id => id !== task.userTaskId));
+                                setSelectedTasks(selectedTasks.filter(id => id !== safeTask.userTaskId));
                               }
                             }}
                           />
@@ -937,13 +1038,13 @@ const UserTasks: React.FC = () => {
                           </button>
                           <ul className="dropdown-menu dropdown-menu-end">
                             <li>
-                              <button className="dropdown-item" onClick={() => openEditTaskModal(task)}>
+                              <button className="dropdown-item" onClick={() => openEditTaskModal(safeTask)}>
                                 <i className="fa fa-edit me-2"></i>Edit
                               </button>
                             </li>
                             <li>
                               <button className="dropdown-item text-danger" onClick={() => {
-                                setDeletingTask(task);
+                                setDeletingTask(safeTask);
                                 setShowDeleteModal(true);
                               }}>
                                 <i className="fa fa-trash me-2"></i>Delete
@@ -954,48 +1055,48 @@ const UserTasks: React.FC = () => {
                       </div>
                       <div className="card-body p-3">
                         <div className="d-flex align-items-start mb-2">
-                          <i className={`fa ${getTaskIcon(task.category)} me-2 text-primary flex-shrink-0 mt-1`}></i>
+                          <i className={`fa ${getTaskIcon(safeTask.category)} me-2 text-primary flex-shrink-0 mt-1`}></i>
                           <h6 
                             className="card-title mb-0 flex-grow-1 task-title-clickable"
                             onClick={() => {
-                              setViewingTask(task);
+                              setViewingTask(safeTask);
                               setShowViewModal(true);
                             }}
                           >
-                            {task.taskTitle}
+                            {safeTask.taskTitle}
                           </h6>
                         </div>
                         
-                        {task.taskDescription && (
+                        {safeTask.taskDescription && (
                           <p className="card-text text-muted small mb-3">
-                            {task.taskDescription.substring(0, 100)}
-                            {task.taskDescription.length > 100 && "..."}
+                            {safeTask.taskDescription.substring(0, 100)}
+                            {safeTask.taskDescription.length > 100 && "..."}
                           </p>
                         )}
 
                         <div className="d-flex gap-2 mb-3 flex-wrap">
-                          <span className={`badge priority-badge priority-${task.priority.toLowerCase()}`}>
-                            <i className={`fa ${TASK_PRIORITY_CONFIG[task.priority].icon} me-1`}></i>
-                            {TASK_PRIORITY_CONFIG[task.priority].label}
+                          <span className={`badge priority-badge priority-${safeTask.priority.toLowerCase()}`}>
+                            <i className={`fa ${TASK_PRIORITY_CONFIG[safeTask.priority].icon} me-1`}></i>
+                            {TASK_PRIORITY_CONFIG[safeTask.priority].label}
                           </span>
-                          <span className={`badge category-badge category-${(task.category || 'other').toLowerCase()}`}>
-                            {task.category || 'Other'}
+                          <span className={`badge category-badge category-${(safeTask.category || 'other').toLowerCase()}`}>
+                            {safeTask.category || 'Other'}
                           </span>
                         </div>
 
                         <div className="progress mb-2" style={{ height: '6px' }}>
                           <div 
-                            className={`progress-bar progress-bar-${task.status.toLowerCase().replace('_', '-')}`}
-                            style={{ width: `${getTaskProgress(task.status)}%` }}
+                            className={`progress-bar progress-bar-${safeTask.status.toLowerCase().replace('_', '-')}`}
+                            style={{ width: `${getTaskProgress(safeTask.status)}%` }}
                           ></div>
                         </div>
                         
                         <div className="d-flex justify-content-between align-items-center mb-2">
-                          <small className="text-muted">{t('tasks.progress')}: {getTaskProgress(task.status)}%</small>
+                          <small className="text-muted">{t('tasks.progress')}: {getTaskProgress(safeTask.status)}%</small>
                           <select
-                            className={`form-select form-select-sm status-select status-${task.status.toLowerCase().replace('_', '-')}`}
-                            value={task.status}
-                            onChange={(e) => handleStatusChange(task.userTaskId, e.target.value as TaskStatus)}
+                            className={`form-select form-select-sm status-select status-${safeTask.status.toLowerCase().replace('_', '-')}`}
+                            value={safeTask.status}
+                            onChange={(e) => handleStatusChange(safeTask.userTaskId, e.target.value as TaskStatus)}
                             style={{ width: 'auto', fontSize: '0.75rem' }}
                           >
                             {Object.values(TaskStatus).map(status => (
@@ -1006,13 +1107,13 @@ const UserTasks: React.FC = () => {
                           </select>
                         </div>
 
-                        {task.dueDate && (
-                          <div className={`due-date-card ${isOverdue(task) ? "overdue" : ""}`}>
+                        {safeTask.dueDate && (
+                          <div className={`due-date-card ${isOverdue(safeTask) ? "overdue" : ""}`}>
                             <i className="fa fa-calendar-alt me-1"></i>
-                            <small>{t('tasks.due')}: {formatDate(task.dueDate)}</small>
-                            {isOverdue(task) && <i className="fa fa-exclamation-triangle ms-1"></i>}
+                            <small>{t('tasks.due')}: {formatDate(safeTask.dueDate)}</small>
+                            {isOverdue(safeTask) && <i className="fa fa-exclamation-triangle ms-1"></i>}
                             <div className="days-remaining-small">
-                              {getDaysRemaining(task.dueDate)}
+                              {getDaysRemaining(safeTask.dueDate)}
                             </div>
                           </div>
                         )}
@@ -1020,12 +1121,12 @@ const UserTasks: React.FC = () => {
                       <div className="card-footer p-2 bg-transparent">
                         <small className="text-muted">
                           <i className="fa fa-clock me-1"></i>
-                          {t('tasks.created')} {formatDate(task.createdAt)}
+                          {t('tasks.created')} {formatDate(safeTask.createdDate)}
                         </small>
                       </div>
                     </div>
                   </div>
-                ))}
+                )))}
               </div>
             </div>
           ) : (
@@ -1036,30 +1137,30 @@ const UserTasks: React.FC = () => {
                   {filteredTasks
                     .filter(task => task.dueDate)
                     .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''))
-                    .map((task) => (
-                      <div key={task.userTaskId} className={`timeline-item ${isOverdue(task) ? 'overdue' : ''}`}>
+                    .map((task) => safeRenderTask(task, (safeTask) => (
+                      <div key={safeTask.userTaskId} className={`timeline-item ${isOverdue(safeTask) ? 'overdue' : ''}`}>
                         <div className="timeline-marker">
-                          <i className={`fa ${getTaskIcon(task.category)}`}></i>
+                          <i className={`fa ${getTaskIcon(safeTask.category)}`}></i>
                         </div>
                         <div className="timeline-content">
                           <div className="timeline-header">
-                            <h6 className="timeline-title">{task.taskTitle}</h6>
-                            <small className="timeline-date">{formatDate(task.dueDate!)}</small>
+                            <h6 className="timeline-title">{safeTask.taskTitle}</h6>
+                            <small className="timeline-date">{formatDate(safeTask.dueDate!)}</small>
                           </div>
-                          {task.taskDescription && (
-                            <p className="timeline-description">{task.taskDescription}</p>
+                          {safeTask.taskDescription && (
+                            <p className="timeline-description">{safeTask.taskDescription}</p>
                           )}
                           <div className="timeline-meta">
-                            <span className={`badge priority-badge priority-${task.priority.toLowerCase()}`}>
-                              {TASK_PRIORITY_CONFIG[task.priority].label}
+                            <span className={`badge priority-badge priority-${safeTask.priority.toLowerCase()}`}>
+                              {TASK_PRIORITY_CONFIG[safeTask.priority].label}
                             </span>
-                            <span className={`badge category-badge category-${(task.category || 'other').toLowerCase()}`}>
-                              {task.category || 'Other'}
+                            <span className={`badge category-badge category-${(safeTask.category || 'other').toLowerCase()}`}>
+                              {safeTask.category || 'Other'}
                             </span>
                             <select
-                              className={`form-select form-select-sm status-select status-${task.status.toLowerCase().replace('_', '-')} ms-2`}
-                              value={task.status}
-                              onChange={(e) => handleStatusChange(task.userTaskId, e.target.value as TaskStatus)}
+                              className={`form-select form-select-sm status-select status-${safeTask.status.toLowerCase().replace('_', '-')} ms-2`}
+                              value={safeTask.status}
+                              onChange={(e) => handleStatusChange(safeTask.userTaskId, e.target.value as TaskStatus)}
                               style={{ width: 'auto', display: 'inline-block' }}
                             >
                               {Object.values(TaskStatus).map(status => (
@@ -1071,31 +1172,31 @@ const UserTasks: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )))}
                   {filteredTasks.filter(task => !task.dueDate).length > 0 && (
                     <div className="mt-4">
                       <h6 className="text-muted">{t('tasks.tasksWithoutDueDates')}:</h6>
-                      {filteredTasks.filter(task => !task.dueDate).map(task => (
-                        <div key={task.userTaskId} className="timeline-item no-date">
+                      {filteredTasks.filter(task => !task.dueDate).map(task => safeRenderTask(task, (safeTask) => (
+                        <div key={safeTask.userTaskId} className="timeline-item no-date">
                           <div className="timeline-marker">
-                            <i className={`fa ${getTaskIcon(task.category)}`}></i>
+                            <i className={`fa ${getTaskIcon(safeTask.category)}`}></i>
                           </div>
                           <div className="timeline-content">
-                            <h6 className="timeline-title">{task.taskTitle}</h6>
-                            {task.taskDescription && (
-                              <p className="timeline-description">{task.taskDescription}</p>
+                            <h6 className="timeline-title">{safeTask.taskTitle}</h6>
+                            {safeTask.taskDescription && (
+                              <p className="timeline-description">{safeTask.taskDescription}</p>
                             )}
                             <div className="timeline-meta">
-                              <span className={`badge priority-badge priority-${task.priority.toLowerCase()}`}>
-                                {TASK_PRIORITY_CONFIG[task.priority].label}
+                              <span className={`badge priority-badge priority-${safeTask.priority.toLowerCase()}`}>
+                                {TASK_PRIORITY_CONFIG[safeTask.priority].label}
                               </span>
-                              <span className={`badge category-badge category-${(task.category || 'other').toLowerCase()}`}>
-                                {task.category || 'Other'}
+                              <span className={`badge category-badge category-${(safeTask.category || 'other').toLowerCase()}`}>
+                                {safeTask.category || 'Other'}
                               </span>
                             </div>
                           </div>
                         </div>
-                      ))}
+                      )))}
                     </div>
                   )}
                 </div>
@@ -1288,11 +1389,11 @@ const UserTasks: React.FC = () => {
                   </div>
                   <div className="col-md-6">
                     <strong>{t('tasks.created')}:</strong>
-                    <span className="ms-2">{formatDate(viewingTask.createdAt)}</span>
+                    <span className="ms-2">{formatDate(viewingTask.createdDate)}</span>
                   </div>
                   <div className="col-md-6">
                     <strong>{t('tasks.lastModified')}:</strong>
-                    <span className="ms-2">{formatDate(viewingTask.updatedAt || viewingTask.createdAt)}</span>
+                    <span className="ms-2">{formatDate(viewingTask.modifiedDate || viewingTask.createdDate)}</span>
                   </div>
                 </div>
               </div>

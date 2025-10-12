@@ -20,15 +20,15 @@ export interface BaseTask {
   remarks?: string;
   isRecurring?: boolean;
   recurringPattern?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdDate?: string;
+  modifiedDate?: string;
 }
 
 // Task interface with required fields
 export interface Task extends BaseTask {
   userTaskId: number;
-  createdAt: string;
-  updatedAt?: string;
+  createdDate: string;
+  modifiedDate?: string;
 }
 
 // Task form data interface for creating/updating tasks
@@ -110,8 +110,8 @@ export interface TaskComment {
   userId: number;
   userName: string;
   comment: string;
-  createdAt: string;
-  updatedAt?: string;
+  createdDate: string;
+  modifiedDate?: string;
 }
 
 // Task attachment interface
@@ -123,7 +123,7 @@ export interface TaskAttachment {
   fileSize: number;
   fileType: string;
   uploadedBy: number;
-  uploadedAt: string;
+  uploadedDate: string;
 }
 
 // Subtask interface
@@ -136,8 +136,8 @@ export interface SubTask {
   priority: TaskPriority;
   dueDate?: string;
   assignedTo?: number;
-  createdAt: string;
-  updatedAt?: string;
+  createdDate: string;
+  modifiedDate?: string;
 }
 
 // Task template interface
@@ -148,8 +148,8 @@ export interface TaskTemplate {
   taskData: Partial<TaskFormData>;
   createdBy: number;
   isPublic: boolean;
-  createdAt: string;
-  updatedAt?: string;
+  createdDate: string;
+  modifiedDate?: string;
 }
 
 // Recurring task pattern interface
@@ -162,7 +162,7 @@ export interface RecurringTaskPattern {
   dayOfMonth?: number;
   endDate?: string;
   isActive: boolean;
-  createdAt: string;
+  createdDate: string;
 }
 
 // Task API response types

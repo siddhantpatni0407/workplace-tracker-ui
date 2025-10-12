@@ -14,6 +14,13 @@ All endpoints require Bearer Token authentication. Include the token in the Auth
 Authorization: Bearer <your-jwt-token>
 ```
 
+## API Design Pattern
+This API uses **query parameters** instead of path variables for resource identification. All resource IDs (like `userTaskId`) are passed as query parameters for consistency and easier integration.
+
+**Example:**
+- ✅ Correct: `GET /tasks/details?userTaskId=1`
+- ❌ Avoid: `GET /tasks/{userTaskId}`
+
 ---
 
 ## Database Schema
@@ -39,8 +46,8 @@ CREATE TABLE IF NOT EXISTS user_tasks (
     remarks TEXT,
     is_recurring BOOLEAN DEFAULT FALSE,
     recurring_pattern VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT fk_user_tasks_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     CONSTRAINT fk_user_tasks_parent FOREIGN KEY (parent_task_id) REFERENCES user_tasks(user_task_id) ON DELETE CASCADE
 );
@@ -149,8 +156,8 @@ enum TaskType {
         "remarks": "Coordinate with security team for compliance review",
         "isRecurring": false,
         "recurringPattern": null,
-        "createdAt": "2025-10-12T14:30:00",
-        "updatedAt": "2025-10-12T14:30:00"
+        "createdDate": "2025-10-12T14:30:00",
+        "modifiedDate": "2025-10-12T14:30:00"
     }
 }
 ```
@@ -178,7 +185,7 @@ searchTerm - Search in title, description, and tags
 tags - Filter by tags (comma-separated)
 page - Page number for pagination (default: 0)
 limit - Number of results per page (default: 50)
-sortBy - Sort field (dueDate, priority, status, createdAt, taskTitle)
+sortBy - Sort field (dueDate, priority, status, createdDate, taskTitle)
 sortOrder - Sort direction (ASC, DESC, default: ASC)
 ```
 
@@ -211,8 +218,8 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
             "remarks": "Coordinate with security team for compliance review",
             "isRecurring": false,
             "recurringPattern": null,
-            "createdAt": "2025-10-12T14:30:00",
-            "updatedAt": "2025-10-15T10:15:00"
+            "createdDate": "2025-10-12T14:30:00",
+            "modifiedDate": "2025-10-15T10:15:00"
         }
     ],
     "pagination": {
@@ -231,8 +238,18 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
 ### 3. Get Task by ID
 
 **Method:** `GET`  
-**Endpoint:** `/tasks/{userTaskId}`  
+**Endpoint:** `/tasks/details`  
 **Authentication:** Required
+
+**Query Parameters:**
+```
+userTaskId (required) - The ID of the task to retrieve
+```
+
+**Example Request:**
+```
+GET /tasks/details?userTaskId=1
+```
 
 **Response (200 OK):**
 ```json
@@ -257,8 +274,8 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
         "remarks": "Coordinate with security team for compliance review",
         "isRecurring": false,
         "recurringPattern": null,
-        "createdAt": "2025-10-12T14:30:00",
-        "updatedAt": "2025-10-15T10:15:00"
+        "createdDate": "2025-10-12T14:30:00",
+        "modifiedDate": "2025-10-15T10:15:00"
     }
 }
 ```
@@ -268,8 +285,18 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
 ### 4. Update Task
 
 **Method:** `PUT`  
-**Endpoint:** `/tasks/{userTaskId}`  
+**Endpoint:** `/tasks/update`  
 **Authentication:** Required
+
+**Query Parameters:**
+```
+userTaskId (required) - The ID of the task to update
+```
+
+**Example Request:**
+```
+PUT /tasks/update?userTaskId=1
+```
 
 **Request Body:**
 ```json
@@ -302,7 +329,7 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
         "status": "IN_PROGRESS",
         "priority": "URGENT",
         "dueDate": "2025-10-18",
-        "updatedAt": "2025-10-15T16:45:00"
+        "modifiedDate": "2025-10-15T16:45:00"
     }
 }
 ```
@@ -312,8 +339,18 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
 ### 5. Delete Task
 
 **Method:** `DELETE`  
-**Endpoint:** `/tasks/{userTaskId}`  
+**Endpoint:** `/tasks/delete`  
 **Authentication:** Required
+
+**Query Parameters:**
+```
+userTaskId (required) - The ID of the task to delete
+```
+
+**Example Request:**
+```
+DELETE /tasks/delete?userTaskId=1
+```
 
 **Response (200 OK):**
 ```json
@@ -329,8 +366,18 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
 ### 6. Update Task Status
 
 **Method:** `PATCH`  
-**Endpoint:** `/tasks/status/{userTaskId}`  
+**Endpoint:** `/tasks/status/update`  
 **Authentication:** Required
+
+**Query Parameters:**
+```
+userTaskId (required) - The ID of the task to update status for
+```
+
+**Example Request:**
+```
+PATCH /tasks/status/update?userTaskId=1
+```
 
 **Request Body:**
 ```json
@@ -347,7 +394,7 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
     "data": {
         "userTaskId": 1,
         "status": "COMPLETED",
-        "updatedAt": "2025-10-15T17:30:00"
+        "modifiedDate": "2025-10-15T17:30:00"
     }
 }
 ```
@@ -357,8 +404,18 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
 ### 7. Update Task Priority
 
 **Method:** `PATCH`  
-**Endpoint:** `/tasks/priority/{userTaskId}`  
+**Endpoint:** `/tasks/priority/update`  
 **Authentication:** Required
+
+**Query Parameters:**
+```
+userTaskId (required) - The ID of the task to update priority for
+```
+
+**Example Request:**
+```
+PATCH /tasks/priority/update?userTaskId=1
+```
 
 **Request Body:**
 ```json
@@ -375,7 +432,7 @@ GET /tasks/user?status=IN_PROGRESS&priority=HIGH&page=0&limit=10&sortBy=dueDate&
     "data": {
         "userTaskId": 1,
         "priority": "URGENT",
-        "updatedAt": "2025-10-15T17:35:00"
+        "modifiedDate": "2025-10-15T17:35:00"
     }
 }
 ```
@@ -506,11 +563,22 @@ GET /tasks/search?searchTerm=authentication&status=IN_PROGRESS&priority=HIGH
 ### 11. Get Tasks by Status
 
 **Method:** `GET`  
-**Endpoint:** `/tasks/by-status/{status}`  
+**Endpoint:** `/tasks/by-status`  
 **Authentication:** Required
 
-**Path Parameters:**
-- `status` - TaskStatus enum value (NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED)
+**Query Parameters:**
+```
+status (required) - TaskStatus enum value (NOT_STARTED, IN_PROGRESS, COMPLETED, ON_HOLD, CANCELLED)
+page - Page number for pagination (default: 0)
+limit - Number of results per page (default: 50)
+sortBy - Sort field (default: createdDate)
+sortOrder - Sort direction (ASC, DESC, default: ASC)
+```
+
+**Example Request:**
+```
+GET /tasks/by-status?status=IN_PROGRESS&page=0&limit=10
+```
 
 **Response (200 OK):**
 ```json
@@ -534,11 +602,22 @@ GET /tasks/search?searchTerm=authentication&status=IN_PROGRESS&priority=HIGH
 ### 12. Get Tasks by Priority
 
 **Method:** `GET`  
-**Endpoint:** `/tasks/by-priority/{priority}`  
+**Endpoint:** `/tasks/by-priority`  
 **Authentication:** Required
 
-**Path Parameters:**
-- `priority` - TaskPriority enum value (LOW, MEDIUM, HIGH, URGENT)
+**Query Parameters:**
+```
+priority (required) - TaskPriority enum value (LOW, MEDIUM, HIGH, URGENT)
+page - Page number for pagination (default: 0)
+limit - Number of results per page (default: 50)
+sortBy - Sort field (default: createdDate)
+sortOrder - Sort direction (ASC, DESC, default: ASC)
+```
+
+**Example Request:**
+```
+GET /tasks/by-priority?priority=HIGH&page=0&limit=10
+```
 
 **Response (200 OK):**
 ```json
@@ -633,8 +712,18 @@ GET /tasks/search?searchTerm=authentication&status=IN_PROGRESS&priority=HIGH
 ### 15. Duplicate Task
 
 **Method:** `POST`  
-**Endpoint:** `/tasks/duplicate/{userTaskId}`  
+**Endpoint:** `/tasks/duplicate`  
 **Authentication:** Required
+
+**Query Parameters:**
+```
+userTaskId (required) - The ID of the task to duplicate
+```
+
+**Example Request:**
+```
+POST /tasks/duplicate?userTaskId=1
+```
 
 **Response (201 Created):**
 ```json
@@ -646,7 +735,7 @@ GET /tasks/search?searchTerm=authentication&status=IN_PROGRESS&priority=HIGH
         "originalUserTaskId": 1,
         "taskTitle": "[Copy] Implement User Authentication Module",
         "status": "NOT_STARTED",
-        "createdAt": "2025-10-15T18:00:00"
+        "createdDate": "2025-10-15T18:00:00"
     }
 }
 ```
@@ -715,7 +804,7 @@ GET /tasks/search?searchTerm=authentication&status=IN_PROGRESS&priority=HIGH
 
 ### Date Formats
 - **taskDate, dueDate**: Use `YYYY-MM-DD` format (e.g., "2025-10-15")
-- **reminderDate, createdAt, updatedAt**: Use ISO 8601 format with timezone (e.g., "2025-10-15T14:30:00")
+- **reminderDate, createdDate, modifiedDate**: Use ISO 8601 format with timezone (e.g., "2025-10-15T14:30:00")
 
 ### Validation Rules
 - **taskTitle**: Required, 1-500 characters
@@ -765,8 +854,8 @@ interface Task {
   remarks?: string;
   isRecurring?: boolean;
   recurringPattern?: string;
-  createdAt: string;
-  updatedAt?: string;
+  createdDate: string;
+  modifiedDate?: string;
 }
 ```
 
@@ -794,7 +883,10 @@ const tasks = await taskService.getTasksByUser(userId, {
 });
 
 // Update task status
-const updatedTask = await taskService.updateTaskStatus(userTaskId, TaskStatus.COMPLETED);
+const updatedTask = await taskService.updateTaskStatus({
+  userTaskId: userTaskId,
+  status: TaskStatus.COMPLETED
+});
 
 // Search tasks
 const searchResults = await taskService.searchTasks(userId, "authentication", {

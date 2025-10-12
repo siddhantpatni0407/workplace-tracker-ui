@@ -40,12 +40,21 @@ class TaskService {
       const response = await axiosInstance.get(
         `${API_ENDPOINTS.TASKS.GET_BY_USER}?${params}`
       );
+      
+      // Return response directly like User Notes service
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching tasks:', error);
+      
+      // Handle different error response formats
+      const errorMessage = error.response?.data?.message || 
+                          error.response?.data?.error || 
+                          error.message || 
+                          'Failed to fetch tasks';
+      
       return {
         status: ApiStatus.ERROR,
-        message: 'Failed to fetch tasks',
+        message: errorMessage,
         data: []
       };
     }
@@ -54,7 +63,7 @@ class TaskService {
   // Get a specific task by ID
   async getTaskById(userTaskId: number): Promise<TaskResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_BY_ID}/${userTaskId}`);
+      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_BY_ID}?userTaskId=${userTaskId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching task:', error);
@@ -87,7 +96,7 @@ class TaskService {
   async updateTask(taskData: TaskUpdateData): Promise<TaskResponse> {
     try {
       const response = await axiosInstance.put(
-        `${API_ENDPOINTS.TASKS.UPDATE}/${taskData.userTaskId}`,
+        `${API_ENDPOINTS.TASKS.UPDATE}?userTaskId=${taskData.userTaskId}`,
         taskData
       );
       return response.data;
@@ -104,7 +113,7 @@ class TaskService {
   // Delete a task
   async deleteTask(userTaskId: number): Promise<TaskResponse> {
     try {
-      const response = await axiosInstance.delete(`${API_ENDPOINTS.TASKS.DELETE}/${userTaskId}`);
+      const response = await axiosInstance.delete(`${API_ENDPOINTS.TASKS.DELETE}?userTaskId=${userTaskId}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting task:', error);
@@ -120,7 +129,7 @@ class TaskService {
   async updateTaskStatus(userTaskId: number, status: TaskStatus): Promise<TaskResponse> {
     try {
       const response = await axiosInstance.patch(
-        `${API_ENDPOINTS.TASKS.UPDATE_STATUS}/${userTaskId}`,
+        `${API_ENDPOINTS.TASKS.UPDATE_STATUS}?userTaskId=${userTaskId}`,
         { status }
       );
       return response.data;
@@ -138,7 +147,7 @@ class TaskService {
   async updateTaskPriority(userTaskId: number, priority: TaskPriority): Promise<TaskResponse> {
     try {
       const response = await axiosInstance.patch(
-        `${API_ENDPOINTS.TASKS.UPDATE_PRIORITY}/${userTaskId}`,
+        `${API_ENDPOINTS.TASKS.UPDATE_PRIORITY}?userTaskId=${userTaskId}`,
         { priority }
       );
       return response.data;
@@ -233,7 +242,7 @@ class TaskService {
   async getTasksByStatus(userId: number, status: TaskStatus): Promise<TaskListResponse> {
     try {
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.TASKS.GET_BY_STATUS}/${status}`
+        `${API_ENDPOINTS.TASKS.GET_BY_STATUS}?status=${status}`
       );
       return response.data;
     } catch (error) {
@@ -250,7 +259,7 @@ class TaskService {
   async getTasksByPriority(userId: number, priority: TaskPriority): Promise<TaskListResponse> {
     try {
       const response = await axiosInstance.get(
-        `${API_ENDPOINTS.TASKS.GET_BY_PRIORITY}/${priority}`
+        `${API_ENDPOINTS.TASKS.GET_BY_PRIORITY}?priority=${priority}`
       );
       return response.data;
     } catch (error) {
@@ -296,7 +305,7 @@ class TaskService {
   // Duplicate a task
   async duplicateTask(userTaskId: number): Promise<TaskCreateResponse> {
     try {
-      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.DUPLICATE}/${userTaskId}`);
+      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.DUPLICATE}?userTaskId=${userTaskId}`);
       return response.data;
     } catch (error) {
       console.error('Error duplicating task:', error);
@@ -334,7 +343,7 @@ class TaskService {
   // Get task comments
   async getTaskComments(taskId: number): Promise<TaskCommentsResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_COMMENTS}/${taskId}`);
+      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_COMMENTS}?taskId=${taskId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching task comments:', error);
@@ -349,7 +358,7 @@ class TaskService {
   // Add task comment
   async addTaskComment(taskId: number, comment: string): Promise<TaskResponse> {
     try {
-      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.ADD_COMMENT}/${taskId}`, {
+      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.ADD_COMMENT}?taskId=${taskId}`, {
         comment
       });
       return response.data;
@@ -366,7 +375,7 @@ class TaskService {
   // Get subtasks
   async getSubTasks(parentTaskId: number): Promise<SubTasksResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_SUBTASKS}/${parentTaskId}`);
+      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_SUBTASKS}?parentTaskId=${parentTaskId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching subtasks:', error);
@@ -381,7 +390,7 @@ class TaskService {
   // Create subtask
   async createSubTask(parentTaskId: number, subTaskData: Partial<SubTask>): Promise<TaskResponse> {
     try {
-      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.CREATE_SUBTASK}/${parentTaskId}`, subTaskData);
+      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.CREATE_SUBTASK}?parentTaskId=${parentTaskId}`, subTaskData);
       return response.data;
     } catch (error) {
       console.error('Error creating subtask:', error);

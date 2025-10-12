@@ -117,12 +117,12 @@ export const API_ENDPOINTS = {
   // Tasks (General task management system)
   TASKS: {
     GET_BY_USER: `${API_BASE_URL}/tasks/user`,
-    GET_BY_ID: `${API_BASE_URL}/tasks`,
+    GET_BY_ID: `${API_BASE_URL}/tasks/details`,
     CREATE: `${API_BASE_URL}/tasks`,
-    UPDATE: `${API_BASE_URL}/tasks`,
-    DELETE: `${API_BASE_URL}/tasks`,
-    UPDATE_STATUS: `${API_BASE_URL}/tasks/status`,
-    UPDATE_PRIORITY: `${API_BASE_URL}/tasks/priority`,
+    UPDATE: `${API_BASE_URL}/tasks/update`,
+    DELETE: `${API_BASE_URL}/tasks/delete`,
+    UPDATE_STATUS: `${API_BASE_URL}/tasks/status/update`,
+    UPDATE_PRIORITY: `${API_BASE_URL}/tasks/priority/update`,
     GET_STATS: `${API_BASE_URL}/tasks/stats`,
     SEARCH: `${API_BASE_URL}/tasks/search`,
     GET_OVERDUE: `${API_BASE_URL}/tasks/overdue`,
