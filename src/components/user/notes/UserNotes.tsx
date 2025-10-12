@@ -67,6 +67,9 @@ const UserNotes: React.FC = () => {
   const [viewingNote, setViewingNote] = useState<Note | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingNote, setDeletingNote] = useState<Note | null>(null);
+  const [permanentDelete, setPermanentDelete] = useState(false);
+  const [showBulkDeleteModal, setShowBulkDeleteModal] = useState(false);
+  const [bulkPermanentDelete, setBulkPermanentDelete] = useState(false);
 
   // Enhanced features states
   const [showStickyNotes, setShowStickyNotes] = useState(true);
@@ -403,11 +406,12 @@ const UserNotes: React.FC = () => {
     if (!deletingNote) return;
     
     try {
-      const response = await noteService.deleteNote(deletingNote.userNoteId);
+      const response = await noteService.deleteNote(deletingNote.userNoteId, permanentDelete);
       if (response.status === ApiStatus.SUCCESS) {
-        toast.success("Note deleted successfully");
+        toast.success(`Note ${permanentDelete ? 'permanently deleted' : 'deleted'} successfully`);
         setShowDeleteModal(false);
         setDeletingNote(null);
+        setPermanentDelete(false);
         loadNotes();
       } else {
         toast.error(response.message || "Failed to delete note");
@@ -614,20 +618,24 @@ const UserNotes: React.FC = () => {
     }
   };
 
-  const handleBulkDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete ${selectedNotes.length} selected notes?`)) {
-      try {
-        for (const noteId of selectedNotes) {
-          await noteService.deleteNote(noteId);
-        }
-        toast.success(`${selectedNotes.length} notes deleted`);
-        setSelectedNotes([]);
-        setShowBulkActions(false);
-        loadNotes();
-      } catch (error) {
-        console.error("Error bulk deleting notes:", error);
-        toast.error("Failed to delete notes");
+  const handleBulkDelete = () => {
+    setShowBulkDeleteModal(true);
+  };
+
+  const confirmBulkDelete = async () => {
+    try {
+      for (const noteId of selectedNotes) {
+        await noteService.deleteNote(noteId, bulkPermanentDelete);
       }
+      toast.success(`${selectedNotes.length} notes ${bulkPermanentDelete ? 'permanently deleted' : 'deleted'}`);
+      setSelectedNotes([]);
+      setShowBulkActions(false);
+      setShowBulkDeleteModal(false);
+      setBulkPermanentDelete(false);
+      loadNotes();
+    } catch (error) {
+      console.error("Error bulk deleting notes:", error);
+      toast.error("Failed to delete notes");
     }
   };
 
@@ -1832,11 +1840,12 @@ const UserNotes: React.FC = () => {
 
       {/* Add/Edit Note Modal */}
       {showModal && (
-        <div className="modal show d-block" tabIndex={-1}>
-          <div className="modal-dialog modal-lg">
+        <div className="modal show d-block modal-centered" tabIndex={-1}>
+          <div className="modal-dialog modal-lg modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header edit-header">
                 <h5 className="modal-title">
+                  <i className={`fa ${editing ? 'fa-edit' : 'fa-plus'} me-2`}></i>
                   {editing ? "Edit Note" : "New Note"}
                 </h5>
                 <button
@@ -2018,11 +2027,14 @@ const UserNotes: React.FC = () => {
 
       {/* View Note Modal */}
       {showViewModal && viewingNote && (
-        <div className="modal show d-block" tabIndex={-1}>
-          <div className="modal-dialog modal-lg">
+        <div className="modal show d-block modal-centered" tabIndex={-1}>
+          <div className="modal-dialog modal-lg modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">{viewingNote.noteTitle}</h5>
+              <div className="modal-header view-header">
+                <h5 className="modal-title">
+                  <i className="fa fa-eye me-2"></i>
+                  {viewingNote.noteTitle}
+                </h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -2141,11 +2153,14 @@ const UserNotes: React.FC = () => {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && deletingNote && (
-        <div className="modal show d-block" tabIndex={-1}>
-          <div className="modal-dialog">
+        <div className="modal show d-block modal-centered" tabIndex={-1}>
+          <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Confirm Delete</h5>
+              <div className="modal-header delete-header">
+                <h5 className="modal-title">
+                  <i className="fa fa-exclamation-triangle me-2"></i>
+                  Confirm Delete
+                </h5>
                 <button
                   type="button"
                   className="btn-close"
@@ -2154,22 +2169,144 @@ const UserNotes: React.FC = () => {
               </div>
               <div className="modal-body">
                 <p>Are you sure you want to delete the note "{deletingNote.noteTitle}"?</p>
-                <p className="text-muted">This action cannot be undone.</p>
+                
+                {/* Permanent Delete Option */}
+                <div className="form-check mt-3 mb-3">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="permanentDeleteCheck"
+                    checked={permanentDelete}
+                    onChange={(e) => setPermanentDelete(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="permanentDeleteCheck">
+                    <strong className="text-danger">Delete Permanently</strong>
+                  </label>
+                  <div className="form-text">
+                    {permanentDelete 
+                      ? "This will permanently remove the note from the system. This action cannot be undone!"
+                      : "Note will be moved to trash and can be restored later."
+                    }
+                  </div>
+                </div>
+                
+                {permanentDelete && (
+                  <div className="alert alert-danger">
+                    <i className="fa fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> Permanent deletion cannot be undone!
+                  </div>
+                )}
               </div>
               <div className="modal-footer">
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={() => setShowDeleteModal(false)}
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setPermanentDelete(false);
+                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  className="btn btn-danger"
+                  className={`btn ${permanentDelete ? 'btn-danger' : 'btn-warning'}`}
                   onClick={handleDelete}
                 >
-                  Delete Note
+                  {permanentDelete ? (
+                    <>
+                      <i className="fa fa-trash-o me-2"></i>
+                      Delete Permanently
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa fa-trash me-2"></i>
+                      Move to Trash
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete Confirmation Modal */}
+      {showBulkDeleteModal && (
+        <div className="modal show d-block modal-centered" tabIndex={-1}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header delete-header">
+                <h5 className="modal-title">
+                  <i className="fa fa-exclamation-triangle me-2"></i>
+                  Confirm Bulk Delete
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => {
+                    setShowBulkDeleteModal(false);
+                    setBulkPermanentDelete(false);
+                  }}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete {selectedNotes.length} selected notes?</p>
+                
+                {/* Permanent Delete Option */}
+                <div className="form-check mt-3 mb-3">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    id="bulkPermanentDeleteCheck"
+                    checked={bulkPermanentDelete}
+                    onChange={(e) => setBulkPermanentDelete(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="bulkPermanentDeleteCheck">
+                    <strong className="text-danger">Delete Permanently</strong>
+                  </label>
+                  <div className="form-text">
+                    {bulkPermanentDelete 
+                      ? "This will permanently remove all selected notes from the system. This action cannot be undone!"
+                      : "Notes will be moved to trash and can be restored later."
+                    }
+                  </div>
+                </div>
+                
+                {bulkPermanentDelete && (
+                  <div className="alert alert-danger">
+                    <i className="fa fa-exclamation-triangle me-2"></i>
+                    <strong>Warning:</strong> Permanent deletion of {selectedNotes.length} notes cannot be undone!
+                  </div>
+                )}
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowBulkDeleteModal(false);
+                    setBulkPermanentDelete(false);
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className={`btn ${bulkPermanentDelete ? 'btn-danger' : 'btn-warning'}`}
+                  onClick={confirmBulkDelete}
+                >
+                  {bulkPermanentDelete ? (
+                    <>
+                      <i className="fa fa-trash-o me-2"></i>
+                      Delete {selectedNotes.length} Notes Permanently
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa fa-trash me-2"></i>
+                      Move {selectedNotes.length} Notes to Trash
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -2178,7 +2315,7 @@ const UserNotes: React.FC = () => {
       )}
 
             {/* Modal Backdrop */}
-            {(showModal || showViewModal || showDeleteModal) && (
+            {(showModal || showViewModal || showDeleteModal || showBulkDeleteModal) && (
               <div className="modal-backdrop show"></div>
             )}
           </div> {/* End notes-main-content */}
