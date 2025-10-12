@@ -1,7 +1,9 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { ROUTES } from "../../constants";
+import RedirectingLoader from "../common/redirectingLoader/RedirectingLoader";
+import { useTranslation } from "../../hooks";
 
 interface PrivateRouteProps {
   children: ReactNode; // same as your current typing
@@ -14,7 +16,13 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, userRole }) => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+  const { t } = useTranslation();
+
+  // Show loading while authentication is being checked
+  if (isLoading) {
+    return <RedirectingLoader message={t("loading.verifying.authentication")} showProgress={false} />;
+  }
 
   // not authenticated -> redirect (keeps your existing behavior)
   if (!user) return <Navigate to={ROUTES.PUBLIC.HOME} replace />;

@@ -62,9 +62,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 
 // Loading Spinner for Suspense
 const Loader: React.FC = () => (
-  <div className="d-flex justify-content-center align-items-center vh-100">
-    <div className="spinner-border text-primary me-2" role="status" />
-    <span className="fw-semibold text-muted">Loading, please wait...</span>
+  <div className="d-flex justify-content-center align-items-center vh-100" style={{
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: 'white'
+  }}>
+    <div className="text-center">
+      <div className="spinner-border text-light mb-3" role="status" style={{width: '3rem', height: '3rem'}} />
+      <div>
+        <h5 className="fw-bold mb-2">Workplace Tracker</h5>
+        <p className="fw-semibold mb-0" style={{opacity: 0.9}}>Loading application...</p>
+      </div>
+    </div>
   </div>
 );
 

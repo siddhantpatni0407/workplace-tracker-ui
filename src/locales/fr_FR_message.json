@@ -25,6 +25,30 @@
     "optional": "optionnel",
     "required": "requis"
   },
+  "app": {
+    "title": "Suivi du Lieu de Travail"
+  },
+  "loading": {
+    "redirecting": {
+      "userDashboard": "Redirection vers le Tableau de Bord Utilisateur",
+      "adminDashboard": "Redirection vers le Tableau de Bord Administrateur",
+      "logout": "Déconnexion...",
+      "login": "Redirection vers la connexion..."
+    },
+    "steps": {
+      "authenticating": "Authentification de l'utilisateur...",
+      "loadingProfile": "Chargement du profil utilisateur...",
+      "preparingUser": "Préparation du tableau de bord utilisateur...",
+      "preparingAdmin": "Préparation du tableau de bord administrateur...",
+      "almostReady": "Presque prêt...",
+      "signingOut": "Déconnexion...",
+      "clearingSession": "Effacement des données de session...",
+      "redirectingLogin": "Redirection vers la connexion..."
+    },
+    "verifying": {
+      "authentication": "Vérification de l'authentification..."
+    }
+  },
   "navigation": {
     "home": "Accueil",
     "about": "À propos",

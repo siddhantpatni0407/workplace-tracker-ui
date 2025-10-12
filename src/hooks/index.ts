@@ -9,6 +9,8 @@ export * from './useFormValidation';
 export * from './useQueryApi';
 export * from './useErrorHandler';
 export * from './useAuth';
+export * from './useAuthRedirect';
+export * from './useTranslation';
 
 // Default export for QueryApiHelpers
 export { default as QueryApiHelpers } from './useQueryApi';

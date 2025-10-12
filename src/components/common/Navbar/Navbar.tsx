@@ -9,6 +9,7 @@ import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES } from "../../../constants";
 import UserNotifications, { NotificationBadge } from "../notifications/UserNotifications";
 import { SessionTimer } from "../sessionTimer/SessionTimer";
+import RedirectingLoader from "../redirectingLoader/RedirectingLoader";
 import "./navbar.css";
 
 interface NavLinkItem {
@@ -31,6 +32,7 @@ const Navbar: React.FC = memo(() => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // refs for outside click handling
   const navRef = useRef<HTMLElement | null>(null);
@@ -102,7 +104,12 @@ const Navbar: React.FC = memo(() => {
 
   const handleLogout = useCallback(() => {
     setActiveDropdown(null);
-    logout();
+    setIsLoggingOut(true);
+    
+    // Show logging out animation for 2 seconds then logout
+    setTimeout(() => {
+      logout();
+    }, 2000);
   }, [logout]);
 
   const handleDropdownToggle = useCallback((dropdownId: string) => {
@@ -228,6 +235,11 @@ const Navbar: React.FC = memo(() => {
   const setDropdownButtonRef = (id: string, el: HTMLButtonElement | null) => {
     dropdownRefs.current[id] = el;
   };
+
+  // Show logout loader if logging out
+  if (isLoggingOut) {
+    return <RedirectingLoader message={t("loading.redirecting.logout")} duration={2000} showProgress={false} />;
+  }
 
   return (
     <nav

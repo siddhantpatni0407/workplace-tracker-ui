@@ -3,9 +3,10 @@ import React, { useState, useRef, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { ErrorBoundary, Alert, Captcha, CaptchaRef } from "../../ui";
-import { useFormValidation } from "../../../hooks";
+import { useFormValidation, useAuthRedirect } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES, AUTH_FIELDS, AUTH_ERRORS } from "../../../constants";
+import RedirectingLoader from "../redirectingLoader/RedirectingLoader";
 import "./login.css";
 
 interface LoginFormData {
@@ -18,6 +19,7 @@ const Login: React.FC = memo(() => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { login } = useAuth();
+  const { isRedirecting, redirectRole, redirectToDashboard } = useAuthRedirect();
   const captchaRef = useRef<CaptchaRef>(null);
   
   // Form state
@@ -90,8 +92,8 @@ const Login: React.FC = memo(() => {
 
       if (response.status === "SUCCESS" && (response.token || response.accessToken)) {
         const role = response.role || "USER";
-        navigate(role === "ADMIN" ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD);
-        // Note: No need for window.location.reload() as AuthContext handles state updates
+        setLoading(false);
+        redirectToDashboard(role); // This will show the RedirectingLoader and navigate after delay
       } else {
         const message = response.message?.toLowerCase().includes("locked")
           ? "Your account is locked due to failed attempts. Reset your password or contact admin."
@@ -106,7 +108,12 @@ const Login: React.FC = memo(() => {
     } finally {
       setLoading(false);
     }
-  }, [canSubmit, validate, errors.captcha, form, navigate, login]);
+  }, [canSubmit, validate, errors.captcha, form, navigate, login, redirectToDashboard]);
+
+  // Show redirecting loader if redirecting
+  if (isRedirecting) {
+    return <RedirectingLoader role={redirectRole} />;
+  }
 
   return (
     <ErrorBoundary>

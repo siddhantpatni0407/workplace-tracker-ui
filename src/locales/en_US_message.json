@@ -46,6 +46,30 @@
       "dec": "Dec"
     }
   },
+  "app": {
+    "title": "Workplace Tracker"
+  },
+  "loading": {
+    "redirecting": {
+      "userDashboard": "Redirecting to User Dashboard",
+      "adminDashboard": "Redirecting to Admin Dashboard",
+      "logout": "Logging out...",
+      "login": "Redirecting to login..."
+    },
+    "steps": {
+      "authenticating": "Authenticating user...",
+      "loadingProfile": "Loading user profile...",
+      "preparingUser": "Preparing user dashboard...",
+      "preparingAdmin": "Preparing admin dashboard...",
+      "almostReady": "Almost ready...",
+      "signingOut": "Signing out...",
+      "clearingSession": "Clearing session data...",
+      "redirectingLogin": "Redirecting to login..."
+    },
+    "verifying": {
+      "authentication": "Verifying authentication..."
+    }
+  },
   "navigation": {
     "home": "Home",
     "about": "About",

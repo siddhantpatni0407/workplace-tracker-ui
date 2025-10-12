@@ -45,6 +45,30 @@
     "optional": "opcional",
     "required": "requerido"
   },
+  "app": {
+    "title": "Rastreador del Lugar de Trabajo"
+  },
+  "loading": {
+    "redirecting": {
+      "userDashboard": "Redirigiendo al Panel de Usuario",
+      "adminDashboard": "Redirigiendo al Panel de Administrador",
+      "logout": "Cerrando sesión...",
+      "login": "Redirigiendo al inicio de sesión..."
+    },
+    "steps": {
+      "authenticating": "Autenticando usuario...",
+      "loadingProfile": "Cargando perfil de usuario...",
+      "preparingUser": "Preparando panel de usuario...",
+      "preparingAdmin": "Preparando panel de administrador...",
+      "almostReady": "Casi listo...",
+      "signingOut": "Cerrando sesión...",
+      "clearingSession": "Borrando datos de sesión...",
+      "redirectingLogin": "Redirigiendo al login..."
+    },
+    "verifying": {
+      "authentication": "Verificando autenticación..."
+    }
+  },
   "validation": {
     "required": "Este campo es requerido",
     "email": "Por favor ingresa un email válido",
