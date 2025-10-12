@@ -298,10 +298,72 @@ const UserNotes: React.FC = () => {
     if (!userId) return;
 
     try {
+      // Format formData for backend compatibility
+      const formatFormData = (data: NoteFormData) => {
+        const formatted = { ...data };
+        
+        // Format reminder date for Java LocalDateTime (YYYY-MM-DD HH:MM:SS)
+        if (formatted.reminderDate && formatted.reminderDate.trim() !== '') {
+          const reminderStr = formatted.reminderDate.trim();
+          
+          // Convert to space-separated format that Java can parse more reliably
+          if (reminderStr.includes('Z') || reminderStr.includes('+')) {
+            // Convert from ISO string to space format
+            const date = new Date(reminderStr);
+            formatted.reminderDate = date.toISOString().slice(0, 19).replace('T', ' ');
+          } else if (reminderStr.includes('T')) {
+            // Convert T format to space format
+            if (reminderStr.length === 16) {
+              // Add seconds if only YYYY-MM-DDTHH:MM format
+              formatted.reminderDate = reminderStr.replace('T', ' ') + ":00";
+            } else if (reminderStr.length === 19) {
+              // Convert YYYY-MM-DDTHH:MM:SS to YYYY-MM-DD HH:MM:SS
+              formatted.reminderDate = reminderStr.replace('T', ' ');
+            } else {
+              // Try to parse and reformat
+              const date = new Date(reminderStr);
+              if (!isNaN(date.getTime())) {
+                formatted.reminderDate = date.toISOString().slice(0, 19).replace('T', ' ');
+              } else {
+                formatted.reminderDate = undefined;
+              }
+            }
+          } else if (reminderStr.includes(' ')) {
+            // Already in space format, ensure seconds are present
+            if (reminderStr.length === 16) {
+              formatted.reminderDate = reminderStr + ":00";
+            } else {
+              formatted.reminderDate = reminderStr;
+            }
+          } else {
+            // Try to parse and reformat
+            const date = new Date(reminderStr);
+            if (!isNaN(date.getTime())) {
+              formatted.reminderDate = date.toISOString().slice(0, 19).replace('T', ' ');
+            } else {
+              formatted.reminderDate = undefined;
+            }
+          }
+        } else {
+          // Empty or undefined, ensure it's undefined for the API
+          formatted.reminderDate = undefined;
+        }
+        
+        return formatted;
+      };
+
       if (editing) {
+        const formattedData = formatFormData(formData);
+        console.log("Sending update data:", formattedData, {
+          reminderDebug: {
+            original: formData.reminderDate,
+            formatted: formattedData.reminderDate,
+            format: 'Space-separated LocalDateTime'
+          }
+        });
         const updateData: NoteUpdateData = {
           userNoteId: editing.userNoteId,
-          ...formData
+          ...formattedData
         };
         const response = await noteService.updateNote(updateData);
         if (response.status === ApiStatus.SUCCESS) {
@@ -313,7 +375,15 @@ const UserNotes: React.FC = () => {
           toast.error(response.message || "Failed to update note");
         }
       } else {
-        const response = await noteService.createNote(userId, formData);
+        const formattedData = formatFormData(formData);
+        console.log("Sending create data:", formattedData, {
+          reminderDebug: {
+            original: formData.reminderDate,
+            formatted: formattedData.reminderDate,
+            format: 'Space-separated LocalDateTime'
+          }
+        });
+        const response = await noteService.createNote(userId, formattedData);
         if (response.status === ApiStatus.SUCCESS) {
           toast.success("Note created successfully");
           setShowModal(false);
@@ -348,6 +418,35 @@ const UserNotes: React.FC = () => {
     }
   };
 
+  // Handle reminder update
+  const handleReminderUpdate = async (note: Note, reminderDate: string | null) => {
+    try {
+      // Format the reminder date for Java LocalDateTime (remove timezone info)
+      let formattedReminderDate: string | undefined = undefined;
+      if (reminderDate) {
+        // Convert to LocalDateTime format (YYYY-MM-DDTHH:MM:SS)
+        const date = new Date(reminderDate);
+        formattedReminderDate = date.toISOString().slice(0, 19); // Remove the .000Z part
+      }
+
+      const updateData: NoteUpdateData = {
+        userNoteId: note.userNoteId,
+        reminderDate: formattedReminderDate
+      };
+      
+      const response = await noteService.updateNote(updateData);
+      if (response.status === ApiStatus.SUCCESS) {
+        toast.success(reminderDate ? "Reminder set successfully" : "Reminder cleared successfully");
+        loadNotes();
+      } else {
+        toast.error(response.message || "Failed to update reminder");
+      }
+    } catch (error) {
+      console.error("Error updating reminder:", error);
+      toast.error("Failed to update reminder");
+    }
+  };
+
   // Toggle note pin
   const handleTogglePin = async (noteId: number) => {
     try {
@@ -373,7 +472,10 @@ const UserNotes: React.FC = () => {
       noteType: NoteType.TEXT,
       color: NoteColor.DEFAULT,
       category: NoteCategory.PERSONAL,
-      priority: NotePriority.MEDIUM
+      priority: NotePriority.MEDIUM,
+      reminderDate: undefined,
+      isPinned: false,
+      isShared: false
     });
     setShowModal(true);
     setTimeout(() => formRef.current?.focus(), 100);
@@ -382,13 +484,28 @@ const UserNotes: React.FC = () => {
   // Open modal for editing note
   const openEditNoteModal = (note: Note) => {
     setEditing(note);
+    
+    // Format the reminder date for the form
+    let formattedReminderDate = note.reminderDate;
+    if (formattedReminderDate) {
+      // Ensure it's in the correct format for the form (YYYY-MM-DDTHH:MM:SS)
+      if (formattedReminderDate.length === 16) {
+        formattedReminderDate = formattedReminderDate + ":00";
+      } else if (formattedReminderDate.includes('Z')) {
+        formattedReminderDate = new Date(formattedReminderDate).toISOString().slice(0, 19);
+      }
+    }
+    
     setFormData({
       noteTitle: note.noteTitle,
       noteContent: note.noteContent,
       noteType: note.noteType,
       color: note.color,
       category: note.category,
-      priority: note.priority
+      priority: note.priority,
+      reminderDate: formattedReminderDate,
+      isPinned: note.isPinned,
+      isShared: note.isShared
     });
     setShowModal(true);
     setTimeout(() => formRef.current?.focus(), 100);
@@ -1500,7 +1617,11 @@ const UserNotes: React.FC = () => {
                       }`}
                     >
                       <div 
-                        className={`card note-card h-100`}
+                        className={`card note-card h-100 ${
+                          note.reminderDate ? 
+                            (new Date(note.reminderDate) <= new Date() ? 'overdue-reminder' : 'has-reminder') 
+                            : ''
+                        }`}
                         style={{ 
                           backgroundColor: NOTE_COLOR_CONFIG[note.color]?.value || '#ffffff',
                           color: NOTE_COLOR_CONFIG[note.color]?.textColor || '#000000',
@@ -1513,15 +1634,36 @@ const UserNotes: React.FC = () => {
                               <h6 className="card-title mb-1">
                                 {note.isPinned && <i className="fa fa-thumbtack me-1 text-warning"></i>}
                                 {favoriteNotes.includes(note.userNoteId) && <i className="fa fa-heart me-1 text-danger"></i>}
+                                {note.reminderDate && (
+                                  <i 
+                                    className={`fa fa-bell me-1 ${
+                                      new Date(note.reminderDate) <= new Date() ? 'text-danger' : 'text-warning'
+                                    }`}
+                                    title={`Reminder: ${formatDate(note.reminderDate)}`}
+                                  ></i>
+                                )}
                                 {note.noteTitle || "Untitled Note"}
                               </h6>
-                              <div className="d-flex gap-1">
+                              <div className="d-flex gap-1 flex-wrap">
                                 <span className={`badge ${NOTE_PRIORITY_CONFIG[note.priority]?.badgeClass || 'bg-secondary'} badge-sm`}>
                                   {NOTE_PRIORITY_CONFIG[note.priority]?.label || note.priority}
                                 </span>
                                 <span className="badge bg-secondary badge-sm">
                                   {NOTE_TYPE_CONFIG[note.noteType]?.label || note.noteType}
                                 </span>
+                                {note.isShared && (
+                                  <span className="badge bg-info badge-sm">
+                                    <i className="fa fa-share me-1"></i>Shared
+                                  </span>
+                                )}
+                                {note.reminderDate && (
+                                  <span className={`badge badge-sm ${
+                                    new Date(note.reminderDate) <= new Date() ? 'bg-danger' : 'bg-warning'
+                                  }`}>
+                                    <i className="fa fa-bell me-1"></i>
+                                    {new Date(note.reminderDate) <= new Date() ? 'Due' : 'Reminder'}
+                                  </span>
+                                )}
                               </div>
                             </div>
                             <div className="dropdown position-relative">
@@ -1587,6 +1729,57 @@ const UserNotes: React.FC = () => {
                                       {favoriteNotes.includes(note.userNoteId) ? "Remove from Favorites" : "Add to Favorites"}
                                     </button>
                                   </li>
+                                  <li>
+                                    <button 
+                                      className="dropdown-item"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        const currentReminder = note.reminderDate ? 
+                                          new Date(note.reminderDate).toISOString().slice(0, 16).replace('T', ' ') :
+                                          new Date(Date.now() + 24*60*60*1000).toISOString().slice(0, 16).replace('T', ' ');
+                                        
+                                        const reminderInput = prompt(
+                                          "Set reminder date and time (YYYY-MM-DD HH:MM):",
+                                          currentReminder
+                                        );
+                                        
+                                        if (reminderInput !== null) {
+                                          if (reminderInput.trim() === "") {
+                                            // Clear reminder if empty string
+                                            handleReminderUpdate(note, null);
+                                          } else {
+                                            const reminderDate = new Date(reminderInput.replace(' ', 'T'));
+                                            if (!isNaN(reminderDate.getTime())) {
+                                              // Format as LocalDateTime (YYYY-MM-DDTHH:MM:SS)
+                                              const localDateTime = reminderInput.replace(' ', 'T') + ":00";
+                                              handleReminderUpdate(note, localDateTime);
+                                            } else {
+                                              toast.error("Invalid date format. Use YYYY-MM-DD HH:MM");
+                                            }
+                                          }
+                                        }
+                                        setOpenDropdown(null);
+                                      }}
+                                    >
+                                      <i className="fa fa-bell text-warning me-2"></i>
+                                      {note.reminderDate ? "Edit Reminder" : "Set Reminder"}
+                                    </button>
+                                  </li>
+                                  {note.reminderDate && (
+                                    <li>
+                                      <button 
+                                        className="dropdown-item"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleReminderUpdate(note, null);
+                                          setOpenDropdown(null);
+                                        }}
+                                      >
+                                        <i className="fa fa-bell-slash text-muted me-2"></i>
+                                        Clear Reminder
+                                      </button>
+                                    </li>
+                                  )}
                                   <li><hr className="dropdown-divider" /></li>
                                   <li>
                                     <button 
@@ -1612,10 +1805,20 @@ const UserNotes: React.FC = () => {
                           </p>
                         </div>
                         <div className="card-footer border-0 p-2">
-                          <small className="text-muted">
-                            <i className="fa fa-clock me-1"></i>
-                            {formatDate(note.modifiedDate || note.createdDate)}
-                          </small>
+                          <div className="d-flex justify-content-between align-items-center">
+                            <small className="text-muted">
+                              <i className="fa fa-clock me-1"></i>
+                              {formatDate(note.modifiedDate || note.createdDate)}
+                            </small>
+                            {note.reminderDate && (
+                              <small className={`${
+                                new Date(note.reminderDate) <= new Date() ? 'text-danger fw-bold' : 'text-warning'
+                              }`}>
+                                <i className="fa fa-bell me-1"></i>
+                                {new Date(note.reminderDate) <= new Date() ? 'Overdue' : 'Reminder Set'}
+                              </small>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1734,6 +1937,64 @@ const UserNotes: React.FC = () => {
                       </select>
                     </div>
 
+                    <div className="col-md-6">
+                      <label className="form-label">
+                        <i className="fa fa-bell me-2 text-warning"></i>
+                        Reminder Date
+                      </label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={formData.reminderDate ? 
+                          (formData.reminderDate.length >= 16 ? 
+                            formData.reminderDate.slice(0, 16) : 
+                            new Date(formData.reminderDate).toISOString().slice(0, 16)
+                          ) : ""}
+                        onChange={(e) => {
+                          const dateValue = e.target.value;
+                          setFormData({ 
+                            ...formData, 
+                            reminderDate: dateValue ? dateValue + ":00" : undefined
+                          });
+                        }}
+                        min={new Date().toISOString().slice(0, 16)}
+                      />
+                      <small className="form-text text-muted">
+                        Set a reminder for this note (optional)
+                      </small>
+                    </div>
+
+                    <div className="col-12">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="isPinned"
+                          checked={formData.isPinned || false}
+                          onChange={(e) => setFormData({ ...formData, isPinned: e.target.checked })}
+                        />
+                        <label className="form-check-label" htmlFor="isPinned">
+                          <i className="fa fa-thumbtack me-2 text-warning"></i>
+                          Pin this note
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="col-12">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="isShared"
+                          checked={formData.isShared || false}
+                          onChange={(e) => setFormData({ ...formData, isShared: e.target.checked })}
+                        />
+                        <label className="form-check-label" htmlFor="isShared">
+                          <i className="fa fa-share me-2 text-info"></i>
+                          Share this note
+                        </label>
+                      </div>
+                    </div>
 
                   </div>
                 </div>
@@ -1803,6 +2064,40 @@ const UserNotes: React.FC = () => {
                       {NOTE_COLOR_CONFIG[viewingNote.color].label}
                     </span>
                   </div>
+
+                  {viewingNote.reminderDate && (
+                    <div className="col-md-6">
+                      <strong>
+                        <i className="fa fa-bell text-warning me-2"></i>
+                        Reminder:
+                      </strong>
+                      <span className="ms-2">
+                        {formatDate(viewingNote.reminderDate)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="col-md-6">
+                    <strong>Status:</strong>
+                    <div className="ms-2">
+                      {viewingNote.isPinned && (
+                        <span className="badge bg-warning me-1">
+                          <i className="fa fa-thumbtack me-1"></i>Pinned
+                        </span>
+                      )}
+                      {viewingNote.isShared && (
+                        <span className="badge bg-info me-1">
+                          <i className="fa fa-share me-1"></i>Shared
+                        </span>
+                      )}
+                      {favoriteNotes.includes(viewingNote.userNoteId) && (
+                        <span className="badge bg-danger me-1">
+                          <i className="fa fa-heart me-1"></i>Favorite
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="col-12">
                     <strong>Content:</strong>
                     <div className="mt-2 p-3 bg-light rounded">

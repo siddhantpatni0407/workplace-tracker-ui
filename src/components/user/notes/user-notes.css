@@ -927,3 +927,43 @@ input[type="text"].form-control {
     font-size: 0.7rem;
   }
 }
+
+/* Reminder Indicators */
+.note-card .fa-bell {
+  animation: none;
+}
+
+.note-card .fa-bell.text-danger {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Reminder datetime input styling */
+.form-control[type="datetime-local"] {
+  color: #495057;
+}
+
+.form-control[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  color: #007bff;
+  opacity: 1;
+}
+
+/* Enhanced note card with reminder */
+.note-card.has-reminder {
+  border-left: 3px solid #ffc107;
+}
+
+.note-card.overdue-reminder {
+  border-left: 3px solid #dc3545;
+}
