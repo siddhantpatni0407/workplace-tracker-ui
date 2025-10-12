@@ -14,6 +14,7 @@ import {
   TaskStatus, 
   TaskPriority, 
   TaskCategory,
+  TaskType,
   TASK_STATUS_CONFIG,
   TASK_PRIORITY_CONFIG
 } from "../../../enums/TaskEnums";
@@ -65,7 +66,14 @@ const UserTasks: React.FC = () => {
     priority: TaskPriority.MEDIUM,
     category: TaskCategory.WORK,
     taskDescription: "",
-    dueDate: ""
+    taskType: undefined,
+    dueDate: "",
+    reminderDate: "",
+    tags: [],
+    parentTaskId: undefined,
+    remarks: "",
+    isRecurring: false,
+    recurringPattern: ""
   });
 
   const formRef = useRef<HTMLInputElement | null>(null);
@@ -368,7 +376,14 @@ const UserTasks: React.FC = () => {
       priority: TaskPriority.MEDIUM,
       category: TaskCategory.WORK,
       taskDescription: "",
-      dueDate: ""
+      taskType: undefined,
+      dueDate: "",
+      reminderDate: "",
+      tags: [],
+      parentTaskId: undefined,
+      remarks: "",
+      isRecurring: false,
+      recurringPattern: ""
     });
     setShowModal(true);
     setTimeout(() => formRef.current?.focus(), 100);
@@ -384,7 +399,14 @@ const UserTasks: React.FC = () => {
       priority: task.priority,
       category: task.category,
       taskDescription: task.taskDescription || "",
-      dueDate: task.dueDate || ""
+      taskType: task.taskType || undefined,
+      dueDate: task.dueDate || "",
+      reminderDate: task.reminderDate || "",
+      tags: task.tags || [],
+      parentTaskId: task.parentTaskId || undefined,
+      remarks: task.remarks || "",
+      isRecurring: task.isRecurring || false,
+      recurringPattern: task.recurringPattern || ""
     });
     setShowModal(true);
     setTimeout(() => formRef.current?.focus(), 100);
@@ -879,8 +901,10 @@ const UserTasks: React.FC = () => {
                     <th>{t('tasks.task')}</th>
                     <th>{t('tasks.priority')}</th>
                     <th>{t('tasks.category')}</th>
+                    <th>{t('tasks.taskType') || 'Type'}</th>
                     <th>{t('tasks.status')}</th>
                     <th>{t('tasks.dueDate')}</th>
+                    <th>{t('tasks.tags') || 'Tags'}</th>
                     <th>{t('tasks.progress')}</th>
                     <th style={{ width: '120px' }}>{t('tasks.actions')}</th>
                   </tr>
@@ -943,6 +967,15 @@ const UserTasks: React.FC = () => {
                         </span>
                       </td>
                       <td>
+                        {task.taskType ? (
+                          <span className={`badge bg-info text-dark`}>
+                            {task.taskType}
+                          </span>
+                        ) : (
+                          <span className="text-muted">-</span>
+                        )}
+                      </td>
+                      <td>
                         <select
                           className={`form-select form-select-sm status-select status-${task.status.toLowerCase().replace('_', '-')}`}
                           value={task.status}
@@ -971,6 +1004,26 @@ const UserTasks: React.FC = () => {
                               <i className="fa fa-calendar-times me-1"></i>
                               {t('tasks.noDueDate')}
                             </span>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="tags-container">
+                          {task.tags && task.tags.length > 0 ? (
+                            <div className="d-flex flex-wrap gap-1">
+                              {task.tags.slice(0, 2).map((tag, index) => (
+                                <span key={index} className="badge bg-secondary text-white small">
+                                  {tag}
+                                </span>
+                              ))}
+                              {task.tags.length > 2 && (
+                                <span className="badge bg-light text-dark small">
+                                  +{task.tags.length - 2}
+                                </span>
+                              )}
+                            </div>
+                          ) : (
+                            <span className="text-muted">-</span>
                           )}
                         </div>
                       </td>
@@ -1082,6 +1135,25 @@ const UserTasks: React.FC = () => {
                           <span className={`badge category-badge category-${(safeTask.category || 'other').toLowerCase()}`}>
                             {safeTask.category || 'Other'}
                           </span>
+                          {safeTask.taskType && (
+                            <span className="badge bg-info text-dark">
+                              {safeTask.taskType}
+                            </span>
+                          )}
+                          {safeTask.tags && safeTask.tags.length > 0 && (
+                            <>
+                              {safeTask.tags.slice(0, 3).map((tag, index) => (
+                                <span key={index} className="badge bg-secondary text-white small">
+                                  {tag}
+                                </span>
+                              ))}
+                              {safeTask.tags.length > 3 && (
+                                <span className="badge bg-light text-dark small">
+                                  +{safeTask.tags.length - 3}
+                                </span>
+                              )}
+                            </>
+                          )}
                         </div>
 
                         <div className="progress mb-2" style={{ height: '6px' }}>
@@ -1310,6 +1382,96 @@ const UserTasks: React.FC = () => {
                         ))}
                       </select>
                     </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label">{t('tasks.taskType') || 'Task Type'}</label>
+                      <select
+                        className="form-select"
+                        value={formData.taskType || ""}
+                        onChange={(e) => setFormData({ ...formData, taskType: e.target.value as TaskType || undefined })}
+                      >
+                        <option value="">{t('tasks.selectTaskType') || 'Select Task Type'}</option>
+                        {Object.values(TaskType).map(type => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label">{t('tasks.reminderDate') || 'Reminder Date'}</label>
+                      <input
+                        type="datetime-local"
+                        className="form-control"
+                        value={formData.reminderDate}
+                        onChange={(e) => setFormData({ ...formData, reminderDate: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <label className="form-label">{t('tasks.parentTask') || 'Parent Task ID'}</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Enter parent task ID"
+                        value={formData.parentTaskId || ""}
+                        onChange={(e) => setFormData({ ...formData, parentTaskId: e.target.value ? parseInt(e.target.value) : undefined })}
+                      />
+                    </div>
+
+                    <div className="col-12">
+                      <label className="form-label">{t('tasks.tags') || 'Tags'}</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter tags separated by commas"
+                        value={formData.tags?.join(', ') || ""}
+                        onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(tag => tag.trim()).filter(tag => tag) })}
+                      />
+                    </div>
+
+                    <div className="col-12">
+                      <label className="form-label">{t('tasks.remarks') || 'Remarks'}</label>
+                      <textarea
+                        className="form-control"
+                        rows={3}
+                        placeholder="Additional remarks or notes"
+                        value={formData.remarks}
+                        onChange={(e) => setFormData({ ...formData, remarks: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="col-md-6">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          checked={formData.isRecurring}
+                          onChange={(e) => setFormData({ ...formData, isRecurring: e.target.checked })}
+                        />
+                        <label className="form-check-label">
+                          {t('tasks.isRecurring') || 'Recurring Task'}
+                        </label>
+                      </div>
+                    </div>
+
+                    {formData.isRecurring && (
+                      <div className="col-md-6">
+                        <label className="form-label">{t('tasks.recurringPattern') || 'Recurring Pattern'}</label>
+                        <select
+                          className="form-select"
+                          value={formData.recurringPattern}
+                          onChange={(e) => setFormData({ ...formData, recurringPattern: e.target.value })}
+                        >
+                          <option value="">{t('tasks.selectPattern') || 'Select Pattern'}</option>
+                          <option value="daily">Daily</option>
+                          <option value="weekly">Weekly</option>
+                          <option value="monthly">Monthly</option>
+                          <option value="yearly">Yearly</option>
+                        </select>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="modal-footer">
@@ -1387,6 +1549,55 @@ const UserTasks: React.FC = () => {
                     <strong>{t('tasks.description')}:</strong>
                     <p className="mt-2">{viewingTask.taskDescription || t('tasks.noDescription')}</p>
                   </div>
+                  {viewingTask.taskType && (
+                    <div className="col-md-6">
+                      <strong>{t('tasks.taskType') || 'Task Type'}:</strong>
+                      <span className="badge bg-info text-dark ms-2">
+                        {viewingTask.taskType}
+                      </span>
+                    </div>
+                  )}
+                  {viewingTask.reminderDate && (
+                    <div className="col-md-6">
+                      <strong>{t('tasks.reminderDate') || 'Reminder Date'}:</strong>
+                      <span className="ms-2">{formatDate(viewingTask.reminderDate)}</span>
+                    </div>
+                  )}
+                  {viewingTask.tags && viewingTask.tags.length > 0 && (
+                    <div className="col-12">
+                      <strong>{t('tasks.tags') || 'Tags'}:</strong>
+                      <div className="mt-2">
+                        {viewingTask.tags.map((tag, index) => (
+                          <span key={index} className="badge bg-secondary text-white me-2 mb-1">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {viewingTask.parentTaskId && (
+                    <div className="col-md-6">
+                      <strong>{t('tasks.parentTask') || 'Parent Task ID'}:</strong>
+                      <span className="ms-2">{viewingTask.parentTaskId}</span>
+                    </div>
+                  )}
+                  {viewingTask.remarks && (
+                    <div className="col-12">
+                      <strong>{t('tasks.remarks') || 'Remarks'}:</strong>
+                      <p className="mt-2">{viewingTask.remarks}</p>
+                    </div>
+                  )}
+                  {viewingTask.isRecurring && (
+                    <div className="col-md-6">
+                      <strong>{t('tasks.recurringPattern') || 'Recurring Pattern'}:</strong>
+                      <span className="ms-2">
+                        <span className="badge bg-warning text-dark">
+                          <i className="fa fa-repeat me-1"></i>
+                          {viewingTask.recurringPattern || 'Yes'}
+                        </span>
+                      </span>
+                    </div>
+                  )}
                   <div className="col-md-6">
                     <strong>{t('tasks.created')}:</strong>
                     <span className="ms-2">{formatDate(viewingTask.createdDate)}</span>
