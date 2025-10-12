@@ -52,9 +52,9 @@ class TaskService {
   }
 
   // Get a specific task by ID
-  async getTaskById(taskId: number): Promise<TaskResponse> {
+  async getTaskById(userTaskId: number): Promise<TaskResponse> {
     try {
-      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_BY_ID}/${taskId}`);
+      const response = await axiosInstance.get(`${API_ENDPOINTS.TASKS.GET_BY_ID}/${userTaskId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching task:', error);
@@ -87,7 +87,7 @@ class TaskService {
   async updateTask(taskData: TaskUpdateData): Promise<TaskResponse> {
     try {
       const response = await axiosInstance.put(
-        `${API_ENDPOINTS.TASKS.UPDATE}/${taskData.taskId}`,
+        `${API_ENDPOINTS.TASKS.UPDATE}/${taskData.userTaskId}`,
         taskData
       );
       return response.data;
@@ -102,9 +102,9 @@ class TaskService {
   }
 
   // Delete a task
-  async deleteTask(taskId: number): Promise<TaskResponse> {
+  async deleteTask(userTaskId: number): Promise<TaskResponse> {
     try {
-      const response = await axiosInstance.delete(`${API_ENDPOINTS.TASKS.DELETE}/${taskId}`);
+      const response = await axiosInstance.delete(`${API_ENDPOINTS.TASKS.DELETE}/${userTaskId}`);
       return response.data;
     } catch (error) {
       console.error('Error deleting task:', error);
@@ -117,10 +117,10 @@ class TaskService {
   }
 
   // Update task status
-  async updateTaskStatus(taskId: number, status: TaskStatus): Promise<TaskResponse> {
+  async updateTaskStatus(userTaskId: number, status: TaskStatus): Promise<TaskResponse> {
     try {
       const response = await axiosInstance.patch(
-        `${API_ENDPOINTS.TASKS.UPDATE_STATUS}/${taskId}`,
+        `${API_ENDPOINTS.TASKS.UPDATE_STATUS}/${userTaskId}`,
         { status }
       );
       return response.data;
@@ -135,10 +135,10 @@ class TaskService {
   }
 
   // Update task priority
-  async updateTaskPriority(taskId: number, priority: TaskPriority): Promise<TaskResponse> {
+  async updateTaskPriority(userTaskId: number, priority: TaskPriority): Promise<TaskResponse> {
     try {
       const response = await axiosInstance.patch(
-        `${API_ENDPOINTS.TASKS.UPDATE_PRIORITY}/${taskId}`,
+        `${API_ENDPOINTS.TASKS.UPDATE_PRIORITY}/${userTaskId}`,
         { priority }
       );
       return response.data;
@@ -294,9 +294,9 @@ class TaskService {
   }
 
   // Duplicate a task
-  async duplicateTask(taskId: number): Promise<TaskCreateResponse> {
+  async duplicateTask(userTaskId: number): Promise<TaskCreateResponse> {
     try {
-      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.DUPLICATE}/${taskId}`);
+      const response = await axiosInstance.post(`${API_ENDPOINTS.TASKS.DUPLICATE}/${userTaskId}`);
       return response.data;
     } catch (error) {
       console.error('Error duplicating task:', error);

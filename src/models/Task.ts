@@ -3,7 +3,7 @@ import { ApiResponse } from './Api';
 
 // Base task interface
 export interface BaseTask {
-  taskId?: number;
+  userTaskId?: number;
   userId: number;
   taskTitle: string;
   taskDescription?: string;
@@ -12,16 +12,12 @@ export interface BaseTask {
   priority: TaskPriority;
   category?: string;
   taskType?: TaskType;
-  estimatedHours?: number;
-  actualHours?: number;
   dueDate?: string; // yyyy-MM-dd format
   reminderDate?: string; // yyyy-MM-dd HH:mm format
   tags?: string[];
   parentTaskId?: number;
-  assignedTo?: number;
   createdBy?: number;
   remarks?: string;
-  attachments?: string[];
   isRecurring?: boolean;
   recurringPattern?: string;
   createdAt?: string;
@@ -30,7 +26,7 @@ export interface BaseTask {
 
 // Task interface with required fields
 export interface Task extends BaseTask {
-  taskId: number;
+  userTaskId: number;
   createdAt: string;
   updatedAt?: string;
 }
@@ -44,22 +40,18 @@ export interface TaskFormData {
   priority: TaskPriority;
   category?: string;
   taskType?: TaskType;
-  estimatedHours?: number;
-  actualHours?: number;
   dueDate?: string;
   reminderDate?: string;
   tags?: string[];
   parentTaskId?: number;
-  assignedTo?: number;
   remarks?: string;
-  attachments?: string[];
   isRecurring?: boolean;
   recurringPattern?: string;
 }
 
 // Task update interface
 export interface TaskUpdateData extends TaskFormData {
-  taskId: number;
+  userTaskId: number;
 }
 
 // Task filter parameters
@@ -68,7 +60,6 @@ export interface TaskFilterParams {
   priority?: TaskPriority;
   category?: string;
   taskType?: TaskType;
-  assignedTo?: number;
   createdBy?: number;
   startDate?: string;
   endDate?: string;
@@ -190,12 +181,12 @@ export interface TaskCreateResponse extends ApiResponse<Task> {
 
 // Bulk task operations
 export interface BulkTaskUpdateData {
-  taskIds: number[];
+  userTaskIds: number[];
   updates: Partial<TaskFormData>;
 }
 
 export interface BulkTaskDeleteData {
-  taskIds: number[];
+  userTaskIds: number[];
 }
 
 export type BulkTaskResponse = ApiResponse<{

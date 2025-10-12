@@ -193,7 +193,7 @@ const UserTasks: React.FC = () => {
     try {
       if (editing) {
         const updateData: TaskUpdateData = {
-          taskId: editing.taskId,
+          userTaskId: editing.userTaskId,
           ...formData
         };
         const response = await taskService.updateTask(updateData);
@@ -222,9 +222,9 @@ const UserTasks: React.FC = () => {
   };
 
   // Handle task status change
-  const handleStatusChange = async (taskId: number, newStatus: TaskStatus) => {
+  const handleStatusChange = async (userTaskId: number, newStatus: TaskStatus) => {
     try {
-      const response = await taskService.updateTaskStatus(taskId, newStatus);
+      const response = await taskService.updateTaskStatus(userTaskId, newStatus);
       if (response.status === ApiStatus.SUCCESS) {
         toast.success(`Task marked as ${TASK_STATUS_CONFIG[newStatus].label.toLowerCase()}`);
         loadTasks();
@@ -242,7 +242,7 @@ const UserTasks: React.FC = () => {
     if (!deletingTask) return;
     
     try {
-      const response = await taskService.deleteTask(deletingTask.taskId);
+      const response = await taskService.deleteTask(deletingTask.userTaskId);
       if (response.status === ApiStatus.SUCCESS) {
         toast.success("Task deleted successfully");
         setShowDeleteModal(false);
@@ -336,8 +336,8 @@ const UserTasks: React.FC = () => {
 
   const handleBulkStatusChange = async (newStatus: TaskStatus) => {
     try {
-      for (const taskId of selectedTasks) {
-        await taskService.updateTaskStatus(taskId, newStatus);
+      for (const userTaskId of selectedTasks) {
+        await taskService.updateTaskStatus(userTaskId, newStatus);
       }
       toast.success(`${selectedTasks.length} tasks updated to ${TASK_STATUS_CONFIG[newStatus].label}`);
       setSelectedTasks([]);
@@ -351,11 +351,11 @@ const UserTasks: React.FC = () => {
 
   const handleBulkPriorityChange = async (newPriority: TaskPriority) => {
     try {
-      for (const taskId of selectedTasks) {
-        const task = tasks.find(t => t.taskId === taskId);
+      for (const userTaskId of selectedTasks) {
+        const task = tasks.find(t => t.userTaskId === userTaskId);
         if (task) {
           const updateData: TaskUpdateData = {
-            taskId: task.taskId,
+            userTaskId: task.userTaskId,
             taskTitle: task.taskTitle,
             taskDate: task.taskDate,
             status: task.status,
@@ -380,8 +380,8 @@ const UserTasks: React.FC = () => {
   const handleBulkDelete = async () => {
     if (window.confirm(`Are you sure you want to delete ${selectedTasks.length} selected tasks?`)) {
       try {
-        for (const taskId of selectedTasks) {
-          await taskService.deleteTask(taskId);
+        for (const userTaskId of selectedTasks) {
+          await taskService.deleteTask(userTaskId);
         }
         toast.success(`${selectedTasks.length} tasks deleted`);
         setSelectedTasks([]);
@@ -768,7 +768,7 @@ const UserTasks: React.FC = () => {
                         checked={selectedTasks.length === filteredTasks.length}
                         onChange={(e) => {
                           if (e.target.checked) {
-                            setSelectedTasks(filteredTasks.map(t => t.taskId));
+                            setSelectedTasks(filteredTasks.map(t => t.userTaskId));
                           } else {
                             setSelectedTasks([]);
                           }
@@ -786,17 +786,17 @@ const UserTasks: React.FC = () => {
                 </thead>
                 <tbody>
                   {filteredTasks.map((task) => (
-                    <tr key={task.taskId} className={`${isOverdue(task) ? "table-danger" : ""} task-row`}>
+                    <tr key={task.userTaskId} className={`${isOverdue(task) ? "table-danger" : ""} task-row`}>
                       <td>
                         <input
                           type="checkbox"
                           className="form-check-input"
-                          checked={selectedTasks.includes(task.taskId)}
+                          checked={selectedTasks.includes(task.userTaskId)}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              setSelectedTasks([...selectedTasks, task.taskId]);
+                              setSelectedTasks([...selectedTasks, task.userTaskId]);
                             } else {
-                              setSelectedTasks(selectedTasks.filter(id => id !== task.taskId));
+                              setSelectedTasks(selectedTasks.filter(id => id !== task.userTaskId));
                             }
                           }}
                         />
@@ -845,7 +845,7 @@ const UserTasks: React.FC = () => {
                         <select
                           className={`form-select form-select-sm status-select status-${task.status.toLowerCase().replace('_', '-')}`}
                           value={task.status}
-                          onChange={(e) => handleStatusChange(task.taskId, e.target.value as TaskStatus)}
+                          onChange={(e) => handleStatusChange(task.userTaskId, e.target.value as TaskStatus)}
                         >
                           {Object.values(TaskStatus).map(status => (
                             <option key={status} value={status}>
@@ -914,19 +914,19 @@ const UserTasks: React.FC = () => {
             <div className="p-3">
               <div className="row g-3">
                 {filteredTasks.map((task) => (
-                  <div key={task.taskId} className="col-lg-4 col-md-6">
-                    <div className={`card task-card h-100 ${isOverdue(task) ? 'border-danger' : ''} ${selectedTasks.includes(task.taskId) ? 'selected' : ''}`}>
+                  <div key={task.userTaskId} className="col-lg-4 col-md-6">
+                    <div className={`card task-card h-100 ${isOverdue(task) ? 'border-danger' : ''} ${selectedTasks.includes(task.userTaskId) ? 'selected' : ''}`}>
                       <div className="card-header d-flex justify-content-between align-items-center p-2">
                         <div className="form-check">
                           <input
                             type="checkbox"
                             className="form-check-input"
-                            checked={selectedTasks.includes(task.taskId)}
+                            checked={selectedTasks.includes(task.userTaskId)}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                setSelectedTasks([...selectedTasks, task.taskId]);
+                                setSelectedTasks([...selectedTasks, task.userTaskId]);
                               } else {
-                                setSelectedTasks(selectedTasks.filter(id => id !== task.taskId));
+                                setSelectedTasks(selectedTasks.filter(id => id !== task.userTaskId));
                               }
                             }}
                           />
@@ -995,7 +995,7 @@ const UserTasks: React.FC = () => {
                           <select
                             className={`form-select form-select-sm status-select status-${task.status.toLowerCase().replace('_', '-')}`}
                             value={task.status}
-                            onChange={(e) => handleStatusChange(task.taskId, e.target.value as TaskStatus)}
+                            onChange={(e) => handleStatusChange(task.userTaskId, e.target.value as TaskStatus)}
                             style={{ width: 'auto', fontSize: '0.75rem' }}
                           >
                             {Object.values(TaskStatus).map(status => (
@@ -1037,7 +1037,7 @@ const UserTasks: React.FC = () => {
                     .filter(task => task.dueDate)
                     .sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || ''))
                     .map((task) => (
-                      <div key={task.taskId} className={`timeline-item ${isOverdue(task) ? 'overdue' : ''}`}>
+                      <div key={task.userTaskId} className={`timeline-item ${isOverdue(task) ? 'overdue' : ''}`}>
                         <div className="timeline-marker">
                           <i className={`fa ${getTaskIcon(task.category)}`}></i>
                         </div>
@@ -1059,7 +1059,7 @@ const UserTasks: React.FC = () => {
                             <select
                               className={`form-select form-select-sm status-select status-${task.status.toLowerCase().replace('_', '-')} ms-2`}
                               value={task.status}
-                              onChange={(e) => handleStatusChange(task.taskId, e.target.value as TaskStatus)}
+                              onChange={(e) => handleStatusChange(task.userTaskId, e.target.value as TaskStatus)}
                               style={{ width: 'auto', display: 'inline-block' }}
                             >
                               {Object.values(TaskStatus).map(status => (
@@ -1076,7 +1076,7 @@ const UserTasks: React.FC = () => {
                     <div className="mt-4">
                       <h6 className="text-muted">{t('tasks.tasksWithoutDueDates')}:</h6>
                       {filteredTasks.filter(task => !task.dueDate).map(task => (
-                        <div key={task.taskId} className="timeline-item no-date">
+                        <div key={task.userTaskId} className="timeline-item no-date">
                           <div className="timeline-marker">
                             <i className={`fa ${getTaskIcon(task.category)}`}></i>
                           </div>
