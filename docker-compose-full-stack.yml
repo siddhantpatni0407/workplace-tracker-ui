@@ -1,0 +1,169 @@
+version: "3.9"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: workplace-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-root}
+      POSTGRES_DB: ${DB_NAME:-workplace_tracker_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${DB_EXTERNAL_PORT:-5432}:5432"
+    networks:
+      - workplace-tracker-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-workplace_tracker_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Spring Boot Application
+  workplace-tracker-backend:
+    image: siddhantpatni0407/workplace-tracker-service:latest
+    container_name: workplace-tracker-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8010}:8010"
+    networks:
+      - workplace-tracker-network
+    environment:
+      # Spring Configuration
+      SPRING_APPLICATION_NAME: ${SPRING_APPLICATION_NAME:-workplace-tracker-service}
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-}
+      SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING: ${SPRING_MAIN_ALLOW_BEAN_DEFINITION_OVERRIDING:-true}
+      SPRING_BANNER_LOCATION: ${SPRING_BANNER_LOCATION:-classpath:banner.txt}
+
+      # Security Configuration
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      ADMIN_ROLES: ${ADMIN_ROLES:-ACTUATOR_ADMIN}
+
+      # Liquibase Configuration
+      LIQUIBASE_CHANGE_LOG: ${LIQUIBASE_CHANGE_LOG:-classpath:db/changelog/db.changelog-master.xml}
+      LIQUIBASE_ENABLED: ${LIQUIBASE_ENABLED:-true}
+
+      # Database Configuration
+      DATASOURCE_DRIVER_CLASS_NAME: ${DATASOURCE_DRIVER_CLASS_NAME:-org.postgresql.Driver}
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${DB_NAME:-workplace_tracker_db}"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_NAME: ${DB_NAME:-workplace_tracker_db}
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
+      DATASOURCE_CHARSET: ${DATASOURCE_CHARSET:-UTF-8}
+
+      # Hikari Connection Pool
+      HIKARI_MINIMUM_IDLE: ${HIKARI_MINIMUM_IDLE:-2}
+      HIKARI_MAXIMUM_POOL_SIZE: ${HIKARI_MAXIMUM_POOL_SIZE:-25}
+      HIKARI_IDLE_TIMEOUT: ${HIKARI_IDLE_TIMEOUT:-10000}
+      HIKARI_POOL_NAME: ${HIKARI_POOL_NAME:-HikariCP}
+      HIKARI_MAX_LIFETIME: ${HIKARI_MAX_LIFETIME:-7200000}
+      HIKARI_CONNECTION_TIMEOUT: ${HIKARI_CONNECTION_TIMEOUT:-30000}
+      HIKARI_SCHEMA: ${HIKARI_SCHEMA:-dev}
+
+      # JPA Configuration
+      JPA_SHOW_SQL: ${JPA_SHOW_SQL:-false}
+      JPA_DEFAULT_SCHEMA: ${JPA_DEFAULT_SCHEMA:-dev}
+      JPA_GLOBALLY_QUOTED_IDENTIFIERS: ${JPA_GLOBALLY_QUOTED_IDENTIFIERS:-true}
+      JPA_DIALECT: ${JPA_DIALECT:-org.hibernate.dialect.PostgreSQLDialect}
+      JPA_FORMAT_SQL: ${JPA_FORMAT_SQL:-true}
+      JPA_JDBC_TIME_ZONE: ${JPA_JDBC_TIME_ZONE:-Asia/Kolkata}
+      JPA_JDBC_LOB_NON_CONTEXTUAL_CREATION: ${JPA_JDBC_LOB_NON_CONTEXTUAL_CREATION:-true}
+
+      # Encryption Configuration
+      AES_ALGORITHM: ${AES_ALGORITHM:-AES}
+      AES_SECRET_KEY: ${AES_SECRET_KEY:-Xf9aLp3qzT7vN2sYgW5KbVc6Rm8QJ0dP}
+
+      # Application Configuration
+      DAILY_VIEW_MAX_RANGE: ${DAILY_VIEW_MAX_RANGE:-366}
+      BACKUP_DIRECTORY: ${BACKUP_DIRECTORY:-/opt/backups}
+      BACKUP_PREFIX: ${BACKUP_PREFIX:-db_backup}
+      BACKUP_DEFAULT_DB: ${BACKUP_DEFAULT_DB:-workplace_tracker_db}
+
+      # JWT Configuration
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-my-super-secret-key-which-is-at-least-32-characters-long!}
+      APP_JWT_EXPIRATION_MS: ${APP_JWT_EXPIRATION_MS:-3600000}
+      APP_JWT_ALLOWED_CLOCK_SKEW_SEC: ${APP_JWT_ALLOWED_CLOCK_SKEW_SEC:-10}
+
+      # UI Configuration (for CORS)
+      UI_HOST: ${UI_HOST:-http://localhost:3010,http://127.0.0.1:3010,http://workplace-tracker-frontend:80}
+      UI_PORT: ${UI_PORT:-3010}
+
+      # Server Configuration
+      SERVER_PORT: ${SERVER_PORT:-8010}
+
+      # Logging Configuration
+      LOGGING_LEVEL_ROOT: ${LOGGING_LEVEL_ROOT:-INFO}
+      LOGGING_LEVEL_COM_SID: ${LOGGING_LEVEL_COM_SID:-INFO}
+      LOGGING_LEVEL_LIQUIBASE: ${LOGGING_LEVEL_LIQUIBASE:-DEBUG}
+      LOGGING_LEVEL_SPRING_LIQUIBASE: ${LOGGING_LEVEL_SPRING_LIQUIBASE:-DEBUG}
+
+      # Java Configuration
+      JAVA_OPTS: ${JAVA_OPTS:-"-Xms256m -Xmx512m -Duser.timezone=Asia/Kolkata"}
+
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8010/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 30s
+
+  # Frontend React Application
+  workplace-tracker-frontend:
+    image: siddhantpatni0407/workplace-tracker-ui:latest
+    container_name: workplace-tracker-frontend
+    depends_on:
+      workplace-tracker-backend:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-3010}:80"
+    networks:
+      - workplace-tracker-network
+    environment:
+      # Frontend Environment Variables
+      NODE_ENV: ${NODE_ENV:-production}
+      REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:8010}
+      REACT_APP_API_BASE_PATH: ${REACT_APP_API_BASE_PATH:-/api}
+      REACT_APP_ENVIRONMENT: ${REACT_APP_ENVIRONMENT:-production}
+
+      # Frontend Feature Flags
+      REACT_APP_ENABLE_DEBUG: ${REACT_APP_ENABLE_DEBUG:-false}
+      REACT_APP_ENABLE_ANALYTICS: ${REACT_APP_ENABLE_ANALYTICS:-true}
+
+      # Frontend Branding
+      REACT_APP_TITLE: ${REACT_APP_TITLE:-Workplace Tracker}
+      REACT_APP_VERSION: ${REACT_APP_VERSION:-1.0.0}
+
+      # Frontend Security
+      REACT_APP_ENABLE_HTTPS: ${REACT_APP_ENABLE_HTTPS:-false}
+      REACT_APP_SESSION_TIMEOUT: ${REACT_APP_SESSION_TIMEOUT:-3600}
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.workplace-tracker-frontend.rule=Host(`${FRONTEND_DOMAIN:-localhost}`)"
+      - "traefik.http.services.workplace-tracker-frontend.loadbalancer.server.port=80"
+
+networks:
+  workplace-tracker-network:
+    driver: bridge
+    name: workplace-tracker-net
+
+volumes:
+  postgres_data:
+    driver: local
+    name: workplace-tracker-postgres-data
