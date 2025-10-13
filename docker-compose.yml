@@ -1,0 +1,91 @@
+version: '3.8'
+
+services:
+  # Frontend React Application
+  workplace-tracker-ui:
+    image: siddhantpatni0407/workplace-tracker-ui:latest
+    container_name: workplace-tracker-frontend
+    ports:
+      - "${FRONTEND_PORT:-3010}:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    networks:
+      - workplace-tracker-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.workplace-tracker.rule=Host(`localhost`)"
+      - "traefik.http.services.workplace-tracker.loadbalancer.server.port=80"
+
+  # Optional: Add a reverse proxy (uncomment if needed)
+  # nginx-proxy:
+  #   image: nginx:alpine
+  #   container_name: workplace-tracker-proxy
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx-proxy.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - workplace-tracker-ui
+  #   networks:
+  #     - workplace-tracker-network
+  #   restart: unless-stopped
+
+  # Optional: Database (uncomment and configure if your app needs a database)
+  # postgresql:
+  #   image: postgres:15-alpine
+  #   container_name: workplace-tracker-db
+  #   environment:
+  #     POSTGRES_DB: workplace_tracker
+  #     POSTGRES_USER: ${DB_USER:-postgres}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-password}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - workplace-tracker-network
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+
+  # Optional: Redis for caching (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: workplace-tracker-cache
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - workplace-tracker-network
+  #   restart: unless-stopped
+  #   command: redis-server --appendonly yes
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 3
+
+networks:
+  workplace-tracker-network:
+    driver: bridge
+    name: workplace-tracker-net
+
+# Uncomment volumes if you enable database or cache services
+# volumes:
+#   postgres_data:
+#     driver: local
+#   redis_data:
+#     driver: local

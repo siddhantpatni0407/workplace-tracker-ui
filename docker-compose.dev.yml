@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  workplace-tracker-ui:
+    image: siddhantpatni0407/workplace-tracker-ui:latest
+    container_name: workplace-tracker-dev
+    ports:
+      - "${FRONTEND_PORT:-3010}:80"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+    networks:
+      - workplace-tracker-dev
+    volumes:
+      # Mount logs for debugging (optional)
+      - ./logs:/var/log/nginx:rw
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Development tools container (optional)
+  dev-tools:
+    image: node:20-alpine
+    container_name: workplace-tracker-devtools
+    working_dir: /app
+    volumes:
+      - .:/app:rw
+      - /app/node_modules
+    command: tail -f /dev/null  # Keep container running
+    networks:
+      - workplace-tracker-dev
+    profiles:
+      - dev-tools  # Only start when --profile dev-tools is specified
+
+networks:
+  workplace-tracker-dev:
+    driver: bridge
+    name: workplace-tracker-development
