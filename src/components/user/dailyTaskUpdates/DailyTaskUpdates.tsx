@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from '../../../hooks/useTranslation';
-import Header from '../../common/header/Header';
+import Header from '../../common/Header/Header';
 import { useAuth } from '../../../context/AuthContext';
 import { toast } from 'react-toastify';
 import { dailyTaskService, dateUtils, DailyTaskApiResponse } from '../../../services/dailyTaskService';

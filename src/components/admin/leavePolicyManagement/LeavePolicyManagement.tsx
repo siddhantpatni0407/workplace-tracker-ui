@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { LeavePolicyDTO } from "../../../types/leavePolicy";
 import { ErrorBoundary } from "../../ui";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import leavePolicyService from "../../../services/leavePolicyService";
 import "./LeavePolicyManagement.css";
 

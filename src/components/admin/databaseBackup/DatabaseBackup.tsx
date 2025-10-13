@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { ErrorBoundary } from "../../ui";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import backupService, { BackupRecord, BackupOptions } from "../../../services/backupService";
 import "./DatabaseBackup.css";
 

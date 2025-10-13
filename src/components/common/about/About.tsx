@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES } from "../../../constants";
-import "./about.css";
+import "./About.css";
 
 const About: React.FC = () => {
   const { t } = useTranslation();

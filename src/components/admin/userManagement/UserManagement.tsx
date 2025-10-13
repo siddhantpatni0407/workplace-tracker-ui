@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState, useRef, useCallback } from "react"
 import axiosInstance from "../../../services/axiosInstance";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { ErrorBoundary } from "../../ui";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import { UserRole, SortDirection } from "../../../enums";
 import { useDebounce } from "../../../hooks";
 import { DEBOUNCE, PAGINATION } from "../../../constants/ui";

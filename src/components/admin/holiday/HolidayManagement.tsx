@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { parseISO, format } from "date-fns";
 import { toast } from "react-toastify";
 import { ErrorBoundary } from "../../ui";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import { HolidayDTO } from "../../../types/holiday";
 import { ResponseDTO } from "../../../types/api";
 import { MonthOption } from "../../../models";

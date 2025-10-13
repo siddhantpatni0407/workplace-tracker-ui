@@ -7,7 +7,7 @@ import { ApiResponse } from "../../../models";
 import { ErrorBoundary, ErrorMessage, LoadingSpinner } from "../../ui";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { getI18nCode, getLanguageFromI18nCode } from "../../../utils/languageMapping";
-import Header from "../header/Header";
+import Header from "../Header/Header";
 import "./user-settings.css";
 
 import {

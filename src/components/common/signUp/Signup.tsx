@@ -8,7 +8,7 @@ import { ErrorBoundary, Alert, Captcha, FormInput, Button, FormProgress, Passwor
 import { useFormValidation } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES, AUTH_FIELDS, AUTH_VALIDATION, COUNTRY_CODES, AUTH_ERRORS, SIGNUP_STEPS, PASSWORD_STRENGTH } from "../../../constants";
-import "./signup.css";
+import "./Signup.css";
 
 interface FormData {
   name: string;

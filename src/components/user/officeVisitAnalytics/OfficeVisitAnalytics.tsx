@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import axiosInstance from "../../../services/axiosInstance";

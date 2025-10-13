@@ -10,7 +10,7 @@ import { ROUTES } from "../../../constants";
 import UserNotifications, { NotificationBadge } from "../notifications/UserNotifications";
 import { SessionTimer } from "../sessionTimer/SessionTimer";
 import RedirectingLoader from "../redirectingLoader/RedirectingLoader";
-import "./navbar.css";
+import "./Navbar.css";
 
 interface NavLinkItem {
   to: string;

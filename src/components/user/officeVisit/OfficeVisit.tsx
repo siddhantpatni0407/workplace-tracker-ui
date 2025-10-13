@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { format, parseISO } from "date-fns";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import { useAuth } from "../../../context/AuthContext";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import axiosInstance from "../../../services/axiosInstance";

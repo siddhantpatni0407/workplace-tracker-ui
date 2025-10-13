@@ -6,7 +6,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { ApiResponse } from "../../../models/Api";
 import { UserProfileData } from "../../../models/User";
 import { ErrorBoundary, ErrorMessage, LoadingSpinner } from "../../ui";
-import Header from "../header/Header";
+import Header from "../Header/Header";
 import { useTranslation } from "../../../hooks/useTranslation";
 import SearchableSelect, { Option } from "../../ui/SearchableSelect";
 import { locationService } from "../../../services/locationService";

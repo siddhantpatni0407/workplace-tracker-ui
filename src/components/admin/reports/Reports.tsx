@@ -4,7 +4,7 @@ import axiosInstance from "../../../services/axiosInstance";
 import { API_ENDPOINTS } from "../../../constants/apiEndpoints";
 import { useAuth } from "../../../context/AuthContext";
 import { ErrorBoundary } from "../../ui";
-import Header from "../../common/header/Header";
+import Header from "../../common/Header/Header";
 import UserAnalyticsCharts, { UserRow } from "./UserAnalyticsCharts";
 import "./Reports.css";
 

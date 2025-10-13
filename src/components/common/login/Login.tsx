@@ -7,7 +7,7 @@ import { useFormValidation, useAuthRedirect } from "../../../hooks";
 import { useTranslation } from "../../../hooks/useTranslation";
 import { ROUTES, AUTH_FIELDS, AUTH_ERRORS } from "../../../constants";
 import RedirectingLoader from "../redirectingLoader/RedirectingLoader";
-import "./login.css";
+import "./Login.css";
 
 interface LoginFormData {
   email: string;

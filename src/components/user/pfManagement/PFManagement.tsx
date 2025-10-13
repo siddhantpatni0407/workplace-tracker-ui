@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useTranslation } from '../../../hooks/useTranslation';
 import { PF_LINKS } from '../../../constants/app';
-import Header from '../../common/header/Header';
+import Header from '../../common/Header/Header';
 import './pf-management.css';
 
 const PFManagement: React.FC = () => {
