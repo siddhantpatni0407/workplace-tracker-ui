@@ -2,6 +2,7 @@
 import React, { memo, useMemo, useCallback, useState, useRef, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { usePlatformAuth } from "../../../context/PlatformAuthContext";
 import { UserRole } from "../../../enums";
 import ThemeToggle from "../theme/ThemeToggle";
 import LanguageSelector from "../language-selector/LanguageSelector";
@@ -25,6 +26,7 @@ interface DropdownItem extends NavLinkItem {
 
 const Navbar: React.FC = memo(() => {
   const { user, logout } = useAuth();
+  const { platformUser, platformLogout, isPlatformAuthenticated } = usePlatformAuth();
   const { t } = useTranslation();
   const location = useLocation();
 
@@ -33,6 +35,7 @@ const Navbar: React.FC = memo(() => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutRole, setLogoutRole] = useState<string | null>(null);
 
   // refs for outside click handling
   const navRef = useRef<HTMLElement | null>(null);
@@ -75,15 +78,38 @@ const Navbar: React.FC = memo(() => {
     [t]
   );
 
+  const platformProfileNavItems = useMemo<DropdownItem[]>(
+    () => [
+      { to: ROUTES.PLATFORM.PROFILE, label: t("navigation.myProfile"), icon: "bi-person-badge-fill" },
+      { to: ROUTES.PLATFORM.SETTINGS, label: t("navigation.settings"), icon: "bi-sliders2-vertical" }, 
+      { to: "", label: "", icon: "", divider: true },
+      { to: ROUTES.PLATFORM.HOME, label: t("navigation.logout"), icon: "bi-box-arrow-right" }
+    ],
+    [t]
+  );
+
+  // Check if we're on a platform page
+  const isPlatformContext = useMemo(() => {
+    return location.pathname.startsWith('/platform');
+  }, [location.pathname]);
+
   const brandLink = useMemo(() => {
+    if (isPlatformContext) {
+      // If platform user is logged in, show platform dashboard, otherwise platform home
+      return isPlatformAuthenticated ? ROUTES.PLATFORM.DASHBOARD : ROUTES.PLATFORM.HOME;
+    }
     if (!user) return ROUTES.PUBLIC.HOME;
     return user.role === UserRole.ADMIN ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD;
-  }, [user]);
+  }, [user, isPlatformContext, isPlatformAuthenticated]);
 
   const homeLink = useMemo(() => {
+    if (isPlatformContext) {
+      // If platform user is logged in, show platform dashboard, otherwise show platform home
+      return isPlatformAuthenticated ? ROUTES.PLATFORM.DASHBOARD : ROUTES.PLATFORM.HOME;
+    }
     if (!user) return ROUTES.PUBLIC.HOME;
     return user.role === UserRole.ADMIN ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD;
-  }, [user]);
+  }, [user, isPlatformContext, isPlatformAuthenticated]);
 
   // Active when location startsWith path (handles nested routes)
   const isActiveLink = useCallback((path: string) => {
@@ -104,13 +130,28 @@ const Navbar: React.FC = memo(() => {
 
   const handleLogout = useCallback(() => {
     setActiveDropdown(null);
+    
+    // Capture the role at the start of logout process to prevent flickering
+    const currentLogoutRole = (isPlatformContext && isPlatformAuthenticated) ? "PLATFORM_ADMIN" : (user?.role || "USER");
+    setLogoutRole(currentLogoutRole);
     setIsLoggingOut(true);
     
-    // Show logging out animation for 2 seconds then logout
-    setTimeout(() => {
-      logout();
-    }, 2000);
-  }, [logout]);
+    // Immediate logout with forced navigation after short delay
+    if (isPlatformContext && isPlatformAuthenticated) {
+      // Clear platform auth immediately
+      platformLogout();
+      
+      // Short delay for visual feedback then force navigation
+      setTimeout(() => {
+        window.location.href = '/platform-home';
+      }, 800);
+    } else {
+      // Regular logout
+      setTimeout(() => {
+        logout();
+      }, 800);
+    }
+  }, [logout, platformLogout, isPlatformContext, isPlatformAuthenticated, user?.role]);
 
   const handleDropdownToggle = useCallback((dropdownId: string) => {
     setActiveDropdown(current => current === dropdownId ? null : dropdownId);
@@ -213,7 +254,12 @@ const Navbar: React.FC = memo(() => {
     );
   }, [renderDropdownItem]);
 
-  const userDisplayName = useMemo(() => user?.name || t("navigation.profile"), [user?.name, t]);
+  const userDisplayName = useMemo(() => {
+    if (isPlatformContext && platformUser) {
+      return platformUser.name || t("platform.navigation.profile");
+    }
+    return user?.name || t("navigation.profile");
+  }, [user?.name, platformUser?.name, t, isPlatformContext]);
 
   const hasRole = useCallback((role: UserRole) => user?.role === role, [user?.role]);
 
@@ -238,7 +284,12 @@ const Navbar: React.FC = memo(() => {
 
   // Show logout loader if logging out
   if (isLoggingOut) {
-    return <RedirectingLoader message={t("loading.redirecting.logout")} duration={2000} showProgress={false} />;
+    return <RedirectingLoader 
+      message={t("loading.redirecting.logout")} 
+      role={logoutRole || "USER"}
+      duration={800} 
+      showProgress={false} 
+    />;
   }
 
   return (
@@ -324,10 +375,16 @@ const Navbar: React.FC = memo(() => {
             )}
 
             <li className="nav-item">
-              {renderNavLink(ROUTES.PUBLIC.ABOUT, t("navigation.about"))}
+              {renderNavLink(
+                isPlatformContext ? ROUTES.PLATFORM.ABOUT : ROUTES.PUBLIC.ABOUT, 
+                t("navigation.about")
+              )}
             </li>
             <li className="nav-item">
-              {renderNavLink(ROUTES.PUBLIC.CONTACT, t("navigation.contact"))}
+              {renderNavLink(
+                isPlatformContext ? ROUTES.PLATFORM.CONTACT : ROUTES.PUBLIC.CONTACT, 
+                t("navigation.contact")
+              )}
             </li>
           </ul>
 
@@ -361,7 +418,7 @@ const Navbar: React.FC = memo(() => {
               </li>
             )}
 
-            {user ? (
+            {(user || (isPlatformContext && isPlatformAuthenticated)) ? (
               <li className="nav-item dropdown">
                 <button
                   ref={(el) => setDropdownButtonRef('profile', el)}
@@ -378,14 +435,19 @@ const Navbar: React.FC = memo(() => {
                   <i className="bi bi-person-circle me-1" aria-hidden="true"></i>
                   {userDisplayName}
                 </button>
-                {renderDropdownMenu(profileNavItems, 'profileDropdown', 'userMenu', activeDropdown === 'profile')}
+                {renderDropdownMenu(
+                  isPlatformContext && isPlatformAuthenticated ? platformProfileNavItems : profileNavItems, 
+                  'profileDropdown', 
+                  'userMenu', 
+                  activeDropdown === 'profile'
+                )}
               </li>
             ) : (
               <li className="nav-item">
-                {renderNavLink(ROUTES.PUBLIC.LOGIN,
+                {renderNavLink(isPlatformContext ? ROUTES.PLATFORM.LOGIN : ROUTES.PUBLIC.LOGIN,
                   <>
                     <i className="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
-                    {t("navigation.login")}
+                    {isPlatformContext ? t("platform.actions.login") : t("navigation.login")}
                   </>
                 )}
               </li>

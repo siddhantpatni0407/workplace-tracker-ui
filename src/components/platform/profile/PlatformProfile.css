@@ -1,0 +1,41 @@
+/* src/components/platform/profile/PlatformProfile.css */
+
+.platform-profile {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.platform-profile .profile-avatar {
+  color: #667eea;
+}
+
+.platform-profile .card {
+  border: none;
+  border-radius: 12px;
+}
+
+.platform-profile .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.platform-profile .card-title {
+  font-weight: 600;
+}
+
+.platform-profile .form-control:disabled,
+.platform-profile .form-control[readonly] {
+  background-color: #f8f9fa;
+  opacity: 1;
+}
+
+.platform-profile .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.platform-profile .btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-1px);
+}

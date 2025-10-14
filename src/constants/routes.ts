@@ -18,6 +18,19 @@ export const ROUTES = {
     CONTACT: '/contact-us',
     PRIVACY: '/privacy',
     TERMS: '/terms',
+  },
+
+  // Platform routes
+  PLATFORM: {
+    HOME: '/platform-home',
+    LOGIN: '/platform-login',
+    SIGNUP: '/platform-signup',
+    DASHBOARD: '/platform-dashboard',
+    PROFILE: '/platform/profile',
+    SETTINGS: '/platform/settings',
+    ABOUT: '/platform/about',
+    CONTACT: '/platform/contact',
+    LOGOUT: '/platform/logout',
     NOT_FOUND: '/404'
   },
 

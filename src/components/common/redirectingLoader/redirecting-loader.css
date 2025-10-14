@@ -264,6 +264,12 @@
   box-shadow: 0 4px 15px rgba(25, 135, 84, 0.3);
 }
 
+.role-badge.platform-admin {
+  background: rgba(102, 126, 234, 0.3);
+  color: #e7e9ff;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
 @keyframes badgePulse {
   0%, 100% {
     transform: scale(1);

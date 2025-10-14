@@ -2,6 +2,7 @@
 import React, { Suspense, lazy, useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { PlatformAuthProvider } from "./context/PlatformAuthContext";
 import { PrivateRoute } from "./components/routing";
 import Navbar from "./components/common/Navbar/Navbar";
 import Footer from "./components/common/Footer/Footer";
@@ -41,6 +42,14 @@ const PFManagement = lazy(() => import("./components/user/pfManagement/PFManagem
 const NotFound = lazy(() => import("./pages/NotFound"));
 const About = lazy(() => import("./components/common/about/About"));
 const Contact = lazy(() => import("./components/common/contact/Contact"));
+
+// Platform components (lazy loaded, separate from main app)
+const PlatformHome = lazy(() => import("./components/platform/home/PlatformHome"));
+const PlatformLogin = lazy(() => import("./components/platform/login/PlatformLogin"));
+const PlatformSignup = lazy(() => import("./components/platform/signup/PlatformSignup"));
+const PlatformDashboard = lazy(() => import("./components/platform/dashboard/PlatformDashboard"));
+const PlatformProfile = lazy(() => import("./components/platform/profile/PlatformProfile"));
+const PlatformSettings = lazy(() => import("./components/platform/settings/PlatformSettings"));
 
 // Layout wrapper (Navbar + Footer)
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -123,7 +132,8 @@ const App: React.FC = () => {
         <ErrorProvider>
           <ThemeProvider>
           <AuthProvider>
-            <BrowserRouter>
+            <PlatformAuthProvider>
+              <BrowserRouter>
             <Suspense fallback={<Loader />}>
               {newVersion && (
                 <VersionNotification
@@ -133,6 +143,16 @@ const App: React.FC = () => {
                 />
               )}
               <Routes>
+              {/* Platform pages (with existing navbar and footer) */}
+              <Route path={ROUTES.PLATFORM.HOME} element={<Layout><PlatformHome /></Layout>} />
+              <Route path={ROUTES.PLATFORM.LOGIN} element={<Layout><PlatformLogin /></Layout>} />
+              <Route path={ROUTES.PLATFORM.SIGNUP} element={<Layout><PlatformSignup /></Layout>} />
+              <Route path={ROUTES.PLATFORM.DASHBOARD} element={<Layout><PlatformDashboard /></Layout>} />
+              <Route path={ROUTES.PLATFORM.PROFILE} element={<Layout><PlatformProfile /></Layout>} />
+              <Route path={ROUTES.PLATFORM.SETTINGS} element={<Layout><PlatformSettings /></Layout>} />
+              <Route path={ROUTES.PLATFORM.ABOUT} element={<Layout><About /></Layout>} />
+              <Route path={ROUTES.PLATFORM.CONTACT} element={<Layout><Contact /></Layout>} />
+
               {/* Home (marketing / cover page) */}
               <Route path={ROUTES.PUBLIC.HOME} element={<Layout><Home /></Layout>} />
 
@@ -361,6 +381,7 @@ const App: React.FC = () => {
             </Routes>
           </Suspense>
         </BrowserRouter>
+            </PlatformAuthProvider>
           </AuthProvider>
           </ThemeProvider>
         </ErrorProvider>

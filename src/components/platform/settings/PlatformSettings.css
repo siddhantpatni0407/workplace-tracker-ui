@@ -1,0 +1,52 @@
+/* src/components/platform/settings/PlatformSettings.css */
+
+.platform-settings {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+}
+
+.platform-settings .card {
+  border: none;
+  border-radius: 12px;
+}
+
+.platform-settings .card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.platform-settings .card-title {
+  font-weight: 600;
+}
+
+.platform-settings .form-check-input:checked {
+  background-color: #667eea;
+  border-color: #667eea;
+}
+
+.platform-settings .form-select:focus,
+.platform-settings .form-check-input:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.platform-settings .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.platform-settings .btn-primary:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-1px);
+}
+
+.platform-settings .btn-outline-primary {
+  color: #667eea;
+  border-color: #667eea;
+}
+
+.platform-settings .btn-outline-primary:hover {
+  background-color: #667eea;
+  border-color: #667eea;
+}

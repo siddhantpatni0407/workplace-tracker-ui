@@ -229,6 +229,168 @@
     "signupWithGoogle": "Sign up with Google",
     "signupWithMicrosoft": "Sign up with Microsoft"
   },
+  "platform": {
+    "title": "Platform Management",
+    "subtitle": "Administrative Portal",
+    "home": {
+      "title": "Platform Administration",
+      "subtitle": "Manage your workplace tracking platform",
+      "welcome": "Welcome to Platform Management",
+      "description": "Access administrative tools and manage your workplace tracking system with comprehensive control over users, settings, and analytics.",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "features": {
+        "multiTenant": {
+          "title": "Multi-Tenant Management",
+          "description": "Manage multiple organizations and workspaces from a single platform interface."
+        },
+        "analytics": {
+          "title": "Advanced Analytics",
+          "description": "Get insights into platform usage, performance metrics, and user engagement across all tenants."
+        },
+        "configuration": {
+          "title": "System Configuration",
+          "description": "Configure global settings, manage integrations, and customize platform behavior."
+        }
+      }
+    },
+    "login": {
+      "title": "Platform Administrator Login",
+      "subtitle": "Access platform management tools",
+      "welcome": "Welcome Back, Administrator",
+      "description": "Sign in to access the platform administration portal",
+      "success": "Platform login successful",
+      "failed": "Platform login failed",
+      "noAccount": "Need platform access?",
+      "signUp": "Sign Up",
+      "contactAdmin": "Contact System Administrator",
+      "backToHome": "← Back to Platform Home",
+      "backToMainApp": "← Back to Main Application",
+      "signingIn": "Signing in to platform..."
+    },
+    "signup": {
+      "title": "Create Platform Account",
+      "subtitle": "Join the platform management team",
+      "welcome": "Join Platform Administration",
+      "description": "Create your platform administrator account",
+      "success": "Platform account created successfully!",
+      "failed": "Platform account creation failed",
+      "creating": "Creating Platform Account...",
+      "createAccount": "Create Platform Account",
+      "successTitle": "Platform Account Created!",
+      "successMessage": "Your platform account has been created successfully. Redirecting to login...",
+      "haveAccount": "Already have a platform account?",
+      "signIn": "Sign In",
+      "backToHome": "← Back to Platform Home",
+      "backToMainApp": "← Back to Main Application"
+    },
+    "navigation": {
+      "home": "Platform Home",
+      "dashboard": "Dashboard",
+      "users": "User Management",
+      "tenants": "Tenant Management",
+      "analytics": "Analytics",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "actions": {
+      "login": "Platform Login",
+      "signup": "Platform Signup",
+      "getStarted": "Get Started",
+      "learnMore": "Learn More",
+      "contactSupport": "Contact Support"
+    },
+    "footer": {
+      "backToMain": "Back to",
+      "mainApp": "Main Application"
+    },
+    "dashboard": {
+      "sidebar": {
+        "title": "Platform Tools",
+        "searchPlaceholder": "Search platform tools...",
+        "noItemsFound": "No tools found",
+        "adminRole": "Platform Administrator"
+      },
+      "welcome": {
+        "title": "Welcome to Platform Administration",
+        "subtitle": "Manage your workplace tracking platform from this centralized dashboard"
+      },
+      "stats": {
+        "activeTenants": "Active Tenants",
+        "totalUsers": "Total Users",
+        "uptime": "System Uptime",
+        "storage": "Storage Used"
+      },
+      "cards": {
+        "tenants": {
+          "subtitle": "Manage organizations and workspaces"
+        },
+        "users": {
+          "subtitle": "Manage platform administrators"
+        },
+        "analytics": {
+          "subtitle": "Platform usage and performance metrics"
+        },
+        "settings": {
+          "subtitle": "Global settings and integrations"
+        },
+        "api": {
+          "title": "API Management",
+          "subtitle": "Monitor API usage and endpoints"
+        },
+        "backup": {
+          "title": "Backup & Restore",
+          "subtitle": "Data backup and recovery operations"
+        }
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "manage": "Manage"
+      },
+      "recentActivity": {
+        "title": "Recent Platform Activity"
+      },
+      "loggingOut": "Logging out of platform..."
+    },
+    "profile": {
+      "title": "Platform Profile",
+      "subtitle": "Manage your platform administrator profile",
+      "personalInfo": "Personal Information",
+      "accountInfo": "Account Information",
+      "platformId": "Platform ID",
+      "lastLogin": "Last Login",
+      "administratorRole": "Platform Administrator"
+    },
+    "settings": {
+      "title": "Platform Settings",
+      "subtitle": "Configure your platform preferences and security",
+      "saveSettings": "Save Settings",
+      "changePassword": "Change Password",
+      "exportSettings": "Export Settings",
+      "resetDefaults": "Reset to Defaults",
+      "quickActions": "Quick Actions",
+      "notifications": {
+        "title": "Notification Preferences",
+        "emailAlerts": "Email Alerts",
+        "systemAlerts": "System Alerts",
+        "maintenanceAlerts": "Maintenance Alerts",
+        "securityAlerts": "Security Alerts"
+      },
+      "security": {
+        "title": "Security Settings",
+        "twoFactorAuth": "Two-Factor Authentication",
+        "sessionTimeout": "Session Timeout (minutes)",
+        "passwordExpiry": "Password Expiry (days)"
+      },
+      "preferences": {
+        "title": "Platform Preferences",
+        "theme": "Theme",
+        "language": "Language",
+        "timezone": "Timezone",
+        "dateFormat": "Date Format"
+      }
+    }
+  },
   "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email",

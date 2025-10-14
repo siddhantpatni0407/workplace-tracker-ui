@@ -12,6 +12,29 @@ interface RedirectingLoaderProps {
   duration?: number; // in milliseconds
 }
 
+// Helper functions for platform role handling
+const getPlatformRoleIcon = (role: string): string => {
+  switch (role) {
+    case 'PLATFORM_ADMIN':
+      return 'shield-check';
+    case 'ADMIN':
+      return 'shield-check';
+    default:
+      return 'person-circle';
+  }
+};
+
+const getPlatformRoleDisplay = (role: string): string => {
+  switch (role) {
+    case 'PLATFORM_ADMIN':
+      return 'PLATFORM USER';
+    case 'ADMIN':
+      return 'ADMIN';
+    default:
+      return 'USER';
+  }
+};
+
 const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
   message,
   role,
@@ -40,6 +63,22 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
     }
   }, [message, role, user?.role, t]);
 
+  // Force navigation after timeout for logout scenarios to prevent getting stuck
+  useEffect(() => {
+    if (message && (message.toLowerCase().includes('logout') || message.toLowerCase().includes('logging out'))) {
+      const timeoutId = setTimeout(() => {
+        console.log('RedirectingLoader: Logout timeout reached, forcing navigation');
+        if (role === 'PLATFORM_ADMIN') {
+          window.location.href = '/platform-home';
+        } else {
+          window.location.href = '/';
+        }
+      }, duration + 200); // Add 200ms buffer
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [message, role, duration]);
+
   useEffect(() => {
     if (!showProgress) return;
 
@@ -64,8 +103,8 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
     if (currentMessage.toLowerCase().includes('logout') || currentMessage.toLowerCase().includes('logging out')) {
       return [
         { text: t('loading.steps.signingOut'), delay: 0 },
-        { text: t('loading.steps.clearingSession'), delay: 600 },
-        { text: t('loading.steps.redirectingLogin'), delay: 1200 }
+        { text: t('loading.steps.clearingSession'), delay: 250 },
+        { text: t('loading.steps.redirectingLogin'), delay: 500 }
       ];
     }
     
@@ -158,9 +197,9 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
 
         {/* Role Badge */}
         <div className="redirecting-loader-badge">
-          <div className={`role-badge ${String(role || user?.role || 'USER').toLowerCase()}`}>
-            <i className={`bi bi-${String(role || user?.role || 'USER').toUpperCase() === 'ADMIN' ? 'shield-check' : 'person-circle'}`}></i>
-            <span>{String(role || user?.role || 'USER').toUpperCase()}</span>
+          <div className={`role-badge ${String(role || user?.role || 'USER').toLowerCase().replace('_', '-')}`}>
+            <i className={`bi bi-${getPlatformRoleIcon(String(role || user?.role || 'USER').toUpperCase())}`}></i>
+            <span>{getPlatformRoleDisplay(String(role || user?.role || 'USER').toUpperCase())}</span>
           </div>
         </div>
       </div>

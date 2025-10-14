@@ -206,6 +206,128 @@
     "haveAccount": "Vous avez déjà un compte ?",
     "signin": "Se Connecter"
   },
+  "platform": {
+    "title": "Gestion de Plateforme",
+    "subtitle": "Portail Administratif",
+    "home": {
+      "title": "Administration de Plateforme",
+      "subtitle": "Gérez votre plateforme de suivi du lieu de travail",
+      "welcome": "Bienvenue dans la Gestion de Plateforme",
+      "description": "Accédez aux outils administratifs et gérez votre système de suivi du lieu de travail avec un contrôle complet sur les utilisateurs, paramètres et analyses.",
+      "getStarted": "Commencer",
+      "learnMore": "En Savoir Plus",
+      "features": {
+        "multiTenant": {
+          "title": "Gestion Multi-Locataire",
+          "description": "Gérez plusieurs organisations et espaces de travail depuis une seule interface de plateforme."
+        },
+        "analytics": {
+          "title": "Analyses Avancées",
+          "description": "Obtenez des informations sur l'utilisation de la plateforme, les métriques de performance et l'engagement des utilisateurs sur tous les locataires."
+        },
+        "configuration": {
+          "title": "Configuration du Système",
+          "description": "Configurez les paramètres globaux, gérez les intégrations et personnalisez le comportement de la plateforme."
+        }
+      }
+    },
+    "login": {
+      "title": "Connexion Administrateur de Plateforme",
+      "subtitle": "Accédez aux outils de gestion de plateforme",
+      "welcome": "Bienvenue, Administrateur",
+      "description": "Connectez-vous pour accéder au portail d'administration de plateforme",
+      "success": "Connexion à la plateforme réussie",
+      "failed": "Échec de la connexion à la plateforme",
+      "noAccount": "Besoin d'accès à la plateforme ?",
+      "signUp": "S'inscrire",
+      "contactAdmin": "Contacter l'Administrateur Système",
+      "backToHome": "← Retour à l'Accueil Plateforme",
+      "backToMainApp": "← Retour à l'Application Principale"
+    },
+    "signup": {
+      "title": "Créer un Compte Plateforme",
+      "subtitle": "Rejoignez l'équipe de gestion de plateforme",
+      "welcome": "Rejoindre l'Administration de Plateforme",
+      "description": "Créez votre compte d'administrateur de plateforme",
+      "success": "Compte de plateforme créé avec succès !",
+      "failed": "Échec de la création du compte de plateforme",
+      "creating": "Création du Compte Plateforme...",
+      "createAccount": "Créer un Compte Plateforme",
+      "successTitle": "Compte Plateforme Créé !",
+      "successMessage": "Votre compte de plateforme a été créé avec succès. Redirection vers la connexion...",
+      "haveAccount": "Vous avez déjà un compte de plateforme ?",
+      "signIn": "Se Connecter",
+      "backToHome": "← Retour à l'Accueil Plateforme",
+      "backToMainApp": "← Retour à l'Application Principale"
+    },
+    "navigation": {
+      "home": "Accueil Plateforme",
+      "dashboard": "Tableau de Bord",
+      "users": "Gestion des Utilisateurs",
+      "tenants": "Gestion des Locataires",
+      "analytics": "Analyses",
+      "settings": "Paramètres",
+      "logout": "Déconnexion"
+    },
+    "actions": {
+      "login": "Connexion Plateforme",
+      "signup": "Inscription Plateforme",
+      "getStarted": "Commencer",
+      "learnMore": "En Savoir Plus",
+      "contactSupport": "Contacter le Support"
+    },
+    "footer": {
+      "backToMain": "Retour à",
+      "mainApp": "Application Principale"
+    },
+    "dashboard": {
+      "sidebar": {
+        "title": "Outils de Plateforme",
+        "searchPlaceholder": "Rechercher des outils de plateforme...",
+        "noItemsFound": "Aucun outil trouvé",
+        "adminRole": "Administrateur de Plateforme"
+      },
+      "welcome": {
+        "title": "Bienvenue dans l'Administration de Plateforme",
+        "subtitle": "Gérez votre plateforme de suivi du lieu de travail depuis ce tableau de bord centralisé"
+      },
+      "stats": {
+        "activeTenants": "Locataires Actifs",
+        "totalUsers": "Utilisateurs Totaux",
+        "uptime": "Temps de Fonctionnement du Système",
+        "storage": "Stockage Utilisé"
+      },
+      "cards": {
+        "tenants": {
+          "subtitle": "Gérer les organisations et espaces de travail"
+        },
+        "users": {
+          "subtitle": "Gérer les administrateurs de plateforme"
+        },
+        "analytics": {
+          "subtitle": "Métriques d'utilisation et de performance de la plateforme"
+        },
+        "settings": {
+          "subtitle": "Paramètres globaux et intégrations"
+        },
+        "api": {
+          "title": "Gestion API",
+          "subtitle": "Surveiller l'utilisation des API et endpoints"
+        },
+        "backup": {
+          "title": "Sauvegarde et Restauration",
+          "subtitle": "Opérations de sauvegarde et récupération des données"
+        }
+      },
+      "quickActions": {
+        "title": "Actions Rapides",
+        "manage": "Gérer"
+      },
+      "recentActivity": {
+        "title": "Activité Récente de la Plateforme"
+      }
+    }
+  },
   "home": {
     "welcomeTo": "Bienvenue à",
     "workplaceTracker": "Suivi du Lieu de Travail",

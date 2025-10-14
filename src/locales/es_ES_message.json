@@ -236,6 +236,128 @@
     "signupWithGoogle": "Registrarse con Google",
     "signupWithMicrosoft": "Registrarse con Microsoft"
   },
+  "platform": {
+    "title": "Gestión de Plataforma",
+    "subtitle": "Portal Administrativo",
+    "home": {
+      "title": "Administración de Plataforma",
+      "subtitle": "Gestiona tu plataforma de seguimiento laboral",
+      "welcome": "Bienvenido a la Gestión de Plataforma",
+      "description": "Accede a herramientas administrativas y gestiona tu sistema de seguimiento laboral con control integral sobre usuarios, configuraciones y análisis.",
+      "getStarted": "Comenzar",
+      "learnMore": "Aprender Más",
+      "features": {
+        "multiTenant": {
+          "title": "Gestión Multi-Inquilino",
+          "description": "Gestiona múltiples organizaciones y espacios de trabajo desde una sola interfaz de plataforma."
+        },
+        "analytics": {
+          "title": "Análisis Avanzado",
+          "description": "Obtén información sobre el uso de la plataforma, métricas de rendimiento y participación del usuario en todos los inquilinos."
+        },
+        "configuration": {
+          "title": "Configuración del Sistema",
+          "description": "Configura ajustes globales, gestiona integraciones y personaliza el comportamiento de la plataforma."
+        }
+      }
+    },
+    "login": {
+      "title": "Inicio de Sesión de Administrador de Plataforma",
+      "subtitle": "Accede a las herramientas de gestión de plataforma",
+      "welcome": "Bienvenido de Nuevo, Administrador",
+      "description": "Inicia sesión para acceder al portal de administración de plataforma",
+      "success": "Inicio de sesión de plataforma exitoso",
+      "failed": "Error al iniciar sesión en plataforma",
+      "noAccount": "¿Necesitas acceso a la plataforma?",
+      "signUp": "Registrarse",
+      "contactAdmin": "Contactar Administrador del Sistema",
+      "backToHome": "← Volver al Inicio de Plataforma",
+      "backToMainApp": "← Volver a la Aplicación Principal"
+    },
+    "signup": {
+      "title": "Crear Cuenta de Plataforma",
+      "subtitle": "Únete al equipo de gestión de plataforma",
+      "welcome": "Únete a la Administración de Plataforma",
+      "description": "Crea tu cuenta de administrador de plataforma",
+      "success": "¡Cuenta de plataforma creada exitosamente!",
+      "failed": "Error al crear cuenta de plataforma",
+      "creating": "Creando Cuenta de Plataforma...",
+      "createAccount": "Crear Cuenta de Plataforma",
+      "successTitle": "¡Cuenta de Plataforma Creada!",
+      "successMessage": "Tu cuenta de plataforma ha sido creada exitosamente. Redirigiendo al inicio de sesión...",
+      "haveAccount": "¿Ya tienes una cuenta de plataforma?",
+      "signIn": "Iniciar Sesión",
+      "backToHome": "← Volver al Inicio de Plataforma",
+      "backToMainApp": "← Volver a la Aplicación Principal"
+    },
+    "navigation": {
+      "home": "Inicio de Plataforma",
+      "dashboard": "Tablero",
+      "users": "Gestión de Usuarios",
+      "tenants": "Gestión de Inquilinos",
+      "analytics": "Análisis",
+      "settings": "Configuraciones",
+      "logout": "Cerrar Sesión"
+    },
+    "actions": {
+      "login": "Inicio de Sesión de Plataforma",
+      "signup": "Registro de Plataforma",
+      "getStarted": "Comenzar",
+      "learnMore": "Aprender Más",
+      "contactSupport": "Contactar Soporte"
+    },
+    "footer": {
+      "backToMain": "Volver a",
+      "mainApp": "Aplicación Principal"
+    },
+    "dashboard": {
+      "sidebar": {
+        "title": "Herramientas de Plataforma",
+        "searchPlaceholder": "Buscar herramientas de plataforma...",
+        "noItemsFound": "No se encontraron herramientas",
+        "adminRole": "Administrador de Plataforma"
+      },
+      "welcome": {
+        "title": "Bienvenido a la Administración de Plataforma",
+        "subtitle": "Gestiona tu plataforma de seguimiento laboral desde este tablero centralizado"
+      },
+      "stats": {
+        "activeTenants": "Inquilinos Activos",
+        "totalUsers": "Usuarios Totales",
+        "uptime": "Tiempo de Actividad del Sistema",
+        "storage": "Almacenamiento Utilizado"
+      },
+      "cards": {
+        "tenants": {
+          "subtitle": "Gestionar organizaciones y espacios de trabajo"
+        },
+        "users": {
+          "subtitle": "Gestionar administradores de plataforma"
+        },
+        "analytics": {
+          "subtitle": "Métricas de uso y rendimiento de la plataforma"
+        },
+        "settings": {
+          "subtitle": "Configuraciones globales e integraciones"
+        },
+        "api": {
+          "title": "Gestión de API",
+          "subtitle": "Monitorear uso de API y endpoints"
+        },
+        "backup": {
+          "title": "Respaldo y Restauración",
+          "subtitle": "Operaciones de respaldo y recuperación de datos"
+        }
+      },
+      "quickActions": {
+        "title": "Acciones Rápidas",
+        "manage": "Gestionar"
+      },
+      "recentActivity": {
+        "title": "Actividad Reciente de la Plataforma"
+      }
+    }
+  },
   "home": {
     "welcomeTo": "Bienvenido a",
     "workplaceTracker": "Rastreador del Lugar de Trabajo",

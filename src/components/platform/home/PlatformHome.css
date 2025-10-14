@@ -1,0 +1,238 @@
+/* Platform Home Styles */
+.platform-home-container {
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-image: var(--platform-home-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.platform-home-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.platform-home-content {
+  max-width: 1200px;
+  width: 100%;
+  text-align: center;
+  color: white;
+  animation: platformFadeInUp 0.8s ease-out;
+}
+
+.platform-home-header {
+  margin-bottom: 3rem;
+}
+
+.platform-home-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  background: linear-gradient(45deg, #fff, #e1e8ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.platform-home-subtitle {
+  font-size: 1.3rem;
+  margin-bottom: 0;
+  color: #e1e8ff;
+  font-weight: 300;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.platform-home-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+
+.platform-feature-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.platform-feature-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.platform-feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.platform-feature-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.platform-feature-card p {
+  color: #e1e8ff;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.platform-home-actions {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.platform-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  min-width: 180px;
+}
+
+.platform-btn-primary {
+  background: linear-gradient(45deg, #4f46e5, #7c3aed);
+  color: white;
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+.platform-btn-primary:hover {
+  background: linear-gradient(45deg, #4338ca, #6d28d9);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.6);
+  color: white;
+  text-decoration: none;
+}
+
+.platform-btn-secondary {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.platform-btn-secondary:hover {
+  background: white;
+  color: #4f46e5;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.platform-home-footer {
+  opacity: 0.8;
+}
+
+.platform-home-footer p {
+  margin: 0;
+  font-size: 1rem;
+  color: #e1e8ff;
+}
+
+.platform-link {
+  color: #60a5fa;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.platform-link:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes platformFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .platform-home-title {
+    font-size: 2.5rem;
+  }
+  
+  .platform-home-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .platform-home-features {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .platform-feature-card {
+    padding: 1.5rem;
+  }
+  
+  .platform-home-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .platform-btn {
+    width: 100%;
+    max-width: 300px;
+  }
+}
+
+@media (max-width: 480px) {
+  .platform-home-overlay {
+    padding: 1rem;
+  }
+  
+  .platform-home-title {
+    font-size: 2rem;
+  }
+  
+  .platform-home-subtitle {
+    font-size: 1rem;
+  }
+  
+  .platform-feature-card {
+    padding: 1rem;
+  }
+  
+  .platform-feature-icon {
+    font-size: 2.5rem;
+  }
+}

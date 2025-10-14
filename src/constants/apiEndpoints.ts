@@ -13,6 +13,13 @@ export const API_ENDPOINTS = {
     REFRESH_TOKEN: `${API_BASE_URL}/auth/refresh`,
   },
 
+  PLATFORM_AUTH: {
+    SIGNUP: `${API_BASE_URL}/platform-auth/signup`,
+    LOGIN: `${API_BASE_URL}/platform-auth/login`,
+    REFRESH_TOKEN: `${API_BASE_URL}/platform-auth/refresh-token`,
+    PROFILE: (platformUserId: number | string) => `${API_BASE_URL}/platform-auth/profile?platformUserId=${platformUserId}`,
+  },
+
   USERS: {
     GET_ALL: `${API_BASE_URL}/user/fetch`,
     GET_BY_ID: (id: number | string) => `${API_BASE_URL}/user/${id}`,
