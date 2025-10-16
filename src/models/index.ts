@@ -3,6 +3,9 @@
 // User related exports
 export * from './User';
 
+// Tenant related exports
+export * from './Tenant';
+
 // Office Visit related exports
 export * from './OfficeVisit';
 

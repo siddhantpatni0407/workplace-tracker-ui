@@ -1,6 +1,17 @@
 // src/services/platformAuthService.ts
-import axiosInstance from './axiosInstance';
+import axios from 'axios';
 import { API_ENDPOINTS } from '../constants/apiEndpoints';
+import { API_CONFIG } from '../constants/app';
+
+// Create a clean axios instance for platform authentication (no user auth headers)
+const platformAuthAxios = axios.create({
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
+  withCredentials: false, // Platform auth doesn't need cookies
+  headers: {
+    'Content-Type': 'application/json',
+  }
+});
 
 export interface PlatformAuthResponse {
   token: string;
@@ -46,7 +57,7 @@ class PlatformAuthService {
       requestData.mobileNumber = data.mobileNumber.trim();
     }
 
-    const response = await axiosInstance.post(API_ENDPOINTS.PLATFORM_AUTH.SIGNUP, requestData);
+    const response = await platformAuthAxios.post(API_ENDPOINTS.PLATFORM_AUTH.SIGNUP, requestData);
     return response.data;
   }
 
@@ -54,7 +65,7 @@ class PlatformAuthService {
    * Platform user login
    */
   async login(data: PlatformLoginRequest): Promise<PlatformAuthResponse> {
-    const response = await axiosInstance.post(API_ENDPOINTS.PLATFORM_AUTH.LOGIN, {
+    const response = await platformAuthAxios.post(API_ENDPOINTS.PLATFORM_AUTH.LOGIN, {
       emailOrMobile: data.emailOrMobile,
       password: data.password
     });
@@ -65,7 +76,7 @@ class PlatformAuthService {
    * Refresh platform auth tokens
    */
   async refreshToken(refreshToken: string): Promise<PlatformAuthResponse> {
-    const response = await axiosInstance.post(API_ENDPOINTS.PLATFORM_AUTH.REFRESH_TOKEN, refreshToken, {
+    const response = await platformAuthAxios.post(API_ENDPOINTS.PLATFORM_AUTH.REFRESH_TOKEN, refreshToken, {
       headers: {
         'Content-Type': 'application/json'
       }
@@ -77,7 +88,7 @@ class PlatformAuthService {
    * Get platform user profile
    */
   async getProfile(platformUserId: number | string) {
-    const response = await axiosInstance.get(API_ENDPOINTS.PLATFORM_AUTH.PROFILE(platformUserId));
+    const response = await platformAuthAxios.get(API_ENDPOINTS.PLATFORM_AUTH.PROFILE(platformUserId));
     return response.data;
   }
 

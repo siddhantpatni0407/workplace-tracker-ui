@@ -50,6 +50,7 @@ const PlatformSignup = lazy(() => import("./components/platform/signup/PlatformS
 const PlatformDashboard = lazy(() => import("./components/platform/dashboard/PlatformDashboard"));
 const PlatformProfile = lazy(() => import("./components/platform/profile/PlatformProfile"));
 const PlatformSettings = lazy(() => import("./components/platform/settings/PlatformSettings"));
+const TenantManagement = lazy(() => import("./components/platform/tenants/TenantManagement"));
 
 // Layout wrapper (Navbar + Footer)
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -150,6 +151,7 @@ const App: React.FC = () => {
               <Route path={ROUTES.PLATFORM.DASHBOARD} element={<Layout><PlatformDashboard /></Layout>} />
               <Route path={ROUTES.PLATFORM.PROFILE} element={<Layout><PlatformProfile /></Layout>} />
               <Route path={ROUTES.PLATFORM.SETTINGS} element={<Layout><PlatformSettings /></Layout>} />
+              <Route path={ROUTES.PLATFORM.TENANTS} element={<Layout><TenantManagement /></Layout>} />
               <Route path={ROUTES.PLATFORM.ABOUT} element={<Layout><About /></Layout>} />
               <Route path={ROUTES.PLATFORM.CONTACT} element={<Layout><Contact /></Layout>} />
 

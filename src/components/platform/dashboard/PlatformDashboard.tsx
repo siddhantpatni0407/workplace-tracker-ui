@@ -42,7 +42,7 @@ const PlatformDashboard: React.FC = memo(() => {
       title: t("platform.navigation.tenants") || "Tenant Management",
       subtitle: t("platform.dashboard.cards.tenants.subtitle") || "Manage organizations and workspaces",
       icon: "bi-buildings",
-      route: "/platform/tenants",
+      route: ROUTES.PLATFORM.TENANTS,
       colorClass: "card-primary",
       count: 12
     },
