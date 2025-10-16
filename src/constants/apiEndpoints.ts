@@ -189,4 +189,26 @@ export const API_ENDPOINTS = {
     BIRTHDAYS: `${API_BASE_URL}/special-days/birthdays`, // GET with query params: ?month=9&year=2025&page=1&limit=8
     ANNIVERSARIES: `${API_BASE_URL}/special-days/anniversaries`, // GET with query params: ?month=9&year=2025
   },
+
+  // Tenant Management (Platform endpoints)
+  TENANTS: {
+    CREATE: `${API_BASE_URL}/tenant`,
+    GET_ALL: `${API_BASE_URL}/tenants`,
+    GET_ACTIVE: `${API_BASE_URL}/tenants/active`,
+    GET_BY_ID: `${API_BASE_URL}/tenant`,
+    GET_BY_CODE: `${API_BASE_URL}/tenant/by-code`,
+    UPDATE: `${API_BASE_URL}/tenant/update`,
+    UPDATE_STATUS: `${API_BASE_URL}/tenant/status`,
+    DELETE: `${API_BASE_URL}/tenant`,
+    SEARCH: `${API_BASE_URL}/tenant/search`,
+    GET_STATS: `${API_BASE_URL}/tenant/stats`,
+    GET_USERS: `${API_BASE_URL}/tenant/users`,
+  },
+
+  // Subscriptions (Platform endpoints)
+  SUBSCRIPTIONS: {
+    GET_ALL: `${API_BASE_URL}/subscriptions`,
+    GET_ACTIVE: `${API_BASE_URL}/subscriptions/active`,
+    GET_BY_CODE: `${API_BASE_URL}/subscription/by-code`,
+  },
 };

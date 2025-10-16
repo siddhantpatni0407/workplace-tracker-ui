@@ -5,6 +5,7 @@
 
 import { AxiosResponse } from 'axios';
 import { ApiResponse } from '../models/Api';
+import { API_ENDPOINTS } from '../constants/apiEndpoints';
 import platformAxiosInstance from './platformAxiosInstance';
 import {
   TenantDTO,
@@ -24,7 +25,7 @@ import {
  */
 export const createTenant = async (tenantData: TenantCreateRequest): Promise<ApiResponse<TenantDTO>> => {
   const response: AxiosResponse<ApiResponse<TenantDTO>> = await platformAxiosInstance.post(
-    `/tenant`,
+    API_ENDPOINTS.TENANTS.CREATE,
     tenantData
   );
   return response.data;
@@ -42,7 +43,7 @@ export const getTenants = async (params: TenantSearchParams = {}): Promise<ApiRe
   } = params;
 
   const response: AxiosResponse<ApiResponse<TenantPaginatedResponse>> = await platformAxiosInstance.get(
-    `/tenants`,
+    API_ENDPOINTS.TENANTS.GET_ALL,
     {
       params: {
         page,
@@ -60,7 +61,7 @@ export const getTenants = async (params: TenantSearchParams = {}): Promise<ApiRe
  */
 export const getActiveTenants = async (): Promise<ApiResponse<TenantDTO[]>> => {
   const response: AxiosResponse<ApiResponse<TenantDTO[]>> = await platformAxiosInstance.get(
-    `/tenants/active`
+    API_ENDPOINTS.TENANTS.GET_ACTIVE
   );
   return response.data;
 };
@@ -70,7 +71,7 @@ export const getActiveTenants = async (): Promise<ApiResponse<TenantDTO[]>> => {
  */
 export const getTenantById = async (tenantId: number): Promise<ApiResponse<TenantDTO>> => {
   const response: AxiosResponse<ApiResponse<TenantDTO>> = await platformAxiosInstance.get(
-    `/tenant`,
+    API_ENDPOINTS.TENANTS.GET_BY_ID,
     {
       params: { tenantId }
     }
@@ -83,7 +84,7 @@ export const getTenantById = async (tenantId: number): Promise<ApiResponse<Tenan
  */
 export const getTenantByCode = async (tenantCode: string): Promise<ApiResponse<TenantDTO>> => {
   const response: AxiosResponse<ApiResponse<TenantDTO>> = await platformAxiosInstance.get(
-    `/tenant/by-code`,
+    API_ENDPOINTS.TENANTS.GET_BY_CODE,
     {
       params: { tenantCode }
     }
@@ -99,7 +100,7 @@ export const updateTenant = async (
   tenantData: TenantUpdateRequest
 ): Promise<ApiResponse<TenantDTO>> => {
   const response: AxiosResponse<ApiResponse<TenantDTO>> = await platformAxiosInstance.put(
-    `/tenant/update`,
+    API_ENDPOINTS.TENANTS.UPDATE,
     tenantData,
     {
       params: { tenantId }
@@ -115,7 +116,7 @@ export const updateTenantStatus = async (
   statusData: TenantStatusUpdateRequest
 ): Promise<ApiResponse<TenantDTO>> => {
   const response: AxiosResponse<ApiResponse<TenantDTO>> = await platformAxiosInstance.patch(
-    `/tenant/status`,
+    API_ENDPOINTS.TENANTS.UPDATE_STATUS,
     statusData
   );
   return response.data;
@@ -126,7 +127,7 @@ export const updateTenantStatus = async (
  */
 export const deleteTenant = async (tenantId: number): Promise<ApiResponse<string>> => {
   const response: AxiosResponse<ApiResponse<string>> = await platformAxiosInstance.delete(
-    `/tenant`,
+    API_ENDPOINTS.TENANTS.DELETE,
     {
       params: { tenantId }
     }
@@ -139,7 +140,7 @@ export const deleteTenant = async (tenantId: number): Promise<ApiResponse<string
  */
 export const searchTenants = async (searchTerm: string): Promise<ApiResponse<TenantDTO[]>> => {
   const response: AxiosResponse<ApiResponse<TenantDTO[]>> = await platformAxiosInstance.get(
-    `/tenant/search`,
+    API_ENDPOINTS.TENANTS.SEARCH,
     {
       params: { searchTerm }
     }
@@ -152,7 +153,7 @@ export const searchTenants = async (searchTerm: string): Promise<ApiResponse<Ten
  */
 export const getTenantStats = async (tenantId: number): Promise<ApiResponse<TenantStats>> => {
   const response: AxiosResponse<ApiResponse<TenantStats>> = await platformAxiosInstance.get(
-    `/tenant/stats`,
+    API_ENDPOINTS.TENANTS.GET_STATS,
     {
       params: { tenantId }
     }
@@ -165,7 +166,7 @@ export const getTenantStats = async (tenantId: number): Promise<ApiResponse<Tena
  */
 export const getTenantUsers = async (tenantId: number): Promise<ApiResponse<any[]>> => {
   const response: AxiosResponse<ApiResponse<any[]>> = await platformAxiosInstance.get(
-    `/tenant/users`,
+    API_ENDPOINTS.TENANTS.GET_USERS,
     {
       params: { tenantId }
     }
@@ -180,7 +181,7 @@ export const getTenantUsers = async (tenantId: number): Promise<ApiResponse<any[
  */
 export const getAllSubscriptions = async (): Promise<ApiResponse<Subscription[]>> => {
   const response: AxiosResponse<ApiResponse<Subscription[]>> = await platformAxiosInstance.get(
-    `/subscriptions`
+    API_ENDPOINTS.SUBSCRIPTIONS.GET_ALL
   );
   return response.data;
 };
@@ -190,7 +191,7 @@ export const getAllSubscriptions = async (): Promise<ApiResponse<Subscription[]>
  */
 export const getActiveSubscriptions = async (): Promise<ApiResponse<Subscription[]>> => {
   const response: AxiosResponse<ApiResponse<Subscription[]>> = await platformAxiosInstance.get(
-    `/subscriptions/active`
+    API_ENDPOINTS.SUBSCRIPTIONS.GET_ACTIVE
   );
   return response.data;
 };
@@ -200,7 +201,7 @@ export const getActiveSubscriptions = async (): Promise<ApiResponse<Subscription
  */
 export const getSubscriptionByCode = async (subscriptionCode: string): Promise<ApiResponse<Subscription>> => {
   const response: AxiosResponse<ApiResponse<Subscription>> = await platformAxiosInstance.get(
-    `/subscription/by-code`,
+    API_ENDPOINTS.SUBSCRIPTIONS.GET_BY_CODE,
     {
       params: { subscriptionCode }
     }

@@ -7,7 +7,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlatformAuth } from '../../../context/PlatformAuthContext';
 import { useTranslation } from '../../../hooks/useTranslation';
-import { LoadingSpinner, Alert, Button } from '../../ui';
+import { LoadingSpinner, Alert, Button, ErrorBoundary } from '../../ui';
+import Header from '../../common/Header/Header';
 import { TenantDTO, TenantSearchParams } from '../../../models/Tenant';
 import {
   getTenants,
@@ -51,69 +52,56 @@ const TenantManagement: React.FC = () => {
   const [selectedTenant, setSelectedTenant] = useState<TenantDTO | null>(null);
 
   // Dropdown state
-  const [showDropdowns, setShowDropdowns] = useState<{[key: number]: boolean}>({});
-  const dropdownRefs = useRef<{[key: number]: HTMLDivElement | null}>({});
+  const [showDropdowns, setShowDropdowns] = useState<Record<string, boolean>>({});
+  const dropdownRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // Check authentication when component mounts and dependencies change
-  useEffect(() => {
-    if (authLoading) return;
-    
-    if (!isPlatformAuthenticated) {
-      navigate(ROUTES.PLATFORM.LOGIN);
-    }
-  }, [isPlatformAuthenticated, platformUser, navigate, authLoading]);
-
-  // Load tenants function
+  // Load tenants with enhanced error handling
   const loadTenants = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
     try {
+      setLoading(true);
+      setError(null);
+
+      const searchParams: TenantSearchParams = {
+        page: currentPage - 1, // API expects 0-based page
+        size: itemsPerPage,
+        sortBy,
+        sortDir,
+        searchTerm: searchTerm || undefined
+      };
+
+      // Use searchTenants if we have a search term, otherwise use getTenants
       let response;
-      
-      if (searchTerm.trim()) {
-        // Use search endpoint
-        const searchResponse = await searchTenants(searchTerm.trim());
-        if (searchResponse.status === 'SUCCESS' && searchResponse.data) {
-          // Apply status filter to search results
-          const filteredData = statusFilter === 'all' 
-            ? searchResponse.data
-            : searchResponse.data.filter(tenant => 
-                statusFilter === 'active' ? tenant.isActive : !tenant.isActive
-              );
-          
-          setTenants(filteredData);
-          setTotalItems(filteredData.length);
-          setTotalPages(Math.ceil(filteredData.length / itemsPerPage));
+      if (searchTerm) {
+        response = await searchTenants(searchTerm);
+        if (response?.data) {
+          // Filter by status if needed
+          let filteredTenants = response.data;
+          if (statusFilter !== 'all') {
+            filteredTenants = filteredTenants.filter(t => 
+              statusFilter === 'active' ? t.isActive : !t.isActive
+            );
+          }
+          setTenants(filteredTenants);
+          setTotalItems(filteredTenants.length);
+          setTotalPages(Math.ceil(filteredTenants.length / itemsPerPage));
         } else {
           setTenants([]);
           setTotalItems(0);
           setTotalPages(0);
         }
       } else {
-        // Use paginated endpoint
-        const params: TenantSearchParams = {
-          page: currentPage - 1, // API uses 0-based indexing
-          size: itemsPerPage,
-          sortBy,
-          sortDir
-        };
-
-        response = await getTenants(params);
-        
-        if (response.status === 'SUCCESS' && response.data) {
-          let filteredTenants = response.data.content;
-          
-          // Apply status filter if not 'all'
+        response = await getTenants(searchParams);
+        if (response?.data) {
+          // Filter by status if needed
+          let filteredTenants = response.data.content || [];
           if (statusFilter !== 'all') {
-            filteredTenants = filteredTenants.filter(tenant => 
-              statusFilter === 'active' ? tenant.isActive : !tenant.isActive
+            filteredTenants = filteredTenants.filter(t => 
+              statusFilter === 'active' ? t.isActive : !t.isActive
             );
           }
-          
           setTenants(filteredTenants);
-          setTotalItems(response.data.totalElements);
-          setTotalPages(response.data.totalPages);
+          setTotalItems(response.data.totalElements || 0);
+          setTotalPages(response.data.totalPages || 0);
         } else {
           setTenants([]);
           setTotalItems(0);
@@ -121,60 +109,24 @@ const TenantManagement: React.FC = () => {
         }
       }
     } catch (err: any) {
-      console.error('❌ Error loading tenants:', err);
+      console.error('Error loading tenants:', err);
       setError(err.message || 'Failed to load tenants');
       setTenants([]);
-      setTotalItems(0);
-      setTotalPages(0);
     } finally {
       setLoading(false);
     }
   }, [currentPage, itemsPerPage, sortBy, sortDir, searchTerm, statusFilter]);
 
-  // Load tenants on component mount and when dependencies change
+  // Load tenants on component mount and dependency changes
   useEffect(() => {
-    loadTenants();
-  }, [loadTenants]);
-
-  // Handle search with debounce
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setCurrentPage(1); // Reset to first page when searching
+    if (isPlatformAuthenticated) {
       loadTenants();
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      Object.entries(dropdownRefs.current).forEach(([tenantId, ref]) => {
-        if (ref && !ref.contains(event.target as Node)) {
-          setShowDropdowns(prev => ({
-            ...prev,
-            [tenantId]: false
-          }));
-        }
-      });
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    }
+  }, [isPlatformAuthenticated, loadTenants]);
 
   // Event handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-  };
-
-  const handleSortChange = (column: string) => {
-    if (sortBy === column) {
-      setSortDir(sortDir === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortBy(column);
-      setSortDir('asc');
-    }
     setCurrentPage(1);
   };
 
@@ -183,8 +135,10 @@ const TenantManagement: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setItemsPerPage(parseInt(e.target.value));
+  const handleSortSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const [newSortBy, newSortDir] = e.target.value.split('-');
+    setSortBy(newSortBy);
+    setSortDir(newSortDir as 'asc' | 'desc');
     setCurrentPage(1);
   };
 
@@ -192,49 +146,48 @@ const TenantManagement: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const handleItemsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
   const handleCreateTenant = () => {
-    setSelectedTenant(null);
     setShowCreateModal(true);
   };
 
   const handleEditTenant = (tenant: TenantDTO) => {
     setSelectedTenant(tenant);
     setShowEditModal(true);
-    setShowDropdowns({});
   };
 
   const handleViewTenant = (tenant: TenantDTO) => {
     setSelectedTenant(tenant);
     setShowDetailModal(true);
-    setShowDropdowns({});
   };
 
   const handleDeleteTenant = (tenant: TenantDTO) => {
     setSelectedTenant(tenant);
     setShowDeleteModal(true);
-    setShowDropdowns({});
   };
 
   const handleToggleStatus = async (tenant: TenantDTO) => {
     try {
       setLoading(true);
-      const response = await updateTenantStatus({
+      setError(null);
+
+      const statusUpdateRequest = {
         tenantId: tenant.tenantId,
         isActive: !tenant.isActive
-      });
+      };
 
-      if (response.status === 'SUCCESS') {
-        setSuccess(`Tenant ${!tenant.isActive ? 'activated' : 'deactivated'} successfully`);
-        loadTenants();
-      } else {
-        setError(response.message || 'Failed to update tenant status');
-      }
+      await updateTenantStatus(statusUpdateRequest);
+      setSuccess(`Tenant ${tenant.isActive ? 'deactivated' : 'activated'} successfully`);
+      loadTenants();
     } catch (err: any) {
       setError(err.message || 'Failed to update tenant status');
     } finally {
       setLoading(false);
     }
-    setShowDropdowns({});
   };
 
   const confirmDeleteTenant = async () => {
@@ -242,28 +195,18 @@ const TenantManagement: React.FC = () => {
 
     try {
       setLoading(true);
-      const response = await deleteTenant(selectedTenant.tenantId);
+      setError(null);
 
-      if (response.status === 'SUCCESS') {
-        setSuccess('Tenant deleted successfully');
-        loadTenants();
-      } else {
-        setError(response.message || 'Failed to delete tenant');
-      }
+      await deleteTenant(selectedTenant.tenantId);
+      setSuccess('Tenant deleted successfully');
+      setShowDeleteModal(false);
+      setSelectedTenant(null);
+      loadTenants();
     } catch (err: any) {
       setError(err.message || 'Failed to delete tenant');
     } finally {
       setLoading(false);
-      setShowDeleteModal(false);
-      setSelectedTenant(null);
     }
-  };
-
-  const handleDropdownToggle = (tenantId: number) => {
-    setShowDropdowns(prev => ({
-      ...prev,
-      [tenantId]: !prev[tenantId]
-    }));
   };
 
   const handleFormSuccess = (message: string) => {
@@ -307,50 +250,40 @@ const TenantManagement: React.FC = () => {
   }
 
   return (
-    <div className="tenant-management">
-      <div className="container-fluid">
-        {/* Header */}
-        <div className="row mb-4">
-          <div className="col-12">
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h2 className="mb-0">Tenant Management</h2>
-                <p className="text-muted mb-0">Manage organizations and workspaces</p>
-              </div>
-              <Button
-                variant="primary"
-                onClick={handleCreateTenant}
-                disabled={loading}
-                className="d-flex align-items-center"
-              >
-                <i className="bi bi-plus me-2"></i>
-                Add Tenant
-              </Button>
+    <ErrorBoundary>
+      {/* Header Component */}
+      <Header
+        title="Tenant Management"
+        subtitle="Manage organizations and workspaces for your platform"
+        eyebrow="Platform Administration"
+        actions={
+          <Button
+            variant="primary"
+            onClick={handleCreateTenant}
+            disabled={loading}
+            className="btn-primary-gradient d-flex align-items-center"
+          >
+            <i className="bi bi-plus me-2"></i>
+            Add Tenant
+          </Button>
+        }
+        showWave={true}
+      />
+
+      <div className="tenant-management">
+        <div className="tenant-dashboard-layout">
+          {/* Left Sidebar */}
+          <div className="tenant-left-sidebar">
+            <div className="tenant-sidebar-header">
+              <h6 className="tenant-sidebar-title">
+                <i className="bi bi-building"></i>
+                Tenant Center
+              </h6>
             </div>
-          </div>
-        </div>
 
-        {/* Alerts */}
-        {error && (
-          <Alert 
-            variant="error" 
-            message={error} 
-            onClose={() => setError(null)}
-          />
-        )}
-        {success && (
-          <Alert 
-            variant="success" 
-            message={success} 
-            onClose={() => setSuccess(null)}
-          />
-        )}
-
-        {/* Search and Filters */}
-        <div className="card mb-4">
-          <div className="card-body">
-            <div className="row g-3">
-              <div className="col-md-4">
+            {/* Search Controls */}
+            <div className="tenant-sidebar-controls">
+              <div className="tenant-search-box">
                 <div className="input-group">
                   <span className="input-group-text">
                     <i className="bi bi-search"></i>
@@ -362,217 +295,320 @@ const TenantManagement: React.FC = () => {
                     value={searchTerm}
                     onChange={handleSearchChange}
                   />
+                  {searchTerm && (
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
+                      onClick={() => setSearchTerm('')}
+                    >
+                      <i className="bi bi-x"></i>
+                    </button>
+                  )}
                 </div>
               </div>
-              <div className="col-md-2">
-                <select
-                  className="form-select"
-                  value={statusFilter}
-                  onChange={handleStatusFilterChange}
+            </div>
+
+            {/* Quick Actions Menu */}
+            <div className="tenant-sidebar-menu">
+              <div className="tenant-menu-section">
+                <div className="tenant-menu-section-title">Quick Actions</div>
+                <div 
+                  className="tenant-menu-item active"
+                  onClick={() => setStatusFilter('all')}
                 >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
+                  <i className="bi bi-grid-3x3-gap"></i>
+                  All Tenants
+                </div>
+                <div 
+                  className="tenant-menu-item"
+                  onClick={() => setStatusFilter('active')}
+                >
+                  <i className="bi bi-check-circle"></i>
+                  Active Tenants
+                </div>
+                <div 
+                  className="tenant-menu-item"
+                  onClick={() => setStatusFilter('inactive')}
+                >
+                  <i className="bi bi-x-circle"></i>
+                  Inactive Tenants
+                </div>
+                <div 
+                  className="tenant-menu-item"
+                  onClick={handleCreateTenant}
+                >
+                  <i className="bi bi-plus-circle"></i>
+                  Create New Tenant
+                </div>
               </div>
-              <div className="col-md-2">
-                <select
-                  className="form-select"
-                  value={sortBy}
-                  onChange={(e) => {
-                    setSortBy(e.target.value);
-                    setCurrentPage(1);
-                  }}
-                >
-                  <option value="tenantName">Sort by Name</option>
-                  <option value="tenantCode">Sort by Code</option>
-                  <option value="createdDate">Sort by Created Date</option>
-                  <option value="subscriptionName">Sort by Subscription</option>
-                </select>
-              </div>
-              <div className="col-md-2">
-                <select
-                  className="form-select"
-                  value={itemsPerPage}
-                  onChange={handleItemsPerPageChange}
-                >
-                  <option value={5}>5 per page</option>
-                  <option value={10}>10 per page</option>
-                  <option value={25}>25 per page</option>
-                  <option value={50}>50 per page</option>
-                </select>
-              </div>
-              <div className="col-md-2">
-                <Button
-                  variant="outline-secondary"
-                  onClick={loadTenants}
-                  disabled={loading}
-                  className="w-100"
-                >
-                  <i className="bi bi-arrow-clockwise me-2"></i>
-                  {loading ? 'Loading...' : 'Load Tenants (Debug)'}
-                </Button>
+
+              <div className="tenant-menu-section">
+                <div className="tenant-menu-section-title">Reports</div>
+                <div className="tenant-menu-item">
+                  <i className="bi bi-graph-up"></i>
+                  Usage Analytics
+                </div>
+                <div className="tenant-menu-item">
+                  <i className="bi bi-file-text"></i>
+                  Activity Logs
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Tenants Table */}
-        <div className="card">
-          <div className="card-body">
-            {loading ? (
-              <div className="text-center py-5">
-                <LoadingSpinner />
-                <p className="mt-3 text-muted">Loading tenants...</p>
+          {/* Main Content Area */}
+          <div className="tenant-main-content">
+            <div className="tenant-content-wrapper">
+              
+              {/* Alerts */}
+              {error && (
+                <Alert 
+                  variant="error" 
+                  message={error || ''} 
+                  onClose={() => setError(null)}
+                />
+              )}
+              {success && (
+                <Alert 
+                  variant="success" 
+                  message={success || ''} 
+                  onClose={() => setSuccess(null)}
+                />
+              )}
+
+              {/* Welcome Section */}
+              <div className="tenant-welcome-section">
+                <div className="tenant-welcome-card">
+                  <div className="tenant-welcome-content">
+                    <h4>Welcome to Tenant Management</h4>
+                    <p>
+                      Manage your platform tenants, monitor their activity, and oversee organizational settings.
+                      Create new tenant workspaces or modify existing ones with comprehensive administrative controls.
+                    </p>
+                  </div>
+                  <div className="tenant-welcome-icon">
+                    <i className="bi bi-buildings"></i>
+                  </div>
+                </div>
               </div>
-            ) : tenants.length === 0 ? (
-              <div className="text-center py-5">
-                <i className="bi bi-building display-1 text-muted mb-3"></i>
-                <h5 className="text-muted">
-                  {searchTerm ? 'No tenants found for your search' : 'No tenants available'}
-                </h5>
-                <p className="text-muted">
-                  {!searchTerm && 'Start by creating your first tenant'}
-                </p>
-              </div>
-            ) : (
-              <>
-                <div className="table-responsive">
-                  <table className="table table-hover">
-                    <thead className="table-light">
-                      <tr>
-                        <th 
-                          scope="col" 
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => handleSortChange('tenantName')}
-                        >
-                          Name {sortBy === 'tenantName' && (
-                            <i className={`bi bi-sort-${sortDir === 'asc' ? 'up' : 'down'}`}></i>
-                          )}
-                        </th>
-                        <th 
-                          scope="col"
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => handleSortChange('tenantCode')}
-                        >
-                          Code {sortBy === 'tenantCode' && (
-                            <i className={`bi bi-sort-${sortDir === 'asc' ? 'up' : 'down'}`}></i>
-                          )}
-                        </th>
-                        <th scope="col">Subscription</th>
-                        <th scope="col">Contact Email</th>
-                        <th scope="col">Status</th>
-                        <th 
-                          scope="col"
-                          style={{ cursor: 'pointer' }}
-                          onClick={() => handleSortChange('createdDate')}
-                        >
-                          Created Date {sortBy === 'createdDate' && (
-                            <i className={`bi bi-sort-${sortDir === 'asc' ? 'up' : 'down'}`}></i>
-                          )}
-                        </th>
-                        <th scope="col" className="text-center">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {tenants.map((tenant) => (
-                        <tr key={tenant.tenantId}>
-                          <td>
-                            <div className="fw-semibold">{tenant.tenantName}</div>
-                          </td>
-                          <td>
-                            <code className="small">{tenant.tenantCode}</code>
-                          </td>
-                          <td>
-                            <span className="badge bg-info-subtle text-info">
-                              {tenant.subscriptionName}
-                            </span>
-                          </td>
-                          <td>
-                            {tenant.contactEmail || (
-                              <span className="text-muted">-</span>
-                            )}
-                          </td>
-                          <td>
-                            <span className={`badge ${tenant.isActive ? 'bg-success' : 'bg-secondary'}`}>
-                              {tenant.isActive ? 'Active' : 'Inactive'}
-                            </span>
-                          </td>
-                          <td>{formatDate(tenant.createdDate)}</td>
-                          <td className="text-center">
-                            <div className="dropdown" ref={el => { dropdownRefs.current[tenant.tenantId] = el; }}>
-                              <button
-                                className="btn btn-outline-secondary btn-sm dropdown-toggle"
-                                type="button"
-                                onClick={() => handleDropdownToggle(tenant.tenantId)}
-                              >
-                                Actions
-                              </button>
-                              <ul className={`dropdown-menu ${showDropdowns[tenant.tenantId] ? 'show' : ''}`}>
-                                <li>
-                                  <button 
-                                    className="dropdown-item"
-                                    onClick={() => handleViewTenant(tenant)}
-                                  >
-                                    <i className="bi bi-eye me-2"></i>View Details
-                                  </button>
-                                </li>
-                                <li>
-                                  <button 
-                                    className="dropdown-item"
-                                    onClick={() => handleEditTenant(tenant)}
-                                  >
-                                    <i className="bi bi-pencil me-2"></i>Edit
-                                  </button>
-                                </li>
-                                <li>
-                                  <button 
-                                    className="dropdown-item"
-                                    onClick={() => handleToggleStatus(tenant)}
-                                  >
-                                    <i className={`bi bi-toggle-${tenant.isActive ? 'off' : 'on'} me-2`}></i>
-                                    {tenant.isActive ? 'Deactivate' : 'Activate'}
-                                  </button>
-                                </li>
-                                <li><hr className="dropdown-divider" /></li>
-                                <li>
-                                  <button 
-                                    className="dropdown-item text-danger"
-                                    onClick={() => handleDeleteTenant(tenant)}
-                                  >
-                                    <i className="bi bi-trash me-2"></i>Delete
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+
+              {/* Statistics Cards */}
+              <div className="tenant-stats-cards">
+                <div className="tenant-stat-card">
+                  <div className="tenant-stat-header">
+                    <span className="tenant-stat-title">Total Tenants</span>
+                    <div className="tenant-stat-icon primary">
+                      <i className="bi bi-building"></i>
+                    </div>
+                  </div>
+                  <div className="tenant-stat-value">{tenants.length}</div>
+                  <div className="tenant-stat-change positive">
+                    <i className="bi bi-arrow-up"></i>
+                    Growing steadily
+                  </div>
                 </div>
 
+                <div className="tenant-stat-card">
+                  <div className="tenant-stat-header">
+                    <span className="tenant-stat-title">Active Tenants</span>
+                    <div className="tenant-stat-icon success">
+                      <i className="bi bi-check-circle"></i>
+                    </div>
+                  </div>
+                  <div className="tenant-stat-value">{tenants.filter(t => t.isActive).length}</div>
+                  <div className="tenant-stat-change positive">
+                    <i className="bi bi-arrow-up"></i>
+                    Healthy rate
+                  </div>
+                </div>
+
+                <div className="tenant-stat-card">
+                  <div className="tenant-stat-header">
+                    <span className="tenant-stat-title">Inactive Tenants</span>
+                    <div className="tenant-stat-icon warning">
+                      <i className="bi bi-pause-circle"></i>
+                    </div>
+                  </div>
+                  <div className="tenant-stat-value">{tenants.filter(t => !t.isActive).length}</div>
+                  <div className="tenant-stat-change">
+                    <i className="bi bi-dash"></i>
+                    Monitoring
+                  </div>
+                </div>
+
+                <div className="tenant-stat-card">
+                  <div className="tenant-stat-header">
+                    <span className="tenant-stat-title">This Month</span>
+                    <div className="tenant-stat-icon primary">
+                      <i className="bi bi-calendar-plus"></i>
+                    </div>
+                  </div>
+                  <div className="tenant-stat-value">
+                    {tenants.filter(t => {
+                      const createdDate = new Date(t.createdDate || '');
+                      const currentMonth = new Date().getMonth();
+                      return createdDate.getMonth() === currentMonth;
+                    }).length}
+                  </div>
+                  <div className="tenant-stat-change positive">
+                    <i className="bi bi-arrow-up"></i>
+                    New signups
+                  </div>
+                </div>
+              </div>
+
+              {/* Tenant Cards Section */}
+              <div className="tenant-cards-section">
+                <div className="tenant-cards-header">
+                  <h3 className="tenant-cards-title">
+                    <i className="bi bi-grid-3x3-gap"></i>
+                    Tenant Overview
+                  </h3>
+                  <div className="tenant-actions">
+                    <select
+                      className="form-select form-select-sm"
+                      value={statusFilter}
+                      onChange={handleStatusFilterChange}
+                      style={{ width: 'auto' }}
+                    >
+                      <option value="all">All Status</option>
+                      <option value="active">Active</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                    <select
+                      className="form-select form-select-sm"
+                      value={`${sortBy}-${sortDir}`}
+                      onChange={handleSortSelectChange}
+                      style={{ width: 'auto' }}
+                    >
+                      <option value="tenantName-asc">Name A-Z</option>
+                      <option value="tenantName-desc">Name Z-A</option>
+                      <option value="tenantCode-asc">Code A-Z</option>
+                      <option value="tenantCode-desc">Code Z-A</option>
+                      <option value="createdDate-desc">Newest First</option>
+                      <option value="createdDate-asc">Oldest First</option>
+                    </select>
+                    <button 
+                      className="btn btn-outline-secondary btn-sm"
+                      onClick={loadTenants}
+                      disabled={loading}
+                    >
+                      <i className="bi bi-arrow-clockwise"></i>
+                    </button>
+                  </div>
+                </div>
+
+                {loading ? (
+                  <div className="tenant-loading">
+                    <div className="tenant-loading-spinner">
+                      <LoadingSpinner />
+                    </div>
+                    <p className="tenant-loading-text">Loading tenants...</p>
+                  </div>
+                ) : tenants.length === 0 ? (
+                  <div className="tenant-empty-state">
+                    <div className="tenant-empty-icon">
+                      <i className="bi bi-building"></i>
+                    </div>
+                    <h5 className="tenant-empty-title">
+                      {searchTerm ? 'No tenants found' : 'No tenants available'}
+                    </h5>
+                    <p className="tenant-empty-subtitle">
+                      {searchTerm 
+                        ? 'Try adjusting your search criteria or filters'
+                        : 'Start by creating your first tenant workspace'
+                      }
+                    </p>
+                    {!searchTerm && (
+                      <button 
+                        className="btn btn-primary-gradient"
+                        onClick={handleCreateTenant}
+                      >
+                        <i className="bi bi-plus me-2"></i>
+                        Create First Tenant
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div className="tenant-grid">
+                    {tenants.map((tenant, index) => (
+                      <div key={tenant.tenantCode || index} className="tenant-card">
+                        <div className="tenant-card-header">
+                          <span className="tenant-code">{tenant.tenantCode}</span>
+                          <span className={`tenant-status ${tenant.isActive ? 'active' : 'inactive'}`}>
+                            {tenant.isActive ? 'Active' : 'Inactive'}
+                          </span>
+                        </div>
+                        
+                        <h5 className="tenant-name">{tenant.tenantName}</h5>
+                        
+                        <div className="tenant-metadata">
+                          <div className="tenant-meta-item">
+                            <div className="tenant-meta-label">Subscription</div>
+                            <div className="tenant-meta-value">
+                              {tenant.subscriptionCode || 'N/A'}
+                            </div>
+                          </div>
+                          <div className="tenant-meta-item">
+                            <div className="tenant-meta-label">Contact</div>
+                            <div className="tenant-meta-value">
+                              {tenant.contactEmail || 'N/A'}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="tenant-card-actions">
+                          <button
+                            className="tenant-action-btn view"
+                            onClick={() => handleViewTenant(tenant)}
+                            title="View Details"
+                          >
+                            <i className="bi bi-eye"></i>
+                            View
+                          </button>
+                          <button
+                            className="tenant-action-btn edit"
+                            onClick={() => handleEditTenant(tenant)}
+                            title="Edit Tenant"
+                          >
+                            <i className="bi bi-pencil"></i>
+                            Edit
+                          </button>
+                          <button
+                            className="tenant-action-btn status"
+                            onClick={() => handleToggleStatus(tenant)}
+                            title={tenant.isActive ? 'Deactivate' : 'Activate'}
+                          >
+                            <i className={`bi bi-${tenant.isActive ? 'pause' : 'play'}-circle`}></i>
+                            {tenant.isActive ? 'Pause' : 'Activate'}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {/* Pagination */}
-                {totalPages > 1 && (
+                {tenants.length > 0 && totalPages > 1 && (
                   <div className="d-flex justify-content-between align-items-center mt-4">
                     <div className="text-muted">
-                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} entries
+                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} tenants
                     </div>
                     <nav>
-                      <ul className="pagination mb-0">
+                      <ul className="pagination pagination-sm mb-0">
                         <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
                           <button 
-                            className="page-link"
+                            className="page-link" 
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
                           >
                             Previous
                           </button>
                         </li>
-                        {getPaginationPages().map(page => (
-                          <li key={page} className={`page-item ${page === currentPage ? 'active' : ''}`}>
+                        {getPaginationPages().map((page: number) => (
+                          <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
                             <button 
-                              className="page-link"
+                              className="page-link" 
                               onClick={() => handlePageChange(page)}
                             >
                               {page}
@@ -581,7 +617,7 @@ const TenantManagement: React.FC = () => {
                         ))}
                         <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
                           <button 
-                            className="page-link"
+                            className="page-link" 
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
                           >
@@ -592,75 +628,80 @@ const TenantManagement: React.FC = () => {
                     </nav>
                   </div>
                 )}
-              </>
-            )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Create Tenant Modal */}
-      <TenantForm
-        show={showCreateModal}
-        onHide={() => setShowCreateModal(false)}
-        onSuccess={handleFormSuccess}
-        tenant={null}
-        isEdit={false}
-      />
+      {/* Modals */}
+      {showCreateModal && (
+        <TenantForm
+          show={showCreateModal}
+          onHide={() => setShowCreateModal(false)}
+          onSuccess={handleFormSuccess}
+          tenant={null}
+          isEdit={false}
+        />
+      )}
 
-      {/* Edit Tenant Modal */}
-      <TenantForm
-        show={showEditModal}
-        onHide={() => setShowEditModal(false)}
-        onSuccess={handleFormSuccess}
-        tenant={selectedTenant}
-        isEdit={true}
-      />
+      {showEditModal && (
+        <TenantForm
+          show={showEditModal}
+          onHide={() => setShowEditModal(false)}
+          onSuccess={handleFormSuccess}
+          tenant={selectedTenant}
+          isEdit={true}
+        />
+      )}
 
-      {/* Tenant Detail Modal */}
-      <TenantDetailModal
-        show={showDetailModal}
-        onHide={() => setShowDetailModal(false)}
-        tenant={selectedTenant}
-      />
+      {showDetailModal && (
+        <TenantDetailModal
+          show={showDetailModal}
+          onHide={() => setShowDetailModal(false)}
+          tenant={selectedTenant}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
-      <div className={`modal fade ${showDeleteModal ? 'show' : ''}`} style={{ display: showDeleteModal ? 'block' : 'none' }}>
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Confirm Delete</h5>
-              <button 
-                type="button" 
-                className="btn-close" 
-                onClick={() => setShowDeleteModal(false)}
-              ></button>
-            </div>
-            <div className="modal-body">
-              <p>
-                Are you sure you want to delete tenant <strong>"{selectedTenant?.tenantName}"</strong>? 
-                This action will deactivate the tenant and cannot be undone.
-              </p>
-            </div>
-            <div className="modal-footer">
-              <Button 
-                variant="secondary" 
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                variant="danger" 
-                onClick={confirmDeleteTenant}
-                disabled={loading}
-              >
-                {loading ? 'Deleting...' : 'Delete'}
-              </Button>
+      {showDeleteModal && (
+        <div className="modal fade show" style={{ display: 'block' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirm Delete</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowDeleteModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <p>Are you sure you want to delete this tenant? This action cannot be undone.</p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={confirmDeleteTenant}
+                  disabled={loading}
+                >
+                  {loading ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
       {showDeleteModal && <div className="modal-backdrop fade show"></div>}
-    </div>
+    </ErrorBoundary>
   );
 };
 
