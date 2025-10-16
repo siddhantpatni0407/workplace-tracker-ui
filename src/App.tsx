@@ -22,6 +22,7 @@ import "./i18n";
 const Home = lazy(() => import("./components/common/home/Home"));
 const Login = lazy(() => import("./components/common/login/Login"));
 const Signup = lazy(() => import("./components/common/signUp/Signup"));
+const SuperAdminDashboard = lazy(() => import("./components/super-admin/dashboard/SuperAdminDashboard"));
 const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDashboard"));
 const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
 const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
@@ -168,6 +169,17 @@ const App: React.FC = () => {
 
               {/* Dashboards (protected) */}
               <Route
+                path={ROUTES.SUPER_ADMIN.DASHBOARD}
+                element={
+                  <PrivateRoute userRole="SUPER_ADMIN">
+                    <Layout>
+                      <SuperAdminDashboard />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
                 path={ROUTES.ADMIN.DASHBOARD}
                 element={
                   <PrivateRoute userRole="ADMIN">
@@ -181,7 +193,7 @@ const App: React.FC = () => {
               <Route
                 path={ROUTES.USER.DASHBOARD}
                 element={
-                  <PrivateRoute userRole="USER">
+                  <PrivateRoute userRole={["USER", "MANAGER"]}>
                     <Layout>
                       <UserDashboard />
                     </Layout>

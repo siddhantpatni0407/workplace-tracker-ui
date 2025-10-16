@@ -19,6 +19,9 @@ interface FormData {
   role: Role;
   acceptTerms: boolean;
   captcha: string;
+  platformUserCode: string;
+  tenantCode: string;
+  tenantUserCode: string;
 }
 
 const initialForm: FormData = {
@@ -30,6 +33,9 @@ const initialForm: FormData = {
   role: "USER",
   acceptTerms: false,
   captcha: "",
+  platformUserCode: "",
+  tenantCode: "",
+  tenantUserCode: "",
 };
 
 const Signup: React.FC = memo(() => {
@@ -75,7 +81,34 @@ const Signup: React.FC = memo(() => {
     role: {
       required: true,
       custom: (value: Role) => {
-        if (!["USER", "ADMIN"].includes(value)) return AUTH_ERRORS.INVALID_ROLE;
+        if (!["USER", "MANAGER", "ADMIN", "SUPER_ADMIN"].includes(value)) return AUTH_ERRORS.INVALID_ROLE;
+        return null;
+      }
+    },
+    platformUserCode: {
+      required: form.role === "SUPER_ADMIN",
+      custom: (value: string) => {
+        if (form.role === "SUPER_ADMIN" && !value.trim()) {
+          return "Platform User Code is required for Super Admin role";
+        }
+        return null;
+      }
+    },
+    tenantCode: {
+      required: form.role === "SUPER_ADMIN",
+      custom: (value: string) => {
+        if (form.role === "SUPER_ADMIN" && !value.trim()) {
+          return "Tenant Code is required for Super Admin role";
+        }
+        return null;
+      }
+    },
+    tenantUserCode: {
+      required: form.role === "ADMIN" || form.role === "USER" || form.role === "MANAGER",
+      custom: (value: string) => {
+        if ((form.role === "ADMIN" || form.role === "USER" || form.role === "MANAGER") && !value.trim()) {
+          return "Tenant User Code is required for this role";
+        }
         return null;
       }
     },
@@ -165,7 +198,14 @@ const Signup: React.FC = memo(() => {
   }, [error, success, errors, clearError, validate]);
 
   const handleRoleChange = useCallback((role: Role) => {
-    setForm(prev => ({ ...prev, role }));
+    setForm(prev => ({
+      ...prev,
+      role,
+      // Clear role-specific fields when role changes
+      platformUserCode: "",
+      tenantCode: "",
+      tenantUserCode: ""
+    }));
   }, []);
 
   const togglePasswordVisibility = useCallback(() => {
@@ -211,13 +251,23 @@ const Signup: React.FC = memo(() => {
     setLoading(true);
 
     try {
-      const response = await authService.signup({
+      const signupData: any = {
         name: form.name.trim(),
         mobileNumber: form.mobileNumber,
         email: form.email.trim(),
         password: form.password,
         role: form.role,
-      });
+      };
+
+      // Add role-specific fields
+      if (form.role === "SUPER_ADMIN") {
+        signupData.platformUserCode = form.platformUserCode.trim();
+        signupData.tenantCode = form.tenantCode.trim();
+      } else if (form.role === "ADMIN" || form.role === "USER" || form.role === "MANAGER") {
+        signupData.tenantUserCode = form.tenantUserCode.trim();
+      }
+
+      const response = await authService.signup(signupData);
 
       if (response.status === "SUCCESS") {
         setSuccess("Account created successfully. Your account is currently InActive — an administrator needs to activate it before you can sign in.");
@@ -386,6 +436,61 @@ const Signup: React.FC = memo(() => {
                   error={errors.role}
                 />
               </div>
+
+              {/* Role-specific code fields */}
+              {/* Platform User Code - required for SUPER_ADMIN */}
+              {form.role === "SUPER_ADMIN" && (
+                <FormInput
+                  type="text"
+                  name="platformUserCode"
+                  label={t(AUTH_FIELDS.LABELS.PLATFORM_USER_CODE)}
+                  placeholder={t(AUTH_FIELDS.PLACEHOLDERS.PLATFORM_USER_CODE)}
+                  value={form.platformUserCode}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors.platformUserCode}
+                  isRequired={true}
+                  leftIcon="bi-star-fill"
+                  className="form-control-lg"
+                  required
+                />
+              )}
+
+              {/* Tenant Code - required for SUPER_ADMIN only */}
+              {form.role === "SUPER_ADMIN" && (
+                <FormInput
+                  type="text"
+                  name="tenantCode"
+                  label={t(AUTH_FIELDS.LABELS.TENANT_CODE)}
+                  placeholder={t(AUTH_FIELDS.PLACEHOLDERS.TENANT_CODE)}
+                  value={form.tenantCode}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors.tenantCode}
+                  isRequired={true}
+                  leftIcon="bi-building-fill"
+                  className="form-control-lg"
+                  required
+                />
+              )}
+
+              {/* Tenant User Code - required for ADMIN, USER and MANAGER */}
+              {(form.role === "ADMIN" || form.role === "USER" || form.role === "MANAGER") && (
+                <FormInput
+                  type="text"
+                  name="tenantUserCode"
+                  label={t(AUTH_FIELDS.LABELS.TENANT_USER_CODE)}
+                  placeholder={t(AUTH_FIELDS.PLACEHOLDERS.TENANT_USER_CODE)}
+                  value={form.tenantUserCode}
+                  onChange={handleChange}
+                  disabled={loading}
+                  error={errors.tenantUserCode}
+                  isRequired={true}
+                  leftIcon="bi-person-badge-fill"
+                  className="form-control-lg"
+                  required
+                />
+              )}
 
               {/* Terms Checkbox */}
               <div className="mb-3 form-check">

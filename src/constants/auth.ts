@@ -15,6 +15,9 @@ export const AUTH_FIELDS = {
     MOBILE_NUMBER: 'auth.mobileNumber',
     CONFIRM_PASSWORD: 'auth.confirmPassword',
     ROLE: 'auth.role',
+    PLATFORM_USER_CODE: 'auth.platformUserCode',
+    TENANT_CODE: 'auth.tenantCode',
+    TENANT_USER_CODE: 'auth.tenantUserCode',
     ACCEPT_TERMS: 'auth.acceptTerms',
     CAPTCHA_VERIFICATION: 'auth.captchaVerification',
     CAPTCHA_LABEL: 'auth.captchaLabel'
@@ -29,6 +32,9 @@ export const AUTH_FIELDS = {
     CONFIRM_PASSWORD: 'auth.confirmPasswordPlaceholder',
     FULL_NAME: 'auth.fullNamePlaceholder',
     MOBILE_NUMBER: 'auth.mobileNumberPlaceholder',
+    PLATFORM_USER_CODE: 'auth.platformUserCodePlaceholder',
+    TENANT_CODE: 'auth.tenantCodePlaceholder',
+    TENANT_USER_CODE: 'auth.tenantUserCodePlaceholder',
     CAPTCHA: 'auth.captchaPlaceholder',
     ENTER_CAPTCHA: 'auth.enterCaptcha'
   },

@@ -99,7 +99,17 @@ const Navbar: React.FC = memo(() => {
       return isPlatformAuthenticated ? ROUTES.PLATFORM.DASHBOARD : ROUTES.PLATFORM.HOME;
     }
     if (!user) return ROUTES.PUBLIC.HOME;
-    return user.role === UserRole.ADMIN ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD;
+    
+    switch (user.role) {
+      case UserRole.SUPER_ADMIN:
+        return ROUTES.SUPER_ADMIN.DASHBOARD;
+      case UserRole.ADMIN:
+        return ROUTES.ADMIN.DASHBOARD;
+      case UserRole.MANAGER:
+      case UserRole.USER:
+      default:
+        return ROUTES.USER.DASHBOARD;
+    }
   }, [user, isPlatformContext, isPlatformAuthenticated]);
 
   const homeLink = useMemo(() => {
@@ -108,7 +118,17 @@ const Navbar: React.FC = memo(() => {
       return isPlatformAuthenticated ? ROUTES.PLATFORM.DASHBOARD : ROUTES.PLATFORM.HOME;
     }
     if (!user) return ROUTES.PUBLIC.HOME;
-    return user.role === UserRole.ADMIN ? ROUTES.ADMIN.DASHBOARD : ROUTES.USER.DASHBOARD;
+    
+    switch (user.role) {
+      case UserRole.SUPER_ADMIN:
+        return ROUTES.SUPER_ADMIN.DASHBOARD;
+      case UserRole.ADMIN:
+        return ROUTES.ADMIN.DASHBOARD;
+      case UserRole.MANAGER:
+      case UserRole.USER:
+      default:
+        return ROUTES.USER.DASHBOARD;
+    }
   }, [user, isPlatformContext, isPlatformAuthenticated]);
 
   // Active when location startsWith path (handles nested routes)

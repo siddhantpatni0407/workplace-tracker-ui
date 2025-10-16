@@ -23,9 +23,22 @@ export const useAuthRedirect = (): UseAuthRedirectReturn => {
     setIsRedirecting(true);
 
     setTimeout(() => {
-      const dashboardRoute = String(targetRole).toUpperCase() === 'ADMIN' 
-        ? ROUTES.ADMIN.DASHBOARD 
-        : ROUTES.USER.DASHBOARD;
+      let dashboardRoute: string;
+      
+      switch (String(targetRole).toUpperCase()) {
+        case 'SUPER_ADMIN':
+          dashboardRoute = ROUTES.SUPER_ADMIN.DASHBOARD;
+          break;
+        case 'ADMIN':
+          dashboardRoute = ROUTES.ADMIN.DASHBOARD;
+          break;
+        case 'MANAGER':
+        case 'USER':
+        default:
+          dashboardRoute = ROUTES.USER.DASHBOARD;
+          break;
+      }
+      
       navigate(dashboardRoute);
     }, delay);
   }, [navigate, user?.role]);

@@ -23,23 +23,59 @@ const RoleSelect: React.FC<RoleSelectProps> = ({
   const { t } = useTranslation();
   
   const getRoleIcon = (role: Role) => {
-    return role === "ADMIN" ? "bi-shield-fill-check" : "bi-person-fill";
+    switch (role) {
+      case "SUPER_ADMIN":
+        return "bi-star-fill";
+      case "ADMIN":
+        return "bi-shield-fill-check";
+      case "MANAGER":
+        return "bi-people-fill";
+      case "USER":
+      default:
+        return "bi-person-fill";
+    }
   };
 
   const getRoleDescription = (role: Role) => {
-    return role === "ADMIN" 
-      ? t("auth.roleAdminDescription")
-      : t("auth.roleUserDescription");
+    switch (role) {
+      case "SUPER_ADMIN":
+        return t("auth.roleSuperAdminDescription");
+      case "ADMIN":
+        return t("auth.roleAdminDescription");
+      case "MANAGER":
+        return t("auth.roleManagerDescription");
+      case "USER":
+      default:
+        return t("auth.roleUserDescription");
+    }
   };
 
   const getRoleName = (role: Role) => {
-    return role === "ADMIN" 
-      ? t("auth.roleAdmin")
-      : t("auth.roleUser");
+    switch (role) {
+      case "SUPER_ADMIN":
+        return t("auth.roleSuperAdmin");
+      case "ADMIN":
+        return t("auth.roleAdmin");
+      case "MANAGER":
+        return t("auth.roleManager");
+      case "USER":
+      default:
+        return t("auth.roleUser");
+    }
   };
 
   const getRoleBadgeColor = (role: Role) => {
-    return role === "ADMIN" ? "badge-admin" : "badge-user";
+    switch (role) {
+      case "SUPER_ADMIN":
+        return "badge-super-admin";
+      case "ADMIN":
+        return "badge-admin";
+      case "MANAGER":
+        return "badge-manager";
+      case "USER":
+      default:
+        return "badge-user";
+    }
   };
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -65,7 +101,9 @@ const RoleSelect: React.FC<RoleSelectProps> = ({
             aria-label={t("auth.selectRole")}
           >
             <option value="USER">👤 {t("auth.roleUser")}</option>
+            <option value="MANAGER">👥 {t("auth.roleManager")}</option>
             <option value="ADMIN">🛡️ {t("auth.roleAdmin")}</option>
+            <option value="SUPER_ADMIN">⭐ {t("auth.roleSuperAdmin")}</option>
           </select>
           <span className="input-group-text role-indicator">
             <i className="bi bi-chevron-down" />
@@ -83,7 +121,9 @@ const RoleSelect: React.FC<RoleSelectProps> = ({
           aria-label={t("auth.selectRole")}
         >
           <option value="USER">{t("auth.roleUser")}</option>
+          <option value="MANAGER">{t("auth.roleManager")}</option>
           <option value="ADMIN">{t("auth.roleAdmin")}</option>
+          <option value="SUPER_ADMIN">{t("auth.roleSuperAdmin")}</option>
         </select>
       )}
       

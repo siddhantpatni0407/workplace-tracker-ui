@@ -45,6 +45,9 @@ export interface SignupData {
   email: string;
   password: string;
   role: Role;
+  platformUserCode?: string;
+  tenantCode?: string;
+  tenantUserCode?: string;
 }
 
 /** Captcha payload (optional) - allow null so callers with string | null don't error */

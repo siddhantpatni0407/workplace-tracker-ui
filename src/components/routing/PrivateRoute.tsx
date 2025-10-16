@@ -10,9 +10,9 @@ interface PrivateRouteProps {
   /**
    * Optional role restriction.
    * - If omitted => any authenticated user allowed.
-   * - Can be a single role string like "USER" or "ADMIN", or an array of roles.
+   * - Can be a single role string or an array of roles.
    */
-  userRole?: "ADMIN" | "USER" | Array<"ADMIN" | "USER">;
+  userRole?: "SUPER_ADMIN" | "ADMIN" | "MANAGER" | "USER" | Array<"SUPER_ADMIN" | "ADMIN" | "MANAGER" | "USER">;
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, userRole }) => {

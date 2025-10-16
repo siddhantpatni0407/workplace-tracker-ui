@@ -167,10 +167,17 @@
     "fullName": "पूरा नाम",
     "mobileNumber": "मोबाइल नंबर",
     "role": "भूमिका",
+    "platformUserCode": "प्लेटफॉर्म उपयोगकर्ता कोड",
+    "tenantCode": "टेनेंट कोड",
+    "tenantUserCode": "टेनेंट उपयोगकर्ता कोड",
     "roleUser": "उपयोगकर्ता",
     "roleAdmin": "प्रशासक",
+    "roleSuperAdmin": "सुपर एडमिन",
+    "roleManager": "प्रबंधक",
     "roleUserDescription": "मूल अनुमतियों के साथ मानक उपयोगकर्ता पहुंच",
     "roleAdminDescription": "पूर्ण सिस्टम पहुंच और प्रबंधन विशेषाधिकार",
+    "roleSuperAdminDescription": "सभी टेनेंट्स पर पूर्ण नियंत्रण के साथ प्लेटफॉर्म प्रशासन",
+    "roleManagerDescription": "उपयोगकर्ता निरीक्षण क्षमताओं के साथ टीम प्रबंधन पहुंच",
     "selectRole": "उपयोगकर्ता भूमिका चुनें",
     "acceptTerms": "मैं स्वीकार करता हूं",
     "termsAndConditions": "नियम और शर्तें",
@@ -205,6 +212,43 @@
     "noAccount": "खाता नहीं है?",
     "haveAccount": "पहले से ही एक खाता है?",
     "signin": "साइन इन करें"
+  },
+  "superAdmin": {
+    "dashboard": {
+      "title": "सुपर एडमिन डैशबोर्ड",
+      "welcome": "सुपर एडमिन पोर्टल में स्वागत है",
+      "subtitle": "प्लेटफॉर्म प्रबंधन और नियंत्रण केंद्र"
+    },
+    "platformManagement": "प्लेटफॉर्म प्रबंधन",
+    "platformManagementDesc": "प्लेटफॉर्म-व्यापी सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",
+    "tenantManagement": "टेनेंट प्रबंधन",
+    "tenantManagementDesc": "सभी टेनेंट्स को बनाएं, प्रबंधित करें और मॉनिटर करें",
+    "subscriptionManagement": "सब्स्क्रिप्शन प्रबंधन",
+    "subscriptionManagementDesc": "बिलिंग और सब्स्क्रिप्शन प्लान संभालें",
+    "globalAnalytics": "ग्लोबल एनालिटिक्स",
+    "globalAnalyticsDesc": "प्लेटफॉर्म-व्यापी प्रदर्शन और उपयोग एनालिटिक्स",
+    "systemMonitoring": "सिस्टम मॉनिटरिंग",
+    "systemMonitoringDesc": "सिस्टम स्वास्थ्य और प्रदर्शन की निगरानी करें",
+    "auditLogs": "ऑडिट लॉग्स",
+    "auditLogsDesc": "सभी प्लेटफॉर्म गतिविधियों और परिवर्तनों को ट्रैक करें",
+    "backupManagement": "बैकअप प्रबंधन",
+    "backupManagementDesc": "डेटा बैकअप और रिकवरी प्रबंधित करें",
+    "settings": "सुपर एडमिन सेटिंग्स",
+    "settingsDesc": "ग्लोबल प्लेटफॉर्म सेटिंग्स कॉन्फ़िगर करें",
+    "quickStats": {
+      "totalTenants": "कुल टेनेंट्स",
+      "activeTenants": "सक्रिय टेनेंट्स",
+      "totalPlatformUsers": "प्लेटफॉर्म उपयोगकर्ता",
+      "totalEndUsers": "अंतिम उपयोगकर्ता",
+      "activeSubscriptions": "सक्रिय सब्स्क्रिप्शन",
+      "systemHealth": "सिस्टम स्वास्थ्य"
+    },
+    "systemHealth": {
+      "excellent": "उत्कृष्ट",
+      "good": "अच्छा",
+      "warning": "चेतावनी",
+      "critical": "गंभीर"
+    }
   },
   "platform": {
     "title": "प्लेटफॉर्म प्रबंधन",

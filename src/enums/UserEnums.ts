@@ -1,7 +1,9 @@
 // src/enums/UserEnums.ts
 
 export enum UserRole {
+  SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
+  MANAGER = 'MANAGER',
   USER = 'USER'
 }
 
@@ -57,7 +59,9 @@ export enum WeekStartDay {
 
 // Display labels for enums
 export const UserRoleLabels: Record<UserRole, string> = {
+  [UserRole.SUPER_ADMIN]: 'Super Admin',
   [UserRole.ADMIN]: 'Administrator',
+  [UserRole.MANAGER]: 'Manager',
   [UserRole.USER]: 'User'
 };
 

@@ -79,6 +79,19 @@ export const ROUTES = {
     ATTENDANCE: '/admin/attendance'
   },
 
+  // Super Admin routes
+  SUPER_ADMIN: {
+    DASHBOARD: '/super-admin/dashboard',
+    PLATFORM_MANAGEMENT: '/super-admin/platform-management',
+    TENANT_MANAGEMENT: '/super-admin/tenant-management',
+    SUBSCRIPTION_MANAGEMENT: '/super-admin/subscription-management',
+    GLOBAL_ANALYTICS: '/super-admin/global-analytics',
+    SYSTEM_MONITORING: '/super-admin/system-monitoring',
+    SETTINGS: '/super-admin/settings',
+    AUDIT_LOGS: '/super-admin/audit-logs',
+    BACKUP_MANAGEMENT: '/super-admin/backup-management'
+  },
+
   // API routes (for reference)
   API: {
     BASE: '/api/v1',

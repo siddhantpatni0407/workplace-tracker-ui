@@ -1,6 +1,6 @@
 // src/types/auth.ts
 
-export type Role = "ADMIN" | "USER";
+export type Role = "SUPER_ADMIN" | "ADMIN" | "MANAGER" | "USER";
 
 /** Credentials used by login API (email + password) */
 export interface LoginCredentials {
@@ -15,6 +15,9 @@ export interface SignupData {
   email: string;
   password: string;
   role: Role;
+  platformUserCode?: string;
+  tenantCode?: string;
+  tenantUserCode?: string;
 }
 
 /** Lightweight user shape stored in localStorage / used in context */
