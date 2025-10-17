@@ -17,8 +17,14 @@ const getPlatformRoleIcon = (role: string): string => {
   switch (role) {
     case 'PLATFORM_ADMIN':
       return 'shield-check';
+    case 'SUPER_ADMIN':
+      return 'star-fill';
     case 'ADMIN':
       return 'shield-check';
+    case 'MANAGER':
+      return 'people-fill';
+    case 'USER':
+      return 'person-circle';
     default:
       return 'person-circle';
   }
@@ -28,8 +34,14 @@ const getPlatformRoleDisplay = (role: string): string => {
   switch (role) {
     case 'PLATFORM_ADMIN':
       return 'PLATFORM USER';
+    case 'SUPER_ADMIN':
+      return 'SUPER ADMIN';
     case 'ADMIN':
       return 'ADMIN';
+    case 'MANAGER':
+      return 'MANAGER';
+    case 'USER':
+      return 'USER';
     default:
       return 'USER';
   }

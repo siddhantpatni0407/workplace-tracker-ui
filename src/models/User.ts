@@ -2,6 +2,8 @@
 // Note: This file expects src/models/Api.ts to export `ApiResponse` and `ApiError`.
 // Example usage in code: import { ApiResponse } from './Api';
 
+import { UserRole } from '../enums/UserEnums';
+
 export interface BaseUser {
   userId?: number;
   name: string;
@@ -58,8 +60,7 @@ export interface UserStatusUpdatePayload {
   reason?: string;
 }
 
-// User role type
-export type UserRole = 'ADMIN' | 'USER';
+
 
 // User status for filtering and display
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'LOCKED' | 'ALL';

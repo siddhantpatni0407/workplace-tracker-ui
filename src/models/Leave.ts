@@ -1,5 +1,5 @@
 // src/models/Leave.ts
-import { UserRole } from './User';
+import { UserRole } from '../enums/UserEnums';
 import { DayPart } from '../enums/LeaveEnums';
 
 export interface Leave {
