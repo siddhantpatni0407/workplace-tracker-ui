@@ -52,6 +52,8 @@
     "redirecting": {
       "userDashboard": "Redirigiendo al Panel de Usuario",
       "adminDashboard": "Redirigiendo al Panel de Administrador",
+      "superAdminDashboard": "Redirigiendo al Panel de Super Administrador",
+      "platformDashboard": "Redirigiendo al Panel de Plataforma",
       "logout": "Cerrando sesión...",
       "login": "Redirigiendo al inicio de sesión..."
     },
@@ -60,6 +62,8 @@
       "loadingProfile": "Cargando perfil de usuario...",
       "preparingUser": "Preparando panel de usuario...",
       "preparingAdmin": "Preparando panel de administrador...",
+      "preparingSuperAdmin": "Preparando panel de super administrador...",
+      "preparingPlatform": "Preparando panel de plataforma...",
       "almostReady": "Casi listo...",
       "signingOut": "Cerrando sesión...",
       "clearingSession": "Borrando datos de sesión...",

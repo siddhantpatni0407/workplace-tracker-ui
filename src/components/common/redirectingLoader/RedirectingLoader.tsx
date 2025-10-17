@@ -67,10 +67,21 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
       setCurrentMessage(message);
     } else {
       const roleKey = String(targetRole).toUpperCase();
-      if (roleKey === 'ADMIN') {
-        setCurrentMessage(t('loading.redirecting.adminDashboard'));
-      } else {
-        setCurrentMessage(t('loading.redirecting.userDashboard'));
+      switch (roleKey) {
+        case 'PLATFORM_USER':
+        case 'PLATFORM_ADMIN':
+          setCurrentMessage(t('loading.redirecting.platformDashboard'));
+          break;
+        case 'SUPER_ADMIN':
+          setCurrentMessage(t('loading.redirecting.superAdminDashboard'));
+          break;
+        case 'ADMIN':
+          setCurrentMessage(t('loading.redirecting.adminDashboard'));
+          break;
+        case 'USER':
+        default:
+          setCurrentMessage(t('loading.redirecting.userDashboard'));
+          break;
       }
     }
   }, [message, role, user?.role, t]);
@@ -109,7 +120,7 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
 
   const getLoadingSteps = () => {
     const targetRole = role || user?.role || 'USER';
-    const isAdmin = String(targetRole).toUpperCase() === 'ADMIN';
+    const roleKey = String(targetRole).toUpperCase();
     
     // Check if this is a logout scenario
     if (currentMessage.toLowerCase().includes('logout') || currentMessage.toLowerCase().includes('logging out')) {
@@ -120,10 +131,29 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
       ];
     }
     
+    // Determine preparation message based on specific role
+    let preparingStep = '';
+    switch (roleKey) {
+      case 'PLATFORM_USER':
+      case 'PLATFORM_ADMIN':
+        preparingStep = t('loading.steps.preparingPlatform');
+        break;
+      case 'SUPER_ADMIN':
+        preparingStep = t('loading.steps.preparingSuperAdmin');
+        break;
+      case 'ADMIN':
+        preparingStep = t('loading.steps.preparingAdmin');
+        break;
+      case 'USER':
+      default:
+        preparingStep = t('loading.steps.preparingUser');
+        break;
+    }
+    
     return [
       { text: t('loading.steps.authenticating'), delay: 0 },
       { text: t('loading.steps.loadingProfile'), delay: 800 },
-      { text: isAdmin ? t('loading.steps.preparingAdmin') : t('loading.steps.preparingUser'), delay: 1600 },
+      { text: preparingStep, delay: 1600 },
       { text: t('loading.steps.almostReady'), delay: 2400 }
     ];
   };

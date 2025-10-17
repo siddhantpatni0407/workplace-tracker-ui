@@ -61,6 +61,8 @@
     "redirecting": {
       "userDashboard": "Redirecting to User Dashboard",
       "adminDashboard": "Redirecting to Admin Dashboard",
+      "superAdminDashboard": "Redirecting to Super Admin Dashboard",
+      "platformDashboard": "Redirecting to Platform Dashboard",
       "logout": "Logging out...",
       "login": "Redirecting to login..."
     },
@@ -69,6 +71,8 @@
       "loadingProfile": "Loading user profile...",
       "preparingUser": "Preparing user dashboard...",
       "preparingAdmin": "Preparing admin dashboard...",
+      "preparingSuperAdmin": "Preparing super admin dashboard...",
+      "preparingPlatform": "Preparing platform dashboard...",
       "almostReady": "Almost ready...",
       "signingOut": "Signing out...",
       "clearingSession": "Clearing session data...",

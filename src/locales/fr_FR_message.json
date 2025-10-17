@@ -32,6 +32,8 @@
     "redirecting": {
       "userDashboard": "Redirection vers le Tableau de Bord Utilisateur",
       "adminDashboard": "Redirection vers le Tableau de Bord Administrateur",
+      "superAdminDashboard": "Redirection vers le Tableau de Bord Super Administrateur",
+      "platformDashboard": "Redirection vers le Tableau de Bord de Plateforme",
       "logout": "Déconnexion...",
       "login": "Redirection vers la connexion..."
     },
@@ -40,6 +42,8 @@
       "loadingProfile": "Chargement du profil utilisateur...",
       "preparingUser": "Préparation du tableau de bord utilisateur...",
       "preparingAdmin": "Préparation du tableau de bord administrateur...",
+      "preparingSuperAdmin": "Préparation du tableau de bord super administrateur...",
+      "preparingPlatform": "Préparation du tableau de bord de plateforme...",
       "almostReady": "Presque prêt...",
       "signingOut": "Déconnexion...",
       "clearingSession": "Effacement des données de session...",
