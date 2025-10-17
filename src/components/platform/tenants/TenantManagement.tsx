@@ -271,215 +271,172 @@ const TenantManagement: React.FC = () => {
       />
 
       <div className="tenant-management">
-        <div className="tenant-dashboard-layout">
-          {/* Left Sidebar */}
-          <div className="tenant-left-sidebar">
-            <div className="tenant-sidebar-header">
-              <h6 className="tenant-sidebar-title">
-                <i className="bi bi-building"></i>
-                Tenant Center
-              </h6>
-            </div>
+        <div className="container-fluid">
+          
+          {/* Alerts */}
+          {error && (
+            <Alert 
+              variant="error" 
+              message={error || ''} 
+              onClose={() => setError(null)}
+            />
+          )}
+          {success && (
+            <Alert 
+              variant="success" 
+              message={success || ''} 
+              onClose={() => setSuccess(null)}
+            />
+          )}
 
-            {/* Search Controls */}
-            <div className="tenant-sidebar-controls">
-              <div className="tenant-search-box">
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <i className="bi bi-search"></i>
-                  </span>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search tenants..."
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                  />
-                  {searchTerm && (
-                    <button
-                      className="btn btn-outline-secondary"
-                      type="button"
-                      onClick={() => setSearchTerm('')}
-                    >
-                      <i className="bi bi-x"></i>
-                    </button>
-                  )}
+          {/* Quick Actions Bar */}
+          <div className="tenant-quick-actions-bar">
+            <div className="row align-items-center">
+              <div className="col-lg-6">
+                <div className="tenant-search-controls">
+                  <div className="input-group">
+                    <span className="input-group-text">
+                      <i className="bi bi-search"></i>
+                    </span>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Search tenants..."
+                      value={searchTerm}
+                      onChange={handleSearchChange}
+                    />
+                    {searchTerm && (
+                      <button
+                        className="btn btn-outline-secondary"
+                        type="button"
+                        onClick={() => setSearchTerm('')}
+                      >
+                        <i className="bi bi-x"></i>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-
-            {/* Quick Actions Menu */}
-            <div className="tenant-sidebar-menu">
-              <div className="tenant-menu-section">
-                <div className="tenant-menu-section-title">Quick Actions</div>
-                <div 
-                  className="tenant-menu-item active"
-                  onClick={() => setStatusFilter('all')}
-                >
-                  <i className="bi bi-grid-3x3-gap"></i>
-                  All Tenants
-                </div>
-                <div 
-                  className="tenant-menu-item"
-                  onClick={() => setStatusFilter('active')}
-                >
-                  <i className="bi bi-check-circle"></i>
-                  Active Tenants
-                </div>
-                <div 
-                  className="tenant-menu-item"
-                  onClick={() => setStatusFilter('inactive')}
-                >
-                  <i className="bi bi-x-circle"></i>
-                  Inactive Tenants
-                </div>
-                <div 
-                  className="tenant-menu-item"
-                  onClick={handleCreateTenant}
-                >
-                  <i className="bi bi-plus-circle"></i>
-                  Create New Tenant
-                </div>
-              </div>
-
-              <div className="tenant-menu-section">
-                <div className="tenant-menu-section-title">Reports</div>
-                <div className="tenant-menu-item">
-                  <i className="bi bi-graph-up"></i>
-                  Usage Analytics
-                </div>
-                <div className="tenant-menu-item">
-                  <i className="bi bi-file-text"></i>
-                  Activity Logs
+              <div className="col-lg-6">
+                <div className="tenant-action-buttons d-flex gap-2 justify-content-end">
+                  <button 
+                    className={`btn ${statusFilter === 'all' ? 'btn-primary' : 'btn-outline-primary'} btn-sm`}
+                    onClick={() => setStatusFilter('all')}
+                  >
+                    <i className="bi bi-grid-3x3-gap me-1"></i>
+                    All ({tenants.length})
+                  </button>
+                  <button 
+                    className={`btn ${statusFilter === 'active' ? 'btn-success' : 'btn-outline-success'} btn-sm`}
+                    onClick={() => setStatusFilter('active')}
+                  >
+                    <i className="bi bi-check-circle me-1"></i>
+                    Active ({tenants.filter(t => t.isActive).length})
+                  </button>
+                  <button 
+                    className={`btn ${statusFilter === 'inactive' ? 'btn-warning' : 'btn-outline-warning'} btn-sm`}
+                    onClick={() => setStatusFilter('inactive')}
+                  >
+                    <i className="bi bi-x-circle me-1"></i>
+                    Inactive ({tenants.filter(t => !t.isActive).length})
+                  </button>
+                  <button 
+                    className="btn btn-outline-info btn-sm"
+                    onClick={loadTenants}
+                    disabled={loading}
+                  >
+                    <i className={`bi bi-arrow-clockwise ${loading ? 'spin' : ''} me-1`}></i>
+                    Refresh
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Main Content Area */}
-          <div className="tenant-main-content">
-            <div className="tenant-content-wrapper">
-              
-              {/* Alerts */}
-              {error && (
-                <Alert 
-                  variant="error" 
-                  message={error || ''} 
-                  onClose={() => setError(null)}
-                />
-              )}
-              {success && (
-                <Alert 
-                  variant="success" 
-                  message={success || ''} 
-                  onClose={() => setSuccess(null)}
-                />
-              )}
-
-              {/* Welcome Section */}
-              <div className="tenant-welcome-section">
-                <div className="tenant-welcome-card">
-                  <div className="tenant-welcome-content">
-                    <h4>Welcome to Tenant Management</h4>
-                    <p>
-                      Manage your platform tenants, monitor their activity, and oversee organizational settings.
-                      Create new tenant workspaces or modify existing ones with comprehensive administrative controls.
-                    </p>
-                  </div>
-                  <div className="tenant-welcome-icon">
-                    <i className="bi bi-buildings"></i>
-                  </div>
+          {/* Enhanced Statistics Cards */}
+          <div className="tenant-stats-cards">
+            <div className="tenant-stat-card">
+              <div className="tenant-stat-header">
+                <span className="tenant-stat-title">Total Tenants</span>
+                <div className="tenant-stat-icon primary">
+                  <i className="bi bi-building"></i>
                 </div>
               </div>
+              <div className="tenant-stat-value">{tenants.length}</div>
+              <div className="tenant-stat-subtitle">
+                <i className="bi bi-arrow-up"></i>
+                Growing steadily
+                <span className="tenant-stat-trend positive">+12%</span>
+              </div>
+            </div>
 
-              {/* Statistics Cards */}
-              <div className="tenant-stats-cards">
-                <div className="tenant-stat-card">
-                  <div className="tenant-stat-header">
-                    <span className="tenant-stat-title">Total Tenants</span>
-                    <div className="tenant-stat-icon primary">
-                      <i className="bi bi-building"></i>
-                    </div>
-                  </div>
-                  <div className="tenant-stat-value">{tenants.length}</div>
-                  <div className="tenant-stat-change positive">
-                    <i className="bi bi-arrow-up"></i>
-                    Growing steadily
-                  </div>
-                </div>
-
-                <div className="tenant-stat-card">
-                  <div className="tenant-stat-header">
-                    <span className="tenant-stat-title">Active Tenants</span>
-                    <div className="tenant-stat-icon success">
-                      <i className="bi bi-check-circle"></i>
-                    </div>
-                  </div>
-                  <div className="tenant-stat-value">{tenants.filter(t => t.isActive).length}</div>
-                  <div className="tenant-stat-change positive">
-                    <i className="bi bi-arrow-up"></i>
-                    Healthy rate
-                  </div>
-                </div>
-
-                <div className="tenant-stat-card">
-                  <div className="tenant-stat-header">
-                    <span className="tenant-stat-title">Inactive Tenants</span>
-                    <div className="tenant-stat-icon warning">
-                      <i className="bi bi-pause-circle"></i>
-                    </div>
-                  </div>
-                  <div className="tenant-stat-value">{tenants.filter(t => !t.isActive).length}</div>
-                  <div className="tenant-stat-change">
-                    <i className="bi bi-dash"></i>
-                    Monitoring
-                  </div>
-                </div>
-
-                <div className="tenant-stat-card">
-                  <div className="tenant-stat-header">
-                    <span className="tenant-stat-title">This Month</span>
-                    <div className="tenant-stat-icon primary">
-                      <i className="bi bi-calendar-plus"></i>
-                    </div>
-                  </div>
-                  <div className="tenant-stat-value">
-                    {tenants.filter(t => {
-                      const createdDate = new Date(t.createdDate || '');
-                      const currentMonth = new Date().getMonth();
-                      return createdDate.getMonth() === currentMonth;
-                    }).length}
-                  </div>
-                  <div className="tenant-stat-change positive">
-                    <i className="bi bi-arrow-up"></i>
-                    New signups
-                  </div>
+            <div className="tenant-stat-card">
+              <div className="tenant-stat-header">
+                <span className="tenant-stat-title">Active Tenants</span>
+                <div className="tenant-stat-icon success">
+                  <i className="bi bi-check-circle"></i>
                 </div>
               </div>
+              <div className="tenant-stat-value">{tenants.filter(t => t.isActive).length}</div>
+              <div className="tenant-stat-subtitle">
+                <i className="bi bi-check"></i>
+                Healthy rate
+                <span className="tenant-stat-trend positive">+5%</span>
+              </div>
+            </div>
 
-              {/* Tenant Cards Section */}
-              <div className="tenant-cards-section">
-                <div className="tenant-cards-header">
-                  <h3 className="tenant-cards-title">
-                    <i className="bi bi-grid-3x3-gap"></i>
-                    Tenant Overview
-                  </h3>
-                  <div className="tenant-actions">
+            <div className="tenant-stat-card">
+              <div className="tenant-stat-header">
+                <span className="tenant-stat-title">Inactive Tenants</span>
+                <div className="tenant-stat-icon warning">
+                  <i className="bi bi-pause-circle"></i>
+                </div>
+              </div>
+              <div className="tenant-stat-value">{tenants.filter(t => !t.isActive).length}</div>
+              <div className="tenant-stat-subtitle">
+                <i className="bi bi-dash"></i>
+                Monitoring
+                <span className="tenant-stat-trend neutral">--</span>
+              </div>
+            </div>
+
+            <div className="tenant-stat-card">
+              <div className="tenant-stat-header">
+                <span className="tenant-stat-title">This Month</span>
+                <div className="tenant-stat-icon info">
+                  <i className="bi bi-calendar-plus"></i>
+                </div>
+              </div>
+              <div className="tenant-stat-value">
+                {tenants.filter(t => {
+                  const createdDate = new Date(t.createdDate || '');
+                  const currentMonth = new Date().getMonth();
+                  return createdDate.getMonth() === currentMonth;
+                }).length}
+              </div>
+              <div className="tenant-stat-subtitle">
+                <i className="bi bi-plus"></i>
+                New signups
+                <span className="tenant-stat-trend positive">+8%</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Enhanced Tenant Table Section */}
+          <div className="tenant-table-section">
+            <div className="tenant-table-header">
+              <h3 className="tenant-table-title">
+                <i className="bi bi-table me-2"></i>
+                Tenant Overview
+              </h3>
+              <div className="tenant-table-controls">
+                <div className="tenant-filters">
+                  <div className="tenant-filter-group">
+                    <label className="tenant-filter-label">Sort By</label>
                     <select
-                      className="form-select form-select-sm"
-                      value={statusFilter}
-                      onChange={handleStatusFilterChange}
-                      style={{ width: 'auto' }}
-                    >
-                      <option value="all">All Status</option>
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                    <select
-                      className="form-select form-select-sm"
+                      className="tenant-filter-select"
                       value={`${sortBy}-${sortDir}`}
                       onChange={handleSortSelectChange}
-                      style={{ width: 'auto' }}
                     >
                       <option value="tenantName-asc">Name A-Z</option>
                       <option value="tenantName-desc">Name Z-A</option>
@@ -488,148 +445,236 @@ const TenantManagement: React.FC = () => {
                       <option value="createdDate-desc">Newest First</option>
                       <option value="createdDate-asc">Oldest First</option>
                     </select>
-                    <button 
-                      className="btn btn-outline-secondary btn-sm"
-                      onClick={loadTenants}
-                      disabled={loading}
+                  </div>
+                  <div className="tenant-filter-group">
+                    <label className="tenant-filter-label">Items Per Page</label>
+                    <select
+                      className="tenant-filter-select"
+                      value={itemsPerPage}
+                      onChange={handleItemsPerPageChange}
                     >
-                      <i className="bi bi-arrow-clockwise"></i>
-                    </button>
+                      <option value={5}>5</option>
+                      <option value={10}>10</option>
+                      <option value={25}>25</option>
+                      <option value={50}>50</option>
+                    </select>
                   </div>
                 </div>
-
-                {loading ? (
-                  <div className="tenant-loading">
-                    <div className="tenant-loading-spinner">
-                      <LoadingSpinner />
-                    </div>
-                    <p className="tenant-loading-text">Loading tenants...</p>
-                  </div>
-                ) : tenants.length === 0 ? (
-                  <div className="tenant-empty-state">
-                    <div className="tenant-empty-icon">
-                      <i className="bi bi-building"></i>
-                    </div>
-                    <h5 className="tenant-empty-title">
-                      {searchTerm ? 'No tenants found' : 'No tenants available'}
-                    </h5>
-                    <p className="tenant-empty-subtitle">
-                      {searchTerm 
-                        ? 'Try adjusting your search criteria or filters'
-                        : 'Start by creating your first tenant workspace'
-                      }
-                    </p>
-                    {!searchTerm && (
-                      <button 
-                        className="btn btn-primary-gradient"
-                        onClick={handleCreateTenant}
-                      >
-                        <i className="bi bi-plus me-2"></i>
-                        Create First Tenant
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <div className="tenant-grid">
-                    {tenants.map((tenant, index) => (
-                      <div key={tenant.tenantCode || index} className="tenant-card">
-                        <div className="tenant-card-header">
-                          <span className="tenant-code">{tenant.tenantCode}</span>
-                          <span className={`tenant-status ${tenant.isActive ? 'active' : 'inactive'}`}>
-                            {tenant.isActive ? 'Active' : 'Inactive'}
-                          </span>
-                        </div>
-                        
-                        <h5 className="tenant-name">{tenant.tenantName}</h5>
-                        
-                        <div className="tenant-metadata">
-                          <div className="tenant-meta-item">
-                            <div className="tenant-meta-label">Subscription</div>
-                            <div className="tenant-meta-value">
-                              {tenant.subscriptionCode || 'N/A'}
-                            </div>
-                          </div>
-                          <div className="tenant-meta-item">
-                            <div className="tenant-meta-label">Contact</div>
-                            <div className="tenant-meta-value">
-                              {tenant.contactEmail || 'N/A'}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="tenant-card-actions">
-                          <button
-                            className="tenant-action-btn view"
-                            onClick={() => handleViewTenant(tenant)}
-                            title="View Details"
-                          >
-                            <i className="bi bi-eye"></i>
-                            View
-                          </button>
-                          <button
-                            className="tenant-action-btn edit"
-                            onClick={() => handleEditTenant(tenant)}
-                            title="Edit Tenant"
-                          >
-                            <i className="bi bi-pencil"></i>
-                            Edit
-                          </button>
-                          <button
-                            className="tenant-action-btn status"
-                            onClick={() => handleToggleStatus(tenant)}
-                            title={tenant.isActive ? 'Deactivate' : 'Activate'}
-                          >
-                            <i className={`bi bi-${tenant.isActive ? 'pause' : 'play'}-circle`}></i>
-                            {tenant.isActive ? 'Pause' : 'Activate'}
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Pagination */}
-                {tenants.length > 0 && totalPages > 1 && (
-                  <div className="d-flex justify-content-between align-items-center mt-4">
-                    <div className="text-muted">
-                      Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} tenants
-                    </div>
-                    <nav>
-                      <ul className="pagination pagination-sm mb-0">
-                        <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
-                          <button 
-                            className="page-link" 
-                            onClick={() => handlePageChange(currentPage - 1)}
-                            disabled={currentPage === 1}
-                          >
-                            Previous
-                          </button>
-                        </li>
-                        {getPaginationPages().map((page: number) => (
-                          <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
-                            <button 
-                              className="page-link" 
-                              onClick={() => handlePageChange(page)}
-                            >
-                              {page}
-                            </button>
-                          </li>
-                        ))}
-                        <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
-                          <button 
-                            className="page-link" 
-                            onClick={() => handlePageChange(currentPage + 1)}
-                            disabled={currentPage === totalPages}
-                          >
-                            Next
-                          </button>
-                        </li>
-                      </ul>
-                    </nav>
-                  </div>
-                )}
               </div>
             </div>
+
+            {loading ? (
+              <div className="tenant-loading">
+                <div className="tenant-loading-spinner">
+                  <LoadingSpinner />
+                </div>
+                <p className="tenant-loading-text">Loading tenants...</p>
+              </div>
+            ) : tenants.length === 0 ? (
+              <div className="tenant-empty-state">
+                <div className="tenant-empty-icon">
+                  <i className="bi bi-building"></i>
+                </div>
+                <h5 className="tenant-empty-title">
+                  {searchTerm ? 'No tenants found' : 'No tenants available'}
+                </h5>
+                <p className="tenant-empty-subtitle">
+                  {searchTerm 
+                    ? 'Try adjusting your search criteria or filters'
+                    : 'Start by creating your first tenant workspace'
+                  }
+                </p>
+                {!searchTerm && (
+                  <button 
+                    className="btn btn-primary-gradient"
+                    onClick={handleCreateTenant}
+                  >
+                    <i className="bi bi-plus me-2"></i>
+                    Create First Tenant
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="tenant-table-wrapper">
+                <div className="table-responsive">
+                  <table className="table tenant-table">
+                    <thead>
+                      <tr>
+                        <th>
+                          <button 
+                            className="btn btn-link p-0 text-decoration-none d-flex align-items-center"
+                            onClick={() => {
+                              setSortBy('tenantCode');
+                              setSortDir(sortBy === 'tenantCode' && sortDir === 'asc' ? 'desc' : 'asc');
+                            }}
+                          >
+                            Tenant Code
+                            <i className={`bi bi-arrow-${sortBy === 'tenantCode' && sortDir === 'desc' ? 'down' : 'up'} ms-1`}></i>
+                          </button>
+                        </th>
+                        <th>
+                          <button 
+                            className="btn btn-link p-0 text-decoration-none d-flex align-items-center"
+                            onClick={() => {
+                              setSortBy('tenantName');
+                              setSortDir(sortBy === 'tenantName' && sortDir === 'asc' ? 'desc' : 'asc');
+                            }}
+                          >
+                            Tenant Name
+                            <i className={`bi bi-arrow-${sortBy === 'tenantName' && sortDir === 'desc' ? 'down' : 'up'} ms-1`}></i>
+                          </button>
+                        </th>
+                        <th>Subscription</th>
+                        <th>Contact Email</th>
+                        <th>Status</th>
+                        <th>
+                          <button 
+                            className="btn btn-link p-0 text-decoration-none d-flex align-items-center"
+                            onClick={() => {
+                              setSortBy('createdDate');
+                              setSortDir(sortBy === 'createdDate' && sortDir === 'asc' ? 'desc' : 'asc');
+                            }}
+                          >
+                            Created Date
+                            <i className={`bi bi-arrow-${sortBy === 'createdDate' && sortDir === 'desc' ? 'down' : 'up'} ms-1`}></i>
+                          </button>
+                        </th>
+                        <th className="text-center">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tenants.map((tenant, index) => (
+                        <tr key={tenant.tenantCode || index} className="tenant-table-row">
+                          <td>
+                            <span className="tenant-code-badge">{tenant.tenantCode}</span>
+                          </td>
+                          <td>
+                            <div className="tenant-name-cell">
+                              <strong>{tenant.tenantName}</strong>
+                            </div>
+                          </td>
+                          <td>
+                            <span className="tenant-subscription">
+                              {tenant.subscriptionCode || 'N/A'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="tenant-email">
+                              {tenant.contactEmail || 'N/A'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className={`badge tenant-status-badge ${tenant.isActive ? 'bg-success' : 'bg-warning'}`}>
+                              <i className={`bi bi-${tenant.isActive ? 'check-circle' : 'pause-circle'} me-1`}></i>
+                              {tenant.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td>
+                            <span className="tenant-date">
+                              {formatDate(tenant.createdDate || '')}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="tenant-actions-dropdown">
+                              <div className="dropdown">
+                                <button
+                                  className="btn btn-outline-secondary btn-sm dropdown-toggle"
+                                  type="button"
+                                  data-bs-toggle="dropdown"
+                                  aria-expanded="false"
+                                >
+                                  <i className="bi bi-three-dots"></i>
+                                </button>
+                                <ul className="dropdown-menu">
+                                  <li>
+                                    <button
+                                      className="dropdown-item"
+                                      onClick={() => handleViewTenant(tenant)}
+                                    >
+                                      <i className="bi bi-eye me-2"></i>
+                                      View Details
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      className="dropdown-item"
+                                      onClick={() => handleEditTenant(tenant)}
+                                    >
+                                      <i className="bi bi-pencil me-2"></i>
+                                      Edit Tenant
+                                    </button>
+                                  </li>
+                                  <li><hr className="dropdown-divider" /></li>
+                                  <li>
+                                    <button
+                                      className="dropdown-item"
+                                      onClick={() => handleToggleStatus(tenant)}
+                                    >
+                                      <i className={`bi bi-${tenant.isActive ? 'pause' : 'play'}-circle me-2`}></i>
+                                      {tenant.isActive ? 'Deactivate' : 'Activate'}
+                                    </button>
+                                  </li>
+                                  <li>
+                                    <button
+                                      className="dropdown-item text-danger"
+                                      onClick={() => handleDeleteTenant(tenant)}
+                                    >
+                                      <i className="bi bi-trash me-2"></i>
+                                      Delete
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {tenants.length > 0 && totalPages > 1 && (
+              <div className="d-flex justify-content-between align-items-center mt-4">
+                <div className="text-muted">
+                  Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} tenants
+                </div>
+                <nav>
+                  <ul className="pagination pagination-sm mb-0">
+                    <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                      <button 
+                        className="page-link" 
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        Previous
+                      </button>
+                    </li>
+                    {getPaginationPages().map((page: number) => (
+                      <li key={page} className={`page-item ${currentPage === page ? 'active' : ''}`}>
+                        <button 
+                          className="page-link" 
+                          onClick={() => handlePageChange(page)}
+                        >
+                          {page}
+                        </button>
+                      </li>
+                    ))}
+                    <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
+                      <button 
+                        className="page-link" 
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                      >
+                        Next
+                      </button>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            )}
           </div>
         </div>
       </div>

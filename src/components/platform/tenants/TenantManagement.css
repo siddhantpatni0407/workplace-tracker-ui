@@ -1,178 +1,127 @@
-/* Enhanced Tenant Management Styles */
-/* Modern Dashboard Design with Left Sidebar */
+/* =================================================
+   ENHANCED TENANT MANAGEMENT STYLES
+   Modern Table-Based Design with Glass Morphism
+   ================================================= */
 
+/* Main Container */
 .tenant-management {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   min-height: 100vh;
-  padding: 0;
-}
-
-/* Dashboard Layout */
-.tenant-dashboard-layout {
-  display: flex;
-  min-height: calc(100vh - 80px);
+  background: linear-gradient(135deg, 
+    rgba(98, 0, 234, 0.1) 0%, 
+    rgba(0, 176, 255, 0.05) 25%, 
+    rgba(255, 255, 255, 0.8) 50%, 
+    rgba(139, 69, 195, 0.05) 75%, 
+    rgba(98, 0, 234, 0.1) 100%);
   position: relative;
+  padding: 2rem 0;
 }
 
-/* Left Sidebar with enhanced Modern Purple styling */
-.tenant-left-sidebar {
-  width: 320px;
-  background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 80px);
-  position: fixed;
-  left: 0;
-  top: 80px;
-  box-shadow: 4px 0 20px rgba(102, 126, 234, 0.25);
-  border-right: 1px solid rgba(255,255,255,0.15);
-  overflow: hidden;
-  z-index: 1000;
-}
-
-.tenant-sidebar-header {
-  padding: 24px 20px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.05);
-}
-
-.tenant-sidebar-title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: white;
-  display: flex;
-  align-items: center;
-  letter-spacing: 0.5px;
-}
-
-.tenant-sidebar-title i {
-  margin-right: 12px;
-  font-size: 20px;
-  color: rgba(255,255,255,0.9);
-}
-
-/* Sidebar Controls */
-.tenant-sidebar-controls {
-  padding: 16px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.tenant-search-box .input-group {
-  border-radius: 25px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.tenant-search-box .input-group-text {
-  background: rgba(255,255,255,0.9);
-  border: none;
-  color: #667eea;
-  font-weight: 500;
-}
-
-.tenant-search-box .form-control {
-  background: rgba(255,255,255,0.95);
-  border: none;
-  color: #2d3748;
-  font-weight: 500;
-}
-
-.tenant-search-box .form-control:focus {
-  background: white;
-  box-shadow: none;
-  border-color: transparent;
-}
-
-.tenant-search-box .form-control::placeholder {
-  color: #9ca3af;
-  font-weight: 400;
-}
-
-/* Main Content Area */
-.tenant-main-content {
-  flex: 1;
-  margin-left: 320px;
-  padding: 0;
-  background: var(--page-bg);
-  min-height: calc(100vh - 80px);
-}
-
-.tenant-content-wrapper {
-  padding: 32px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-/* Welcome Section */
-.tenant-welcome-section {
-  margin-bottom: 32px;
-}
-
-.tenant-welcome-card {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 32px;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(102, 126, 234, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  overflow: hidden;
-}
-
-.tenant-welcome-card::before {
+.tenant-management::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 100%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-  animation: float 6s ease-in-out infinite;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(98, 0, 234, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0, 176, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(139, 69, 195, 0.06) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(2deg); }
-}
-
-.tenant-welcome-content h4 {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.tenant-welcome-content p {
-  font-size: 16px;
-  opacity: 0.9;
-  margin: 0;
-  max-width: 600px;
-}
-
-.tenant-welcome-icon {
-  font-size: 48px;
-  opacity: 0.8;
+.tenant-management .container-fluid {
   position: relative;
   z-index: 1;
 }
 
-/* Stats Cards */
+/* =================================================
+   QUICK ACTIONS BAR
+   ================================================= */
+.tenant-quick-actions-bar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 
+    0 8px 32px rgba(98, 0, 234, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Search Controls */
+.tenant-search-controls .input-group {
+  max-width: 400px;
+}
+
+.tenant-search-controls .input-group-text {
+  background: rgba(98, 0, 234, 0.1);
+  border-color: rgba(98, 0, 234, 0.2);
+  color: #6200ea;
+  border-radius: 12px 0 0 12px;
+}
+
+.tenant-search-controls .form-control {
+  border-color: rgba(98, 0, 234, 0.2);
+  border-left: none;
+  transition: all 0.3s ease;
+  border-radius: 0 12px 12px 0;
+}
+
+.tenant-search-controls .form-control:focus {
+  border-color: #6200ea;
+  box-shadow: 0 0 0 0.2rem rgba(98, 0, 234, 0.25);
+}
+
+/* Action Buttons */
+.tenant-action-buttons .btn {
+  border-radius: 12px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tenant-action-buttons .btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.tenant-action-buttons .btn:hover::before {
+  left: 100%;
+}
+
+/* =================================================
+   STATISTICS CARDS
+   ================================================= */
 .tenant-stats-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .tenant-stat-card {
-  background: white;
-  padding: 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.95) 0%, 
+    rgba(248, 250, 252, 0.95) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 
+    0 8px 32px rgba(98, 0, 234, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -181,585 +130,488 @@
 .tenant-stat-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(98, 0, 234, 0.05) 0%, transparent 70%);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg); 
+    opacity: 0.5; 
+  }
+  50% { 
+    transform: scale(1.1) rotate(180deg); 
+    opacity: 0.8; 
+  }
 }
 
 .tenant-stat-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  box-shadow: 
+    0 12px 40px rgba(98, 0, 234, 0.15),
+    0 6px 20px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
+/* Card Header */
 .tenant-stat-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .tenant-stat-title {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   color: #6b7280;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
 }
 
+/* Stat Icons */
 .tenant-stat-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  color: white;
+  font-size: 1.25rem;
 }
 
 .tenant-stat-icon.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #6200ea, #9c27b0);
+  color: white;
 }
 
 .tenant-stat-icon.success {
-  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
 }
 
 .tenant-stat-icon.warning {
-  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
 }
 
-.tenant-stat-icon.danger {
-  background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+.tenant-stat-icon.info {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: white;
 }
 
+/* Stat Values */
 .tenant-stat-value {
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 4px;
-}
-
-.tenant-stat-change {
-  font-size: 12px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-}
-
-.tenant-stat-change.positive {
-  color: #48bb78;
-}
-
-.tenant-stat-change.negative {
-  color: #f56565;
-}
-
-.tenant-stat-change i {
-  margin-right: 4px;
-}
-
-/* Tenant Cards Grid */
-.tenant-cards-section {
-  background: white;
-  border-radius: 16px;
-  padding: 32px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-}
-
-.tenant-cards-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #f7fafc;
-}
-
-.tenant-cards-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #1a202c;
-  display: flex;
-  align-items: center;
-}
-
-.tenant-cards-title i {
-  margin-right: 12px;
-  color: #667eea;
-}
-
-.tenant-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.tenant-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 24px;
-}
-
-.tenant-card {
-  background: white;
-  border: 2px solid #f7fafc;
-  border-radius: 16px;
-  padding: 24px;
-  transition: all 0.3s ease;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
   position: relative;
+  z-index: 2;
+}
+
+.tenant-stat-subtitle {
+  font-size: 0.75rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  position: relative;
+  z-index: 2;
+}
+
+.tenant-stat-trend {
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.tenant-stat-trend.positive {
+  color: #22c55e;
+}
+
+.tenant-stat-trend.negative {
+  color: #ef4444;
+}
+
+.tenant-stat-trend.neutral {
+  color: #6b7280;
+}
+
+/* =================================================
+   TABLE SECTION
+   ================================================= */
+.tenant-table-section {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 
+    0 8px 32px rgba(98, 0, 234, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   overflow: hidden;
 }
 
-.tenant-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-  transform: scaleX(0);
-  transition: transform 0.3s ease;
-}
-
-.tenant-card:hover::before {
-  transform: scaleX(1);
-}
-
-.tenant-card:hover {
-  border-color: #667eea;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15);
-}
-
-.tenant-card-header {
+/* Table Header */
+.tenant-table-header {
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, rgba(98, 0, 234, 0.05), rgba(0, 176, 255, 0.05));
+  border-bottom: 1px solid rgba(98, 0, 234, 0.1);
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  align-items: center;
 }
 
-.tenant-code {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.tenant-status {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.tenant-status.active {
-  background: #c6f6d5;
-  color: #22543d;
-}
-
-.tenant-status.inactive {
-  background: #fed7d7;
-  color: #742a2a;
-}
-
-.tenant-name {
-  font-size: 20px;
+.tenant-table-title {
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #1a202c;
-  margin-bottom: 8px;
-}
-
-.tenant-description {
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.5;
-  margin-bottom: 16px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.tenant-metadata {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.tenant-meta-item {
-  background: #f7fafc;
-  padding: 12px;
-  border-radius: 8px;
-  text-align: center;
-}
-
-.tenant-meta-label {
-  font-size: 11px;
-  color: #6b7280;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  margin-bottom: 4px;
-}
-
-.tenant-meta-value {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1a202c;
-}
-
-.tenant-card-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.tenant-action-btn {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  color: #1f2937;
+  margin: 0;
   display: flex;
   align-items: center;
-  gap: 4px;
 }
 
-.tenant-action-btn:hover {
-  transform: translateY(-1px);
+.tenant-table-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
-.tenant-action-btn.view {
-  background: #e6fffa;
-  color: #234e52;
+/* Filters */
+.tenant-filters {
+  display: flex;
+  gap: 1rem;
 }
 
-.tenant-action-btn.view:hover {
-  background: #b2f5ea;
+.tenant-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.tenant-action-btn.edit {
-  background: #fefcbf;
-  color: #744210;
-}
-
-.tenant-action-btn.edit:hover {
-  background: #faf089;
-}
-
-.tenant-action-btn.delete {
-  background: #fed7d7;
-  color: #742a2a;
-}
-
-.tenant-action-btn.delete:hover {
-  background: #feb2b2;
-}
-
-.tenant-action-btn.status {
-  background: #e0e7ff;
-  color: #3730a3;
-}
-
-.tenant-action-btn.status:hover {
-  background: #c7d2fe;
-}
-
-/* Button Enhancements */
-.btn-primary-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  color: white;
+.tenant-filter-label {
+  font-size: 0.75rem;
   font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tenant-filter-select {
+  border: 1px solid rgba(98, 0, 234, 0.2);
   border-radius: 8px;
-  padding: 10px 20px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  background: white;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 
-.btn-primary-gradient:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-  color: white;
+.tenant-filter-select:focus {
+  border-color: #6200ea;
+  box-shadow: 0 0 0 0.2rem rgba(98, 0, 234, 0.25);
+  outline: none;
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-  .tenant-left-sidebar {
-    width: 280px;
-  }
-  
-  .tenant-main-content {
-    margin-left: 280px;
-  }
+/* =================================================
+   TABLE STYLES
+   ================================================= */
+.tenant-table-wrapper {
+  padding: 0;
 }
 
-@media (max-width: 768px) {
-  .tenant-dashboard-layout {
-    flex-direction: column;
-  }
-  
-  .tenant-left-sidebar {
-    width: 100%;
-    height: auto;
-    position: relative;
-    top: 0;
-  }
-  
-  .tenant-main-content {
-    margin-left: 0;
-  }
-  
-  .tenant-content-wrapper {
-    padding: 16px;
-  }
-  
-  .tenant-welcome-card {
-    flex-direction: column;
-    text-align: center;
-    padding: 24px;
-  }
-  
-  .tenant-welcome-icon {
-    margin-top: 16px;
-  }
-  
-  .tenant-stats-cards {
-    grid-template-columns: 1fr;
-  }
-  
-  .tenant-grid {
-    grid-template-columns: 1fr;
-  }
+.tenant-table {
+  margin: 0;
+  width: 100%;
+  background: transparent;
 }
 
-/* Animation for page entrance */
-.tenant-management {
-  animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.tenant-management .table th {
-  border-top: none;
-  font-weight: 600;
-  color: #495057;
-  background-color: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
-  padding: 1rem 0.75rem;
-}
-
-.tenant-management .table td {
-  padding: 1rem 0.75rem;
-  vertical-align: middle;
-  border-bottom: 1px solid #dee2e6;
-}
-
-.tenant-management .table tbody tr:hover {
-  background-color: #f8f9fa;
-}
-
-.tenant-management .dropdown-menu {
+/* Table Header */
+.tenant-table thead th {
+  background: linear-gradient(135deg, rgba(98, 0, 234, 0.08), rgba(0, 176, 255, 0.05));
   border: none;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  border-radius: 0.5rem;
-  padding: 0.5rem 0;
+  border-bottom: 2px solid rgba(98, 0, 234, 0.15);
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 1rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
-.tenant-management .dropdown-item {
+.tenant-table thead th .btn-link {
+  color: #374151;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.tenant-table thead th .btn-link:hover {
+  color: #6200ea;
+  text-decoration: none;
+}
+
+/* Table Body */
+.tenant-table tbody tr {
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+  transition: all 0.3s ease;
+}
+
+.tenant-table tbody tr:hover {
+  background: linear-gradient(135deg, rgba(98, 0, 234, 0.02), rgba(0, 176, 255, 0.02));
+  transform: translateX(2px);
+}
+
+.tenant-table tbody td {
+  padding: 1rem 1.5rem;
+  border: none;
+  vertical-align: middle;
+}
+
+/* Table Cell Styles */
+.tenant-code-badge {
+  background: linear-gradient(135deg, #6200ea, #9c27b0);
+  color: white;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.tenant-name-cell strong {
+  color: #1f2937;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.tenant-subscription,
+.tenant-email,
+.tenant-date {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.tenant-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+/* =================================================
+   ACTIONS DROPDOWN
+   ================================================= */
+.tenant-actions-dropdown .dropdown-toggle {
+  border: 1px solid rgba(98, 0, 234, 0.2);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.tenant-actions-dropdown .dropdown-toggle:hover {
+  border-color: #6200ea;
+  background: rgba(98, 0, 234, 0.05);
+}
+
+.tenant-actions-dropdown .dropdown-menu {
+  border: 1px solid rgba(98, 0, 234, 0.2);
+  border-radius: 12px;
+  padding: 0.5rem 0;
+  box-shadow: 0 8px 32px rgba(98, 0, 234, 0.15);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.tenant-actions-dropdown .dropdown-item {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
   border: none;
   background: none;
   width: 100%;
   text-align: left;
 }
 
-.tenant-management .dropdown-item:hover {
-  background-color: #f8f9fa;
-  color: #212529;
+.tenant-actions-dropdown .dropdown-item:hover {
+  background: rgba(98, 0, 234, 0.08);
+  color: #6200ea;
 }
 
-.tenant-management .dropdown-item.text-danger:hover {
-  background-color: #f8d7da;
-  color: #721c24;
+.tenant-actions-dropdown .dropdown-item.text-danger:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
 }
 
-.tenant-management .badge {
-  font-size: 0.75rem;
-  padding: 0.375rem 0.75rem;
-  border-radius: 0.375rem;
-}
-
-.tenant-management .pagination .page-link {
-  color: #6c757d;
-  border-color: #dee2e6;
-  padding: 0.5rem 0.75rem;
-}
-
-.tenant-management .pagination .page-item.active .page-link {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-}
-
-.tenant-management .pagination .page-link:hover {
-  color: #0d6efd;
-  background-color: #e9ecef;
-  border-color: #dee2e6;
-}
-
-.tenant-management .input-group-text {
-  background-color: #e9ecef;
-  border-color: #ced4da;
-  color: #6c757d;
-}
-
-.tenant-management .form-control:focus,
-.tenant-management .form-select:focus {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-}
-
-.tenant-management .btn-outline-secondary {
-  color: #6c757d;
-  border-color: #6c757d;
-}
-
-.tenant-management .btn-outline-secondary:hover {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
-
-.tenant-management .modal-content {
-  border: none;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  border-radius: 0.5rem;
-}
-
-.tenant-management .modal-header {
-  border-bottom: 1px solid #dee2e6;
-  padding: 1.5rem;
-}
-
-.tenant-management .modal-body {
-  padding: 1.5rem;
-}
-
-.tenant-management .modal-footer {
-  border-top: 1px solid #dee2e6;
-  padding: 1.5rem;
-}
-
-/* Loading state */
-.tenant-management .loading-overlay {
-  position: relative;
-}
-
-.tenant-management .loading-overlay::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-}
-
-/* Empty state */
-.tenant-management .empty-state {
-  padding: 4rem 2rem;
+/* =================================================
+   LOADING & EMPTY STATES
+   ================================================= */
+.tenant-loading {
   text-align: center;
+  padding: 3rem 1rem;
 }
 
-.tenant-management .empty-state .display-1 {
+.tenant-loading-spinner {
+  margin-bottom: 1rem;
+}
+
+.tenant-loading-text {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.tenant-empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.tenant-empty-icon {
   font-size: 4rem;
-  opacity: 0.5;
+  color: #d1d5db;
+  margin-bottom: 1rem;
 }
 
-/* Responsive design */
+.tenant-empty-title {
+  color: #374151;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tenant-empty-subtitle {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+/* =================================================
+   RESPONSIVE DESIGN
+   ================================================= */
 @media (max-width: 768px) {
   .tenant-management {
-    padding: 10px 0;
+    padding: 1rem 0;
   }
   
-  .tenant-management .table-responsive {
-    font-size: 0.875rem;
+  .tenant-quick-actions-bar {
+    padding: 1rem;
+    margin-bottom: 1rem;
   }
   
-  .tenant-management .btn-sm {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
+  .tenant-quick-actions-bar .row {
+    flex-direction: column;
+    gap: 1rem;
   }
   
-  .tenant-management .dropdown-menu {
-    font-size: 0.8rem;
+  .tenant-action-buttons {
+    justify-content: center !important;
+  }
+  
+  .tenant-stats-cards {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .tenant-table-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .tenant-filters {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .tenant-table-wrapper {
+    overflow-x: auto;
+  }
+  
+  .tenant-table {
+    min-width: 800px;
   }
 }
 
-/* Status badges */
-.tenant-management .badge.bg-success {
-  background-color: #198754 !important;
+/* =================================================
+   ANIMATIONS
+   ================================================= */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
-.tenant-management .badge.bg-secondary {
-  background-color: #6c757d !important;
+@keyframes slideIn {
+  from { 
+    opacity: 0; 
+    transform: translateX(-20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0); 
+  }
 }
 
-.tenant-management .badge.bg-info-subtle {
-  background-color: #cff4fc !important;
-  color: #055160 !important;
+.tenant-stat-card {
+  animation: fadeIn 0.6s ease-out;
 }
 
-/* Sort indicators */
-.tenant-management th[style*="cursor: pointer"]:hover {
-  background-color: #e9ecef;
+.tenant-table-row {
+  animation: slideIn 0.4s ease-out;
 }
 
-.tenant-management .bi-sort-up,
-.tenant-management .bi-sort-down {
-  font-size: 0.8rem;
-  margin-left: 0.25rem;
+/* =================================================
+   UTILITY CLASSES
+   ================================================= */
+.spin {
+  animation: spin 1s linear infinite;
 }
 
-/* Action buttons */
-.tenant-management .dropdown-toggle::after {
-  margin-left: 0.5rem;
+@keyframes spin {
+  from { 
+    transform: rotate(0deg); 
+  }
+  to { 
+    transform: rotate(360deg); 
+  }
 }
 
-.tenant-management .dropdown-item i {
-  width: 1rem;
-  text-align: center;
+/* =================================================
+   BOOTSTRAP OVERRIDES
+   ================================================= */
+.btn-primary-gradient {
+  background: linear-gradient(135deg, #6200ea, #9c27b0);
+  border: none;
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
-/* Card hover effects */
-.tenant-management .card:hover {
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  transition: box-shadow 0.15s ease-in-out;
+.btn-primary-gradient:hover {
+  background: linear-gradient(135deg, #5a00d4, #8e24aa);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(98, 0, 234, 0.4);
+  color: white;
+}
+
+.btn-primary-gradient:focus {
+  box-shadow: 0 0 0 0.2rem rgba(98, 0, 234, 0.25);
+  color: white;
 }
