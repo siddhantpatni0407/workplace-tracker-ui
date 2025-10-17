@@ -1,0 +1,319 @@
+/* src/components/platform/tenant-users/TenantUserManagement.css */
+
+.tenant-user-management {
+  padding: 1.5rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.header-content {
+  flex: 1;
+}
+
+.page-title {
+  color: #2c3e50;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-subtitle {
+  color: #6c757d;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Loading States */
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.loading-container p,
+.error-container h5 {
+  margin-top: 1rem;
+}
+
+/* Table Container */
+.table-container {
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  overflow: hidden;
+}
+
+.table-responsive {
+  position: relative;
+}
+
+.tenant-user-table .table {
+  margin-bottom: 0;
+}
+
+.tenant-user-table .table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  font-weight: 600;
+  color: #495057;
+  padding: 1rem 0.75rem;
+}
+
+.tenant-user-table .table td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.tenant-user-table .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* User Info Styles */
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.user-email {
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.tenant-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.tenant-name {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.last-login {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.action-buttons .btn {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* Table Loading Overlay */
+.table-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.loading-indicator {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+/* Empty State */
+.table-empty {
+  background: white;
+  border-radius: 0.5rem;
+}
+
+.table-empty i {
+  color: #6c757d;
+}
+
+/* Filter Styles */
+.tenant-user-filters .card {
+  border: 1px solid #e9ecef;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.tenant-user-filters .form-label {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tenant-user-filters .form-control,
+.tenant-user-filters .form-select {
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.tenant-user-filters .form-control:focus,
+.tenant-user-filters .form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.filter-info {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Badge Styles */
+.badge {
+  font-size: 0.75rem;
+  padding: 0.375rem 0.5rem;
+}
+
+.badge.bg-info {
+  background-color: #0dcaf0 !important;
+}
+
+.badge.bg-success {
+  background-color: #198754 !important;
+}
+
+.badge.bg-danger {
+  background-color: #dc3545 !important;
+}
+
+.badge.bg-warning {
+  background-color: #ffc107 !important;
+  color: #000;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .tenant-user-management {
+    padding: 1rem;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .tenant-user-table .table {
+    font-size: 0.875rem;
+  }
+
+  .tenant-user-table .table th,
+  .tenant-user-table .table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .action-buttons .btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.375rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .tenant-user-filters .row {
+    gap: 1rem;
+  }
+
+  .tenant-user-table .table {
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .tenant-user-management {
+    background-color: #1a1a1a;
+    color: #ffffff;
+  }
+
+  .page-title {
+    color: #ffffff;
+  }
+
+  .page-subtitle {
+    color: #b0b0b0;
+  }
+
+  .table-container,
+  .tenant-user-filters .card {
+    background-color: #2d2d2d;
+    border-color: #404040;
+  }
+
+  .tenant-user-table .table th {
+    background-color: #404040;
+    color: #ffffff;
+    border-color: #555;
+  }
+
+  .tenant-user-table .table td {
+    background-color: #2d2d2d;
+    color: #ffffff;
+    border-color: #404040;
+  }
+
+  .tenant-user-table .table tbody tr:hover {
+    background-color: #404040;
+  }
+}

@@ -211,4 +211,13 @@ export const API_ENDPOINTS = {
     GET_ACTIVE: `${API_BASE_URL}/subscriptions/active`,
     GET_BY_CODE: `${API_BASE_URL}/subscription/by-code`,
   },
+
+  // Platform User Management (Tenant User Management)
+  PLATFORM_USERS: {
+    GET_ALL_SUPER_ADMINS: `${API_BASE_URL}/platform/super-admins`,
+    GET_SUPER_ADMINS_BY_TENANT: `${API_BASE_URL}/platform/super-admins/by-tenant`,
+    SEARCH_SUPER_ADMINS: `${API_BASE_URL}/platform/super-admins/search`,
+    GET_SUPER_ADMIN_DETAILS: `${API_BASE_URL}/platform/super-admins/details`,
+    UPDATE_SUPER_ADMIN_STATUS: `${API_BASE_URL}/platform/super-admins/status`,
+  },
 };

@@ -48,10 +48,10 @@ const PlatformDashboard: React.FC = memo(() => {
     },
     {
       id: "user-management", 
-      title: t("platform.navigation.users") || "User Management",
-      subtitle: t("platform.dashboard.cards.users.subtitle") || "Manage platform administrators",
+      title: t("platform.navigation.tenantUsers") || "Tenant User Management",
+      subtitle: t("platform.dashboard.cards.tenantUsers.subtitle") || "Manage Super Admin users across tenants",
       icon: "bi-people-fill",
-      route: "/platform/users",
+      route: ROUTES.PLATFORM.TENANT_USERS,
       colorClass: "card-success",
       count: 8
     },

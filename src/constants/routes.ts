@@ -32,6 +32,7 @@ export const ROUTES = {
     CONTACT: '/platform/contact',
     LOGOUT: '/platform/logout',
     TENANTS: '/platform/tenants',
+    TENANT_USERS: '/platform/tenant-users',
     NOT_FOUND: '/404'
   },
 

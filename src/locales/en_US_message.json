@@ -31,6 +31,14 @@
     "refresh": "Refresh",
     "allMonths": "All months",
     "allYears": "All years",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "all": "All",
+    "clearFilters": "Clear Filters",
     "months": {
       "jan": "Jan",
       "feb": "Feb",
@@ -334,7 +342,7 @@
     "navigation": {
       "home": "Platform Home",
       "dashboard": "Dashboard",
-      "users": "User Management",
+      "tenantUsers": "Tenant User Management",
       "tenants": "Tenant Management",
       "analytics": "Analytics",
       "settings": "Settings",
@@ -372,8 +380,8 @@
         "tenants": {
           "subtitle": "Manage organizations and workspaces"
         },
-        "users": {
-          "subtitle": "Manage platform administrators"
+        "tenantUsers": {
+          "subtitle": "Manage Super Admin users across tenants"
         },
         "analytics": {
           "subtitle": "Platform usage and performance metrics"
@@ -398,6 +406,30 @@
         "title": "Recent Platform Activity"
       },
       "loggingOut": "Logging out of platform..."
+    },
+    "tenantUsers": {
+      "title": "Tenant User Management",
+      "subtitle": "Manage Super Admin users across all tenants",
+      "searchPlaceholder": "Search by name, email, or tenant...",
+      "searchResults": "Search results for:",
+      "noUsers": "No Super Admin users match the current filters.",
+      "userDetails": "Tenant User Details",
+      "tenant": "Tenant",
+      "lastLogin": "Last Login",
+      "filters": {
+        "clearFilters": "Clear Filters",
+        "status": "Status"
+      },
+      "actions": {
+        "activate": "Activate User",
+        "deactivate": "Deactivate User",
+        "viewDetails": "View Details"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "locked": "Locked"
+      }
     },
     "profile": {
       "title": "Platform Profile",
