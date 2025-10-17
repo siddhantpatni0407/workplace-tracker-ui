@@ -269,6 +269,30 @@
     "backupManagementDesc": "Manage data backups and recovery",
     "settings": "Super Admin Settings",
     "settingsDesc": "Configure global platform settings",
+    "adminManagement": {
+      "title": "Admin Management",
+      "subtitle": "Manage Admin users in your tenant",
+      "searchPlaceholder": "Search by name, email, or manager...",
+      "searchResults": "Search results for:",
+      "noAdmins": "No Admin users match the current filters.",
+      "adminDetails": "Admin Details",
+      "manager": "Manager",
+      "lastLogin": "Last Login",
+      "filters": {
+        "clearFilters": "Clear Filters",
+        "status": "Status"
+      },
+      "actions": {
+        "activate": "Activate Admin",
+        "deactivate": "Deactivate Admin",
+        "viewDetails": "View Details"
+      },
+      "status": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "locked": "Locked"
+      }
+    },
     "quickStats": {
       "totalTenants": "Total Tenants",
       "activeTenants": "Active Tenants",

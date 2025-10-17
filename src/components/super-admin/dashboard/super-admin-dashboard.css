@@ -1,8 +1,8 @@
-/* Super Admin Dashboard Styles */
+/* Super Admin Dashboard Styles - Admin Theme */
 
 .super-admin-dashboard {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
   background-attachment: fixed;
 }
 
@@ -15,11 +15,12 @@
 
 /* Dashboard Header */
 .dashboard-header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 2rem 0;
+  background: rgba(30, 60, 114, 0.2);
+  backdrop-filter: blur(15px);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 2.5rem 0;
   margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .header-content {
@@ -32,22 +33,31 @@
 
 .header-text .dashboard-title {
   color: white;
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  font-size: 2.75rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.5px;
 }
 
 .header-text .dashboard-subtitle {
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
   margin-bottom: 0;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
 }
 
 .header-actions .btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.25);
   color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
@@ -72,17 +82,18 @@
 }
 
 .stat-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 15px;
-  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(15px);
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-radius: 18px;
+  padding: 2rem;
   height: 100%;
   display: flex;
   align-items: center;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 8px 25px rgba(30, 60, 114, 0.15);
 }
 
 .stat-card::before {
@@ -97,25 +108,27 @@
 }
 
 .stat-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(30, 60, 114, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .stat-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
+  width: 60px;
+  height: 60px;
+  border-radius: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 1rem;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(10px);
+  margin-right: 1.5rem;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(15px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
 }
 
 .stat-icon i {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
+  color: white;
 }
 
 .stat-content {
@@ -123,39 +136,43 @@
 }
 
 .stat-value {
-  font-size: 1.8rem;
-  font-weight: 700;
+  font-size: 2rem;
+  font-weight: 800;
   line-height: 1;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .stat-label {
-  font-size: 0.9rem;
-  opacity: 0.8;
+  font-size: 1rem;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
 }
 
-/* Gradient backgrounds for stats */
+/* Admin-themed gradient backgrounds for stats */
 .bg-gradient-primary {
-  background: linear-gradient(135deg, #007bff, #0056b3) !important;
+  background: linear-gradient(135deg, #1e3c72, #2a5298) !important;
 }
 
 .bg-gradient-success {
-  background: linear-gradient(135deg, #28a745, #1e7e34) !important;
+  background: linear-gradient(135deg, #1e5d1e, #2d7d2d) !important;
 }
 
 .bg-gradient-info {
-  background: linear-gradient(135deg, #17a2b8, #117a8b) !important;
+  background: linear-gradient(135deg, #1e4a5d, #2a6b7c) !important;
 }
 
 .bg-gradient-warning {
-  background: linear-gradient(135deg, #ffc107, #d39e00) !important;
+  background: linear-gradient(135deg, #8b6914, #b8871b) !important;
 }
 
 .bg-gradient-danger {
-  background: linear-gradient(135deg, #dc3545, #bd2130) !important;
+  background: linear-gradient(135deg, #8b2635, #a63142) !important;
 }
 
-/* Management Section */
+/* Management Section - Admin Theme */
 .management-section {
   margin-bottom: 3rem;
 }
@@ -165,23 +182,24 @@
 }
 
 .management-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(15px);
+  border-radius: 18px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: all 0.4s ease;
   height: 100%;
-  border: 2px solid transparent;
+  border: 3px solid rgba(30, 60, 114, 0.1);
+  box-shadow: 0 5px 20px rgba(30, 60, 114, 0.1);
 }
 
 .management-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-  border-color: inherit;
+  transform: translateY(-10px);
+  box-shadow: 0 20px 50px rgba(30, 60, 114, 0.25);
+  border-color: rgba(30, 60, 114, 0.3);
 }
 
 .management-card .card-body {
-  padding: 2rem;
+  padding: 2.5rem;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -189,52 +207,57 @@
 }
 
 .card-icon-wrapper {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
 }
 
 .card-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 15px;
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #667eea 100%);
+  box-shadow: 0 8px 25px rgba(30, 60, 114, 0.3);
 }
 
 .card-icon i {
-  font-size: 1.8rem;
+  font-size: 2rem;
+  color: white;
 }
 
 .card-content {
   flex: 1;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .card-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: #2c3e50;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.8rem;
+  color: #1e3c72;
+  letter-spacing: -0.3px;
 }
 
 .card-subtitle {
-  font-size: 0.95rem;
-  line-height: 1.4;
+  font-size: 1rem;
+  line-height: 1.5;
   margin-bottom: 0;
+  color: #64748b;
 }
 
 .card-arrow {
   align-self: flex-end;
   transition: transform 0.3s ease;
+  color: #1e3c72;
 }
 
 .management-card:hover .card-arrow {
-  transform: translateX(5px);
+  transform: translateX(8px);
 }
 
 .card-arrow i {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
 }
 
 /* Error Section */
@@ -308,19 +331,28 @@
   }
 }
 
-/* Dark mode support */
+/* Dark mode support - Admin Theme */
 @media (prefers-color-scheme: dark) {
   .management-card {
-    background: rgba(33, 37, 41, 0.95);
+    background: rgba(30, 60, 114, 0.2);
     color: white;
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   .card-title {
-    color: white;
+    color: #e2e8f0;
   }
 
   .card-subtitle {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .card-icon {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  }
+
+  .card-arrow {
+    color: #e2e8f0;
   }
 }
 

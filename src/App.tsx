@@ -23,6 +23,7 @@ const Home = lazy(() => import("./components/common/home/Home"));
 const Login = lazy(() => import("./components/common/login/Login"));
 const Signup = lazy(() => import("./components/common/signUp/Signup"));
 const SuperAdminDashboard = lazy(() => import("./components/super-admin/dashboard/SuperAdminDashboard"));
+const AdminManagement = lazy(() => import("./components/super-admin/admin-management/AdminManagement"));
 const AdminDashboard = lazy(() => import("./components/admin/dashboard/AdminDashboard"));
 const UserDashboard = lazy(() => import("./components/user/dashboard/UserDashboard"));
 const UserManagement = lazy(() => import("./components/admin/userManagement/UserManagement"));
@@ -176,6 +177,17 @@ const App: React.FC = () => {
                   <PrivateRoute userRole="SUPER_ADMIN">
                     <Layout>
                       <SuperAdminDashboard />
+                    </Layout>
+                  </PrivateRoute>
+                }
+              />
+
+              <Route
+                path={ROUTES.SUPER_ADMIN.ADMIN_MANAGEMENT}
+                element={
+                  <PrivateRoute userRole="SUPER_ADMIN">
+                    <Layout>
+                      <AdminManagement />
                     </Layout>
                   </PrivateRoute>
                 }

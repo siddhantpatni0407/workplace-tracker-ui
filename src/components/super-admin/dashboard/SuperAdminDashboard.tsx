@@ -67,6 +67,15 @@ const SuperAdminDashboard: React.FC = () => {
     () => [
       // Platform Management
       {
+        id: "admin-management",
+        title: t("superAdmin.adminManagement") || "Admin Management",
+        subtitle: t("superAdmin.adminManagementDesc") || "Manage Admin users in your tenant",
+        icon: "bi-shield-check",
+        colorClass: "success",
+        route: ROUTES.SUPER_ADMIN.ADMIN_MANAGEMENT,
+        category: "tenant",
+      },
+      {
         id: "platform-management",
         title: t("superAdmin.platformManagement"),
         subtitle: t("superAdmin.platformManagementDesc"),
@@ -280,10 +289,12 @@ const SuperAdminDashboard: React.FC = () => {
                 <div className="header-content">
                   <div className="header-text">
                     <h1 className="dashboard-title">
-                      {t("superAdmin.welcome", { name: user?.name || "Super Admin" })}
+                      <i className="bi bi-shield-check me-3"></i>
+                      {t("superAdmin.dashboard.adminTitle", { name: user?.name || "Super Admin" }) || `Welcome, ${user?.name || "Super Admin"}`}
                     </h1>
                     <p className="dashboard-subtitle">
-                      {t("superAdmin.dashboardSubtitle")}
+                      <i className="bi bi-gear me-2"></i>
+                      {t("superAdmin.dashboard.adminSubtitle") || "Admin Control Center - Manage your tenant and oversee operations"}
                     </p>
                   </div>
                   <div className="header-actions">

@@ -220,4 +220,13 @@ export const API_ENDPOINTS = {
     GET_SUPER_ADMIN_DETAILS: `${API_BASE_URL}/platform/super-admins/details`,
     UPDATE_SUPER_ADMIN_STATUS: `${API_BASE_URL}/platform/super-admins/status`,
   },
+
+  // Super Admin Management (Admin Management)
+  SUPER_ADMIN: {
+    GET_ALL_ADMINS: `${API_BASE_URL}/super-admin/admins`,
+    GET_ADMINS_BY_TENANT: `${API_BASE_URL}/super-admin/admins/by-tenant`,
+    SEARCH_ADMINS: `${API_BASE_URL}/super-admin/admins/search`,
+    GET_ADMIN_DETAILS: `${API_BASE_URL}/super-admin/admins/details`,
+    UPDATE_ADMIN_STATUS: `${API_BASE_URL}/super-admin/admins/status`,
+  },
 };

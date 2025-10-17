@@ -83,6 +83,7 @@ export const ROUTES = {
   // Super Admin routes
   SUPER_ADMIN: {
     DASHBOARD: '/super-admin/dashboard',
+    ADMIN_MANAGEMENT: '/super-admin/admin-management',
     PLATFORM_MANAGEMENT: '/super-admin/platform-management',
     TENANT_MANAGEMENT: '/super-admin/tenant-management',
     SUBSCRIPTION_MANAGEMENT: '/super-admin/subscription-management',
