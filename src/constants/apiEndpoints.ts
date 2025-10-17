@@ -212,6 +212,11 @@ export const API_ENDPOINTS = {
     GET_BY_CODE: `${API_BASE_URL}/subscription/by-code`,
   },
 
+  // Platform Statistics
+  PLATFORM: {
+    STATS: `${API_BASE_URL}/platform/stats`,
+  },
+
   // Platform User Management (Tenant User Management)
   PLATFORM_USERS: {
     GET_ALL_SUPER_ADMINS: `${API_BASE_URL}/platform/super-admins`,

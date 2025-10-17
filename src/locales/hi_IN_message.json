@@ -386,7 +386,14 @@
       },
       "stats": {
         "activeTenants": "सक्रिय टेनेंट्स",
-        "totalUsers": "कुल उपयोगकर्ता",
+        "totalTenants": "कुल टेनेंट्स",
+        "totalUsers": "कुल प्लेटफॉर्म उपयोगकर्ता",
+        "superAdmins": "सुपर एडमिन",
+        "admins": "एडमिन",
+        "regularUsers": "नियमित उपयोगकर्ता",
+        "avgUsersPerTenant": "औसत उपयोगकर्ता/टेनेंट",
+        "superAdminRatio": "सुपर एडमिन %",
+        "lastUpdated": "अंतिम अपडेट",
         "uptime": "सिस्टम अपटाइम",
         "storage": "उपयोग किया गया स्टोरेज"
       },
@@ -415,6 +422,17 @@
       "quickActions": {
         "title": "त्वरित कार्य",
         "manage": "प्रबंधित करें"
+      },
+      "tenantBreakdown": {
+        "title": "टेनेंट-वार आंकड़े",
+        "subtitle": "सभी टेनेंट्स में उपयोगकर्ताओं का विस्तृत विवरण",
+        "tenantsCount": "टेनेंट्स",
+        "tenantName": "टेनेंट नाम",
+        "superAdmins": "सुपर एडमिन",
+        "admins": "एडमिन",
+        "users": "उपयोगकर्ता",
+        "totalUsers": "कुल उपयोगकर्ता",
+        "distribution": "वितरण"
       },
       "recentActivity": {
         "title": "हाल की प्लेटफॉर्म गतिविधि"

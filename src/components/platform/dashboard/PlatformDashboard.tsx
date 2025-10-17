@@ -7,6 +7,8 @@ import { useTranslation } from "../../../hooks/useTranslation";
 import { ErrorBoundary } from "../../ui";
 import { ROUTES } from "../../../constants";
 import RedirectingLoader from "../../common/redirectingLoader/RedirectingLoader";
+import { PlatformDashboardData } from "../../../models/Platform";
+import { platformStatsService } from "../../../services/platformStatsService";
 import "./PlatformDashboard.css";
 
 interface PlatformDashboardCard {
@@ -29,13 +31,60 @@ const PlatformDashboard: React.FC = memo(() => {
   const [searchTerm, setSearchTerm] = useState("");
   const [language] = useState("en");
   
+  // Platform statistics state
+  const [dashboardData, setDashboardData] = useState<PlatformDashboardData>({
+    platformStats: null,
+    loading: true,
+    error: null,
+    lastUpdated: null
+  });
+  
   // UI State for dropdowns
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoutRole, setLogoutRole] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Platform dashboard cards
+  // Load platform statistics
+  const loadPlatformStats = useCallback(async () => {
+    try {
+      setDashboardData(prev => ({ ...prev, loading: true, error: null }));
+      
+      const response = await platformStatsService.getPlatformStats();
+      
+      if (response.status === 'SUCCESS' && response.data) {
+        setDashboardData(prev => ({
+          ...prev,
+          platformStats: response.data!,
+          loading: false,
+          error: null,
+          lastUpdated: new Date().toISOString()
+        }));
+      } else {
+        setDashboardData(prev => ({
+          ...prev,
+          loading: false,
+          error: response.message || 'Failed to load platform statistics'
+        }));
+      }
+    } catch (error: any) {
+      console.error('Error loading platform statistics:', error);
+      setDashboardData(prev => ({
+        ...prev,
+        loading: false,
+        error: error.message || 'Failed to load platform statistics'
+      }));
+    }
+  }, []);
+
+  // Load data on component mount
+  useEffect(() => {
+    if (isPlatformAuthenticated) {
+      loadPlatformStats();
+    }
+  }, [isPlatformAuthenticated, loadPlatformStats]);
+
+  // Platform dashboard cards with real statistics
   const platformCards = useMemo<PlatformDashboardCard[]>(() => [
     {
       id: "tenant-management",
@@ -44,7 +93,7 @@ const PlatformDashboard: React.FC = memo(() => {
       icon: "bi-buildings",
       route: ROUTES.PLATFORM.TENANTS,
       colorClass: "card-primary",
-      count: 12
+      count: dashboardData.platformStats?.totalTenants || 0
     },
     {
       id: "user-management", 
@@ -53,7 +102,7 @@ const PlatformDashboard: React.FC = memo(() => {
       icon: "bi-people-fill",
       route: ROUTES.PLATFORM.TENANT_USERS,
       colorClass: "card-success",
-      count: 8
+      count: dashboardData.platformStats?.totalTenantUsers || 0
     },
     {
       id: "analytics",
@@ -62,7 +111,7 @@ const PlatformDashboard: React.FC = memo(() => {
       icon: "bi-graph-up-arrow",
       route: "/platform/analytics",
       colorClass: "card-info",
-      count: 0
+      count: dashboardData.platformStats ? (dashboardData.platformStats.totalSuperAdmins + dashboardData.platformStats.totalAdmins) : 0
     },
     {
       id: "system-config",
@@ -91,7 +140,7 @@ const PlatformDashboard: React.FC = memo(() => {
       colorClass: "card-danger",
       count: 0
     }
-  ], [t]);
+  ], [t, dashboardData.platformStats]);
 
   // Filter cards based on search term
   const visibleCards = useMemo(() => {
@@ -330,52 +379,143 @@ const PlatformDashboard: React.FC = memo(() => {
 
             {/* Platform Stats Section */}
             <div className="stats-section mb-4">
-              <div className="row g-3">
-                <div className="col-lg-3 col-md-6">
-                  <div className="stat-card stat-primary">
-                    <div className="stat-icon">
-                      <i className="bi bi-buildings"></i>
-                    </div>
-                    <div className="stat-content">
-                      <div className="stat-number">12</div>
-                      <div className="stat-label">{t('platform.dashboard.stats.activeTenants') || 'Active Tenants'}</div>
-                    </div>
+              {dashboardData.loading && (
+                <div className="loading-section text-center py-4">
+                  <div className="spinner-border text-primary me-2" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <span>Loading platform statistics...</span>
+                </div>
+              )}
+
+              {dashboardData.error && (
+                <div className="alert alert-danger d-flex align-items-center" role="alert">
+                  <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                  <div>
+                    <strong>Error:</strong> {dashboardData.error}
+                    <button 
+                      className="btn btn-sm btn-outline-danger ms-2"
+                      onClick={loadPlatformStats}
+                    >
+                      <i className="bi bi-arrow-clockwise"></i> Retry
+                    </button>
                   </div>
                 </div>
-                <div className="col-lg-3 col-md-6">
-                  <div className="stat-card stat-success">
-                    <div className="stat-icon">
-                      <i className="bi bi-people-fill"></i>
+              )}
+
+              {!dashboardData.loading && !dashboardData.error && dashboardData.platformStats && (
+                <>
+                  <div className="row g-3">
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-primary">
+                        <div className="stat-icon">
+                          <i className="bi bi-buildings"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">{dashboardData.platformStats.totalTenants}</div>
+                          <div className="stat-label">{t('platform.dashboard.stats.totalTenants') || 'Total Tenants'}</div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="stat-content">
-                      <div className="stat-number">1,247</div>
-                      <div className="stat-label">{t('platform.dashboard.stats.totalUsers') || 'Total Users'}</div>
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-success">
+                        <div className="stat-icon">
+                          <i className="bi bi-people-fill"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">{dashboardData.platformStats.totalTenantUsers}</div>
+                          <div className="stat-label">{t('platform.dashboard.stats.totalUsers') || 'Total Platform Users'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-info">
+                        <div className="stat-icon">
+                          <i className="bi bi-person-badge"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">{dashboardData.platformStats.totalSuperAdmins}</div>
+                          <div className="stat-label">{t('platform.dashboard.stats.superAdmins') || 'Super Admins'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-warning">
+                        <div className="stat-icon">
+                          <i className="bi bi-person-check"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">{dashboardData.platformStats.totalAdmins}</div>
+                          <div className="stat-label">{t('platform.dashboard.stats.admins') || 'Admins'}</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="col-lg-3 col-md-6">
-                  <div className="stat-card stat-info">
-                    <div className="stat-icon">
-                      <i className="bi bi-graph-up-arrow"></i>
+
+                  {/* Additional Statistics Row */}
+                  <div className="row g-3 mt-2">
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-secondary">
+                        <div className="stat-icon">
+                          <i className="bi bi-person"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">{dashboardData.platformStats.totalUsers}</div>
+                          <div className="stat-label">{t('platform.dashboard.stats.regularUsers') || 'Regular Users'}</div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="stat-content">
-                      <div className="stat-number">98.5%</div>
-                      <div className="stat-label">{t('platform.dashboard.stats.uptime') || 'System Uptime'}</div>
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-success">
+                        <div className="stat-icon">
+                          <i className="bi bi-calculator"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">
+                            {dashboardData.platformStats.totalTenants > 0 
+                              ? Math.round(dashboardData.platformStats.totalTenantUsers / dashboardData.platformStats.totalTenants)
+                              : 0
+                            }
+                          </div>
+                          <div className="stat-label">{t('platform.dashboard.stats.avgUsersPerTenant') || 'Avg Users/Tenant'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-info">
+                        <div className="stat-icon">
+                          <i className="bi bi-percent"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">
+                            {dashboardData.platformStats.totalTenantUsers > 0 
+                              ? ((dashboardData.platformStats.totalSuperAdmins / dashboardData.platformStats.totalTenantUsers) * 100).toFixed(1)
+                              : 0
+                            }%
+                          </div>
+                          <div className="stat-label">{t('platform.dashboard.stats.superAdminRatio') || 'Super Admin %'}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-lg-3 col-md-6">
+                      <div className="stat-card stat-primary">
+                        <div className="stat-icon">
+                          <i className="bi bi-clock-history"></i>
+                        </div>
+                        <div className="stat-content">
+                          <div className="stat-number">
+                            {dashboardData.lastUpdated 
+                              ? new Date(dashboardData.lastUpdated).toLocaleTimeString()
+                              : '--'
+                            }
+                          </div>
+                          <div className="stat-label">{t('platform.dashboard.stats.lastUpdated') || 'Last Updated'}</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="col-lg-3 col-md-6">
-                  <div className="stat-card stat-warning">
-                    <div className="stat-icon">
-                      <i className="bi bi-server"></i>
-                    </div>
-                    <div className="stat-content">
-                      <div className="stat-number">2.1GB</div>
-                      <div className="stat-label">{t('platform.dashboard.stats.storage') || 'Storage Used'}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
 
             {/* Quick Actions Grid */}
@@ -416,6 +556,162 @@ const PlatformDashboard: React.FC = memo(() => {
                 ))}
               </div>
             </div>
+
+            {/* Tenant Statistics Breakdown Table */}
+            {!dashboardData.loading && !dashboardData.error && dashboardData.platformStats && (
+              <div className="tenant-breakdown-section mt-5">
+                <h5 className="section-title">
+                  <i className="bi bi-table me-2"></i>
+                  {t('platform.dashboard.tenantBreakdown.title') || 'Tenant-wise Statistics'}
+                </h5>
+                <div className="table-card">
+                  <div className="card-header">
+                    <div className="header-content">
+                      <h6 className="card-title mb-0">
+                        {t('platform.dashboard.tenantBreakdown.subtitle') || 'Detailed breakdown of users across all tenants'}
+                      </h6>
+                      <span className="badge bg-primary">
+                        {dashboardData.platformStats.tenantStats.length} {t('platform.dashboard.tenantBreakdown.tenantsCount') || 'Tenants'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="card-body p-0">
+                    <div className="table-responsive">
+                      <table className="table table-hover mb-0">
+                        <thead className="table-light">
+                          <tr>
+                            <th scope="col">
+                              <i className="bi bi-building me-1"></i>
+                              {t('platform.dashboard.tenantBreakdown.tenantName') || 'Tenant Name'}
+                            </th>
+                            <th scope="col" className="text-center">
+                              <i className="bi bi-person-badge me-1"></i>
+                              {t('platform.dashboard.tenantBreakdown.superAdmins') || 'Super Admins'}
+                            </th>
+                            <th scope="col" className="text-center">
+                              <i className="bi bi-person-check me-1"></i>
+                              {t('platform.dashboard.tenantBreakdown.admins') || 'Admins'}
+                            </th>
+                            <th scope="col" className="text-center">
+                              <i className="bi bi-person me-1"></i>
+                              {t('platform.dashboard.tenantBreakdown.users') || 'Users'}
+                            </th>
+                            <th scope="col" className="text-center">
+                              <i className="bi bi-people me-1"></i>
+                              {t('platform.dashboard.tenantBreakdown.totalUsers') || 'Total Users'}
+                            </th>
+                            <th scope="col" className="text-center">
+                              <i className="bi bi-pie-chart me-1"></i>
+                              {t('platform.dashboard.tenantBreakdown.distribution') || 'Distribution'}
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {dashboardData.platformStats.tenantStats.map((tenant) => (
+                            <tr key={tenant.tenantId}>
+                              <td>
+                                <div className="tenant-info">
+                                  <div className="tenant-name">{tenant.tenantName}</div>
+                                  <small className="text-muted">ID: {tenant.tenantId}</small>
+                                </div>
+                              </td>
+                              <td className="text-center">
+                                <span className="badge bg-primary rounded-pill">
+                                  {tenant.superAdminCount}
+                                </span>
+                              </td>
+                              <td className="text-center">
+                                <span className="badge bg-success rounded-pill">
+                                  {tenant.adminCount}
+                                </span>
+                              </td>
+                              <td className="text-center">
+                                <span className="badge bg-info rounded-pill">
+                                  {tenant.userCount}
+                                </span>
+                              </td>
+                              <td className="text-center">
+                                <span className="badge bg-dark rounded-pill">
+                                  {tenant.totalTenantUsers}
+                                </span>
+                              </td>
+                              <td className="text-center">
+                                <div className="distribution-chart">
+                                  <div className="progress" style={{ height: '20px' }}>
+                                    {tenant.totalTenantUsers > 0 && (
+                                      <>
+                                        <div 
+                                          className="progress-bar bg-primary" 
+                                          role="progressbar" 
+                                          style={{ 
+                                            width: `${(tenant.superAdminCount / tenant.totalTenantUsers) * 100}%` 
+                                          }}
+                                          title={`Super Admins: ${((tenant.superAdminCount / tenant.totalTenantUsers) * 100).toFixed(1)}%`}
+                                        ></div>
+                                        <div 
+                                          className="progress-bar bg-success" 
+                                          role="progressbar" 
+                                          style={{ 
+                                            width: `${(tenant.adminCount / tenant.totalTenantUsers) * 100}%` 
+                                          }}
+                                          title={`Admins: ${((tenant.adminCount / tenant.totalTenantUsers) * 100).toFixed(1)}%`}
+                                        ></div>
+                                        <div 
+                                          className="progress-bar bg-info" 
+                                          role="progressbar" 
+                                          style={{ 
+                                            width: `${(tenant.userCount / tenant.totalTenantUsers) * 100}%` 
+                                          }}
+                                          title={`Users: ${((tenant.userCount / tenant.totalTenantUsers) * 100).toFixed(1)}%`}
+                                        ></div>
+                                      </>
+                                    )}
+                                  </div>
+                                  <small className="text-muted d-block mt-1">
+                                    {tenant.totalTenantUsers > 0 
+                                      ? `${((tenant.superAdminCount / tenant.totalTenantUsers) * 100).toFixed(0)}% / ${((tenant.adminCount / tenant.totalTenantUsers) * 100).toFixed(0)}% / ${((tenant.userCount / tenant.totalTenantUsers) * 100).toFixed(0)}%`
+                                      : 'No users'
+                                    }
+                                  </small>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div className="card-footer">
+                    <div className="row text-center">
+                      <div className="col-md-3">
+                        <div className="summary-stat">
+                          <div className="stat-value text-primary">{dashboardData.platformStats.totalSuperAdmins}</div>
+                          <div className="stat-label">Total Super Admins</div>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="summary-stat">
+                          <div className="stat-value text-success">{dashboardData.platformStats.totalAdmins}</div>
+                          <div className="stat-label">Total Admins</div>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="summary-stat">
+                          <div className="stat-value text-info">{dashboardData.platformStats.totalUsers}</div>
+                          <div className="stat-label">Total Users</div>
+                        </div>
+                      </div>
+                      <div className="col-md-3">
+                        <div className="summary-stat">
+                          <div className="stat-value text-dark">{dashboardData.platformStats.totalTenantUsers}</div>
+                          <div className="stat-label">Total Platform Users</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Recent Activity Section */}
             <div className="recent-activity-section mt-5">

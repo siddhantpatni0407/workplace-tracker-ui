@@ -428,7 +428,14 @@
       },
       "stats": {
         "activeTenants": "Active Tenants",
-        "totalUsers": "Total Users",
+        "totalTenants": "Total Tenants",
+        "totalUsers": "Total Platform Users",
+        "superAdmins": "Super Admins",
+        "admins": "Admins",
+        "regularUsers": "Regular Users",
+        "avgUsersPerTenant": "Avg Users/Tenant",
+        "superAdminRatio": "Super Admin %",
+        "lastUpdated": "Last Updated",
         "uptime": "System Uptime",
         "storage": "Storage Used"
       },
@@ -457,6 +464,17 @@
       "quickActions": {
         "title": "Quick Actions",
         "manage": "Manage"
+      },
+      "tenantBreakdown": {
+        "title": "Tenant-wise Statistics",
+        "subtitle": "Detailed breakdown of users across all tenants",
+        "tenantsCount": "Tenants",
+        "tenantName": "Tenant Name",
+        "superAdmins": "Super Admins",
+        "admins": "Admins",
+        "users": "Users",
+        "totalUsers": "Total Users",
+        "distribution": "Distribution"
       },
       "recentActivity": {
         "title": "Recent Platform Activity"

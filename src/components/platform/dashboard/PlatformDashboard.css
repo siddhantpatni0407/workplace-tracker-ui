@@ -588,3 +588,142 @@
   width: 16px;
   text-align: center;
 }
+
+/* Tenant Breakdown Table Styles */
+.platform-dashboard .tenant-breakdown-section {
+  margin-top: 2rem;
+}
+
+.platform-dashboard .table-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.platform-dashboard .table-card .card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.platform-dashboard .table-card .header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.platform-dashboard .table-card .card-title {
+  color: #495057;
+  font-weight: 600;
+  margin: 0;
+}
+
+.platform-dashboard .table-card .table {
+  margin: 0;
+}
+
+.platform-dashboard .table-card .table thead th {
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-bottom: 2px solid #dee2e6;
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+}
+
+.platform-dashboard .table-card .table tbody td {
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.platform-dashboard .table-card .table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.platform-dashboard .tenant-info .tenant-name {
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.25rem;
+}
+
+.platform-dashboard .distribution-chart {
+  min-width: 120px;
+}
+
+.platform-dashboard .distribution-chart .progress {
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #e9ecef;
+}
+
+.platform-dashboard .distribution-chart .progress-bar {
+  transition: width 0.3s ease;
+}
+
+.platform-dashboard .table-card .card-footer {
+  background: #f8f9fa;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+.platform-dashboard .summary-stat {
+  text-align: center;
+}
+
+.platform-dashboard .summary-stat .stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.platform-dashboard .summary-stat .stat-label {
+  font-size: 0.875rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+/* Loading Section Styles */
+.platform-dashboard .loading-section {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  color: #495057;
+}
+
+/* Error Alert Enhancements */
+.platform-dashboard .alert {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge Enhancements */
+.platform-dashboard .badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35em 0.65em;
+}
+
+/* Responsive Design for Tenant Table */
+@media (max-width: 768px) {
+  .platform-dashboard .table-responsive {
+    font-size: 0.875rem;
+  }
+  
+  .platform-dashboard .distribution-chart {
+    min-width: 80px;
+  }
+  
+  .platform-dashboard .summary-stat .stat-value {
+    font-size: 1.25rem;
+  }
+  
+  .platform-dashboard .table-card .card-footer .row > div {
+    margin-bottom: 1rem;
+  }
+}

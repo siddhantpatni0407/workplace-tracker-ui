@@ -293,7 +293,14 @@
       },
       "stats": {
         "activeTenants": "Locataires Actifs",
-        "totalUsers": "Utilisateurs Totaux",
+        "totalTenants": "Locataires Totaux",
+        "totalUsers": "Utilisateurs Totaux de Plateforme",
+        "superAdmins": "Super Administrateurs",
+        "admins": "Administrateurs",
+        "regularUsers": "Utilisateurs Réguliers",
+        "avgUsersPerTenant": "Utilisateurs Moy./Locataire",
+        "superAdminRatio": "% Super Admin",
+        "lastUpdated": "Dernière Mise à Jour",
         "uptime": "Temps de Fonctionnement du Système",
         "storage": "Stockage Utilisé"
       },
@@ -322,6 +329,17 @@
       "quickActions": {
         "title": "Actions Rapides",
         "manage": "Gérer"
+      },
+      "tenantBreakdown": {
+        "title": "Statistiques par Locataire",
+        "subtitle": "Répartition détaillée des utilisateurs sur tous les locataires",
+        "tenantsCount": "Locataires",
+        "tenantName": "Nom du Locataire",
+        "superAdmins": "Super Administrateurs",
+        "admins": "Administrateurs",
+        "users": "Utilisateurs",
+        "totalUsers": "Utilisateurs Totaux",
+        "distribution": "Distribution"
       },
       "recentActivity": {
         "title": "Activité Récente de la Plateforme"

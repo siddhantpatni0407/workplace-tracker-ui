@@ -323,7 +323,14 @@
       },
       "stats": {
         "activeTenants": "Inquilinos Activos",
-        "totalUsers": "Usuarios Totales",
+        "totalTenants": "Inquilinos Totales",
+        "totalUsers": "Usuarios Totales de Plataforma",
+        "superAdmins": "Super Administradores",
+        "admins": "Administradores",
+        "regularUsers": "Usuarios Regulares",
+        "avgUsersPerTenant": "Usuarios Promedio/Inquilino",
+        "superAdminRatio": "% Super Admin",
+        "lastUpdated": "Última Actualización",
         "uptime": "Tiempo de Actividad del Sistema",
         "storage": "Almacenamiento Utilizado"
       },
@@ -352,6 +359,17 @@
       "quickActions": {
         "title": "Acciones Rápidas",
         "manage": "Gestionar"
+      },
+      "tenantBreakdown": {
+        "title": "Estadísticas por Inquilino",
+        "subtitle": "Desglose detallado de usuarios en todos los inquilinos",
+        "tenantsCount": "Inquilinos",
+        "tenantName": "Nombre del Inquilino",
+        "superAdmins": "Super Administradores",
+        "admins": "Administradores",
+        "users": "Usuarios",
+        "totalUsers": "Usuarios Totales",
+        "distribution": "Distribución"
       },
       "recentActivity": {
         "title": "Actividad Reciente de la Plataforma"
