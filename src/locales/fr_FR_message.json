@@ -1173,5 +1173,98 @@
         }
       }
     }
+  },
+  "superAdmin": {
+    "dashboard": {
+      "title": "Tableau de Bord Super Administrateur",
+      "adminTitle": "Centre de Contrôle Super Administrateur",
+      "adminSubtitle": "Supervision et gestion complète de la plateforme",
+      "welcome": "Bienvenue sur le Portail Super Administrateur",
+      "subtitle": "Centre de gestion et contrôle de la plateforme",
+      "quickOverview": "Aperçu Rapide",
+      "sidebar": {
+        "quickAccess": "Accès Rapide",
+        "categories": "Catégories",
+        "platform": "Plateforme",
+        "tenant": "Locataire",
+        "analytics": "Analytique",
+        "system": "Système"
+      },
+      "search": {
+        "placeholder": "Rechercher les outils de super administrateur...",
+        "noResults": "Aucun outil trouvé"
+      },
+      "stats": {
+        "totalTenants": "Total des Locataires",
+        "activeTenants": "Locataires Actifs",
+        "platformUsers": "Utilisateurs de Plateforme",
+        "endUsers": "Utilisateurs Finaux",
+        "systemHealth": "Santé du Système"
+      },
+      "categories": {
+        "tenant": "Gestion des Locataires",
+        "platform": "Administration de Plateforme",
+        "analytics": "Analytique et Rapports",
+        "system": "Gestion du Système"
+      }
+    },
+    "adminManagementTitle": "Gestion des Administrateurs",
+    "adminManagementDesc": "Gérer les utilisateurs administrateurs dans votre locataire",
+    "platformManagement": "Gestion de Plateforme",
+    "platformManagementDesc": "Gérer les paramètres et configurations de toute la plateforme",
+    "tenantManagement": "Gestion des Locataires",
+    "tenantManagementDesc": "Créer, gérer et surveiller tous les locataires",
+    "subscriptionManagement": "Gestion des Abonnements",
+    "subscriptionManagementDesc": "Gérer la facturation et les plans d'abonnement",
+    "globalAnalytics": "Analytique Globale",
+    "globalAnalyticsDesc": "Analytique des performances et utilisation de toute la plateforme",
+    "systemMonitoring": "Surveillance du Système",
+    "systemMonitoringDesc": "Surveiller la santé et les performances du système",
+    "auditLogs": "Journaux d'Audit",
+    "auditLogsDesc": "Suivre toutes les activités et changements de la plateforme",
+    "backupManagement": "Gestion des Sauvegardes",
+    "backupManagementDesc": "Gérer les sauvegardes et la récupération de données",
+    "settings": "Paramètres Super Administrateur",
+    "settingsDesc": "Configurer les paramètres globaux de la plateforme",
+    "systemSettings": "Paramètres du Système",
+    "systemSettingsDesc": "Configurer les préférences et la sécurité du système",
+    "adminManagement": {
+      "title": "Gestion des Administrateurs",
+      "subtitle": "Gérer les utilisateurs administrateurs dans votre locataire",
+      "searchPlaceholder": "Rechercher par nom, email ou gestionnaire...",
+      "searchResults": "Résultats de recherche pour:",
+      "noAdmins": "Aucun utilisateur administrateur ne correspond aux filtres actuels.",
+      "adminDetails": "Détails de l'Administrateur",
+      "manager": "Gestionnaire",
+      "lastLogin": "Dernière Connexion",
+      "filters": {
+        "clearFilters": "Effacer les Filtres",
+        "status": "Statut"
+      },
+      "actions": {
+        "activate": "Activer l'Administrateur",
+        "deactivate": "Désactiver l'Administrateur",
+        "viewDetails": "Voir les Détails"
+      },
+      "status": {
+        "active": "Actif",
+        "inactive": "Inactif",
+        "locked": "Verrouillé"
+      }
+    },
+    "quickStats": {
+      "totalTenants": "Total des Locataires",
+      "activeTenants": "Locataires Actifs",
+      "totalPlatformUsers": "Utilisateurs de Plateforme",
+      "totalEndUsers": "Utilisateurs Finaux",
+      "activeSubscriptions": "Abonnements Actifs",
+      "systemHealth": "Santé du Système"
+    },
+    "systemHealth": {
+      "excellent": "Excellent",
+      "good": "Bon",
+      "warning": "Avertissement",
+      "critical": "Critique"
+    }
   }
 }

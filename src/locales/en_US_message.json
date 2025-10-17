@@ -250,8 +250,36 @@
   "superAdmin": {
     "dashboard": {
       "title": "Super Admin Dashboard",
+      "adminTitle": "Super Admin Control Center",
+      "adminSubtitle": "Complete platform oversight and management",
       "welcome": "Welcome to Super Admin Portal",
-      "subtitle": "Platform management and control center"
+      "subtitle": "Platform management and control center",
+      "quickOverview": "Quick Overview",
+      "sidebar": {
+        "quickAccess": "Quick Access",
+        "categories": "Categories",
+        "platform": "Platform",
+        "tenant": "Tenant",
+        "analytics": "Analytics",
+        "system": "System"
+      },
+      "search": {
+        "placeholder": "Search super admin tools...",
+        "noResults": "No tools found matching your search"
+      },
+      "stats": {
+        "totalTenants": "Total Tenants",
+        "activeTenants": "Active Tenants", 
+        "platformUsers": "Platform Users",
+        "endUsers": "End Users",
+        "systemHealth": "System Health"
+      },
+      "categories": {
+        "tenant": "Tenant Management",
+        "platform": "Platform Administration", 
+        "analytics": "Analytics & Reporting",
+        "system": "System Management"
+      }
     },
     "platformManagement": "Platform Management",
     "platformManagementDesc": "Manage platform-wide settings and configurations",
@@ -269,6 +297,10 @@
     "backupManagementDesc": "Manage data backups and recovery",
     "settings": "Super Admin Settings",
     "settingsDesc": "Configure global platform settings",
+    "systemSettings": "System Settings",
+    "systemSettingsDesc": "Configure system-wide preferences and security",
+    "adminManagementTitle": "Admin Management",
+    "adminManagementDesc": "Manage Admin users in your tenant",
     "adminManagement": {
       "title": "Admin Management",
       "subtitle": "Manage Admin users in your tenant",

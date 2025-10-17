@@ -999,5 +999,98 @@
         }
       }
     }
+  },
+  "superAdmin": {
+    "dashboard": {
+      "title": "Panel de Super Administrador",
+      "adminTitle": "Centro de Control de Super Administrador",
+      "adminSubtitle": "Supervisión y gestión completa de la plataforma",
+      "welcome": "Bienvenido al Portal de Super Administrador",
+      "subtitle": "Centro de gestión y control de la plataforma",
+      "quickOverview": "Resumen Rápido",
+      "sidebar": {
+        "quickAccess": "Acceso Rápido",
+        "categories": "Categorías",
+        "platform": "Plataforma",
+        "tenant": "Inquilino",
+        "analytics": "Analítica",
+        "system": "Sistema"
+      },
+      "search": {
+        "placeholder": "Buscar herramientas de super administrador...",
+        "noResults": "No se encontraron herramientas"
+      },
+      "stats": {
+        "totalTenants": "Total de Inquilinos",
+        "activeTenants": "Inquilinos Activos",
+        "platformUsers": "Usuarios de Plataforma",
+        "endUsers": "Usuarios Finales",
+        "systemHealth": "Salud del Sistema"
+      },
+      "categories": {
+        "tenant": "Gestión de Inquilinos",
+        "platform": "Administración de Plataforma",
+        "analytics": "Analítica e Informes",
+        "system": "Gestión del Sistema"
+      }
+    },
+    "adminManagementTitle": "Gestión de Administradores",
+    "adminManagementDesc": "Gestionar usuarios administradores en tu inquilino",
+    "platformManagement": "Gestión de Plataforma",
+    "platformManagementDesc": "Gestionar configuraciones y ajustes de toda la plataforma",
+    "tenantManagement": "Gestión de Inquilinos",
+    "tenantManagementDesc": "Crear, gestionar y monitorear todos los inquilinos",
+    "subscriptionManagement": "Gestión de Suscripciones",
+    "subscriptionManagementDesc": "Manejar facturación y planes de suscripción",
+    "globalAnalytics": "Analítica Global",
+    "globalAnalyticsDesc": "Analítica de rendimiento y uso de toda la plataforma",
+    "systemMonitoring": "Monitoreo del Sistema",
+    "systemMonitoringDesc": "Monitorear la salud y rendimiento del sistema",
+    "auditLogs": "Registros de Auditoría",
+    "auditLogsDesc": "Rastrear todas las actividades y cambios de la plataforma",
+    "backupManagement": "Gestión de Respaldos",
+    "backupManagementDesc": "Gestionar respaldos y recuperación de datos",
+    "settings": "Configuraciones de Super Administrador",
+    "settingsDesc": "Configurar ajustes globales de la plataforma",
+    "systemSettings": "Configuraciones del Sistema",
+    "systemSettingsDesc": "Configurar preferencias y seguridad del sistema",
+    "adminManagement": {
+      "title": "Gestión de Administradores",
+      "subtitle": "Gestionar usuarios administradores en tu inquilino",
+      "searchPlaceholder": "Buscar por nombre, email o gerente...",
+      "searchResults": "Resultados de búsqueda para:",
+      "noAdmins": "Ningún usuario administrador coincide con los filtros actuales.",
+      "adminDetails": "Detalles del Administrador",
+      "manager": "Gerente",
+      "lastLogin": "Último Inicio de Sesión",
+      "filters": {
+        "clearFilters": "Limpiar Filtros",
+        "status": "Estado"
+      },
+      "actions": {
+        "activate": "Activar Administrador",
+        "deactivate": "Desactivar Administrador",
+        "viewDetails": "Ver Detalles"
+      },
+      "status": {
+        "active": "Activo",
+        "inactive": "Inactivo",
+        "locked": "Bloqueado"
+      }
+    },
+    "quickStats": {
+      "totalTenants": "Total de Inquilinos",
+      "activeTenants": "Inquilinos Activos",
+      "totalPlatformUsers": "Usuarios de Plataforma",
+      "totalEndUsers": "Usuarios Finales",
+      "activeSubscriptions": "Suscripciones Activas",
+      "systemHealth": "Salud del Sistema"
+    },
+    "systemHealth": {
+      "excellent": "Excelente",
+      "good": "Bueno",
+      "warning": "Advertencia",
+      "critical": "Crítico"
+    }
   }
 }

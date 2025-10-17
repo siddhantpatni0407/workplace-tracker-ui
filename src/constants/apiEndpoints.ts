@@ -228,5 +228,6 @@ export const API_ENDPOINTS = {
     SEARCH_ADMINS: `${API_BASE_URL}/super-admin/admins/search`,
     GET_ADMIN_DETAILS: `${API_BASE_URL}/super-admin/admins/details`,
     UPDATE_ADMIN_STATUS: `${API_BASE_URL}/super-admin/admins/status`,
+    DASHBOARD_STATS: `${API_BASE_URL}/super-admin/dashboard/stats`,
   },
 };

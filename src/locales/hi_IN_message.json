@@ -216,9 +216,32 @@
   "superAdmin": {
     "dashboard": {
       "title": "सुपर एडमिन डैशबोर्ड",
+      "adminTitle": "सुपर एडमिन नियंत्रण केंद्र",
+      "adminSubtitle": "संपूर्ण प्लेटफॉर्म निरीक्षण और प्रबंधन",
       "welcome": "सुपर एडमिन पोर्टल में स्वागत है",
-      "subtitle": "प्लेटफॉर्म प्रबंधन और नियंत्रण केंद्र"
+      "subtitle": "प्लेटफॉर्म प्रबंधन और नियंत्रण केंद्र",
+      "quickOverview": "त्वरित अवलोकन",
+      "sidebar": {
+        "quickAccess": "त्वरित पहुंच",
+        "categories": "श्रेणियां",
+        "platform": "प्लेटफॉर्म",
+        "tenant": "टेनेंट",
+        "analytics": "विश्लेषिकी",
+        "system": "सिस्टम"
+      },
+      "search": {
+        "placeholder": "सुपर एडमिन टूल्स खोजें...",
+        "noResults": "कोई टूल नहीं मिला"
+      },
+      "categories": {
+        "tenant": "टेनेंट प्रबंधन",
+        "platform": "प्लेटफॉर्म प्रशासन",
+        "analytics": "विश्लेषिकी और रिपोर्टिंग",
+        "system": "सिस्टम प्रबंधन"
+      }
     },
+    "adminManagementTitle": "एडमिन प्रबंधन",
+    "adminManagementDesc": "अपने टेनेंट में एडमिन उपयोगकर्ताओं का प्रबंधन करें",
     "platformManagement": "प्लेटफॉर्म प्रबंधन",
     "platformManagementDesc": "प्लेटफॉर्म-व्यापी सेटिंग्स और कॉन्फ़िगरेशन प्रबंधित करें",
     "tenantManagement": "टेनेंट प्रबंधन",
@@ -235,6 +258,32 @@
     "backupManagementDesc": "डेटा बैकअप और रिकवरी प्रबंधित करें",
     "settings": "सुपर एडमिन सेटिंग्स",
     "settingsDesc": "ग्लोबल प्लेटफॉर्म सेटिंग्स कॉन्फ़िगर करें",
+    "systemSettings": "सिस्टम सेटिंग्स",
+    "systemSettingsDesc": "सिस्टम-व्यापी प्राथमिकताएं और सुरक्षा कॉन्फ़िगर करें",
+    "adminManagement": {
+      "title": "एडमिन प्रबंधन",
+      "subtitle": "अपने टेनेंट में एडमिन उपयोगकर्ताओं का प्रबंधन करें",
+      "searchPlaceholder": "नाम, ईमेल या प्रबंधक द्वारा खोजें...",
+      "searchResults": "खोज परिणाम:",
+      "noAdmins": "वर्तमान फ़िल्टर से कोई एडमिन उपयोगकर्ता मेल नहीं खाता।",
+      "adminDetails": "एडमिन विवरण",
+      "manager": "प्रबंधक",
+      "lastLogin": "अंतिम लॉगिन",
+      "filters": {
+        "clearFilters": "फ़िल्टर साफ़ करें",
+        "status": "स्थिति"
+      },
+      "actions": {
+        "activate": "एडमिन सक्रिय करें",
+        "deactivate": "एडमिन निष्क्रिय करें",
+        "viewDetails": "विवरण देखें"
+      },
+      "status": {
+        "active": "सक्रिय",
+        "inactive": "निष्क्रिय",
+        "locked": "लॉक किया गया"
+      }
+    },
     "quickStats": {
       "totalTenants": "कुल टेनेंट्स",
       "activeTenants": "सक्रिय टेनेंट्स",
