@@ -496,7 +496,7 @@ const TenantManagement: React.FC = () => {
               </div>
             ) : (
               <div className="tenant-table-wrapper">
-                <div className="table-responsive">
+                <div className="table-responsive tenant-table-responsive-custom">
                   <table className="table tenant-table">
                     <thead>
                       <tr>

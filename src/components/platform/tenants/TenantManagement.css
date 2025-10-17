@@ -412,6 +412,37 @@
 /* =================================================
    ACTIONS DROPDOWN
    ================================================= */
+
+/* Fix dropdown positioning in table */
+.tenant-main-content .table-responsive {
+  overflow: visible;
+}
+
+.tenant-table-responsive-custom {
+  overflow-x: auto;
+  overflow-y: visible !important;
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .tenant-table-responsive-custom {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+}
+
+.tenant-table {
+  position: relative;
+}
+
+.tenant-actions-dropdown {
+  position: relative;
+}
+
+.tenant-actions-dropdown .dropdown {
+  position: static;
+}
+
 .tenant-actions-dropdown .dropdown-toggle {
   border: 1px solid rgba(98, 0, 234, 0.2);
   border-radius: 8px;
@@ -432,6 +463,29 @@
   box-shadow: 0 8px 32px rgba(98, 0, 234, 0.15);
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.95);
+  position: absolute;
+  z-index: 1050;
+  right: 0;
+  top: 100%;
+  min-width: 160px;
+  margin-top: 0.125rem;
+}
+
+/* Ensure dropdown stays visible on right edge */
+.tenant-actions-dropdown .dropdown-menu.show {
+  display: block;
+  animation: fadeInDropdown 0.15s ease-out;
+}
+
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .tenant-actions-dropdown .dropdown-item {
@@ -444,6 +498,7 @@
   background: none;
   width: 100%;
   text-align: left;
+  white-space: nowrap;
 }
 
 .tenant-actions-dropdown .dropdown-item:hover {
@@ -536,10 +591,18 @@
   
   .tenant-table-wrapper {
     overflow-x: auto;
+    overflow-y: visible;
   }
   
   .tenant-table {
     min-width: 800px;
+  }
+
+  /* Adjust dropdown positioning on mobile */
+  .tenant-actions-dropdown .dropdown-menu {
+    right: auto;
+    left: 0;
+    min-width: 140px;
   }
 }
 
