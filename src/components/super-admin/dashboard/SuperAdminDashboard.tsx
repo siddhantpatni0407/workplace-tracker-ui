@@ -426,38 +426,35 @@ const SuperAdminDashboard: React.FC = () => {
                 </div>
               ))}
             </div>
+
+            {/* Sidebar Footer */}
+            <div className="sidebar-footer">
+              <div className="super-admin-info">
+                <div className="super-admin-avatar">
+                  <i className="bi bi-shield-check"></i>
+                </div>
+                <div className="super-admin-details">
+                  <span className="super-admin-name">
+                    {user?.name || 'Super Admin'}
+                  </span>
+                  <span className="super-admin-role">
+                    {t('common.roles.superAdmin') || 'Super Administrator'}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Main Content */}
           <div className="main-content">
-            {/* Header Section */}
-            <div className="dashboard-header">
-              <div className="container-fluid">
-                <div className="row">
-                  <div className="col-12">
-                    <div className="header-content">
-                      <div className="header-text">
-                        <h1 className="dashboard-title">
-                          <i className="bi bi-shield-check me-3"></i>
-                          {t("superAdmin.dashboard.adminTitle") || "Super Admin Control Center"}
-                        </h1>
-                        <p className="dashboard-subtitle">
-                          <i className="bi bi-gear me-2"></i>
-                          {t("superAdmin.dashboard.adminSubtitle") || "Complete platform oversight and management"}
-                        </p>
-                      </div>
-                      <div className="header-actions">
-                        <button 
-                          className="btn btn-outline-primary"
-                          onClick={loadDashboardData}
-                          disabled={dashboardData.loading}
-                        >
-                          <i className="bi bi-arrow-clockwise me-2"></i>
-                          {t("common.refresh")}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+            {/* Welcome Section */}
+            <div className="welcome-section mb-4">
+              <div className="welcome-card">
+                <div className="welcome-content">
+                  <h4 className="welcome-title">
+                    <i className="bi bi-shield-check"></i>
+                    Welcome, {user?.name || 'Super Administrator'}
+                  </h4>
                 </div>
               </div>
             </div>

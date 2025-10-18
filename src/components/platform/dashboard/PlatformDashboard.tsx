@@ -371,29 +371,32 @@ const PlatformDashboard: React.FC = memo(() => {
           <div className="main-content">
             {/* Welcome Section */}
             <div className="welcome-section mb-4">
-              <div className="welcome-card platform-welcome">
+              <div className="welcome-card">
                 <div className="welcome-content">
                   <h4 className="welcome-title">
-                    {t('platform.dashboard.welcome.title') || 'Welcome to Platform Administration'}, {platformUser?.name || user?.name || 'User'}
+                    <i className="bi bi-speedometer2"></i>
+                    Welcome, {platformUser?.name || user?.name || 'Platform Administrator'}
                   </h4>
-                  <p className="welcome-subtitle">
-                    {t('platform.dashboard.welcome.subtitle') || 'Manage your workplace tracking platform from this centralized dashboard'}
-                  </p>
-                </div>
-                <div className="welcome-icon">
-                  <i className="bi bi-speedometer2"></i>
                 </div>
               </div>
             </div>
 
-            {/* Platform Stats Section */}
-            <div className="stats-section mb-4">
+            {/* Platform Analytics Section */}
+            <div className="dashboard-section mb-4">
+              <div className="section-header">
+                <h5 className="section-title">
+                  <i className="bi bi-bar-chart-line me-2"></i>
+                  Quick Analytics
+                </h5>
+                <span className="section-subtitle">Real-time insights into your platform performance</span>
+              </div>
+
               {dashboardData.loading && (
                 <div className="loading-section text-center py-4">
                   <div className="spinner-border text-primary me-2" role="status">
                     <span className="visually-hidden">Loading...</span>
                   </div>
-                  <span>Loading platform statistics...</span>
+                  <span>Loading platform analytics...</span>
                 </div>
               )}
 
@@ -413,101 +416,78 @@ const PlatformDashboard: React.FC = memo(() => {
               )}
 
               {!dashboardData.loading && !dashboardData.error && dashboardData.platformStats && (
-                <>
-                  <div className="row g-3">
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-primary">
-                        <div className="stat-icon">
-                          <i className="bi bi-buildings"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">{dashboardData.platformStats.totalTenants}</div>
-                          <div className="stat-label">{t('platform.dashboard.stats.totalTenants') || 'Total Tenants'}</div>
-                        </div>
-                      </div>
+                <div className="analytics-grid">
+                  <div className="analytics-card">
+                    <div className="analytics-icon">
+                      <i className="bi bi-buildings"></i>
                     </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-success">
-                        <div className="stat-icon">
-                          <i className="bi bi-people-fill"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">{dashboardData.platformStats.totalTenantUsers}</div>
-                          <div className="stat-label">{t('platform.dashboard.stats.totalUsers') || 'Total Platform Users'}</div>
-                        </div>
-                      </div>
+                    <div className="analytics-content">
+                      <h6>Total Tenants</h6>
+                      <p>Organizations using platform</p>
+                      <div className="analytics-value">{dashboardData.platformStats.totalTenants}</div>
                     </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-info">
-                        <div className="stat-icon">
-                          <i className="bi bi-person-badge"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">{dashboardData.platformStats.totalSuperAdmins}</div>
-                          <div className="stat-label">{t('platform.dashboard.stats.superAdmins') || 'Super Admins'}</div>
-                        </div>
-                      </div>
+                  </div>
+                  
+                  <div className="analytics-card">
+                    <div className="analytics-icon">
+                      <i className="bi bi-people-fill"></i>
                     </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-warning">
-                        <div className="stat-icon">
-                          <i className="bi bi-person-check"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">{dashboardData.platformStats.totalAdmins}</div>
-                          <div className="stat-label">{t('platform.dashboard.stats.admins') || 'Admins'}</div>
-                        </div>
+                    <div className="analytics-content">
+                      <h6>Total Platform Users</h6>
+                      <p>All users across tenants</p>
+                      <div className="analytics-value">{dashboardData.platformStats.totalTenantUsers}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="analytics-card">
+                    <div className="analytics-icon">
+                      <i className="bi bi-person-badge"></i>
+                    </div>
+                    <div className="analytics-content">
+                      <h6>Super Admins</h6>
+                      <p>Platform administrators</p>
+                      <div className="analytics-value">{dashboardData.platformStats.totalSuperAdmins}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="analytics-card">
+                    <div className="analytics-icon">
+                      <i className="bi bi-person-check"></i>
+                    </div>
+                    <div className="analytics-content">
+                      <h6>Admins</h6>
+                      <p>Tenant administrators</p>
+                      <div className="analytics-value">{dashboardData.platformStats.totalAdmins}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="analytics-card">
+                    <div className="analytics-icon">
+                      <i className="bi bi-person"></i>
+                    </div>
+                    <div className="analytics-content">
+                      <h6>Regular Users</h6>
+                      <p>Standard platform users</p>
+                      <div className="analytics-value">{dashboardData.platformStats.totalUsers}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="analytics-card">
+                    <div className="analytics-icon">
+                      <i className="bi bi-calculator"></i>
+                    </div>
+                    <div className="analytics-content">
+                      <h6>Avg Users/Tenant</h6>
+                      <p>User distribution average</p>
+                      <div className="analytics-value">
+                        {dashboardData.platformStats.totalTenants > 0 
+                          ? Math.round(dashboardData.platformStats.totalTenantUsers / dashboardData.platformStats.totalTenants)
+                          : 0
+                        }
                       </div>
                     </div>
                   </div>
-
-                  {/* Additional Statistics Row */}
-                  <div className="row g-3 mt-2">
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-secondary">
-                        <div className="stat-icon">
-                          <i className="bi bi-person"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">{dashboardData.platformStats.totalUsers}</div>
-                          <div className="stat-label">{t('platform.dashboard.stats.regularUsers') || 'Regular Users'}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-success">
-                        <div className="stat-icon">
-                          <i className="bi bi-calculator"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">
-                            {dashboardData.platformStats.totalTenants > 0 
-                              ? Math.round(dashboardData.platformStats.totalTenantUsers / dashboardData.platformStats.totalTenants)
-                              : 0
-                            }
-                          </div>
-                          <div className="stat-label">{t('platform.dashboard.stats.avgUsersPerTenant') || 'Avg Users/Tenant'}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-info">
-                        <div className="stat-icon">
-                          <i className="bi bi-percent"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">
-                            {dashboardData.platformStats.totalTenantUsers > 0 
-                              ? ((dashboardData.platformStats.totalSuperAdmins / dashboardData.platformStats.totalTenantUsers) * 100).toFixed(1)
-                              : 0
-                            }%
-                          </div>
-                          <div className="stat-label">{t('platform.dashboard.stats.superAdminRatio') || 'Super Admin %'}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </>
+                </div>
               )}
             </div>
 
