@@ -506,22 +506,6 @@ const PlatformDashboard: React.FC = memo(() => {
                         </div>
                       </div>
                     </div>
-                    <div className="col-lg-3 col-md-6">
-                      <div className="stat-card stat-primary">
-                        <div className="stat-icon">
-                          <i className="bi bi-clock-history"></i>
-                        </div>
-                        <div className="stat-content">
-                          <div className="stat-number">
-                            {dashboardData.lastUpdated 
-                              ? new Date(dashboardData.lastUpdated).toLocaleTimeString()
-                              : '--'
-                            }
-                          </div>
-                          <div className="stat-label">{t('platform.dashboard.stats.lastUpdated') || 'Last Updated'}</div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                 </>
               )}
