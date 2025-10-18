@@ -52,9 +52,6 @@ const UserTasks: React.FC = () => {
 
   // Enhanced features states
   const [showBulkActions, setShowBulkActions] = useState(false);
-  // const [showTemplateModal, setShowTemplateModal] = useState(false);
-  // const [showImportModal, setShowImportModal] = useState(false);
-  // const [showExportModal, setShowExportModal] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'kanban' | 'calendar'>('table');
   const [showQuickAdd, setShowQuickAdd] = useState(false);
 

@@ -221,13 +221,6 @@ export class TokenService {
     const tokenType = tokenInfo?.tokenType || 'Bearer';
     const authHeader = `${tokenType} ${token}`;
     
-    console.log('🔑 Authorization header generated:', {
-      tokenType,
-      tokenLength: token.length,
-      tokenStart: token.substring(0, 20) + '...',
-      hasTokenInfo: !!tokenInfo
-    });
-    
     return authHeader;
   }
 

@@ -36,10 +36,6 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
     const fromDate = DateUtils.formatForApi(today);
     const toDate = DateUtils.formatForApi(endDate);
     
-    console.log(`Current date: ${today.toISOString().split('T')[0]}`);
-    console.log(`Fetching events from ${fromDate} to ${toDate}`);
-    console.log(`Looking ahead ${days} days`);
-    
     // Fetch holidays
     const holidaysPromise = axiosInstance.get<any>(API_ENDPOINTS.HOLIDAYS.GET_ALL, {
       params: { from: fromDate, to: toDate }
@@ -71,12 +67,7 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
       }
       
       // Debug the leave data structure
-      console.log('Raw leave data received:', leaves);
-      if (leaves.length > 0) {
-        console.log('Sample leave object fields:', Object.keys(leaves[0]));
-        console.log('Sample leave startDate:', leaves[0].startDate);
-        console.log('Sample leave reason:', leaves[0].reason);
-      }
+      // Process leave data for notification filtering
     }
     
     // Filter leaves only by date range, ignoring approval status
@@ -84,8 +75,7 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
       // Check if the leave falls within our date range
       const startDate = new Date(leave.startDate);
       if (isNaN(startDate.getTime())) {
-        console.log(`Leave ${leave.leaveId} has invalid date: ${leave.startDate}`);
-        return false; // Invalid date
+        return false; // Skip leaves with invalid dates
       }
       
       // Set hours to 0 for accurate date comparison
@@ -93,14 +83,8 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
       
       // Check if the start date is in the future and within our range
       const isInRange = startDate >= today && startDate <= endDate;
-      
-      console.log(`Leave ${leave.leaveId || 'new'} (${leave.startDate}): isInRange=${isInRange}, today=${today.toISOString().split('T')[0]}, endDate=${endDate.toISOString().split('T')[0]}`);
-      
       return isInRange;
     });
-    
-    console.log(`Found ${holidays.length} holidays and ${approvedLeaves.length} leaves in date range`);
-    console.log('Upcoming leaves:', JSON.stringify(approvedLeaves, null, 2));
     
     // Convert holidays to unified format
     const holidayEvents: UpcomingEvent[] = holidays.map(holiday => {
@@ -155,8 +139,6 @@ const getUpcomingEvents = async (userId: number, days: number = 30): Promise<Upc
         daysUntil
       };
     });
-    
-    console.log(`Processed ${holidayEvents.length} holiday events and ${leaveEvents.length} leave events`);
     
     // Combine all events and sort by date (closest first)
     const allEvents = [...holidayEvents, ...leaveEvents].sort((a, b) => a.daysUntil - b.daysUntil);

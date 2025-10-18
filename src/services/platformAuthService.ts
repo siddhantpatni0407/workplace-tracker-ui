@@ -157,16 +157,7 @@ class PlatformAuthService {
     // If token is expired, try to refresh
     // if (refreshToken) {
     //   try {
-    //     const authResponse = await this.refreshToken(refreshToken);
-    //     if (authResponse.status === 'SUCCESS') {
-    //       this.storePlatformTokens(authResponse);
-    //       return true;
-    //     }
-    //   } catch (error) {
-    //     console.error('Platform token refresh failed:', error);
-    //     this.clearPlatformAuth();
-    //   }
-    // }
+
     
     // return false;
   }

@@ -1,4 +1,11 @@
-// src/components/common/redirectingLoader/RedirectingLoader.tsx
+/**
+ * RedirectingLoader Component
+ * 
+ * A sophisticated loading screen that displays during user authentication and redirection.
+ * Features role-based messaging, animated progress indicators, and multi-step loading visualization.
+ * Supports internationalization and provides contextual feedback based on user roles.
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { UserRole } from '../../../enums';
@@ -6,13 +13,20 @@ import { useTranslation } from '../../../hooks/useTranslation';
 import './redirecting-loader.css';
 
 interface RedirectingLoaderProps {
+  /** Custom message to display, overrides role-based messaging */
   message?: string;
+  /** User role for contextual messaging and styling */
   role?: UserRole | string;
+  /** Whether to show animated progress bar */
   showProgress?: boolean;
-  duration?: number; // in milliseconds
+  /** Duration of the loading animation in milliseconds */
+  duration?: number;
 }
 
-// Helper functions for platform role handling
+/**
+ * Returns Bootstrap icon class for the specified user role
+ * Used in the role badge display
+ */
 const getPlatformRoleIcon = (role: string): string => {
   switch (role) {
     case 'PLATFORM_ADMIN':
@@ -30,6 +44,10 @@ const getPlatformRoleIcon = (role: string): string => {
   }
 };
 
+/**
+ * Returns human-readable display text for the specified user role
+ * Used in the role badge and messaging
+ */
 const getPlatformRoleDisplay = (role: string): string => {
   switch (role) {
     case 'PLATFORM_ADMIN':
@@ -59,13 +77,15 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
   const [currentMessage, setCurrentMessage] = useState('');
 
   useEffect(() => {
-    // Determine the role to use
+    // Determine the role to use - prioritize prop, then context, then default
     const targetRole = role || user?.role || 'USER';
     
-    // Set appropriate message based on role
+    // Set appropriate message based on role or use custom message
     if (message) {
+      // Custom message provided - use as-is
       setCurrentMessage(message);
     } else {
+      // Generate role-specific redirection message using translations
       const roleKey = String(targetRole).toUpperCase();
       switch (roleKey) {
         case 'PLATFORM_USER':
@@ -86,11 +106,14 @@ const RedirectingLoader: React.FC<RedirectingLoaderProps> = ({
     }
   }, [message, role, user?.role, t]);
 
-  // Force navigation after timeout for logout scenarios to prevent getting stuck
+  /**
+   * Logout timeout handler - prevents users from getting stuck on logout screen
+   * Automatically redirects after a buffer period to ensure logout completes
+   */
   useEffect(() => {
     if (message && (message.toLowerCase().includes('logout') || message.toLowerCase().includes('logging out'))) {
       const timeoutId = setTimeout(() => {
-        console.log('RedirectingLoader: Logout timeout reached, forcing navigation');
+        // Redirect to appropriate homepage based on user role
         if (role === 'PLATFORM_ADMIN') {
           window.location.href = '/platform-home';
         } else {

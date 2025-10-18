@@ -43,9 +43,17 @@ const PlatformProfile: React.FC = memo(() => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  /**
+   * Handles saving platform user profile changes
+   * TODO: Implement API integration with platform auth service
+   * - Create PUT /api/platform/profile endpoint  
+   * - Add form validation before save
+   * - Implement error handling and success feedback
+   * - Update local state after successful save
+   */
   const handleSave = () => {
-    // TODO: Implement profile update API call
-    console.log("Save profile:", formData);
+    // Placeholder for profile update functionality
+    // Implementation pending API endpoint creation
     setIsEditing(false);
   };
 

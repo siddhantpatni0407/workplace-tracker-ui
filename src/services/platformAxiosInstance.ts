@@ -93,14 +93,16 @@ platformAxiosInstance.interceptors.request.use(
       });
     }
     
-    // Always log platform auth status
-    console.log('🔐 Platform request auth status:', {
-      url: config.url,
-      hasAuthHeader: !!config.headers.Authorization,
-      hasPlatformToken: hasPlatformAuth(),
-      platformUserId: getPlatformUserId(),
-      context: 'platform'
-    });
+    // Log platform auth status in development mode
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔐 Platform request auth status:', {
+        url: config.url,
+        hasAuthHeader: !!config.headers.Authorization,
+        hasPlatformToken: hasPlatformAuth(),
+        platformUserId: getPlatformUserId(),
+        context: 'platform'
+      });
+    }
     
     return config;
   },

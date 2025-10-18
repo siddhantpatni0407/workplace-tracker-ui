@@ -61,13 +61,7 @@ export class SpecialDaysService {
       queryParams.append('limit', defaultParams.limit.toString());
 
       const url = `${API_ENDPOINTS.SPECIAL_DAYS.CURRENT_MONTH}?${queryParams.toString()}`;
-      console.log('🔍 DEBUG - Current Month API URL:', url);
-      console.log('🔍 DEBUG - Query params:', defaultParams);
-      
       const response = await axiosInstance.get<SpecialDaysResponse>(url);
-      console.log('🔍 DEBUG - Current Month API Response Status:', response.data.status);
-      console.log('🔍 DEBUG - Current Month API Response:', response.data);
-      
       return response.data;
     } catch (error) {
       console.error('Error fetching current month special days:', error);

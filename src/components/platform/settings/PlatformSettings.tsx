@@ -70,10 +70,19 @@ const PlatformSettings: React.FC = memo(() => {
     }));
   };
 
+  /**
+   * Handles saving platform settings
+   * TODO: Implement API integration with platformSettingsService
+   * - Create PUT /api/platform/settings endpoint
+   * - Add error handling and success notifications
+   * - Implement validation for settings values
+   */
   const handleSaveSettings = () => {
-    // TODO: Implement settings save API call
-    console.log("Save settings:", settings);
-    // Show success message
+    // Placeholder for platform settings save functionality
+    // Implementation pending API endpoint creation
+    
+    // Show success message placeholder
+    // TODO: Replace with actual toast notification service
   };
 
   return (
