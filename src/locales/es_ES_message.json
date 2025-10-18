@@ -113,6 +113,8 @@
     "myProfile": "Mi Perfil",
     "adminTools": "Herramientas de Administrador",
     "userTools": "Herramientas de Usuario",
+    "superAdminTools": "Herramientas de Súper Administrador",
+    "platformTools": "Herramientas de Plataforma",
     "workplaceTracker": "Rastreador del Lugar de Trabajo",
     "mainNavigation": "Navegación principal",
     "toggleMenu": "Alternar menú de navegación",

@@ -81,6 +81,8 @@
     "myProfile": "Mon Profil",
     "adminTools": "Outils d'Administration",
     "userTools": "Outils Utilisateur",
+    "superAdminTools": "Outils Super Administrateur",
+    "platformTools": "Outils Plateforme",
     "workplaceTracker": "Suivi du Lieu de Travail",
     "mainNavigation": "Navigation principale",
     "toggleMenu": "Basculer le menu de navigation",

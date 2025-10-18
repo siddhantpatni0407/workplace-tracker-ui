@@ -68,6 +68,30 @@ const Navbar: React.FC = memo(() => {
     [t]
   );
 
+  // Platform navigation items
+  const platformAdminNavItems = useMemo<DropdownItem[]>(
+    () => [
+      { to: ROUTES.PLATFORM.TENANTS, label: t("platform.navigation.tenants") || "Tenant Management", icon: "bi-buildings" },
+      { to: ROUTES.PLATFORM.TENANT_USERS, label: t("platform.navigation.tenantUsers") || "Tenant User Management", icon: "bi-people-fill" },
+      { to: ROUTES.PLATFORM.TENANT_SUBSCRIPTIONS, label: t("platform.navigation.subscriptions") || "Subscription Management", icon: "bi-credit-card-2-front" },
+      { to: "/platform/analytics", label: t("platform.navigation.analytics") || "Analytics", icon: "bi-graph-up-arrow" },
+      { to: "/platform/settings", label: t("platform.navigation.settings") || "Settings", icon: "bi-gear-fill" }
+    ],
+    [t]
+  );
+
+  const superAdminNavItems = useMemo<DropdownItem[]>(
+    () => [
+      { to: ROUTES.SUPER_ADMIN.ADMIN_MANAGEMENT, label: t("navigation.userManagement"), icon: "bi-people-fill" },
+      { to: ROUTES.SUPER_ADMIN.TENANT_MANAGEMENT, label: t("navigation.tenantManagement"), icon: "bi-buildings" },
+      { to: ROUTES.SUPER_ADMIN.PLATFORM_MANAGEMENT, label: t("navigation.platformManagement"), icon: "bi-gear-wide-connected" },
+      { to: ROUTES.SUPER_ADMIN.SYSTEM_MONITORING, label: t("navigation.systemMonitoring"), icon: "bi-activity" },
+      { to: ROUTES.SUPER_ADMIN.BACKUP_MANAGEMENT, label: t("navigation.dbBackup"), icon: "bi-hdd-fill" },
+      { to: ROUTES.SUPER_ADMIN.GLOBAL_ANALYTICS, label: t("navigation.reports"), icon: "bi-bar-chart-line-fill" }
+    ],
+    [t]
+  );
+
   const profileNavItems = useMemo<DropdownItem[]>(
     () => [
       { to: ROUTES.USER.PROFILE, label: t("navigation.myProfile"), icon: "bi-person-badge-fill" },
@@ -146,6 +170,23 @@ const Navbar: React.FC = memo(() => {
       ROUTES.USER.LEAVE_POLICY, ROUTES.USER.HOLIDAY_TRACKER
     ];
     return userToolsPaths.some(p => isActiveLink(p));
+  }, [isActiveLink]);
+
+  const isPlatformToolsActive = useCallback(() => {
+    const platformToolsPaths = [
+      ROUTES.PLATFORM.TENANTS, ROUTES.PLATFORM.TENANT_USERS, ROUTES.PLATFORM.TENANT_SUBSCRIPTIONS,
+      "/platform/analytics", "/platform/settings"
+    ];
+    return platformToolsPaths.some(p => isActiveLink(p));
+  }, [isActiveLink]);
+
+  const isSuperAdminToolsActive = useCallback(() => {
+    const superAdminToolsPaths = [
+      ROUTES.SUPER_ADMIN.ADMIN_MANAGEMENT, ROUTES.SUPER_ADMIN.TENANT_MANAGEMENT, 
+      ROUTES.SUPER_ADMIN.PLATFORM_MANAGEMENT, ROUTES.SUPER_ADMIN.SYSTEM_MONITORING,
+      ROUTES.SUPER_ADMIN.BACKUP_MANAGEMENT, ROUTES.SUPER_ADMIN.GLOBAL_ANALYTICS
+    ];
+    return superAdminToolsPaths.some(p => isActiveLink(p));
   }, [isActiveLink]);
 
   const handleLogout = useCallback(() => {
@@ -366,6 +407,46 @@ const Navbar: React.FC = memo(() => {
                   {t("navigation.adminTools")}
                 </button>
                 {renderDropdownMenu(adminNavItems, 'adminDropdown', 'adminMenu', activeDropdown === 'admin')}
+              </li>
+            )}
+
+            {hasRole(UserRole.SUPER_ADMIN) && (
+              <li className="nav-item dropdown">
+                <button
+                  ref={(el) => setDropdownButtonRef('superAdmin', el)}
+                  className={`nav-link dropdown-toggle text-white btn btn-link nav-hover ${isSuperAdminToolsActive() ? 'active' : ''}`}
+                  id="superAdminTools"
+                  type="button"
+                  onClick={() => handleDropdownToggle('superAdmin')}
+                  onKeyDown={(e) => handleDropdownKeyDown(e, 'superAdminDropdown')}
+                  onBlur={() => setTimeout(() => setActiveDropdown(null), 150)}
+                  aria-expanded={activeDropdown === 'superAdmin'}
+                  aria-haspopup="true"
+                >
+                  <i className="bi bi-shield-check me-1" aria-hidden="true"></i>
+                  {t("navigation.superAdminTools") || "Super Admin Tools"}
+                </button>
+                {renderDropdownMenu(superAdminNavItems, 'superAdminDropdown', 'superAdminTools', activeDropdown === 'superAdmin')}
+              </li>
+            )}
+
+            {isPlatformContext && isPlatformAuthenticated && (
+              <li className="nav-item dropdown">
+                <button
+                  ref={(el) => setDropdownButtonRef('platform', el)}
+                  className={`nav-link dropdown-toggle text-white btn btn-link nav-hover ${isPlatformToolsActive() ? 'active' : ''}`}
+                  id="platformTools"
+                  type="button"
+                  onClick={() => handleDropdownToggle('platform')}
+                  onKeyDown={(e) => handleDropdownKeyDown(e, 'platformDropdown')}
+                  onBlur={() => setTimeout(() => setActiveDropdown(null), 150)}
+                  aria-expanded={activeDropdown === 'platform'}
+                  aria-haspopup="true"
+                >
+                  <i className="bi bi-building-gear me-1" aria-hidden="true"></i>
+                  {t("navigation.platformTools") || "Platform Tools"}
+                </button>
+                {renderDropdownMenu(platformAdminNavItems, 'platformDropdown', 'platformTools', activeDropdown === 'platform')}
               </li>
             )}
 
