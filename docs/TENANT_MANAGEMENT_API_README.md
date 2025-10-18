@@ -359,11 +359,64 @@ Retrieves all users (both tenant users and regular users) for a specific tenant.
 
 ---
 
+### 12. Update Tenant's Subscription Plan
+Updates the subscription plan for an existing tenant using tenant code and subscription code.
+
+**Endpoint**: `PATCH /tenant/subscription/update`
+
+**Query Parameters**:
+- `tenantCode` (required): Tenant code (e.g., "EXM001")
+- `subscriptionCode` (required): Subscription code (e.g., "BASIC", "PRO", "ENTERPRISE")
+
+**Example**: `PATCH /tenant/subscription/update?tenantCode=EXM001&subscriptionCode=PRO`
+
+**Response**:
+```json
+{
+  "status": "SUCCESS",
+  "message": "Tenant subscription updated successfully",
+  "data": {
+    "tenantId": 1,
+    "tenantName": "Example Corp",
+    "tenantCode": "EXM001",
+    "appSubscriptionId": 2,
+    "subscriptionCode": "PRO",
+    "subscriptionName": "Pro Plan",
+    "contactEmail": "contact@example.com",
+    "contactPhone": "+1234567890",
+    "isActive": true,
+    "subscriptionStartDate": "2023-01-01T00:00:00",
+    "subscriptionEndDate": "2024-01-01T00:00:00",
+    "createdDate": "2023-10-16T10:30:00",
+    "modifiedDate": "2023-10-18T14:30:00"
+  }
+}
+```
+
+**Status Codes**:
+- `200 OK`: Tenant subscription updated successfully
+- `400 Bad Request`: Validation failed (empty tenant code, empty subscription code)
+- `404 Not Found`: Tenant or subscription not found
+- `500 Internal Server Error`: Server error
+
+**Use Cases**:
+- Upgrade/downgrade tenant subscription plans
+- Change subscription when billing requirements change
+- Administrative subscription management
+
+**Important Notes**:
+- Both `tenantCode` and `subscriptionCode` are required and cannot be empty
+- The subscription code must exist in the app_subscription table
+- The tenant code must exist and correspond to an active tenant
+- This operation updates the tenant's subscription reference and may affect available features
+
+---
+
 ## Subscription API Endpoints
 
 The following endpoints are available to fetch subscription plans that can be used when creating or updating tenants. **Use these endpoints to get subscription IDs for tenant operations.**
 
-### 12. Get All Subscriptions
+### 13. Get All Subscriptions
 Retrieves all subscription plans available in the system.
 
 **Endpoint**: `GET /subscriptions`
@@ -411,7 +464,7 @@ Retrieves all subscription plans available in the system.
 
 ---
 
-### 13. Get Active Subscriptions
+### 14. Get Active Subscriptions
 Retrieves only active subscription plans (recommended for UI dropdowns).
 
 **Endpoint**: `GET /subscriptions/active`
@@ -448,7 +501,7 @@ Retrieves only active subscription plans (recommended for UI dropdowns).
 
 ---
 
-### 14. Get Subscription by Code
+### 15. Get Subscription by Code
 Retrieves a specific subscription plan by its code.
 
 **Endpoint**: `GET /subscription/by-code`

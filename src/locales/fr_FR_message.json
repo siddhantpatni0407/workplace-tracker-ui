@@ -269,6 +269,7 @@
       "dashboard": "Tableau de Bord",
       "users": "Gestion des Utilisateurs",
       "tenants": "Gestion des Locataires",
+      "subscriptions": "Gestion des Abonnements des Locataires",
       "analytics": "Analyses",
       "settings": "Paramètres",
       "logout": "Déconnexion"

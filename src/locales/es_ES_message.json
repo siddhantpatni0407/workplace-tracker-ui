@@ -299,6 +299,7 @@
       "dashboard": "Tablero",
       "users": "Gestión de Usuarios",
       "tenants": "Gestión de Inquilinos",
+      "subscriptions": "Gestión de Suscripciones de Inquilinos",
       "analytics": "Análisis",
       "settings": "Configuraciones",
       "logout": "Cerrar Sesión"

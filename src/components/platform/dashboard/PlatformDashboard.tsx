@@ -105,6 +105,15 @@ const PlatformDashboard: React.FC = memo(() => {
       count: dashboardData.platformStats?.totalTenantUsers || 0
     },
     {
+      id: "subscription-management",
+      title: t("platform.navigation.subscriptions") || "Tenant Subscription Management",
+      subtitle: t("platform.dashboard.cards.subscriptions.subtitle") || "Manage tenant subscription plans and billing",
+      icon: "bi-credit-card-2-front",
+      route: ROUTES.PLATFORM.TENANT_SUBSCRIPTIONS,
+      colorClass: "card-info",
+      count: dashboardData.platformStats?.totalTenants || 0
+    },
+    {
       id: "analytics",
       title: t("platform.navigation.analytics") || "Analytics",
       subtitle: t("platform.dashboard.cards.analytics.subtitle") || "Platform usage and performance metrics",
@@ -365,7 +374,7 @@ const PlatformDashboard: React.FC = memo(() => {
               <div className="welcome-card platform-welcome">
                 <div className="welcome-content">
                   <h4 className="welcome-title">
-                    {t('platform.dashboard.welcome.title') || 'Welcome to Platform Administration'}, {user?.name || 'Admin'}
+                    {t('platform.dashboard.welcome.title') || 'Welcome to Platform Administration'}, {platformUser?.name || user?.name || 'User'}
                   </h4>
                   <p className="welcome-subtitle">
                     {t('platform.dashboard.welcome.subtitle') || 'Manage your workplace tracking platform from this centralized dashboard'}

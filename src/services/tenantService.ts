@@ -236,6 +236,23 @@ export const validateSubscriptionId = async (subscriptionId: number): Promise<bo
   }
 };
 
+/**
+ * Update tenant's subscription plan
+ */
+export const updateTenantSubscription = async (
+  tenantCode: string,
+  subscriptionCode: string
+): Promise<ApiResponse<TenantDTO>> => {
+  try {
+    const response = await platformAxiosInstance.patch<ApiResponse<TenantDTO>>(
+      `${API_ENDPOINTS.TENANTS.UPDATE_SUBSCRIPTION}?tenantCode=${tenantCode}&subscriptionCode=${subscriptionCode}`
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || { status: 'FAILED', message: 'Failed to update tenant subscription' };
+  }
+};
+
 export default {
   createTenant,
   getTenants,
@@ -252,5 +269,6 @@ export default {
   getActiveSubscriptions,
   getSubscriptionByCode,
   checkTenantNameExists,
-  validateSubscriptionId
+  validateSubscriptionId,
+  updateTenantSubscription
 };

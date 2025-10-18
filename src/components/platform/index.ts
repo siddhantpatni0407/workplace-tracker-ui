@@ -7,3 +7,4 @@ export { default as PlatformProfile } from './profile/PlatformProfile';
 export { default as PlatformSettings } from './settings/PlatformSettings';
 export { default as TenantManagement } from './tenants/TenantManagement';
 export { default as TenantUserManagement } from './tenant-users/TenantUserManagement';
+export { TenantSubscriptionManagement } from './subscription';

@@ -404,6 +404,7 @@
       "dashboard": "Dashboard",
       "tenantUsers": "Tenant User Management",
       "tenants": "Tenant Management",
+      "subscriptions": "Tenant Subscription Management",
       "analytics": "Analytics",
       "settings": "Settings",
       "logout": "Logout"
@@ -449,6 +450,9 @@
         },
         "tenantUsers": {
           "subtitle": "Manage Super Admin users across tenants"
+        },
+        "subscriptions": {
+          "subtitle": "Manage tenant subscription plans and billing"
         },
         "analytics": {
           "subtitle": "Platform usage and performance metrics"

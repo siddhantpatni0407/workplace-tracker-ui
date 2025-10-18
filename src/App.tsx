@@ -54,6 +54,7 @@ const PlatformProfile = lazy(() => import("./components/platform/profile/Platfor
 const PlatformSettings = lazy(() => import("./components/platform/settings/PlatformSettings"));
 const TenantManagement = lazy(() => import("./components/platform/tenants/TenantManagement"));
 const TenantUserManagement = lazy(() => import("./components/platform/tenant-users/TenantUserManagement"));
+const TenantSubscriptionManagement = lazy(() => import("./components/platform/subscription/TenantSubscriptionManagement"));
 
 // Layout wrapper (Navbar + Footer)
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
@@ -156,6 +157,7 @@ const App: React.FC = () => {
               <Route path={ROUTES.PLATFORM.SETTINGS} element={<Layout><PlatformSettings /></Layout>} />
               <Route path={ROUTES.PLATFORM.TENANTS} element={<Layout><TenantManagement /></Layout>} />
               <Route path={ROUTES.PLATFORM.TENANT_USERS} element={<Layout><TenantUserManagement /></Layout>} />
+              <Route path={ROUTES.PLATFORM.TENANT_SUBSCRIPTIONS} element={<Layout><TenantSubscriptionManagement /></Layout>} />
               <Route path={ROUTES.PLATFORM.ABOUT} element={<Layout><About /></Layout>} />
               <Route path={ROUTES.PLATFORM.CONTACT} element={<Layout><Contact /></Layout>} />
 

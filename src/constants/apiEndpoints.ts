@@ -199,6 +199,7 @@ export const API_ENDPOINTS = {
     GET_BY_CODE: `${API_BASE_URL}/tenant/by-code`,
     UPDATE: `${API_BASE_URL}/tenant/update`,
     UPDATE_STATUS: `${API_BASE_URL}/tenant/status`,
+    UPDATE_SUBSCRIPTION: `${API_BASE_URL}/tenant/subscription/update`,
     DELETE: `${API_BASE_URL}/tenant`,
     SEARCH: `${API_BASE_URL}/tenant/search`,
     GET_STATS: `${API_BASE_URL}/tenant/stats`,
